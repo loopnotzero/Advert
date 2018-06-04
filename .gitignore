@@ -9,3 +9,15 @@ Datagram\.MongoDbStorage/obj/
 
 
 Datagram\.sln\.DotSettings\.user
+
+Egghead\.MongoDbStorage/bin/Debug/netcoreapp2\.0/
+
+Egghead\.MongoDbStorage/obj/Debug/netcoreapp2\.0/
+
+Egghead\.MongoDbStorage/obj/
+
+Egghead/obj/Debug/netcoreapp2\.0/
+
+Egghead/bin/Debug/netcoreapp2\.0/
+
+Egghead/obj/
