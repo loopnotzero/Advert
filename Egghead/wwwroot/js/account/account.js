@@ -1,16 +1,21 @@
 
 class Account {
-    static loginAjax(email, password, token, callback) {
+    static login(targetUrl, email, password, token, callback) {
         let additionalHeaders = {};
 
         if (token) {
             additionalHeaders["RequestVerificationToken"] = token;
         }
         
+        let model = {
+            email: email,
+            password: password
+        };
+        
         $.ajax({
-            url: $("form").attr("asp-action"),
+            url: targetUrl,
             type: "POST",
-            data: JSON.stringify(""),
+            data: model, //JSON.stringify(model),
             headers: additionalHeaders,
             contentType: "application/json",
             success: function(data) {

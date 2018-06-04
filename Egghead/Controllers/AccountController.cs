@@ -50,15 +50,17 @@ namespace Egghead.Controllers
 
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest(new ErrorViewModel
+                {
+                    Message = "Invalid model"
+                });
             }
 
             var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, isPersistent: true, lockoutOnFailure: true);
-
+                    
             if (!result.Succeeded)
-            {               
-                ModelState.AddModelError(string.Empty, "Invalid credentials");
-                return Json(model);
+            {
+                return Unauthorized();
             }
 
             return RedirectToAction(nameof(HomeController.Index), "Home");

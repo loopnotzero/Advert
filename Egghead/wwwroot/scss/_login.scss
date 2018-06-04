@@ -113,6 +113,13 @@ label {
   color: #898989;
 }
 
+.label-error {
+  -webkit-transform: translateY(-38px);
+  transform: translateY(-38px);
+  font-size: 10px;
+  color: $danger;
+}
+
 .label-required:before {
   content: '*';
   color: $primary;
