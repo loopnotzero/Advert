@@ -1,0 +1,11 @@
+
+\.idea
+Datagram/bin/
+Datagram/obj/
+Datagram\.MongoDbStorage/bin/
+Datagram\.MongoDbStorage/obj/
+
+
+
+
+Datagram\.sln\.DotSettings\.user
