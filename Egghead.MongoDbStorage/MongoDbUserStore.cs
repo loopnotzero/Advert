@@ -9,28 +9,44 @@ using MongoDB.Driver;
 
 namespace Egghead.MongoDbStorage
 {
-    public class MongoDbUserStore<T> : IUserStore<T> where T : MongoDbIdentityUser
+    public class MongoDbUserStore<T> : IUserEmailStore<T>, IUserPasswordStore<T> where T : MongoDbIdentityUser
     {
-        private readonly IMongoCollection<T> _users;
+        private readonly IMongoCollection<T> _collection;
          
-        public MongoDbUserStore(IMongoDatabase mongoDatabase) : this()
-        {          
-            _users = mongoDatabase.GetCollection<T>(MongoDbCollections.Users);
-            
-            //todo: Create indices
-        }
-        
         private MongoDbUserStore()
         {
             RegisterWellKnownTypes.EnsureConfigure();
         }
+        
+        public MongoDbUserStore(IMongoDatabase mongoDatabase) : this()
+        {          
+            _collection = mongoDatabase.GetCollection<T>(MongoDbCollections.Users);
+            
+            //todo: Create indices
+        }
+
 
         public void Dispose()
         {
-            //throw new System.NotImplementedException();
+            //throw new NotImplementedException();
+        }
+
+        public Task<string> GetUserIdAsync(T user, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<string> GetUserNameAsync(T user, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
         }
 
         public Task SetUserNameAsync(T user, string userName, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<string> GetNormalizedUserNameAsync(T user, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
@@ -40,50 +56,7 @@ namespace Egghead.MongoDbStorage
             throw new NotImplementedException();
         }
 
-        public Task<T> FindByIdAsync(string userId, CancellationToken cancellationToken)
-        {
-            if (userId == null)
-            {
-                throw new ArgumentNullException(nameof(userId));
-            }
-           
-            cancellationToken.ThrowIfCancellationRequested();
-            
-            var query = Builders<T>.Filter.And(Builders<T>.Filter.Eq(x => x.Id, userId));
-
-            return _users.Find(query).FirstOrDefaultAsync(cancellationToken);
-        }
-
-        public Task<T> FindByNameAsync(string email, CancellationToken cancellationToken)
-        {
-            if (email == null)
-            {
-                throw new ArgumentNullException(nameof(email));
-            }
-            
-            cancellationToken.ThrowIfCancellationRequested();
-            
-            var query = Builders<T>.Filter.And(Builders<T>.Filter.Eq(x => x.Email, email));
-
-            return _users.Find(query).FirstOrDefaultAsync(cancellationToken);
-        }
-        
-        public Task<string> GetUserIdAsync(T user, CancellationToken cancellationToken)
-        {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
-
-            throw new NotImplementedException();
-        }
-
-        public Task<string> GetUserNameAsync(T user, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<string> GetNormalizedUserNameAsync(T user, CancellationToken cancellationToken)
+        public Task<IdentityResult> CreateAsync(T user, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
@@ -98,18 +71,84 @@ namespace Egghead.MongoDbStorage
             throw new NotImplementedException();
         }
 
-        public async Task<IdentityResult> CreateAsync(T user, CancellationToken cancellationToken)
+        public Task<T> FindByIdAsync(string userId, CancellationToken cancellationToken)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
-            
+            throw new NotImplementedException();
+        }
+
+        public Task<T> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task SetEmailAsync(T user, string email, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<string> GetEmailAsync(T user, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> GetEmailConfirmedAsync(T user, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task SetEmailConfirmedAsync(T user, bool confirmed, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<T> FindByEmailAsync(string email, CancellationToken cancellationToken)
+        {
+            if (email == null)
+                throw new ArgumentNullException(nameof(email));
+          
             cancellationToken.ThrowIfCancellationRequested();
 
-            await _users.InsertOneAsync(user, new InsertOneOptions(), cancellationToken).ConfigureAwait(false);
+            var filter = Builders<T>.Filter.Eq(x => x.Email, email);
+            var result = await _collection.FindAsync(filter, cancellationToken: cancellationToken);
+            var entity = await result.FirstOrDefaultAsync(cancellationToken: cancellationToken);
+
+            return entity;
+        }
+
+        public Task<string> GetNormalizedEmailAsync(T user, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task SetNormalizedEmailAsync(T user, string normalizedEmail, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task SetPasswordHashAsync(T user, string passwordHash, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<string> GetPasswordHashAsync(T user, CancellationToken cancellationToken)
+        {
+            if (user == null)
+                throw new ArgumentNullException(nameof(user));
+          
+            cancellationToken.ThrowIfCancellationRequested();
             
-            return IdentityResult.Success;
+            //todo: Compute hash
+
+            var filter = Builders<T>.Filter.Eq(x => x.Password, user.Password);
+            var result = await _collection.FindAsync(filter, cancellationToken: cancellationToken);
+            var entity = await result.FirstOrDefaultAsync(cancellationToken);
+            
+            return entity?.Password;
+        }
+
+        public Task<bool> HasPasswordAsync(T user, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
         }
     }
 }

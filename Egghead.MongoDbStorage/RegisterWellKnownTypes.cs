@@ -1,7 +1,5 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using Egghead.MongoDbStorage.Identity;
-using Microsoft.AspNetCore.Identity;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.IdGenerators;
@@ -30,7 +28,7 @@ namespace Egghead.MongoDbStorage
             {
                 cm.AutoMap();
                 cm.MapIdMember(c => c.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
-                cm.MapCreator(user => new MongoDbIdentityUser(user.Email));
+                cm.MapCreator(user => new MongoDbIdentityUser(user.Email, user.Password));
             });
         }
     }
