@@ -50,6 +50,13 @@ namespace Egghead.Controllers
             return View();
         }
 
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult PasswordReset(string returnUrl = null)
+        {
+            throw new NotImplementedException();
+        }
+
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -140,6 +147,13 @@ namespace Egghead.Controllers
             await _signInManager.SignInAsync(user, isPersistent: false);
             
             return RedirectToAction(nameof(HomeController.Index), "Home");
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> PasswordReset([FromBody] PasswordResetViewModel model, string returnUrl)
+        {
+            throw new NotImplementedException();
         }
     }
 }

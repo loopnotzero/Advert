@@ -1,8 +1,8 @@
 ﻿@model Egghead.Models.LoginViewModel
 
-@{ ViewData["Title"] = "Login Page"; }
+@* @{ ViewData["Title"] = "Login on Egghead"; } *@
 
-<div class="card-box">
+<div class="card-box">   
     <div class="row">
         <div class="title col-md-12 font-bold text-left m-b-30" style="color: #222">
             <h6>
@@ -11,7 +11,7 @@
         </div>
     </div>
     <form id="form" asp-controller="Account" asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" novalidate="">
-        <div class="form-group form-mbt-4 row">
+        <div class="form-group form-mbt-3 row">
             <div class="col-md-12">
                 <label class="floating-label label-required">Email</label>
                 <input type="email">
@@ -19,69 +19,90 @@
         </div>
         <div class="form-group form-mbt-4 row">
             <div class="col-md-12">
+                @* todo: Add eye open/closed *@
                 <label class="floating-label label-required">Password</label>
                 <input type="password">
             </div>
         </div>
-        <div class="form-group form-mbt-2 row">
+        <div class="form-group form-mbt-3 row">
             <div class="input-group">
                 <span class="p-t-7">
-                    <a href="/Account/Recover" class="text-muted"><i class="fa fa-lock m-r-5"></i> Forgot password?</a>
+                    <a href="/Account/PasswordReset" class="text-muted"><i class="fa fa-lock m-r-5"></i> Forgot password?</a>
                 </span>
                 <span class="input-group-btn ml-auto">
                     <button id="eggh-login" class="btn btn-danger w-xs waves-effect waves-light">Next</button>
                 </span>
             </div>
         </div>
+        <div class="form-group row">
+            <div class="container align-center">
+                New to Egghead? <a href="/Account/Register">SIGN UP</a>
+            </div>
+        </div>
     </form>
-    <div class="col-sm-12 p-t-20 text-center text-muted">Don't have an account? <a href="/Account/Register"> Sign up</a></div>
 </div>
 
-
-<script>
-    $("input[type='email']").focusin(function() {
-        var prev = $(this).prev();      
-        if (!prev.hasClass("floating-label-error")) {
-            prev.addClass("label-transform");
-        } else {
-            prev.addClass("label-error-transform");
-        }
-    }).focusout(function() {
-        var prev = $(this).prev();       
-        if (!prev.hasClass("floating-label-error")) {
-            prev.toggleClass("label-transform", !((this.value === "") && prev.hasClass("label-transform")));
-        } else {
-            prev.toggleClass("label-error-transform", !((this.value === "") && prev.hasClass("label-error-transform")));
-            if (!(this.value === "")) {
-                prev.removeClass("floating-label-error label-error-transform").addClass("floating-lable label-transform");
-                $(this).css("background",
-                    "linear-gradient(to bottom, rgba(255, 255, 255, 0) 96%, #5682a3 96%)");
-            }
-        }
-    });
-
-    $("input[type='password']").focusin(function() {
-        var prev = $(this).prev();      
-        if (!prev.hasClass("floating-label-error")) {
-            prev.addClass("label-transform");
-        } else {
-            prev.addClass("label-error-transform");
-        }
-    }).focusout(function() {
-        var prev = $(this).prev();       
-        if (!prev.hasClass("floating-label-error")) {
-            prev.toggleClass("label-transform", !((this.value === "") && prev.hasClass("label-transform")));
-        } else {
-            prev.toggleClass("label-error-transform", !((this.value === "") && prev.hasClass("label-error-transform")));
-            if (!(this.value === "")) {
-                prev.removeClass("floating-label-error label-error-transform").addClass("floating-lable label-transform");
-                $(this).css("background",
-                    "linear-gradient(to bottom, rgba(255, 255, 255, 0) 96%, #5682a3 96%)");
-            }
-        }
-    });
-
+<script>   
     $(document).ready(function() {
+        var progresspump = setInterval(function(){
+            /* query the completion percentage from the server */
+            $.get("/Account/Login",
+                function(data) {
+                    /* update the progress bar width */
+                    $("#progress").css('width', data + '%');
+                    /* and display the numeric value */
+                    $("#progress").html(data + '%');
+                    /* test to see if the job has completed */
+                    if (data > 99.999) {
+                        clearInterval(progresspump);
+                        $("#progressouter").removeClass("active");
+                        $("#progress").html("Done");
+                    }
+                });
+        }, 10000);
+        
+        $("input[type='email']").focusin(function() {
+            var prev = $(this).prev();      
+            if (!prev.hasClass("floating-label-error")) {
+                prev.addClass("label-transform");
+            } else {
+                prev.addClass("label-error-transform");
+            }
+        }).focusout(function() {
+            var prev = $(this).prev();       
+            if (!prev.hasClass("floating-label-error")) {
+                prev.toggleClass("label-transform", !((this.value === "") && prev.hasClass("label-transform")));
+            } else {
+                prev.toggleClass("label-error-transform", !((this.value === "") && prev.hasClass("label-error-transform")));
+                if (!(this.value === "")) {
+                    prev.removeClass("floating-label-error label-error-transform").addClass("floating-lable label-transform");
+                    $(this).css("background",
+                        "linear-gradient(to bottom, rgba(255, 255, 255, 0) 96%, #5682a3 96%)");
+                }
+            }
+        });
+
+        $("input[type='password']").focusin(function() {
+            var prev = $(this).prev();      
+            if (!prev.hasClass("floating-label-error")) {
+                prev.addClass("label-transform");
+            } else {
+                prev.addClass("label-error-transform");
+            }
+        }).focusout(function() {
+            var prev = $(this).prev();       
+            if (!prev.hasClass("floating-label-error")) {
+                prev.toggleClass("label-transform", !((this.value === "") && prev.hasClass("label-transform")));
+            } else {
+                prev.toggleClass("label-error-transform", !((this.value === "") && prev.hasClass("label-error-transform")));
+                if (!(this.value === "")) {
+                    prev.removeClass("floating-label-error label-error-transform").addClass("floating-lable label-transform");
+                    $(this).css("background",
+                        "linear-gradient(to bottom, rgba(255, 255, 255, 0) 96%, #5682a3 96%)");
+                }
+            }
+        });
+        
         $("#eggh-login").click(function(e) {
             e.preventDefault();
 
