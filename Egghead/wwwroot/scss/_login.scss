@@ -57,16 +57,6 @@
   margin-top: -6px;
 }
 
-//form {
-//  background: #fff;
-//  padding: 30px 20px;
-//  position: relative;
-//  width: 100%;
-//  margin-top: 40px;
-//  border-radius: 6px;
-//  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
-//}
-
 .form-control {
   position: relative;
   z-index: 2;
@@ -88,6 +78,14 @@
   -webkit-box-shadow: inset 0 0px 0px rgba(0, 0, 0, .075);
 }
 
+.form-mbt-2 {
+  margin-bottom: 2rem !important;
+}
+
+.form-mbt-4 {
+  margin-bottom: 4rem !important;
+}
+
 
 /* ============ LABEL =========== */
 
@@ -106,14 +104,21 @@ label {
   position: absolute
 }
 
-.label-active {
+.label-transform {
   -webkit-transform: translateY(-38px);
   transform: translateY(-38px);
   font-size: 10px;
-  color: #898989;
+  color: $primary;
 }
 
-.label-error {
+.floating-label-error {
+  -webkit-transform: translateY(-18px);
+  transform: translateY(-18px);
+  position: absolute;
+  color: $danger;
+}
+
+.label-error-transform {
   -webkit-transform: translateY(-38px);
   transform: translateY(-38px);
   font-size: 10px;
@@ -138,7 +143,7 @@ input[type=password],
 input[type=number] {
   position: relative;
   z-index: 2;
-  margin-bottom: 30px;
+  //margin-bottom: 10px;
   width: 100%;
   display: block;
   border: none;

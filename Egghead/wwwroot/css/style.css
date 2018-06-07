@@ -5719,6 +5719,14 @@ File: Responsive
   -webkit-box-shadow: inset 0 0px 0px rgba(0, 0, 0, 0.075);
 }
 
+.form-mbt-2 {
+  margin-bottom: 2rem !important;
+}
+
+.form-mbt-4 {
+  margin-bottom: 4rem !important;
+}
+
 /* ============ LABEL =========== */
 label {
   color: #898989;
@@ -5735,14 +5743,21 @@ label {
   position: absolute;
 }
 
-.label-active {
+.label-transform {
   -webkit-transform: translateY(-38px);
   transform: translateY(-38px);
   font-size: 10px;
-  color: #898989;
+  color: #5682a3;
 }
 
-.label-error {
+.floating-label-error {
+  -webkit-transform: translateY(-18px);
+  transform: translateY(-18px);
+  position: absolute;
+  color: #ee6e73;
+}
+
+.label-error-transform {
   -webkit-transform: translateY(-38px);
   transform: translateY(-38px);
   font-size: 10px;
@@ -5765,7 +5780,6 @@ input[type=password],
 input[type=number] {
   position: relative;
   z-index: 2;
-  margin-bottom: 30px;
   width: 100%;
   display: block;
   border: none;

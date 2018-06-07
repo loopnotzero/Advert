@@ -10,20 +10,20 @@
             </h6>
         </div>
     </div>
-    <form id="form" asp-controller="Account" asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post">
-        <div class="form-group row">
+    <form id="form" asp-controller="Account" asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" novalidate="">
+        <div class="form-group form-mbt-4 row">
             <div class="col-md-12">
                 <label class="floating-label label-required">Email</label>
-                <input type="email" required="">
+                <input type="email">
             </div>
         </div>
-        <div class="form-group row">
+        <div class="form-group form-mbt-4 row">
             <div class="col-md-12">
                 <label class="floating-label label-required">Password</label>
-                <input type="password" required="">
+                <input type="password">
             </div>
         </div>
-        <div class="form-group row">
+        <div class="form-group form-mbt-2 row">
             <div class="input-group">
                 <span class="p-t-7">
                     <a href="/Account/Recover" class="text-muted"><i class="fa fa-lock m-r-5"></i> Forgot password?</a>
@@ -38,30 +38,46 @@
 </div>
 
 
-<script src="~/js/account/account.js"></script>
-
 <script>
     $("input[type='email']").focusin(function() {
-        $(this).prev().addClass("label-active");
-    }).focusout(function() {
-        if (this.value === "") {
-            console.log("Email input is empty");
-            $(this).prev().removeClass("label-active");
+        var prev = $(this).prev();      
+        if (!prev.hasClass("floating-label-error")) {
+            prev.addClass("label-transform");
         } else {
-            console.log("Email input is not empty");
-            $(this).prev().addClass("label-active");
+            prev.addClass("label-error-transform");
+        }
+    }).focusout(function() {
+        var prev = $(this).prev();       
+        if (!prev.hasClass("floating-label-error")) {
+            prev.toggleClass("label-transform", !((this.value === "") && prev.hasClass("label-transform")));
+        } else {
+            prev.toggleClass("label-error-transform", !((this.value === "") && prev.hasClass("label-error-transform")));
+            if (!(this.value === "")) {
+                prev.removeClass("floating-label-error label-error-transform").addClass("floating-lable label-transform");
+                $(this).css("background",
+                    "linear-gradient(to bottom, rgba(255, 255, 255, 0) 96%, #5682a3 96%)");
+            }
         }
     });
 
     $("input[type='password']").focusin(function() {
-        $(this).prev().addClass("label-active");
-    }).focusout(function() {
-        if (this.value === "") {
-            console.log("Password input is empty");
-            $(this).prev().removeClass("label-active");
+        var prev = $(this).prev();      
+        if (!prev.hasClass("floating-label-error")) {
+            prev.addClass("label-transform");
         } else {
-            console.log("Password input is not empty");
-            $(this).prev().addClass("label-active");
+            prev.addClass("label-error-transform");
+        }
+    }).focusout(function() {
+        var prev = $(this).prev();       
+        if (!prev.hasClass("floating-label-error")) {
+            prev.toggleClass("label-transform", !((this.value === "") && prev.hasClass("label-transform")));
+        } else {
+            prev.toggleClass("label-error-transform", !((this.value === "") && prev.hasClass("label-error-transform")));
+            if (!(this.value === "")) {
+                prev.removeClass("floating-label-error label-error-transform").addClass("floating-lable label-transform");
+                $(this).css("background",
+                    "linear-gradient(to bottom, rgba(255, 255, 255, 0) 96%, #5682a3 96%)");
+            }
         }
     });
 
@@ -87,35 +103,80 @@
                 additionalHeaders["RequestVerificationToken"] = token;
             }
 
-            var model = {
-                email: email,
-                password: password
-            };
-
             $.ajax({
                 url: url,
                 type: "POST",
-                data: JSON.stringify(model),
+                data: JSON.stringify({ email: email, password: password }),
                 headers: additionalHeaders,
                 contentType: "application/json",
                 error: function(jqXhr, textStatus, errorThrown) {
+                    console.log("jqXhr: " + JSON.stringify(jqXhr));
+                    console.log("Text status: " + JSON.stringify(textStatus));
+                    console.log("Error thrown: " + JSON.stringify(errorThrown));
+
                     switch (errorThrown) {
-                    case "Unauthorized":
+                    case "Bad Request":
                         {
-                            $("input[type=email]").prev().addClass("label-error");
-                            $("input[type=password]").prev().addClass("label-error");
-                            //Wrong password. Try again or click Forgot password to reset it
+                            switch (jqXhr.responseJSON.responseStatusCode) {
+                            case 4:
+                                {
+                                    $("input[type='email']")
+                                        .css("background",
+                                            "linear-gradient(to bottom, rgba(255, 255, 255, 0) 96%, #ee6e73 96%)")
+                                        .prev().addClass("floating-label-error").text(jqXhr.responseJSON.errorMessage);
+                                }
+                                break;
+                            case 8:
+                                {
+                                    $("input[type='password']")
+                                        .css("background",
+                                            "linear-gradient(to bottom, rgba(255, 255, 255, 0) 96%, #ee6e73 96%)")
+                                        .prev().addClass("floating-label-error").text(jqXhr.responseJSON.errorMessage);
+                                }
+                                break;
+                            }
                         }
                         break;
                     case "Internal Server Error":
                         {
-                            console.log("Service is temporarily unavailable");
+                            //todo: Add card box notification
+                            console.log("Service is temporarily unavailable, please try again later");
                         }
                         break;
                     }
                 },
-                success: function(data) {
-                    console.log(data);
+                success: function(model) {
+                    console.log("Error message: " + model.errorMessage);
+                    console.log("Response status code: " + model.responseStatusCode);
+
+                    switch (model.responseStatusCode) {
+                    case 0: //Email not found
+                        {
+                            $("input[type='email']")
+                                .css("background",
+                                    "linear-gradient(to bottom, rgba(255, 255, 255, 0) 96%, #ee6e73 96%)")
+                                .prev().addClass("floating-label-error label-error-transform").text(model.errorMessage);
+                        }
+                        break;
+                    case 1: //Password do not match
+                        {
+                            $("input[type='password']")
+                                .css("background",
+                                    "linear-gradient(to bottom, rgba(255, 255, 255, 0) 96%, #ee6e73 96%)")
+                                .prev().addClass("floating-label-error label-error-transform").text(model.errorMessage);
+                        }
+                        break;
+                    case 2: //Authorization failed
+                        {
+
+                        }
+                        break;
+                    default: //Not implemented response status handling
+                        {
+
+                        }
+                        break;
+                    }
                 }
             });
             return false;

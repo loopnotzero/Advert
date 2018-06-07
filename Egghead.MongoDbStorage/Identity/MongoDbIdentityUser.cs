@@ -3,9 +3,9 @@ using MongoDB.Bson;
 
 namespace Egghead.MongoDbStorage.Identity
 {
-    public class MongoDbIdentityUser
+    public class MongoDbIdentityEmail
     {
-        public MongoDbIdentityUser(string email)
+        public MongoDbIdentityEmail(string email)
         {
             Id = ObjectId.GenerateNewId().ToString();
             Email = email ?? throw new ArgumentNullException(nameof(email));
