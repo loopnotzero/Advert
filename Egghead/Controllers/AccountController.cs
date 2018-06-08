@@ -158,7 +158,11 @@ namespace Egghead.Controllers
         
         private bool IsCredentialsValidationError(string email, string password, ref IActionResult badRequest)
         {
-            if (string.IsNullOrEmpty(email))
+            //todo: Add email regex validation
+            //todo: Add password length validation
+            //todo: Add password complexity valdiation
+            
+            if (string.IsNullOrEmpty(email) || string.IsNullOrWhiteSpace(email))
             {
                 badRequest = BadRequest(new ErrorViewModel
                 {
@@ -168,7 +172,7 @@ namespace Egghead.Controllers
                 return false;
             }
 
-            if (string.IsNullOrEmpty(password))
+            if (string.IsNullOrEmpty(password) || string.IsNullOrWhiteSpace(password))
             {
                 badRequest = BadRequest(new ErrorViewModel
                 {
