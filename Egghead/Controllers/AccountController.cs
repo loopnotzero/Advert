@@ -16,6 +16,8 @@ using Microsoft.Extensions.Logging;
 
 namespace Egghead.Controllers
 {
+    //todo: Added string constants to config file or as consts
+    
     public class AccountController : Controller
     {
         private readonly ILogger _logger;
@@ -76,7 +78,7 @@ namespace Egghead.Controllers
             {
                 return Ok(new ErrorViewModel
                 {
-                    ErrorMessage = "This email does not seem to exist",
+                    ErrorMessage = "Couldn't find your Egghead account",
                     ResponseStatusCode = ResponseStatusCode.CouldNotFindYourEmail
                 });
             }
@@ -85,7 +87,7 @@ namespace Egghead.Controllers
             {
                 return Ok(new ErrorViewModel
                 {
-                    ErrorMessage = "Wrong password. Try again or reset it",
+                    ErrorMessage = "Wrong password. Try again or click forgot password to reset it",
                     ResponseStatusCode = ResponseStatusCode.PasswordDidNotMatch
                 });
             }
@@ -96,7 +98,7 @@ namespace Egghead.Controllers
             {
                 return StatusCode((int) HttpStatusCode.InternalServerError, new ErrorViewModel
                 {
-                    ErrorMessage = "Authorization failed. Please contact your administrator",
+                    ErrorMessage = "Couldn't log in account. Please, contact technical support for help",
                     ResponseStatusCode = ResponseStatusCode.CouldNotAthorizeYourAccount
                 });
             }
@@ -138,7 +140,7 @@ namespace Egghead.Controllers
             {
                 return StatusCode((int) HttpStatusCode.InternalServerError, new ErrorViewModel
                 {
-                    ErrorMessage = "Couldn't register account. Please contact your administrator",
+                    ErrorMessage = "Couldn't register account. Please, contact technical support for assistance",
                     ResponseStatusCode = ResponseStatusCode.CouldNotRegisterYourAccount
                 });
             }
@@ -160,7 +162,7 @@ namespace Egghead.Controllers
             {
                 badRequest = BadRequest(new ErrorViewModel
                 {
-                    ErrorMessage = "Please enter your email",
+                    ErrorMessage = "Enter your email",
                     ResponseStatusCode = ResponseStatusCode.EmailValidationError
                 });
                 return false;
@@ -170,7 +172,7 @@ namespace Egghead.Controllers
             {
                 badRequest = BadRequest(new ErrorViewModel
                 {
-                    ErrorMessage = "Please enter your password",
+                    ErrorMessage = "Enter your password",
                     ResponseStatusCode = ResponseStatusCode.PasswordValidationError
                 });
                 return false;
