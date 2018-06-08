@@ -2,7 +2,7 @@
 
 @* @{ ViewData["Title"] = "Login on Egghead"; } *@
 
-<div class="card-box">   
+<div class="card-box">
     <div class="row">
         <div class="title col-md-12 font-bold text-left m-b-30" style="color: #222">
             <h6>
@@ -36,86 +36,127 @@
         </div>
         <div class="form-group row">
             <div class="container align-center">
-                New to Egghead? <a href="/Account/Register">SIGN UP</a>
+                Don't have an account? <a href="/Account/Register">Sign Up</a>
             </div>
         </div>
     </form>
 </div>
 
-<script>   
-    $(document).ready(function() {
-        var progresspump = setInterval(function(){
-            /* query the completion percentage from the server */
-            $.get("/Account/Login",
-                function(data) {
-                    /* update the progress bar width */
-                    $("#progress").css('width', data + '%');
-                    /* and display the numeric value */
-                    $("#progress").html(data + '%');
-                    /* test to see if the job has completed */
-                    if (data > 99.999) {
-                        clearInterval(progresspump);
-                        $("#progressouter").removeClass("active");
-                        $("#progress").html("Done");
-                    }
-                });
-        }, 10000);
+<script>
+    function init() {
+        var emailInput = $("input[type='email']");
+        var passwordInput = $("input[type='password']");        
+        var floatingLabel = "floating-lable";
+        var floatingLabelError = "floating-label-error";
+        var labelTransform = "label-transform";
+        var labelErrorTransform = "label-error-transform";      
+        var requestVerificationToken = $("input[name=__RequestVerificationToken]");
         
-        $("input[type='email']").focusin(function() {
-            var prev = $(this).prev();      
-            if (!prev.hasClass("floating-label-error")) {
-                prev.addClass("label-transform");
+        //todo: Add class for changing css background
+
+        function inputFocusIn(form) {
+            var prevElement = form.prev();
+            prevElement.addClass(!prevElement.hasClass(floatingLabelError) ? labelTransform : labelErrorTransform);
+        }
+
+        function inputFocusOut(form) {
+            var prev = form.prev();
+            if (!prev.hasClass(floatingLabelError)) {
+                prev.toggleClass(labelTransform, !((form[0].value === "") && prev.hasClass(labelTransform)));
             } else {
-                prev.addClass("label-error-transform");
-            }
-        }).focusout(function() {
-            var prev = $(this).prev();       
-            if (!prev.hasClass("floating-label-error")) {
-                prev.toggleClass("label-transform", !((this.value === "") && prev.hasClass("label-transform")));
-            } else {
-                prev.toggleClass("label-error-transform", !((this.value === "") && prev.hasClass("label-error-transform")));
-                if (!(this.value === "")) {
-                    prev.removeClass("floating-label-error label-error-transform").addClass("floating-lable label-transform");
-                    $(this).css("background",
-                        "linear-gradient(to bottom, rgba(255, 255, 255, 0) 96%, #5682a3 96%)");
+                prev.toggleClass(labelErrorTransform, !((form[0].value === "") && prev.hasClass(labelErrorTransform)));                
+                if (!(form[0].value === "")) {
+                    prev.removeClass(floatingLabelError + " " + labelErrorTransform).addClass(floatingLabel + " " + labelTransform);
+                    form.css("background", "linear-gradient(to bottom, rgba(255, 255, 255, 0) 96%, #5682a3 96%)");
                 }
             }
+        }
+
+        function onAjaxRequestError(jqXhr, textStatus, errorThrown) {
+            console.log("jqXhr: " + JSON.stringify(jqXhr));
+            console.log("Text status: " + JSON.stringify(textStatus));
+            console.log("Error thrown: " + JSON.stringify(errorThrown));
+
+            switch (errorThrown) {
+            case "Bad Request":
+                {
+                    switch (jqXhr.responseJSON.responseStatusCode) {
+                    case 4:
+                        {
+                            emailInput
+                                .css("background",
+                                    "linear-gradient(to bottom, rgba(255, 255, 255, 0) 96%, #ee6e73 96%)")
+                                .prev().addClass(floatingLabelError).text(jqXhr.responseJSON.errorMessage);
+                        }
+                        break;
+                    case 8:
+                        {
+                            passwordInput
+                                .css("background",
+                                    "linear-gradient(to bottom, rgba(255, 255, 255, 0) 96%, #ee6e73 96%)")
+                                .prev().addClass(floatingLabelError).text(jqXhr.responseJSON.errorMessage);
+                        }
+                        break;
+                    }
+                }
+                break;
+            case "Internal Server Error":
+                {
+                    //todo: Add card box notification
+                    console.log("Service is temporarily unavailable, please try again later");
+                }
+                break;
+            }
+        }
+
+        function onAjaxRequestSuccess(response) {
+            console.log("Error message: " + response.errorMessage);
+            console.log("Response status code: " + response.responseStatusCode);
+
+            switch (response.responseStatusCode) {
+            case 0: //Email not found
+                {
+                    emailInput
+                        .css("background", "linear-gradient(to bottom, rgba(255, 255, 255, 0) 96%, #ee6e73 96%)")                  
+                        .prev().addClass(floatingLabelError + " " + labelErrorTransform).text(response.errorMessage);
+                }
+                break;
+            case 1: //Password do not match
+                {
+                    passwordInput
+                        .css("background",
+                            "linear-gradient(to bottom, rgba(255, 255, 255, 0) 96%, #ee6e73 96%)")
+                        .prev().addClass(floatingLabelError + " " + labelErrorTransform).text(response.errorMessage);
+                }
+                break;
+            case 2: //Authorization failed
+                {
+
+                }
+                break;
+            default: //Not implemented response status handling
+                {
+
+                }
+                break;
+            }
+        }
+
+        $("input[type='email'], input[type='password']").focusin(function() {
+            inputFocusIn($(this));
+        }).focusout(function() {
+            inputFocusOut($(this));
         });
 
-        $("input[type='password']").focusin(function() {
-            var prev = $(this).prev();      
-            if (!prev.hasClass("floating-label-error")) {
-                prev.addClass("label-transform");
-            } else {
-                prev.addClass("label-error-transform");
-            }
-        }).focusout(function() {
-            var prev = $(this).prev();       
-            if (!prev.hasClass("floating-label-error")) {
-                prev.toggleClass("label-transform", !((this.value === "") && prev.hasClass("label-transform")));
-            } else {
-                prev.toggleClass("label-error-transform", !((this.value === "") && prev.hasClass("label-error-transform")));
-                if (!(this.value === "")) {
-                    prev.removeClass("floating-label-error label-error-transform").addClass("floating-lable label-transform");
-                    $(this).css("background",
-                        "linear-gradient(to bottom, rgba(255, 255, 255, 0) 96%, #5682a3 96%)");
-                }
-            }
-        });
-        
         $("#eggh-login").click(function(e) {
             e.preventDefault();
-
             var url = $("#form").attr("action");
             console.log("Request url: " + url);
-
-            var token = $("input[name=__RequestVerificationToken]").val();
+            var token = requestVerificationToken.val();
             console.log("Request verification token: " + token);
-
-            var email = $("input[type=email]").val();
+            var email = emailInput.val();
             console.log("Email: " + email);
-
-            var password = $("input[type=password]").val();
+            var password = passwordInput.val();
             console.log("Password: " + password);
 
             var additionalHeaders = {};
@@ -131,76 +172,18 @@
                 headers: additionalHeaders,
                 contentType: "application/json",
                 error: function(jqXhr, textStatus, errorThrown) {
-                    console.log("jqXhr: " + JSON.stringify(jqXhr));
-                    console.log("Text status: " + JSON.stringify(textStatus));
-                    console.log("Error thrown: " + JSON.stringify(errorThrown));
-
-                    switch (errorThrown) {
-                    case "Bad Request":
-                        {
-                            switch (jqXhr.responseJSON.responseStatusCode) {
-                            case 4:
-                                {
-                                    $("input[type='email']")
-                                        .css("background",
-                                            "linear-gradient(to bottom, rgba(255, 255, 255, 0) 96%, #ee6e73 96%)")
-                                        .prev().addClass("floating-label-error").text(jqXhr.responseJSON.errorMessage);
-                                }
-                                break;
-                            case 8:
-                                {
-                                    $("input[type='password']")
-                                        .css("background",
-                                            "linear-gradient(to bottom, rgba(255, 255, 255, 0) 96%, #ee6e73 96%)")
-                                        .prev().addClass("floating-label-error").text(jqXhr.responseJSON.errorMessage);
-                                }
-                                break;
-                            }
-                        }
-                        break;
-                    case "Internal Server Error":
-                        {
-                            //todo: Add card box notification
-                            console.log("Service is temporarily unavailable, please try again later");
-                        }
-                        break;
-                    }
+                    onAjaxRequestError(jqXhr, textStatus, errorThrown);
                 },
-                success: function(model) {
-                    console.log("Error message: " + model.errorMessage);
-                    console.log("Response status code: " + model.responseStatusCode);
-
-                    switch (model.responseStatusCode) {
-                    case 0: //Email not found
-                        {
-                            $("input[type='email']")
-                                .css("background",
-                                    "linear-gradient(to bottom, rgba(255, 255, 255, 0) 96%, #ee6e73 96%)")
-                                .prev().addClass("floating-label-error label-error-transform").text(model.errorMessage);
-                        }
-                        break;
-                    case 1: //Password do not match
-                        {
-                            $("input[type='password']")
-                                .css("background",
-                                    "linear-gradient(to bottom, rgba(255, 255, 255, 0) 96%, #ee6e73 96%)")
-                                .prev().addClass("floating-label-error label-error-transform").text(model.errorMessage);
-                        }
-                        break;
-                    case 2: //Authorization failed
-                        {
-
-                        }
-                        break;
-                    default: //Not implemented response status handling
-                        {
-
-                        }
-                        break;
-                    }
+                success: function(response) {
+                    onAjaxRequestSuccess(response);
                 }
             });
+
             return false;
         });
+    }
+
+    $(document).ready(function() {
+        init();
     });
 </script>
