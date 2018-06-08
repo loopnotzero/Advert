@@ -56,9 +56,22 @@ namespace Egghead.MongoDbStorage
             throw new NotImplementedException();
         }
 
-        public Task<IdentityResult> CreateAsync(T user, CancellationToken cancellationToken)
+        public async Task<IdentityResult> CreateAsync(T user, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            if (user.Email == null)
+                throw new ArgumentNullException(nameof(user.Email));
+           
+            if (user.Password == null)
+                throw new ArgumentNullException(nameof(user.Email));
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            await _collection.InsertOneAsync(user, new InsertOneOptions
+            {
+                BypassDocumentValidation = false
+            }, cancellationToken);
+            
+            return IdentityResult.Success;
         }
 
         public Task<IdentityResult> UpdateAsync(T user, CancellationToken cancellationToken)
@@ -108,11 +121,9 @@ namespace Egghead.MongoDbStorage
           
             cancellationToken.ThrowIfCancellationRequested();
 
-            var filter = Builders<T>.Filter.Eq(x => x.Email, email);
-            var result = await _collection.FindAsync(filter, cancellationToken: cancellationToken);
-            var entity = await result.FirstOrDefaultAsync(cancellationToken: cancellationToken);
+            var result = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.Email, email), cancellationToken: cancellationToken);
 
-            return entity;
+            return await result.FirstOrDefaultAsync(cancellationToken);
         }
 
         public Task<string> GetNormalizedEmailAsync(T user, CancellationToken cancellationToken)
