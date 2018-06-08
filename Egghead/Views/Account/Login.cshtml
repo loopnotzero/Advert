@@ -81,7 +81,7 @@
             case "Bad Request":
                 {
                     switch (jqXhr.responseJSON.responseStatusCode) {
-                    case 4:
+                    case 1:
                         {
                             emailInput
                                 .css("background",
@@ -89,7 +89,7 @@
                                 .prev().addClass(floatingLabelError).text(jqXhr.responseJSON.errorMessage);
                         }
                         break;
-                    case 8:
+                    case 11:
                         {
                             passwordInput
                                 .css("background",
@@ -114,14 +114,14 @@
             console.log("Response status code: " + response.responseStatusCode);
 
             switch (response.responseStatusCode) {
-            case 0: //Email not found
+            case 2: //Email not found
                 {
                     emailInput
                         .css("background", "linear-gradient(to bottom, rgba(255, 255, 255, 0) 96%, #ee6e73 96%)")                  
                         .prev().addClass(floatingLabelError + " " + labelErrorTransform).text(response.errorMessage);
                 }
                 break;
-            case 1: //Password do not match
+            case 10: //Password do not match
                 {
                     passwordInput
                         .css("background",
@@ -129,7 +129,7 @@
                         .prev().addClass(floatingLabelError + " " + labelErrorTransform).text(response.errorMessage);
                 }
                 break;
-            case 2: //Authorization failed
+            case 20: //Authorization failed
                 {
 
                 }

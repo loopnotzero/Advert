@@ -19,13 +19,10 @@ namespace Egghead.Controllers
     public class AccountController : Controller
     {
         private readonly ILogger _logger;
-        private readonly UserManager<MongoDbIdentityUser> _userManager;     
+        private readonly UserManager<MongoDbIdentityUser> _userManager;
         private readonly SignInManager<MongoDbIdentityUser> _signInManager;
-        
-        public AccountController(
-            UserManager<MongoDbIdentityUser> userManager, 
-            SignInManager<MongoDbIdentityUser> signInManager, 
-            ILoggerFactory loggerFactory)
+
+        public AccountController(UserManager<MongoDbIdentityUser> userManager, SignInManager<MongoDbIdentityUser> signInManager, ILoggerFactory loggerFactory)
         {
             _logger = loggerFactory.CreateLogger<AccountController>();
             _userManager = userManager;
@@ -40,7 +37,7 @@ namespace Egghead.Controllers
             _logger.LogInformation("ReturnUrl: {0}", returnUrl);
             return View();
         }
-        
+
         [HttpGet]
         [AllowAnonymous]
         public IActionResult Register(string returnUrl = null)
@@ -68,23 +65,11 @@ namespace Egghead.Controllers
 
             if (!ModelState.IsValid)
             {
-                if (string.IsNullOrEmpty(model.Email))
+                IActionResult badRequest = null;
+                if (!IsCredentialsValidationError(model.Email, model.Password, ref badRequest))
                 {
-                    return BadRequest(new ErrorViewModel
-                    {
-                        ErrorMessage = "Please enter your email",
-                        ResponseStatusCode = ResponseStatusCode.EmailValidationFailed
-                    }); 
+                    return badRequest;
                 }
-                
-                if (string.IsNullOrEmpty(model.Password))
-                {
-                    return BadRequest(new ErrorViewModel
-                    {
-                        ErrorMessage = "Please enter your password",
-                        ResponseStatusCode = ResponseStatusCode.PasswordValidationFailed
-                    }); 
-                }       
             }
 
             if (await _userManager.FindByEmailAsync(model.Email) == null)
@@ -92,7 +77,7 @@ namespace Egghead.Controllers
                 return Ok(new ErrorViewModel
                 {
                     ErrorMessage = "This email does not seem to exist",
-                    ResponseStatusCode = ResponseStatusCode.EmailNotFound
+                    ResponseStatusCode = ResponseStatusCode.CouldNotFindYourEmail
                 });
             }
 
@@ -101,21 +86,21 @@ namespace Egghead.Controllers
                 return Ok(new ErrorViewModel
                 {
                     ErrorMessage = "Wrong password. Try again or reset it",
-                    ResponseStatusCode = ResponseStatusCode.PasswordDoNotMatch
+                    ResponseStatusCode = ResponseStatusCode.PasswordDidNotMatch
                 });
             }
-            
+
             var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, isPersistent: true, lockoutOnFailure: true);
 
             if (!result.Succeeded)
             {
-                return StatusCode((int)HttpStatusCode.InternalServerError, new ErrorViewModel
+                return StatusCode((int) HttpStatusCode.InternalServerError, new ErrorViewModel
                 {
                     ErrorMessage = "Authorization failed. Please contact your administrator",
-                    ResponseStatusCode = ResponseStatusCode.AuthorizationFailed
+                    ResponseStatusCode = ResponseStatusCode.CouldNotAthorizeYourAccount
                 });
             }
-            
+
             return RedirectToAction(nameof(HomeController.Index), "Home");
         }
 
@@ -125,27 +110,39 @@ namespace Egghead.Controllers
         public async Task<IActionResult> Register([FromBody] RegisterViewModel model, string returnUrl = null)
         {
             ViewData["returnUrl"] = returnUrl;
-            _logger.LogInformation("ReturnUrl: {0}", returnUrl);
+
+            _logger.LogInformation($"Model: {model}");
 
             if (!ModelState.IsValid)
             {
-                _logger.LogWarning("RegisterViewModel state is not valid");
-                return View(model);
+                IActionResult badRequest = null;
+                if (!IsCredentialsValidationError(model.Email, model.Password, ref badRequest))
+                {
+                    return badRequest;
+                }
             }
 
-            var user = new MongoDbIdentityUser(model.Email, model.Password);
+            if (await _userManager.FindByEmailAsync(model.Email) == null)
+            {
+                return Ok(new ErrorViewModel
+                {
+                    ErrorMessage = "That email is taken. Try another one",
+                    ResponseStatusCode = ResponseStatusCode.ThatEmailIsTaken
+                });
+            }
 
-            var result = await _userManager.CreateAsync(user, model.Password);
+            var result = await _userManager.CreateAsync(new MongoDbIdentityUser(model.Email, model.Password));
 
+  
             if (!result.Succeeded)
             {
-                foreach (var error in result.Errors)
-                    ModelState.AddModelError(string.Empty, error.Description);             
-                return View(model);
+                return StatusCode((int) HttpStatusCode.InternalServerError, new ErrorViewModel
+                {
+                    ErrorMessage = "Couldn't register account. Please contact your administrator",
+                    ResponseStatusCode = ResponseStatusCode.CouldNotRegisterYourAccount
+                });
             }
 
-            await _signInManager.SignInAsync(user, isPersistent: false);
-            
             return RedirectToAction(nameof(HomeController.Index), "Home");
         }
 
@@ -154,6 +151,32 @@ namespace Egghead.Controllers
         public async Task<IActionResult> PasswordReset([FromBody] PasswordResetViewModel model, string returnUrl)
         {
             throw new NotImplementedException();
+        }
+        
+        
+        private bool IsCredentialsValidationError(string email, string password, ref IActionResult badRequest)
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+                badRequest = BadRequest(new ErrorViewModel
+                {
+                    ErrorMessage = "Please enter your email",
+                    ResponseStatusCode = ResponseStatusCode.EmailValidationError
+                });
+                return false;
+            }
+
+            if (string.IsNullOrEmpty(password))
+            {
+                badRequest = BadRequest(new ErrorViewModel
+                {
+                    ErrorMessage = "Please enter your password",
+                    ResponseStatusCode = ResponseStatusCode.PasswordValidationError
+                });
+                return false;
+            }
+
+            return true;
         }
     }
 }

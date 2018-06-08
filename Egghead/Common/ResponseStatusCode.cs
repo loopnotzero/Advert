@@ -5,10 +5,17 @@ namespace Egghead.Common
     [Flags]
     public enum ResponseStatusCode
     {
-        EmailNotFound = 0,
-        PasswordDoNotMatch = 1,
-        AuthorizationFailed = 2,
-        EmailValidationFailed = 4,
-        PasswordValidationFailed = 8
+        //Email
+        ThatEmailIsTaken = 0,
+        EmailValidationError = 1,
+        CouldNotFindYourEmail = 2,
+
+        //Password
+        PasswordDidNotMatch = 10,           
+        PasswordValidationError = 11,
+       
+        //Account
+        CouldNotAthorizeYourAccount = 20,
+        CouldNotRegisterYourAccount = 21
     }
 }
