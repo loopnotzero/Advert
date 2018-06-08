@@ -15,7 +15,7 @@ namespace Egghead.Common
         PasswordValidationError = 11,
        
         //Account
-        CouldNotAthorizeYourAccount = 20,
-        CouldNotRegisterYourAccount = 21
+        CouldNotLogInAccount = 20,
+        CouldNotRegisterAccount = 21
     }
 }

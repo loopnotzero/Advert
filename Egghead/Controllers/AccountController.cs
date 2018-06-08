@@ -99,7 +99,7 @@ namespace Egghead.Controllers
                 return StatusCode((int) HttpStatusCode.InternalServerError, new ErrorViewModel
                 {
                     ErrorMessage = "Couldn't log in account. Please, contact technical support for help",
-                    ResponseStatusCode = ResponseStatusCode.CouldNotAthorizeYourAccount
+                    ResponseStatusCode = ResponseStatusCode.CouldNotLogInAccount
                 });
             }
 
@@ -141,7 +141,7 @@ namespace Egghead.Controllers
                 return StatusCode((int) HttpStatusCode.InternalServerError, new ErrorViewModel
                 {
                     ErrorMessage = "Couldn't register account. Please, contact technical support for assistance",
-                    ResponseStatusCode = ResponseStatusCode.CouldNotRegisterYourAccount
+                    ResponseStatusCode = ResponseStatusCode.CouldNotRegisterAccount
                 });
             }
 
