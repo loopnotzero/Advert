@@ -2,11 +2,11 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Egghead.MongoDbStorage.Common;
-using Egghead.MongoDbStorage.Identity;
+using Egghead.MongoDbStorage.Identities;
 using Microsoft.AspNetCore.Identity;
 using MongoDB.Driver;
 
-namespace Egghead.MongoDbStorage
+namespace Egghead.MongoDbStorage.Stores
 {
     public class MongoDbRoleStore<T> : IRoleStore<T> where T : MongoDbIdentityRole
     {

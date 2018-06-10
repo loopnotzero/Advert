@@ -1,4 +1,4 @@
-﻿namespace Egghead.MongoDbStorage.Identity
+﻿namespace Egghead.MongoDbStorage.Identities
 {
     public class MongoDbIdentityRole
     {

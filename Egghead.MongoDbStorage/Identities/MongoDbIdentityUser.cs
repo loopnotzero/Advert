@@ -1,21 +1,29 @@
 ﻿using System;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
-namespace Egghead.MongoDbStorage.Identity
+namespace Egghead.MongoDbStorage.Identities
 {
+    [BsonIgnoreExtraElements]
     public class MongoDbIdentityUser
     {
-        public MongoDbIdentityUser(string email, string password)
+        private MongoDbIdentityUser()
         {
             Id = ObjectId.GenerateNewId().ToString();
-            Email = email ?? throw new ArgumentNullException(nameof(email));
-            Password = password ?? throw new ArgumentNullException(nameof(password));; 
         }
+        
+        public MongoDbIdentityUser(string email) : this()
+        {        
+            Email = email ?? throw new ArgumentNullException(nameof(email));
+        }
+        
+        public bool EmailConfirmed { get; set; }
         
         public string Id { get; private set; }
         
         public string Email { get; private set; }
         
-        public string Password { get; private set; }
+        public string PasswordHash { get; set; }
+        
     }
 }

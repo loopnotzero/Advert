@@ -1,4 +1,4 @@
-﻿namespace Egghead.Models
+﻿namespace Egghead.ViewModels
 {
     public class PasswordResetViewModel
     {

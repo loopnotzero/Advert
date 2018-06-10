@@ -1,4 +1,5 @@
-﻿@model Egghead.Models.LoginViewModel
+﻿@using Egghead.ViewModels
+@model Egghead.ViewModels.LoginViewModel
 
 @* @{ ViewData["Title"] = "Login on Egghead"; } *@
 
@@ -10,24 +11,24 @@
             </h6>
         </div>
     </div>
-    <form id="form" asp-controller="Account" asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" novalidate="">
-        <div class="form-group form-mbt-3 row">
+    <form id="form" asp-controller="Account" asp-action="LogIn" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" novalidate="" autocomplete="off">
+        <div class="form-group form-mbt-2 row">
             <div class="col-md-12">
                 <label class="floating-label label-required">Email</label>
-                <input type="email">
+                <input name="email" type="email">
             </div>
         </div>
-        <div class="form-group form-mbt-4 row">
+        <div class="form-group form-mbt-3 row">
             <div class="col-md-12">
                 @* todo: Add eye open/closed *@
                 <label class="floating-label label-required">Password</label>
-                <input type="password">
+                <input name="password" type="password">
             </div>
         </div>
-        <div class="form-group form-mbt-3 row">
+        <div class="form-group form-mbt-2 row">
             <div class="input-group">
                 <span class="p-t-7">
-                    <a href="/Account/PasswordReset" class="text-muted"><i class="fa fa-lock m-r-5"></i> Forgot password?</a>
+                    <a href="/Account/SignUp">Forgot your password?</a>
                 </span>
                 <span class="input-group-btn ml-auto">
                     <button id="eggh-login" class="btn btn-danger w-xs waves-effect waves-light">Next</button>
@@ -36,7 +37,7 @@
         </div>
         <div class="form-group row">
             <div class="container align-center">
-                Don't have an account? <a href="/Account/Register">Sign Up</a>
+                Don't have an account? <a href="/Account/SignUp">Sign Up</a>
             </div>
         </div>
     </form>
@@ -45,28 +46,28 @@
 <script>
     function init() {
         var emailInput = $("input[type='email']");
-        var passwordInput = $("input[type='password']");        
+        var passwordInput = $("input[type='password']");
         var floatingLabel = "floating-lable";
         var floatingLabelError = "floating-label-error";
         var labelTransform = "label-transform";
-        var labelErrorTransform = "label-error-transform";      
+        var labelErrorTransform = "label-error-transform";
         var requestVerificationToken = $("input[name=__RequestVerificationToken]");
-        
-        //todo: Add class for changing css background
 
-        function inputFocusIn(form) {
+        function focusIn(form) {
             var prevElement = form.prev();
             prevElement.addClass(!prevElement.hasClass(floatingLabelError) ? labelTransform : labelErrorTransform);
         }
 
-        function inputFocusOut(form) {
+        function focusOut(form) {
             var prev = form.prev();
             if (!prev.hasClass(floatingLabelError)) {
                 prev.toggleClass(labelTransform, !((form[0].value === "") && prev.hasClass(labelTransform)));
             } else {
-                prev.toggleClass(labelErrorTransform, !((form[0].value === "") && prev.hasClass(labelErrorTransform)));                
+                prev.toggleClass(labelErrorTransform,
+                    !((form[0].value === "") && prev.hasClass(labelErrorTransform)));
                 if (!(form[0].value === "")) {
-                    prev.removeClass(floatingLabelError + " " + labelErrorTransform).addClass(floatingLabel + " " + labelTransform);
+                    prev.removeClass(floatingLabelError + " " + labelErrorTransform)
+                        .addClass(floatingLabel + " " + labelTransform);
                     form.css("background", "linear-gradient(to bottom, rgba(255, 255, 255, 0) 96%, #5682a3 96%)");
                 }
             }
@@ -76,76 +77,40 @@
             console.log("jqXhr: " + JSON.stringify(jqXhr));
             console.log("Text status: " + JSON.stringify(textStatus));
             console.log("Error thrown: " + JSON.stringify(errorThrown));
-
-            switch (errorThrown) {
-            case "Bad Request":
-                {
-                    switch (jqXhr.responseJSON.responseStatusCode) {
-                    case 1:
-                        {
-                            emailInput
-                                .css("background",
-                                    "linear-gradient(to bottom, rgba(255, 255, 255, 0) 96%, #ee6e73 96%)")
-                                .prev().addClass(floatingLabelError).text(jqXhr.responseJSON.errorMessage);
-                        }
-                        break;
-                    case 11:
-                        {
-                            passwordInput
-                                .css("background",
-                                    "linear-gradient(to bottom, rgba(255, 255, 255, 0) 96%, #ee6e73 96%)")
-                                .prev().addClass(floatingLabelError).text(jqXhr.responseJSON.errorMessage);
-                        }
-                        break;
-                    }
-                }
-                break;
-            case "Internal Server Error":
-                {
-                    //todo: Add card box notification
-                    console.log("Service is temporarily unavailable, please try again later");
-                }
-                break;
-            }
+            //todo: Add form for reporting bug
         }
 
         function onAjaxRequestSuccess(response) {
             console.log("Error message: " + response.errorMessage);
-            console.log("Response status code: " + response.responseStatusCode);
+            console.log("Error status code: " + response.errorStatusCode);
 
-            switch (response.responseStatusCode) {
-            case 2: //Email not found
+            switch (response.errorStatusCode) {
+            case 401:
+            case 409:
+            case 422:
+            case 500:
                 {
-                    emailInput
-                        .css("background", "linear-gradient(to bottom, rgba(255, 255, 255, 0) 96%, #ee6e73 96%)")                  
-                        .prev().addClass(floatingLabelError + " " + labelErrorTransform).text(response.errorMessage);
-                }
-                break;
-            case 10: //Password do not match
-                {
-                    passwordInput
-                        .css("background",
-                            "linear-gradient(to bottom, rgba(255, 255, 255, 0) 96%, #ee6e73 96%)")
-                        .prev().addClass(floatingLabelError + " " + labelErrorTransform).text(response.errorMessage);
-                }
-                break;
-            case 20: //Couldn't register account
-                {
-
-                }
-                break;
-            default: //Not implemented response status
-                {
-
+                    //todo: Add css style to float label style
+                    if (emailInput.attr("name") === response.tagName) {
+                        emailInput
+                            .css("background",
+                                "linear-gradient(to bottom, rgba(255, 255, 255, 0) 96%, #ee6e73 96%)").prev()
+                            .addClass(floatingLabelError + " " + labelErrorTransform).text(response.errorMessage);
+                    } else if (passwordInput.attr("name") === response.tagName) {
+                        passwordInput
+                            .css("background",
+                                "linear-gradient(to bottom, rgba(255, 255, 255, 0) 96%, #ee6e73 96%)").prev()
+                            .addClass(floatingLabelError + " " + labelErrorTransform).text(response.errorMessage);
+                    }
                 }
                 break;
             }
         }
 
         $("input[type='email'], input[type='password']").focusin(function() {
-            inputFocusIn($(this));
+            focusIn($(this));
         }).focusout(function() {
-            inputFocusOut($(this));
+            focusOut($(this));
         });
 
         $("#eggh-login").click(function(e) {

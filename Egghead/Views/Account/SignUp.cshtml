@@ -1,0 +1,182 @@
+﻿@using Egghead.ViewModels
+@model Egghead.ViewModels.SignUpViewModel
+
+@* @{ ViewData["Title"] = "Login on Egghead"; } *@
+
+<div class="card-box">
+    <div class="row">
+        <div class="title col-lg-12 font-bold text-left m-b-30" style="color: #222">
+            <h6>
+                Create your Egghead account
+            </h6>
+        </div>
+    </div>   
+    <form id="form" asp-controller="Account" asp-action="SignUp" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" novalidate="" autocomplete="off">        
+        <div class="form-group form-mbt-2 row">
+            <div class="col-lg-12">
+                <label class="floating-label label-required">Email</label>
+                <input name="email" type="email">
+            </div>
+        </div>  
+        <div class="form-group form-mbt-2 row">
+            <div class="col-lg-6">
+                <label class="floating-label label-required">First Name</label>
+                <input name="firstName" type="text">
+            </div>
+            <div class="col-lg-6">
+                <label class="floating-label label-required">Last Name</label>
+                <input name="lastName" type="text">
+            </div>
+        </div>    
+        <div class="form-group form-mbt-3 row">
+            <div class="col-lg-12">
+                @* todo: Add eye open/closed *@
+                <label class="floating-label label-required">Password</label>
+                <input name="password" type="password">
+            </div>
+        </div>
+        <div class="form-group form-mbt-2 row">
+            <div class="input-group">               
+                <span class="input-group-btn ml-auto">
+                    <button id="eggh-signup" class="btn btn-danger w-xs waves-effect waves-light">Next</button>
+                </span>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="container align-center">
+                Already have an account? <a href="/Account/LogIn">Log In</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    function init() {
+        var emailInput = $("input[type='email']");
+        var passwordInput = $("input[type='password']");
+        var firstNameInput = $("input[name='firstName']");
+        var lastNameInput = $("input[name='lastName']");
+        var floatingLabel = "floating-lable";
+        var floatingLabelError = "floating-label-error";
+        var labelTransform = "label-transform";
+        var labelErrorTransform = "label-error-transform";
+        var requestVerificationToken = $("input[name=__RequestVerificationToken]");
+
+        //todo: Add class for changing css background
+
+        function focusIn(form) {
+            var prevElement = form.prev();
+            prevElement.addClass(!prevElement.hasClass(floatingLabelError) ? labelTransform : labelErrorTransform);
+        }
+
+        function focusOut(form) {
+            var prev = form.prev();
+            if (!prev.hasClass(floatingLabelError)) {
+                prev.toggleClass(labelTransform, !((form[0].value === "") && prev.hasClass(labelTransform)));
+            } else {
+                prev.toggleClass(labelErrorTransform, !((form[0].value === "") && prev.hasClass(labelErrorTransform)));
+                if (!(form[0].value === "")) {
+                    prev.removeClass(floatingLabelError + " " + labelErrorTransform)
+                        .addClass(floatingLabel + " " + labelTransform);
+                    form.css("background", "linear-gradient(to bottom, rgba(255, 255, 255, 0) 96%, #5682a3 96%)");
+                }
+            }
+        }
+
+        function onAjaxRequestError(jqXhr, textStatus, errorThrown) {
+            console.log("jqXhr: " + JSON.stringify(jqXhr));
+            console.log("Text status: " + JSON.stringify(textStatus));
+            console.log("Error thrown: " + JSON.stringify(errorThrown));
+            
+        }
+
+        function onAjaxRequestSuccess(response) {
+            console.log("Error message: " + response.errorMessage);
+            console.log("Error status code: " + response.responseStatusCode);
+
+            switch (response.errorStatusCode) {
+            case 401:
+            case 409:
+            case 422:
+            case 500:
+                {
+                    //todo: Add css style to float label style
+                    if (emailInput.attr("name") === response.tagName) {
+                        emailInput
+                            .css("background",
+                                "linear-gradient(to bottom, rgba(255, 255, 255, 0) 96%, #ee6e73 96%)").prev()
+                            .addClass(floatingLabelError + " " + labelErrorTransform).text(response.errorMessage);
+                    } else if (passwordInput.attr("name") === response.tagName) {
+                        passwordInput
+                            .css("background",
+                                "linear-gradient(to bottom, rgba(255, 255, 255, 0) 96%, #ee6e73 96%)").prev()
+                            .addClass(floatingLabelError + " " + labelErrorTransform).text(response.errorMessage);
+                    } else if (firstNameInput.attr("name") === response.tagName) {
+                        firstNameInput
+                            .css("background",
+                                "linear-gradient(to bottom, rgba(255, 255, 255, 0) 96%, #ee6e73 96%)").prev()
+                            .addClass(floatingLabelError + " " + labelErrorTransform).text(response.errorMessage);
+                    } else if (lastNameInput.attr("name") === response.tagName) {
+                        lastNameInput
+                            .css("background",
+                                "linear-gradient(to bottom, rgba(255, 255, 255, 0) 96%, #ee6e73 96%)").prev()
+                            .addClass(floatingLabelError + " " + labelErrorTransform).text(response.errorMessage);
+                    } else {
+                        
+                        //todo: An error occurred
+                        
+                    }
+                }
+                break;
+            }
+        }
+
+        $("input[type='email'], input[type='password'], input[type=text]").focusin(function() {
+            focusIn($(this));
+        }).focusout(function() {
+            focusOut($(this));
+        });
+
+        $("#eggh-signup").click(function(e) {
+            e.preventDefault();
+            var url = $("#form").attr("action");
+            console.log("Request url: " + url);
+            var token = requestVerificationToken.val();
+            console.log("Request verification token: " + token);
+            var email = emailInput.val();
+            console.log("Email: " + email);
+            var password = passwordInput.val();
+            console.log("Password: " + password);
+            var firstName = firstNameInput.val();
+            console.log("First Name: " + firstName);
+            var lastName = lastNameInput.val();
+            console.log("Last Name: " + lastName);
+
+            var additionalHeaders = {};
+
+            if (token) {
+                additionalHeaders["RequestVerificationToken"] = token;
+            }
+
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: JSON.stringify({ email: email, password: password, firstName: firstName, lastName: lastName }),
+                headers: additionalHeaders,
+                contentType: "application/json",
+                error: function(jqXhr, textStatus, errorThrown) {
+                    onAjaxRequestError(jqXhr, textStatus, errorThrown);
+                },
+                success: function(response) {
+                    onAjaxRequestSuccess(response);
+                }
+            });
+
+            return false;
+        });
+    }
+
+    $(document).ready(function() {
+        init();
+    });
+</script>

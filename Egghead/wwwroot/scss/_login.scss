@@ -139,6 +139,7 @@ label {
 
 /* ============ INPUT =========== */
 
+
 input[type=email],
 input[type=text],
 input[type=datepicker],
@@ -314,6 +315,14 @@ input[type=radio]:checked:before {
   background-size: 14px 14px
 }
 
+//input:-webkit-autofill {
+//  box-shadow: 0 0 0 1000px white inset;
+//  
+//  &:hover,
+//  &:focus {
+//    box-shadow: 0 0 0 1000px white inset;
+//  }
+//}
 
 /* FILE INPUT */
 

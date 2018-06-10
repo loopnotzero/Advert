@@ -1,10 +1,8 @@
-﻿using System;
-using Egghead.MongoDbStorage;
-using Egghead.MongoDbStorage.Identity;
-using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using Egghead.MongoDbStorage;
+using Egghead.MongoDbStorage.Identities;
+using Egghead.MongoDbStorage.Stores;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,7 +25,17 @@ namespace Egghead
         {
             services.Configure<MongoDbOptions>(Configuration.GetSection("MongoDbOptions"));
 
-            services.AddIdentity<MongoDbIdentityUser, MongoDbIdentityRole>().AddDefaultTokenProviders();
+            services.AddIdentity<MongoDbIdentityUser, MongoDbIdentityRole>(options =>
+            {
+                options.User.RequireUniqueEmail = true;
+                options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";               
+                options.Password.RequireDigit = true;
+                options.Password.RequiredLength = 8;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequiredUniqueChars = 1;
+                options.Password.RequireNonAlphanumeric = false;
+            }).AddDefaultTokenProviders();
 
             services.AddTransient<IUserStore<MongoDbIdentityUser>>(provider =>
             {
