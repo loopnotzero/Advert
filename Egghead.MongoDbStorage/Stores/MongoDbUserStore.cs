@@ -36,12 +36,9 @@ namespace Egghead.MongoDbStorage.Stores
             if (user == null)         
                 throw new ArgumentNullException(nameof(user));            
             
-            if (user.Email == null)           
-                throw new ArgumentNullException(nameof(user.Email));
-            
             cancellationToken.ThrowIfCancellationRequested();
 
-            var asyncCursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.Email, user.Email), cancellationToken: cancellationToken);
+            var asyncCursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.Id, user.Id), cancellationToken: cancellationToken);
 
             var identityUser = await asyncCursor.FirstOrDefaultAsync(cancellationToken);
 
@@ -53,23 +50,19 @@ namespace Egghead.MongoDbStorage.Stores
             if (user == null)            
                 throw new ArgumentNullException(nameof(user));
             
-            
-            if (user.Email == null)            
-                throw new ArgumentNullException(nameof(user.Email));
-            
-
             cancellationToken.ThrowIfCancellationRequested();
 
-            var asyncCursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.Email, user.Email), cancellationToken: cancellationToken);
+            var asyncCursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.Id, user.Id), cancellationToken: cancellationToken);
 
             var identityUser = await asyncCursor.FirstOrDefaultAsync(cancellationToken);
 
-            return identityUser?.Email;
+            return identityUser?.UserName;
         }
 
         public Task SetUserNameAsync(T user, string userName, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            user.UserName = userName;
+            return Task.FromResult<object>(null);
         }
 
         public async Task<string> GetNormalizedUserNameAsync(T user, CancellationToken cancellationToken)
@@ -77,34 +70,27 @@ namespace Egghead.MongoDbStorage.Stores
             if (user == null)            
                 throw new ArgumentNullException(nameof(user));
                      
-            if (user.Email == null)            
-                throw new ArgumentNullException(nameof(user.Email));
-            
             cancellationToken.ThrowIfCancellationRequested();
 
-            var asyncCursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.Email, user.Email), cancellationToken: cancellationToken);
+            var asyncCursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.Id, user.Id), cancellationToken: cancellationToken);
 
             var identityUser = await asyncCursor.FirstOrDefaultAsync(cancellationToken);
 
-            return identityUser?.Email;
+            return identityUser?.NormalizedUserName;
         }
 
         public Task SetNormalizedUserNameAsync(T user, string normalizedName, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            //todo: why normalized name is null?
+            user.NormalizedUserName = normalizedName ?? user.Email.ToUpper();
+            return Task.FromResult<object>(null);
         }
 
         public async Task<IdentityResult> CreateAsync(T user, CancellationToken cancellationToken)
         {
             if (user == null)            
                 throw new ArgumentNullException(nameof(user));
-            
-            if (user.Email == null)
-                throw new ArgumentNullException(nameof(user.Email));
-                     
-            if (user.PasswordHash == null)            
-                throw new ArgumentNullException(nameof(user.PasswordHash));
-                      
+                                 
             cancellationToken.ThrowIfCancellationRequested();
 
             await _collection.InsertOneAsync(user, new InsertOneOptions
@@ -127,11 +113,9 @@ namespace Egghead.MongoDbStorage.Stores
 
         public async Task<T> FindByIdAsync(string userId, CancellationToken cancellationToken)
         {
-            if (userId == null)
-            {
+            if (userId == null)         
                 throw new ArgumentNullException(nameof(userId));
-            }
-            
+                    
             cancellationToken.ThrowIfCancellationRequested();
 
             var asyncCursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.Id, userId), cancellationToken: cancellationToken);
@@ -146,27 +130,25 @@ namespace Egghead.MongoDbStorage.Stores
             
             cancellationToken.ThrowIfCancellationRequested();
 
-            var result = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.Email, normalizedUserName), cancellationToken: cancellationToken);
+            var result = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.NormalizedUserName, normalizedUserName), cancellationToken: cancellationToken);
 
             return await result.FirstOrDefaultAsync(cancellationToken);
         }
 
         public Task SetEmailAsync(T user, string email, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            user.Email = email;
+            return Task.FromResult<object>(null);
         }
 
         public async Task<string> GetEmailAsync(T user, CancellationToken cancellationToken)
         {
             if (user == null)           
                 throw new ArgumentNullException(nameof(user));
-            
-            if (user.Email == null)            
-                throw new ArgumentNullException(nameof(user.Email));
-                   
+                  
             cancellationToken.ThrowIfCancellationRequested();
 
-            var result = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.Email, user.Email), cancellationToken: cancellationToken);
+            var result = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.Id, user.Id), cancellationToken: cancellationToken);
 
             var identityUser = await result.FirstOrDefaultAsync(cancellationToken);
 
@@ -177,22 +159,20 @@ namespace Egghead.MongoDbStorage.Stores
         {
             if (user == null)           
                 throw new ArgumentNullException(nameof(user));
-            
-            if (user.Email == null)            
-                throw new ArgumentNullException(nameof(user.Email));
-                   
+               
             cancellationToken.ThrowIfCancellationRequested();
 
-            var result = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.Email, user.Email), cancellationToken: cancellationToken);
+            var result = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.Id, user.Id), cancellationToken: cancellationToken);
 
             var identityUser = await result.FirstOrDefaultAsync(cancellationToken);
 
-            return identityUser?.EmailConfirmed ?? false;
+            return identityUser?.EmailConfirmed == true;
         }
 
         public Task SetEmailConfirmedAsync(T user, bool confirmed, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            user.EmailConfirmed = confirmed;
+            return Task.FromResult<object>(null);
         }
 
         public async Task<T> FindByEmailAsync(string email, CancellationToken cancellationToken)
@@ -211,13 +191,10 @@ namespace Egghead.MongoDbStorage.Stores
         {
             if (user == null)           
                 throw new ArgumentNullException(nameof(user));
-            
-            if (user.Email == null)            
-                throw new ArgumentNullException(nameof(user.Email));
-                   
+                
             cancellationToken.ThrowIfCancellationRequested();
 
-            var result = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.Email, user.Email), cancellationToken: cancellationToken);
+            var result = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.Id, user.Id), cancellationToken: cancellationToken);
 
             var identityUser = await result.FirstOrDefaultAsync(cancellationToken);
 
@@ -226,7 +203,9 @@ namespace Egghead.MongoDbStorage.Stores
 
         public Task SetNormalizedEmailAsync(T user, string normalizedEmail, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            //todo: why normalized email is null?
+            user.NormalizedEmail = normalizedEmail ?? user.Email.ToUpper();
+            return Task.FromResult<object>(null);
         }
 
         public Task SetPasswordHashAsync(T user, string passwordHash, CancellationToken cancellationToken)
@@ -259,13 +238,8 @@ namespace Egghead.MongoDbStorage.Stores
             var result = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.Id, user.Id), cancellationToken: cancellationToken);
 
             var identityUser = await result.FirstOrDefaultAsync(cancellationToken);
-
-            if (identityUser == null)
-            {
-                throw new NullReferenceException();
-            }
-
-            return identityUser.PasswordHash != null;
+            
+            return identityUser?.PasswordHash != null;
         }
     }
 }

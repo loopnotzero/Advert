@@ -28,19 +28,8 @@ namespace Egghead.MongoDbStorage.Utils
             {
                 bsonClassMap.AutoMap();
                 bsonClassMap.MapIdMember(c => c.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
-                bsonClassMap.MapCreator(user => new MongoDbIdentityUser(user.Email)
-                {
-                    PasswordHash = user.PasswordHash,
-                    EmailConfirmed = user.EmailConfirmed
-                });
+                bsonClassMap.MapCreator(user => new MongoDbIdentityUser(user.UserName, user.Email));
             });
-            
-//            BsonClassMap.RegisterClassMap<MongoDbIdentityProfile>(bsonClassMap =>
-//            {
-//                bsonClassMap.AutoMap();
-//                bsonClassMap.MapIdMember(c => c.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
-//                bsonClassMap.MapCreator(user => new MongoDbIdentityProfile(user.FirstName, user.LastName));
-//            });
         }
     }
 }
