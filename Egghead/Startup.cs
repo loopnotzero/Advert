@@ -1,6 +1,8 @@
-﻿using Egghead.MongoDbStorage;
+﻿using Egghead.Models;
+using Egghead.MongoDbStorage;
 using Egghead.MongoDbStorage.Identities;
 using Egghead.MongoDbStorage.Stores;
+using Egghead.Validators;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -24,19 +26,7 @@ namespace Egghead
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<MongoDbOptions>(Configuration.GetSection("MongoDbOptions"));
-
-            services.AddIdentity<MongoDbIdentityUser, MongoDbIdentityRole>(options =>
-            {
-                options.User.RequireUniqueEmail = true;
-                options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";               
-                options.Password.RequireDigit = true;
-                options.Password.RequiredLength = 8;
-                options.Password.RequireLowercase = false;
-                options.Password.RequireUppercase = false;
-                options.Password.RequiredUniqueChars = 1;
-                options.Password.RequireNonAlphanumeric = false;
-            }).AddDefaultTokenProviders();
-
+          
             services.AddTransient<IUserStore<MongoDbIdentityUser>>(provider =>
             {
                 var options = provider.GetService<IOptions<MongoDbOptions>>();
@@ -48,6 +38,22 @@ namespace Egghead
                 var options = provider.GetService<IOptions<MongoDbOptions>>();
                 return new MongoDbRoleStore<MongoDbIdentityRole>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
             });
+
+            services.AddTransient<IUserValidator<MongoDbIdentityUser>, EggheadUserValidator<MongoDbIdentityUser>>();
+            
+            services.AddIdentity<MongoDbIdentityUser, MongoDbIdentityRole>(options =>
+            {
+                options.User.RequireUniqueEmail = true;
+                options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";               
+                
+                options.Password.RequireDigit = true;
+                options.Password.RequiredLength = 8;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequiredUniqueChars = 1;
+                options.Password.RequireNonAlphanumeric = false;
+                
+            }).AddDefaultTokenProviders().AddUserValidator<EggheadUserValidator<MongoDbIdentityUser>>();
             
             services.AddMvc();    
         }

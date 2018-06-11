@@ -25,7 +25,7 @@ namespace Egghead.Controllers
         {
             _logger = loggerFactory.CreateLogger<AccountController>();
             _userManager = userManager;
-            _signInManager = signInManager;
+            _signInManager = signInManager;                                 
         }
 
         [HttpGet]
@@ -193,13 +193,21 @@ namespace Egghead.Controllers
                 });
             }
 
-            var identityUser = new MongoDbIdentityUser(model.Email);
+            var identityUser = new MongoDbIdentityUser
+            {
+                Email = model.Email,
+                NormalizedEmail = model.Email,
+                UserName = model.Email,
+                NormalizedUserName = model.Email,
+                FirstName = model.FirstName,
+                LastName = model.LastName             
+            };
 
             var result = await _userManager.CreateAsync(identityUser, model.Password);
 
             if (!result.Succeeded)
             {
-                _logger.LogError("Couldn't create user: " + string.Join(", ", result.Errors.Select(x => $"Code: {x.Code} Description: {x.Description}")));
+                _logger.LogError(string.Join(", ", result.Errors.Select(x => $"Error Code: {x.Code} Description: {x.Description}")));
                 return Ok(new ErrorViewModel
                 {
                     //todo: Handle TagName on client side
