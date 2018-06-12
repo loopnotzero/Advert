@@ -3,6 +3,7 @@
     public enum ErrorStatusCode
     {
         Ok = 200,
+        Found = 302,
         Unauthorized = 401,
         NotFound = 404,
         Conflict = 409,

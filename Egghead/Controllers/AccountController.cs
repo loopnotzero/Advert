@@ -98,9 +98,7 @@ namespace Egghead.Controllers
                 });
             }
 
-            var passwordHash = _userManager.PasswordHasher.HashPassword(identityUser, model.Password);
-
-            if (!await _userManager.CheckPasswordAsync(identityUser, passwordHash))
+            if (!await _userManager.CheckPasswordAsync(identityUser, model.Password))
             {
                 return Ok(new ErrorViewModel
                 {
@@ -110,7 +108,7 @@ namespace Egghead.Controllers
                 });
             }
 
-            var result = await _signInManager.PasswordSignInAsync(model.Email, passwordHash, isPersistent: true, lockoutOnFailure: true);
+            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, isPersistent: true, lockoutOnFailure: true);
 
             if (!result.Succeeded)
             {
@@ -122,7 +120,11 @@ namespace Egghead.Controllers
                 });
             }
 
-            return RedirectToLocal(returnUrl);
+            return Ok(new ErrorViewModel
+            {
+                RedirectUrl = returnUrl,
+                ErrorStatusCode = ErrorStatusCode.Found
+            });
         }
 
         [HttpPost]
@@ -135,7 +137,13 @@ namespace Egghead.Controllers
             if (!ModelState.IsValid)
             {
                 _logger.LogWarning("Model state is not valid: " + ModelState);
-                return View(model);
+                //todo: create special
+                return Ok(new ErrorViewModel
+                {
+                    TagName = "error",
+                    ErrorMessage = "An error occurred",
+                    ErrorStatusCode = ErrorStatusCode.UnprocessableEntity
+                });
             }
 
             if (!AccountValidation.IsEmailValid(model.Email))
@@ -210,7 +218,7 @@ namespace Egghead.Controllers
                 _logger.LogError(string.Join(", ", result.Errors.Select(x => $"Error Code: {x.Code} Description: {x.Description}")));
                 return Ok(new ErrorViewModel
                 {
-                    //todo: Handle TagName on client side
+                    TagName = "error",
                     ErrorMessage = "An error occurred",
                     ErrorStatusCode = ErrorStatusCode.InternalServerError
                 });
@@ -221,7 +229,11 @@ namespace Egghead.Controllers
             await _signInManager.SignInAsync(identityUser, isPersistent: false);
             _logger.LogInformation("User authenticated: " + model);
 
-            return RedirectToLocal(returnUrl);
+            return Ok(new ErrorViewModel
+            {
+                RedirectUrl = returnUrl,
+                ErrorStatusCode = ErrorStatusCode.Found
+            });
         }
 
         [HttpPost]
@@ -229,17 +241,6 @@ namespace Egghead.Controllers
         public async Task<IActionResult> ForgotPassword([FromBody] PasswordResetViewModel model, string returnUrl)
         {
             throw new NotImplementedException();
-        }
-
-
-        private IActionResult RedirectToLocal(string returnUrl)
-        {
-            if (Url.IsLocalUrl(returnUrl))
-            {
-                return Redirect(returnUrl);
-            }
-
-            return RedirectToAction(nameof(HomeController.Index), "Home");
         }
     }
 }

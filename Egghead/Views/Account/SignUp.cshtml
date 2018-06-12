@@ -10,28 +10,28 @@
             </h6>
         </div>
     </div>   
-    <form id="form" asp-controller="Account" asp-action="SignUp" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" novalidate="" autocomplete="off">        
+    <form id="form" asp-controller="Account" asp-action="SignUp" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" novalidate="">        
         <div class="form-group form-mbt-2 row">
             <div class="col-lg-12">
                 <label class="floating-label label-required">Email</label>
-                <input name="email" type="email">
+                <input name="email" type="email"/>
             </div>
         </div>  
         <div class="form-group form-mbt-2 row">
             <div class="col-lg-6">
                 <label class="floating-label label-required">First Name</label>
-                <input name="firstName" type="text">
+                <input name="firstName" type="text"/>
             </div>
             <div class="col-lg-6">
                 <label class="floating-label label-required">Last Name</label>
-                <input name="lastName" type="text">
+                <input name="lastName" type="text"/>
             </div>
         </div>    
         <div class="form-group form-mbt-3 row">
             <div class="col-lg-12">
                 @* todo: Add eye open/closed *@
                 <label class="floating-label label-required">Password</label>
-                <input name="password" type="password">
+                <input name="password" type="password"/>
             </div>
         </div>
         <div class="form-group form-mbt-2 row">
@@ -61,8 +61,6 @@
         var labelErrorTransform = "label-error-transform";
         var requestVerificationToken = $("input[name=__RequestVerificationToken]");
 
-        //todo: Add class for changing css background
-
         function focusIn(form) {
             var prevElement = form.prev();
             prevElement.addClass(!prevElement.hasClass(floatingLabelError) ? labelTransform : labelErrorTransform);
@@ -89,16 +87,21 @@
             
         }
 
-        function onAjaxRequestSuccess(response) {
+        function onAjaxRequestSuccess(response) {       
             console.log("Error message: " + response.errorMessage);
             console.log("Error status code: " + response.responseStatusCode);
 
             switch (response.errorStatusCode) {
+            case 302:
+                {
+                    window.location.href = response.redirectUrl;
+                }
+                break;          
             case 401:
             case 409:
             case 422:
             case 500:
-                {
+                {                   
                     //todo: Add css style to float label style
                     if (emailInput.attr("name") === response.tagName) {
                         emailInput
