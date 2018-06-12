@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Egghead.MongoDbStorage.Common;
@@ -182,7 +183,7 @@ namespace Egghead.MongoDbStorage.Stores
                       
             cancellationToken.ThrowIfCancellationRequested();
 
-            var result = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.Email, email), cancellationToken: cancellationToken);
+            var result = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.NormalizedEmail, email), cancellationToken: cancellationToken);
 
             return await result.FirstOrDefaultAsync(cancellationToken);
         }
