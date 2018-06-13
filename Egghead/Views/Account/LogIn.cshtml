@@ -30,7 +30,7 @@
                     <a href="/Account/SignUp">Forgot your password?</a>
                 </span>
                 <span class="input-group-btn ml-auto">
-                    <button id="eggh-login" class="btn btn-danger w-xs waves-effect waves-light">Next</button>
+                    <button id="next" class="btn btn-danger w-xs waves-effect waves-light">Next</button>
                 </span>
             </div>
         </div>
@@ -43,7 +43,7 @@
 </div>
 
 <script>
-    function init() {
+    $(document).ready(function() {
         var emailInput = $("input[type='email']");
         var passwordInput = $("input[type='password']");
         var floatingLabel = "floating-lable";
@@ -52,34 +52,36 @@
         var labelErrorTransform = "label-error-transform";
         var requestVerificationToken = $("input[name=__RequestVerificationToken]");
 
-        function focusIn(form) {
-            var prevElement = form.prev();
-            prevElement.addClass(!prevElement.hasClass(floatingLabelError) ? labelTransform : labelErrorTransform);
-        }
-
-        function focusOut(form) {
-            var prev = form.prev();
-            if (!prev.hasClass(floatingLabelError)) {
-                prev.toggleClass(labelTransform, !((form[0].value === "") && prev.hasClass(labelTransform)));
-            } else {
-                prev.toggleClass(labelErrorTransform,
-                    !((form[0].value === "") && prev.hasClass(labelErrorTransform)));
-                if (!(form[0].value === "")) {
-                    prev.removeClass(floatingLabelError + " " + labelErrorTransform)
-                        .addClass(floatingLabel + " " + labelTransform);
-                    form.css("background", "linear-gradient(to bottom, rgba(255, 255, 255, 0) 96%, #5682a3 96%)");
+        function handleFocusFor(element) {
+            element.focusin(function() {
+                var self = $(this);
+                var prev = self.prev();
+                prev.addClass(!prev.hasClass(floatingLabelError) ? labelTransform : labelErrorTransform);
+            }).focusout(function() {
+                var self = $(this);          
+                var prev = self.prev();          
+                if (!prev.hasClass(floatingLabelError)) {
+                    prev.toggleClass(labelTransform, !((self[0].value === "") && prev.hasClass(labelTransform)));
+                } else {
+                    prev.toggleClass(labelErrorTransform,
+                        !((self[0].value === "") && prev.hasClass(labelErrorTransform)));
+                    if (!(self[0].value === "")) {
+                        prev.removeClass(floatingLabelError + " " + labelErrorTransform)
+                            .addClass(floatingLabel + " " + labelTransform);
+                        self.css("background", "linear-gradient(to bottom, rgba(255, 255, 255, 0) 96%, #5682a3 96%)");
+                    }
                 }
-            }
+            });                                           
         }
 
-        function onAjaxRequestError(jqXhr, textStatus, errorThrown) {
+        function onRequestError(jqXhr, textStatus, errorThrown) {
             console.log("jqXhr: " + JSON.stringify(jqXhr));
             console.log("Text status: " + JSON.stringify(textStatus));
             console.log("Error thrown: " + JSON.stringify(errorThrown));
             //todo: Add form for reporting bug
         }
 
-        function onAjaxRequestSuccess(response) {   
+        function onRequestSuccess(response) {
             console.log("Error message: " + response.errorMessage);
             console.log("Error status code: " + response.errorStatusCode);
 
@@ -93,7 +95,7 @@
             case 409:
             case 422:
             case 500:
-                {                   
+                {
                     //todo: Add css style to float label style
                     if (emailInput.attr("name") === response.tagName) {
                         emailInput
@@ -110,14 +112,8 @@
                 break;
             }
         }
-
-        $("input[type='email'], input[type='password']").focusin(function() {
-            focusIn($(this));
-        }).focusout(function() {
-            focusOut($(this));
-        });
-
-        $("#eggh-login").click(function(e) {
+              
+        $("#next").click(function(e) {
             e.preventDefault();
             var url = $("#form").attr("action");
             console.log("Request url: " + url);
@@ -141,18 +137,19 @@
                 headers: additionalHeaders,
                 contentType: "application/json",
                 error: function(jqXhr, textStatus, errorThrown) {
-                    onAjaxRequestError(jqXhr, textStatus, errorThrown);
+                    onRequestError(jqXhr, textStatus, errorThrown);
                 },
                 success: function(response) {
-                    onAjaxRequestSuccess(response);
+                    onRequestSuccess(response);
                 }
             });
 
             return false;
         });
-    }
+       
+        $('.wp-bg').addClass("bg-lg");
 
-    $(document).ready(function() {
-        init();
+        handleFocusFor(emailInput);
+        handleFocusFor(passwordInput);
     });
 </script>

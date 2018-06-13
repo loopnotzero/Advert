@@ -64,7 +64,17 @@ namespace Egghead.Controllers
 
             _logger.LogInformation($"Model: {model}");
 
-            if (!ModelState.IsValid) return View(model);
+            if (!ModelState.IsValid)
+            {
+                _logger.LogWarning("Model state is not valid: " + ModelState);
+                //todo: Highlight all input forms
+                return Ok(new ErrorViewModel
+                {
+                    TagName = "email",
+                    ErrorMessage = "Enter your email",
+                    ErrorStatusCode = ErrorStatusCode.UnprocessableEntity
+                });
+            }
 
             if (!AccountValidation.IsEmailValid(model.Email))
             {
@@ -137,11 +147,11 @@ namespace Egghead.Controllers
             if (!ModelState.IsValid)
             {
                 _logger.LogWarning("Model state is not valid: " + ModelState);
-                //todo: create special
+                //todo: Highlight all input forms
                 return Ok(new ErrorViewModel
                 {
-                    TagName = "error",
-                    ErrorMessage = "An error occurred",
+                    TagName = "email",
+                    ErrorMessage = "Enter your email",
                     ErrorStatusCode = ErrorStatusCode.UnprocessableEntity
                 });
             }

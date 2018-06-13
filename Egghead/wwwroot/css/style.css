@@ -5176,16 +5176,28 @@ h3.timeline-title {
   letter-spacing: 1px;
 }
 
-.wrapper-bg {
+.wp-bg {
   background: #5682a3;
-  height: 226px;
+  height: 0px;
 }
 
-.wrapper-page {
+.bg-sm {
+  background: #5682a3;
+  height: 50px;
+  -webkit-transition-duration: 0.3s;
+}
+
+.bg-lg {
+  background: #5682a3;
+  height: 226px;
+  -webkit-transition-duration: 0.3s;
+}
+
+.wp-page {
   margin: -75px auto 90px;
   max-width: 404px;
 }
-.wrapper-page .form-control {
+.wp-page .form-control {
   height: 40px;
   padding-left: 0;
 }
