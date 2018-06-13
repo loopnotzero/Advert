@@ -88,6 +88,7 @@
             switch (response.errorStatusCode) {
             case 302:
                 {
+                    console.log("Redirect url: " + response.redirectUrl);
                     window.location.href = response.redirectUrl;
                 }
                 break;
