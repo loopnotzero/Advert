@@ -1,9 +1,11 @@
 ﻿@* @{ ViewData["Title"] = "Home Page"; } *@
 
-<input id="signOut" type="button"/>
-
 <script>
-    $(document).ready(function() {
-        console.log("jquery ready for job");
+    $(document).ready(function() {           
+        function resizeHeader() {
+            $("#header-bg").addClass("header-h75px");
+        }
+        
+        resizeHeader();
     });
 </script>

@@ -64,6 +64,10 @@
         var labelErrorTransform = "label-error-transform";
         var requestVerificationToken = $("input[name=__RequestVerificationToken]");
 
+        function resizeHeader() {
+            $("#header-bg").addClass("header-h226px");
+        }
+        
         function handleFocusFor(element) {
             element.focusin(function() {
                 var self = $(this);
@@ -178,6 +182,7 @@
             return false;
         });
 
+        resizeHeader();
         handleFocusFor(emailInput);
         handleFocusFor(passwordInput);
         handleFocusFor(firstNameInput);

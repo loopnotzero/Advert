@@ -29,7 +29,7 @@
                 <div class="form-group form-mbt-2 row">
                     <div class="input-group">
                         <span class="p-t-7">
-                            <a href="/Account/SignUp">Forgot your password?</a>
+                            <a href="/Account/ForgotPassword?returnUrl=@ViewData["ReturnUrl"]">Forgot your password?</a>
                         </span>
                         <span class="input-group-btn ml-auto">
                             <button id="next" class="btn btn-danger w-xs waves-effect waves-light">Next</button>
@@ -55,7 +55,11 @@
         var labelTransform = "label-transform";
         var labelErrorTransform = "label-error-transform";
         var requestVerificationToken = $("input[name=__RequestVerificationToken]");
-
+        
+        function resizeHeader() {
+            $("#header-bg").addClass("header-h226px");
+        }
+      
         function handleFocusFor(element) {
             element.focusin(function() {
                 var self = $(this);
@@ -152,6 +156,7 @@
             return false;
         });
 
+        resizeHeader();
         handleFocusFor(emailInput);
         handleFocusFor(passwordInput);
     });
