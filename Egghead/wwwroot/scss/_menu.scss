@@ -15,7 +15,7 @@
   }
 }
 
-#topnav {
+#header-bg {
   position: fixed;
   right: 0;
   left: 0;
@@ -23,9 +23,8 @@
   z-index: 0;
   background-color: $primary;
   border: 0;
-  -webkit-transition: all .5s ease;
-  transition: all .5s ease;
-  min-height: 40%;
+  -webkit-transition: all .3s ease;
+  transition: all .3s ease;
 
   .has-submenu.active {
     a{
@@ -279,6 +278,14 @@
   .navigation-menu > li > a:hover, .navigation-menu > li > a:focus {
     background-color: transparent;
   }
+}
+
+.header-h75px {
+  height: 75px;
+}
+
+.header-h226px {
+  height: 226px;
 }
 
 /*
