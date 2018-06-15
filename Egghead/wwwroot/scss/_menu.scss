@@ -20,12 +20,12 @@
   right: 0;
   left: 0;
   top: 0;
-  z-index: 1030;
-  background-color: transparent;
+  z-index: 0;
+  background-color: $primary;
   border: 0;
   -webkit-transition: all .5s ease;
   transition: all .5s ease;
-  min-height: 62px;
+  min-height: 40%;
 
   .has-submenu.active {
     a{
@@ -540,6 +540,7 @@
 .topbar-custom {
   border-radius: 0;
   margin-bottom: 0;
+  height: 20%;
 
   .nav-link {
     padding: 0;

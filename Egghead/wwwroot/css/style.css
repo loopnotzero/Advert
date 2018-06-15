@@ -21,12 +21,12 @@
   right: 0;
   left: 0;
   top: 0;
-  z-index: 1030;
-  background-color: transparent;
+  z-index: 0;
+  background-color: #5682a3;
   border: 0;
   -webkit-transition: all 0.5s ease;
   transition: all 0.5s ease;
-  min-height: 62px;
+  min-height: 40%;
 }
 #topnav .has-submenu.active a {
   color: #ffffff;
@@ -479,6 +479,7 @@
 .topbar-custom {
   border-radius: 0;
   margin-bottom: 0;
+  height: 20%;
 }
 .topbar-custom .nav-link {
   padding: 0;
@@ -669,9 +670,6 @@
   font-size: 14px;
 }
 
-/* ===========
-   Common
- =============*/
 body {
   background: #e5e9ee;
   margin: 0;
@@ -680,15 +678,25 @@ body {
   font-family: "Roboto", sans-serif;
   font-size: 0.95rem;
   padding-bottom: 65px;
+  height: 100%;
 }
 
 html {
+  overflow: scroll;
   overflow-x: hidden;
   position: relative;
-  min-height: 100%;
+  height: 100%;
   background: #e5e9ee;
 }
 
+::-webkit-scrollbar {
+  width: 0;
+  /* remove scrollbar space */
+  background: transparent;
+  /* optional: just make scrollbar invisible */
+}
+
+/* optional: show position indicator in red */
 h1 {
   line-height: 43px;
 }
@@ -767,6 +775,7 @@ a:focus {
 }
 
 .card-box {
+  width: 425px;
   padding: 40px;
   box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.14);
   -webkit-border-radius: 3px;
@@ -775,6 +784,7 @@ a:focus {
   background-clip: padding-box;
   margin-bottom: 20px;
   background-color: #ffffff;
+  z-index: 10;
 }
 
 .header-title {
@@ -5178,7 +5188,7 @@ h3.timeline-title {
 
 .wp-bg {
   background: #5682a3;
-  height: 0px;
+  height: 100px;
 }
 
 .bg-sm {
