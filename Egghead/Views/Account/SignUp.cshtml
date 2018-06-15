@@ -2,53 +2,56 @@
 
 @* @{ ViewData["Title"] = "Login on Egghead"; } *@
 
-<div class="card-box">
-    <div class="row">
-        <div class="title col-lg-12 font-bold text-left m-b-30" style="color: #222">
-            <h6>
-                Create your Egghead account
-            </h6>
+<div class="container-fluid h-100">
+    <div class="row h-100 justify-content-center align-items-center">
+        <div class="card-box">
+            <div class="row">
+                <div class="title col-lg-12 font-bold text-left m-b-30" style="color: #222">
+                    <h6>
+                        Create your Egghead account
+                    </h6>
+                </div>
+            </div>
+            <form id="form" asp-controller="Account" asp-action="SignUp" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" novalidate="">
+                <div class="form-group form-mbt-2 row">
+                    <div class="col-md-12">
+                        <label class="floating-label label-required">Email</label>
+                        <input name="email" type="email"/>
+                    </div>
+                </div>
+                <div class="form-group form-mbt-2 row">
+                    <div class="col-md-6">
+                        <label class="floating-label label-required">First Name</label>
+                        <input name="firstName" type="text"/>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="floating-label label-required">Last Name</label>
+                        <input name="lastName" type="text"/>
+                    </div>
+                </div>
+                <div class="form-group form-mbt-3 row">
+                    <div class="col-md-12">
+                        @* todo: Add eye open/closed *@
+                        <label class="floating-label label-required">Password</label>
+                        <input name="password" type="password"/>
+                    </div>
+                </div>
+                <div class="form-group form-mbt-2 row">
+                    <div class="input-group">
+                        <span class="input-group-btn ml-auto">
+                            <button id="next" class="btn btn-danger w-xs waves-effect waves-light">Next</button>
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="container align-center">
+                        Already have an account? <a href="/Account/LogIn?returnUrl=@ViewData["ReturnUrl"]">Log In</a>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
-    <form id="form" asp-controller="Account" asp-action="SignUp" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" novalidate="">
-        <div class="form-group form-mbt-2 row">
-            <div class="col-lg-12">
-                <label class="floating-label label-required">Email</label>
-                <input name="email" type="email"/>
-            </div>
-        </div>
-        <div class="form-group form-mbt-2 row">
-            <div class="col-lg-6">
-                <label class="floating-label label-required">First Name</label>
-                <input name="firstName" type="text"/>
-            </div>
-            <div class="col-lg-6">
-                <label class="floating-label label-required">Last Name</label>
-                <input name="lastName" type="text"/>
-            </div>
-        </div>
-        <div class="form-group form-mbt-3 row">
-            <div class="col-lg-12">
-                @* todo: Add eye open/closed *@
-                <label class="floating-label label-required">Password</label>
-                <input name="password" type="password"/>
-            </div>
-        </div>
-        <div class="form-group form-mbt-2 row">
-            <div class="input-group">
-                <span class="input-group-btn ml-auto">
-                    <button id="next" class="btn btn-danger w-xs waves-effect waves-light">Next</button>
-                </span>
-            </div>
-        </div>
-        <div class="form-group row">
-            <div class="container align-center">
-                Already have an account? <a href="/Account/LogIn?returnUrl=@ViewData["ReturnUrl"]">Log In</a>
-            </div>
-        </div>
-    </form>
 </div>
-
 <script>
     $(document).ready(function() {
         var emailInput = $("input[type='email']");
@@ -67,8 +70,8 @@
                 var prev = self.prev();
                 prev.addClass(!prev.hasClass(floatingLabelError) ? labelTransform : labelErrorTransform);
             }).focusout(function() {
-                var self = $(this);          
-                var prev = self.prev();          
+                var self = $(this);
+                var prev = self.prev();
                 if (!prev.hasClass(floatingLabelError)) {
                     prev.toggleClass(labelTransform, !((self[0].value === "") && prev.hasClass(labelTransform)));
                 } else {
@@ -80,7 +83,7 @@
                         self.css("background", "linear-gradient(to bottom, rgba(255, 255, 255, 0) 96%, #5682a3 96%)");
                     }
                 }
-            });                                           
+            });
         }
 
         function onRequestError(jqXhr, textStatus, errorThrown) {
@@ -136,7 +139,7 @@
                 break;
             }
         }
-     
+
         $("#next").click(function(e) {
             e.preventDefault();
             var url = $("#form").attr("action");
@@ -174,8 +177,6 @@
 
             return false;
         });
-
-        $('.wp-bg').addClass("bg-lg");
 
         handleFocusFor(emailInput);
         handleFocusFor(passwordInput);
