@@ -132,7 +132,7 @@ namespace Egghead.Controllers
 
             return Ok(new ErrorViewModel
             {
-                RedirectUrl = "/",
+                RedirectUrl = returnUrl,
                 ErrorStatusCode = ErrorStatusCode.Found
             });
         }
@@ -241,7 +241,7 @@ namespace Egghead.Controllers
 
             return Ok(new ErrorViewModel
             {
-                RedirectUrl = "/",
+                RedirectUrl = returnUrl,
                 ErrorStatusCode = ErrorStatusCode.Found
             });
         }
