@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Egghead.ViewModels
+namespace Egghead.Models
 {
     public class SignUpViewModel
     {

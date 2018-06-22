@@ -3,9 +3,9 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Egghead.Common;
-using Egghead.MongoDbStorage.Identities;
+using Egghead.Models;
+using Egghead.MongoDbStorage.Entities;
 using Egghead.Utils;
-using Egghead.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -18,10 +18,10 @@ namespace Egghead.Controllers
     public class AccountController : Controller
     {
         private readonly ILogger _logger;
-        private readonly UserManager<MongoDbIdentityUser> _userManager;
-        private readonly SignInManager<MongoDbIdentityUser> _signInManager;
+        private readonly UserManager<MongoDbUser> _userManager;
+        private readonly SignInManager<MongoDbUser> _signInManager;
 
-        public AccountController(UserManager<MongoDbIdentityUser> userManager, SignInManager<MongoDbIdentityUser> signInManager, ILoggerFactory loggerFactory)
+        public AccountController(UserManager<MongoDbUser> userManager, SignInManager<MongoDbUser> signInManager, ILoggerFactory loggerFactory)
         {
             _logger = loggerFactory.CreateLogger<AccountController>();
             _userManager = userManager;
@@ -211,7 +211,7 @@ namespace Egghead.Controllers
                 });
             }
 
-            var identityUser = new MongoDbIdentityUser
+            var identityUser = new MongoDbUser
             {
                 Email = model.Email,
                 NormalizedEmail = model.Email,
