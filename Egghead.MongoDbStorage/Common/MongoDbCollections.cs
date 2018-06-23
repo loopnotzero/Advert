@@ -3,5 +3,7 @@
     public static class MongoDbCollections
     {
         public const string Users = "Users";
+        public const string Posts = "Posts";
+        public const string Subjects = "Subjects";
     }
 }

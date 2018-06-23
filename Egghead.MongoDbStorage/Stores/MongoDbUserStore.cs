@@ -3,29 +3,27 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Egghead.MongoDbStorage.Common;
-using Egghead.MongoDbStorage.Identities;
-using Egghead.MongoDbStorage.Utils;
+using Egghead.MongoDbStorage.Entities;
+using Egghead.MongoDbStorage.Mappings;
 using Microsoft.AspNetCore.Identity;
 using MongoDB.Driver;
 
 namespace Egghead.MongoDbStorage.Stores
 {
-    public class MongoDbUserStore<T> : IUserEmailStore<T>, IUserPasswordStore<T> where T : MongoDbIdentityUser
+    public class MongoDbUserStore<T> : IUserEmailStore<T>, IUserPasswordStore<T> where T : MongoDbUser
     {
         private readonly IMongoCollection<T> _collection;
          
         private MongoDbUserStore()
         {
-            RegisterWellKnownTypes.EnsureConfigure();
+            RegisterMappings.EnsureConfigure();
         }
         
         public MongoDbUserStore(IMongoDatabase mongoDatabase) : this()
         {          
-            _collection = mongoDatabase.GetCollection<T>(MongoDbCollections.Users);
-            
+            _collection = mongoDatabase.GetCollection<T>(MongoDbCollections.Users);          
             //todo: Create indices
         }
-
 
         public void Dispose()
         {

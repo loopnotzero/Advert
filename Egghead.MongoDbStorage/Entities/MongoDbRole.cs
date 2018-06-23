@@ -1,28 +1,26 @@
-﻿using System;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization.IdGenerators;
+﻿using MongoDB.Bson;
 
-namespace Egghead.MongoDbStorage.Identities
+namespace Egghead.MongoDbStorage.Entities
 {
-    public class MongoDbIdentityRole
+    public class MongoDbRole
     {
-        public MongoDbIdentityRole()
+        public MongoDbRole()
         {
             Id = ObjectId.GenerateNewId().ToString();
         }
         
-        public MongoDbIdentityRole(string name) : this()
+        public MongoDbRole(string name) : this()
         {
             Name = name;
         }
         
-        public MongoDbIdentityRole(string name, string normalizedName) : this()
+        public MongoDbRole(string name, string normalizedName) : this()
         {
             Name = name;
             NormalizedName = normalizedName;
         }
         
-        public MongoDbIdentityRole(string name, string normalizedName, string concurrencyStamp) : this()
+        public MongoDbRole(string name, string normalizedName, string concurrencyStamp) : this()
         {
             Name = name;
             NormalizedName = normalizedName;
