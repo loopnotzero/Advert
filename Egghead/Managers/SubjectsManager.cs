@@ -7,53 +7,117 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Egghead.Managers
 {
-    public class SubjectsManager<T> : ISubjectStore<T> where T : class
+    public class SubjectsManager<T> : IDisposable where T : class
     {
-        private readonly ISubjectStore<T> _subjectStore;
+        private bool _disposed;
 
-        public SubjectsManager(ISubjectStore<T> subjectStore)
-        {
-            _subjectStore = subjectStore;
-        }
-        
-        public async Task SetNormalizedTitleAsync(T subject, string normalizedTitle, CancellationToken cancellationToken)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            await _subjectStore.SetNormalizedTitleAsync(subject, normalizedTitle, cancellationToken);
-        }
+        /// <summary>
+        /// Gets or sets the persistence store the manager operates over.
+        /// </summary>
+        /// <value>The persistence store the manager operates over.</value>
+        protected internal ISubjectStore<T> Store { get; set; }
 
-        public Task<T> FindSubjectByIdAsync(string subjectId, CancellationToken cancellationToken)
+        protected virtual CancellationToken CancellationToken => CancellationToken.None;
+
+        public SubjectsManager(ISubjectStore<T> store)
         {
-            throw new NotImplementedException();
+            Store = store ?? throw new ArgumentNullException(nameof(store));
         }
 
-        public Task<T> FindSubjectByTitleAsync(string title, CancellationToken cancellationToken)
+        public async Task SetNormalizedTitleAsync(T subject, string normalizedTitle)
         {
-            throw new NotImplementedException();
+            ThrowIfDisposed();
+
+            if (subject == null)
+            {
+                throw new ArgumentNullException(nameof(subject));
+            }
+
+            await Store.SetNormalizedTitleAsync(subject, normalizedTitle, CancellationToken);
         }
 
-        public Task<string> GetSubjectAsync(T subject, CancellationToken cancellationToken)
+        public async Task<T> FindSubjectByIdAsync(string subjectId)
         {
-            throw new NotImplementedException();
+            ThrowIfDisposed();
+
+            if (subjectId == null)
+            {
+                throw new ArgumentNullException(nameof(subjectId));
+            }
+
+            return await Store.FindSubjectByIdAsync(subjectId, CancellationToken);
         }
 
-        public Task<IdentityResult> UpdateSubjectAsync(T subject, CancellationToken cancellationToken)
+        public async Task<T> FindSubjectByTitleAsync(string normalizedTitle)
         {
-            throw new NotImplementedException();
+            ThrowIfDisposed();
+
+            if (normalizedTitle == null)
+            {
+                throw new ArgumentNullException(nameof(normalizedTitle));
+            }
+
+            return await Store.FindSubjectByTitleAsync(normalizedTitle, CancellationToken);
         }
 
-        public Task<IdentityResult> CreateSubjectAsync(T subject, CancellationToken cancellationToken)
+        public async Task<IdentityResult> CreateSubjectAsync(T subject)
         {
-            throw new NotImplementedException();
+            ThrowIfDisposed();
+
+            if (subject == null)
+            {
+                throw new ArgumentNullException(nameof(subject));
+            }
+
+            return await Store.CreateSubjectAsync(subject, CancellationToken);
         }
 
-        public Task<IdentityResult> DeleteSubjectAsync(T subject, CancellationToken cancellationToken)
+        public async Task<IdentityResult> UpdateSubjectAsync(T subject)
         {
-            throw new NotImplementedException();
+            ThrowIfDisposed();
+
+            if (subject == null)
+            {
+                throw new ArgumentNullException(nameof(subject));
+            }
+
+            return await Store.UpdateSubjectAsync(subject, CancellationToken);
+        }
+
+        public async Task<IdentityResult> DeleteSubjectAsync(T subject)
+        {
+            ThrowIfDisposed();
+
+            if (subject == null)
+            {
+                throw new ArgumentNullException(nameof(subject));
+            }
+
+            return await Store.DeleteSubjectAsync(subject, CancellationToken);
         }
 
         public void Dispose()
         {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (!disposing || _disposed)
+                return;
+
+            Store.Dispose();
+
+            _disposed = true;
+        }
+
+        protected void ThrowIfDisposed()
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(GetType().Name);
+            }
         }
     }
 }

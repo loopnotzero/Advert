@@ -26,13 +26,13 @@ namespace Egghead
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<MongoDbOptions>(Configuration.GetSection("MongoDbOptions"));
-          
+
             services.AddTransient<IUserStore<MongoDbUser>>(provider =>
             {
                 var options = provider.GetService<IOptions<MongoDbOptions>>();
                 return new MongoDbUserStore<MongoDbUser>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
-            });                  
-            
+            });
+
             services.AddTransient<IRoleStore<MongoDbRole>>(provider =>
             {
                 var options = provider.GetService<IOptions<MongoDbOptions>>();
@@ -44,24 +44,24 @@ namespace Egghead
                 var options = provider.GetService<IOptions<MongoDbOptions>>();
                 return new MongoDbSubjectStore<MongoDbSubject>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
             });
-            
+
             services.AddTransient<IUserValidator<MongoDbUser>, EggheadUserValidator<MongoDbUser>>();
-            
+
             services.AddIdentity<MongoDbUser, MongoDbRole>(options =>
             {
                 options.User.RequireUniqueEmail = true;
-                options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";               
-                
+                options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+
                 options.Password.RequireDigit = true;
                 options.Password.RequiredLength = 8;
                 options.Password.RequireLowercase = false;
                 options.Password.RequireUppercase = false;
                 options.Password.RequiredUniqueChars = 1;
                 options.Password.RequireNonAlphanumeric = false;
-                
+
             }).AddDefaultTokenProviders().AddUserValidator<EggheadUserValidator<MongoDbUser>>();
-            
-            services.AddMvc();    
+
+            services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -69,11 +69,11 @@ namespace Egghead
         {
             if (!env.IsDevelopment())
             {
-                app.UseExceptionHandler("/Home/Error"); 
+                app.UseExceptionHandler("/Home/Error");
             }
-            else       
+            else
             {
-                app.UseDeveloperExceptionPage();       
+                app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
                 app.UseBrowserLink();
             }
@@ -82,10 +82,7 @@ namespace Egghead
 
             app.UseAuthentication();
 
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
-            });
+            app.UseMvc(routes => { routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}"); });
         }
     }
 }

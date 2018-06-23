@@ -16,15 +16,6 @@ namespace Egghead
             var builder = WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()        
                 .Build();         
-
-//            var builder = new WebHostBuilder()
-//                .UseKestrel()
-//                .UseContentRoot(Directory.GetCurrentDirectory())
-//                .UseIISIntegration()
-//                .UseStartup<Startup>()
-//                .UseApplicationInsights()
-//                .Build();
-
             return builder;
         }
     }
