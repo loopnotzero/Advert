@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Egghead.MongoDbStorage.Common;
 using Egghead.MongoDbStorage.Entities;
@@ -30,37 +31,92 @@ namespace Egghead.MongoDbStorage.Stores
 
         public Task SetNormalizedTitleAsync(T subject, string normalizedTitle, CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            if (subject == null)
+            {
+                throw new NullReferenceException();
+            }         
+            
+            cancellationToken.ThrowIfCancellationRequested();
+            
+            subject.NormalizedTitle = normalizedTitle ?? subject.Title.ToUpper();
+            
+            return Task.FromResult<object>(null);
         }
 
-        public Task<T> FindSubjectByIdAsync(string subjectId, CancellationToken cancellationToken)
+        public async Task<T> FindSubjectByIdAsync(string subjectId, CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            if (subjectId == null)
+            {
+                throw new ArgumentNullException(nameof(subjectId));
+            }
+                    
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.Id, subjectId), cancellationToken: cancellationToken);
+
+            return await cursor.FirstOrDefaultAsync(cancellationToken);
         }
 
-        public Task<T> FindSubjectByTitleAsync(string title, CancellationToken cancellationToken)
+        public async Task<T> FindSubjectByTitleAsync(string normalizedTitle, CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            if (normalizedTitle == null)
+            {
+                throw new ArgumentNullException(nameof(normalizedTitle));
+            }
+                    
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.NormalizedTitle, normalizedTitle), cancellationToken: cancellationToken);
+
+            return await cursor.FirstOrDefaultAsync(cancellationToken);
         }
 
-        public Task<string> GetSubjectAsync(T subject, CancellationToken cancellationToken)
+        public async Task<IdentityResult> CreateSubjectAsync(T subject, CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            if (subject == null)
+            {
+                throw new ArgumentNullException(nameof(subject));
+            }
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            await _collection.InsertOneAsync(subject, new InsertOneOptions
+            {
+                BypassDocumentValidation = false
+            }, cancellationToken);
+
+            return IdentityResult.Success;
         }
 
-        public Task<IdentityResult> UpdateSubjectAsync(T subject, CancellationToken cancellationToken)
+        public async Task<IdentityResult> UpdateSubjectAsync(T subject, CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            if (subject == null)
+            {
+                throw new ArgumentNullException();
+            }
+            
+            cancellationToken.ThrowIfCancellationRequested();
+
+            await _collection.ReplaceOneAsync(Builders<T>.Filter.Eq(x => x.Id, subject.Id), subject, new UpdateOptions
+            {
+                BypassDocumentValidation = false
+            }, cancellationToken);
+
+            return IdentityResult.Success;
         }
 
-        public Task<IdentityResult> CreateSubjectAsync(T subject, CancellationToken cancellationToken)
+        public async Task<IdentityResult> DeleteSubjectAsync(T subject, CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
-        }
+            if (subject == null)
+            {
+                throw new ArgumentNullException(nameof(subject));
+            }
 
-        public Task<IdentityResult> DeleteSubjectAsync(T subject, CancellationToken cancellationToken)
-        {
-            throw new System.NotImplementedException();
+            cancellationToken.ThrowIfCancellationRequested();
+
+            await _collection.DeleteOneAsync(Builders<T>.Filter.Eq(x => x.Id, subject.Id), cancellationToken);
+            
+            return IdentityResult.Success;
         }
     }
 }
