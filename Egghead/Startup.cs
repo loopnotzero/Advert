@@ -1,6 +1,6 @@
-﻿using Egghead.Models;
-using Egghead.MongoDbStorage;
-using Egghead.MongoDbStorage.Identities;
+﻿using Egghead.MongoDbStorage.Common;
+using Egghead.MongoDbStorage.Entities;
+using Egghead.MongoDbStorage.IStores;
 using Egghead.MongoDbStorage.Stores;
 using Egghead.Validators;
 using Microsoft.AspNetCore.Builder;
@@ -27,21 +27,27 @@ namespace Egghead
         {
             services.Configure<MongoDbOptions>(Configuration.GetSection("MongoDbOptions"));
           
-            services.AddTransient<IUserStore<MongoDbIdentityUser>>(provider =>
+            services.AddTransient<IUserStore<MongoDbUser>>(provider =>
             {
                 var options = provider.GetService<IOptions<MongoDbOptions>>();
-                return new MongoDbUserStore<MongoDbIdentityUser>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+                return new MongoDbUserStore<MongoDbUser>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
             });                  
             
-            services.AddTransient<IRoleStore<MongoDbIdentityRole>>(provider =>
+            services.AddTransient<IRoleStore<MongoDbRole>>(provider =>
             {
                 var options = provider.GetService<IOptions<MongoDbOptions>>();
-                return new MongoDbRoleStore<MongoDbIdentityRole>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+                return new MongoDbRoleStore<MongoDbRole>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
             });
 
-            services.AddTransient<IUserValidator<MongoDbIdentityUser>, EggheadUserValidator<MongoDbIdentityUser>>();
+            services.AddTransient<ISubjectStore<MongoDbSubject>>(provider =>
+            {
+                var options = provider.GetService<IOptions<MongoDbOptions>>();
+                return new MongoDbSubjectStore<MongoDbSubject>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+            });
             
-            services.AddIdentity<MongoDbIdentityUser, MongoDbIdentityRole>(options =>
+            services.AddTransient<IUserValidator<MongoDbUser>, EggheadUserValidator<MongoDbUser>>();
+            
+            services.AddIdentity<MongoDbUser, MongoDbRole>(options =>
             {
                 options.User.RequireUniqueEmail = true;
                 options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";               
@@ -53,7 +59,7 @@ namespace Egghead
                 options.Password.RequiredUniqueChars = 1;
                 options.Password.RequireNonAlphanumeric = false;
                 
-            }).AddDefaultTokenProviders().AddUserValidator<EggheadUserValidator<MongoDbIdentityUser>>();
+            }).AddDefaultTokenProviders().AddUserValidator<EggheadUserValidator<MongoDbUser>>();
             
             services.AddMvc();    
         }

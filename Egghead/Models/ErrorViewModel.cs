@@ -1,6 +1,6 @@
 using Egghead.Common;
 
-namespace Egghead.ViewModels
+namespace Egghead.Models
 {
     public class ErrorViewModel
     {

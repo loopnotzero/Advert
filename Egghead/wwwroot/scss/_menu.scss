@@ -1,8 +1,5 @@
-/* ===========
-   Menu
- =============*/
 .wrapper {
-  padding-top: 145px;
+  padding-top: 150px;
 }
 
 .page-title-box {
@@ -20,7 +17,7 @@
   right: 0;
   left: 0;
   top: 0;
-  z-index: 0;
+  z-index: 1;
   background-color: $primary;
   border: 0;
   -webkit-transition: all .3s ease;

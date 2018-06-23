@@ -1,4 +1,4 @@
-﻿namespace Egghead.MongoDbStorage
+﻿namespace Egghead.MongoDbStorage.Common
 {
     public class MongoDbOptions
     {

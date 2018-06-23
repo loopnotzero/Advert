@@ -1,13 +1,13 @@
 ﻿using System.Threading;
-using Egghead.MongoDbStorage.Identities;
+using Egghead.MongoDbStorage.Entities;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.IdGenerators;
 using MongoDB.Bson.Serialization.Serializers;
 
-namespace Egghead.MongoDbStorage.Utils
+namespace Egghead.MongoDbStorage.Mappings
 {
-    public static class RegisterWellKnownTypes
+    public static class RegisterMappings
     {
         private static bool _initialized;
         private static object _initializationLock = new object();
@@ -24,11 +24,11 @@ namespace Egghead.MongoDbStorage.Utils
 
         private static void Configure()
         {
-            BsonClassMap.RegisterClassMap<MongoDbIdentityUser>(bsonClassMap =>
+            BsonClassMap.RegisterClassMap<MongoDbUser>(bsonClassMap =>
             {
                 bsonClassMap.AutoMap();
                 bsonClassMap.MapIdMember(c => c.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
-                bsonClassMap.MapCreator(user => new MongoDbIdentityUser(user.UserName, user.Email));
+                bsonClassMap.MapCreator(user => new MongoDbUser(user.UserName, user.Email));
             });
         }
     }

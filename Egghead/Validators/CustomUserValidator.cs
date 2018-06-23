@@ -1,10 +1,10 @@
 ﻿using System.Threading.Tasks;
-using Egghead.MongoDbStorage.Identities;
+using Egghead.MongoDbStorage.Entities;
 using Microsoft.AspNetCore.Identity;
 
 namespace Egghead.Validators
 {
-    public class EggheadUserValidator<T> : IUserValidator<T> where T : MongoDbIdentityUser
+    public class EggheadUserValidator<T> : IUserValidator<T> where T : MongoDbUser
     {
         public Task<IdentityResult> ValidateAsync(UserManager<T> manager, T user)
         {

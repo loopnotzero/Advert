@@ -1,10 +1,7 @@
 @charset "UTF-8";
 @import url("https://fonts.googleapis.com/css?family=Roboto:400,500,700");
-/* ===========
-   Menu
- =============*/
 .wrapper {
-  padding-top: 145px;
+  padding-top: 150px;
 }
 
 .page-title-box {
@@ -21,7 +18,7 @@
   right: 0;
   left: 0;
   top: 0;
-  z-index: 0;
+  z-index: 1;
   background-color: #5682a3;
   border: 0;
   -webkit-transition: all 0.3s ease;
@@ -4495,7 +4492,6 @@ table.dataTable.dtr-inline.collapsed > tbody > tr.parent > th:first-child:before
   border-spacing: 0;
   display: table;
   margin-bottom: 50px;
-  position: relative;
   table-layout: fixed;
   width: 100%;
 }
@@ -4512,7 +4508,6 @@ table.dataTable.dtr-inline.collapsed > tbody > tr.parent > th:first-child:before
   background-color: #5682a3;
   bottom: 0;
   content: "";
-  left: 50%;
   position: absolute;
   top: 30px;
   width: 1px;
@@ -4549,9 +4544,6 @@ h3.timeline-title {
   text-transform: uppercase;
 }
 
-.timeline-item {
-  display: table-row;
-}
 .timeline-item:before {
   content: "";
   display: block;
