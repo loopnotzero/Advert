@@ -17,7 +17,7 @@ namespace Egghead.MongoDbStorage.Stores
 
         private MongoDbUserStore()
         {
-            RegisterMappings.EnsureConfigure();
+            EntityMappings.EnsureMongoDbUserConfigured();
         }
 
         public MongoDbUserStore(IMongoDatabase mongoDatabase) : this()
