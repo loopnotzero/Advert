@@ -1,5 +1,4 @@
-﻿@using Egghead.Models
-@model Egghead.Models.SignUpViewModel
+﻿@model Egghead.Models.Identity.SignUpViewModel
 
 @* @{ ViewData["Title"] = "Login on Egghead"; } *@
 
@@ -66,7 +65,7 @@
         var requestVerificationToken = $("input[name=__RequestVerificationToken]");
 
         function resizeHeader() {
-            $("#header-bg").addClass("header-h226px");
+            $("#topnav").addClass("header-h226px");
         }
         
         function handleFocusFor(element) {

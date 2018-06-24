@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Egghead.MongoDbStorage.IStores;
-using Egghead.MongoDbStorage.Stores;
 using Microsoft.AspNetCore.Identity;
 
 namespace Egghead.Managers
@@ -25,31 +24,31 @@ namespace Egghead.Managers
             Store = store ?? throw new ArgumentNullException(nameof(store));
         }
 
-        public async Task SetNormalizedTitleAsync(T subject, string normalizedTitle)
+        public async Task SetNormalizedTitleAsync(T article, string normalizedTitle)
         {
             ThrowIfDisposed();
 
-            if (subject == null)
+            if (article == null)
             {
-                throw new ArgumentNullException(nameof(subject));
+                throw new ArgumentNullException(nameof(article));
             }
 
-            await Store.SetNormalizedTitleAsync(subject, normalizedTitle, CancellationToken);
+            await Store.SetNormalizedTitleAsync(article, normalizedTitle, CancellationToken);
         }
 
-        public async Task<T> FindSubjectByIdAsync(string subjectId)
+        public async Task<T> FindArticleByIdAsync(string articleId)
         {
             ThrowIfDisposed();
 
-            if (subjectId == null)
+            if (articleId == null)
             {
-                throw new ArgumentNullException(nameof(subjectId));
+                throw new ArgumentNullException(nameof(articleId));
             }
 
-            return await Store.FindSubjectByIdAsync(subjectId, CancellationToken);
+            return await Store.FindArticleByIdAsync(articleId, CancellationToken);
         }
 
-        public async Task<T> FindSubjectByTitleAsync(string normalizedTitle)
+        public async Task<T> FindArticleByTitleAsync(string normalizedTitle)
         {
             ThrowIfDisposed();
 
@@ -58,49 +57,49 @@ namespace Egghead.Managers
                 throw new ArgumentNullException(nameof(normalizedTitle));
             }
 
-            return await Store.FindSubjectByTitleAsync(normalizedTitle, CancellationToken);
+            return await Store.FindArticleByTitleAsync(normalizedTitle, CancellationToken);
         }
         
-        public async Task<List<T>> GetSubjects()
+        public async Task<List<T>> GetArticles()
         {
             ThrowIfDisposed();          
-            return await Store.GetSubjects(CancellationToken);
+            return await Store.GetArticles(CancellationToken);
         }
 
-        public async Task<IdentityResult> CreateSubjectAsync(T subject)
+        public async Task<IdentityResult> CreateArticleAsync(T article)
         {
             ThrowIfDisposed();
 
-            if (subject == null)
+            if (article == null)
             {
-                throw new ArgumentNullException(nameof(subject));
+                throw new ArgumentNullException(nameof(article));
             }
 
-            return await Store.CreateSubjectAsync(subject, CancellationToken);
+            return await Store.CreateArticleAsync(article, CancellationToken);
         }
 
-        public async Task<IdentityResult> UpdateSubjectAsync(T subject)
+        public async Task<IdentityResult> DeleteArticleAsync(T article)
         {
             ThrowIfDisposed();
 
-            if (subject == null)
+            if (article == null)
             {
-                throw new ArgumentNullException(nameof(subject));
+                throw new ArgumentNullException(nameof(article));
             }
 
-            return await Store.UpdateSubjectAsync(subject, CancellationToken);
+            return await Store.DeleteArticleAsync(article, CancellationToken);
         }
 
-        public async Task<IdentityResult> DeleteSubjectAsync(T subject)
+        public async Task<IdentityResult> UpdateArticleAsync(T article)
         {
             ThrowIfDisposed();
 
-            if (subject == null)
+            if (article == null)
             {
-                throw new ArgumentNullException(nameof(subject));
+                throw new ArgumentNullException(nameof(article));
             }
 
-            return await Store.DeleteSubjectAsync(subject, CancellationToken);
+            return await Store.UpdateArticleAsync(article, CancellationToken);
         }
 
         public void Dispose()

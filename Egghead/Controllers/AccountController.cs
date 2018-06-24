@@ -2,7 +2,8 @@
 using System.Net;
 using System.Threading.Tasks;
 using Egghead.Common;
-using Egghead.Models;
+using Egghead.Models.Errors;
+using Egghead.Models.Identity;
 using Egghead.MongoDbStorage.Entities;
 using Egghead.Utils;
 using Microsoft.AspNetCore.Authorization;
@@ -56,7 +57,7 @@ namespace Egghead.Controllers
             {
                 _logger.LogWarning("Model state is not valid: " + ModelState);
                 //todo: Highlight all input forms
-                return Ok(new ErrorViewModel
+                return Ok(new ErrorModel
                 {
                     TagName = "email",
                     ErrorMessage = "Enter your email",
@@ -66,7 +67,7 @@ namespace Egghead.Controllers
 
             if (!AccountValidation.IsEmailValid(model.Email))
             {
-                return Ok(new ErrorViewModel
+                return Ok(new ErrorModel
                 {
                     TagName = "email",
                     ErrorMessage = "Enter your email",
@@ -76,7 +77,7 @@ namespace Egghead.Controllers
 
             if (!AccountValidation.IsPasswordValid(model.Password))
             {
-                return Ok(new ErrorViewModel
+                return Ok(new ErrorModel
                 {
                     TagName = "password",
                     ErrorMessage = "Enter your password",
@@ -88,7 +89,7 @@ namespace Egghead.Controllers
 
             if (identityUser == null)
             {
-                return Ok(new ErrorViewModel
+                return Ok(new ErrorModel
                 {
                     TagName = "email",
                     ErrorMessage = "Couldn't find your Egghead account",
@@ -98,7 +99,7 @@ namespace Egghead.Controllers
 
             if (!await _userManager.CheckPasswordAsync(identityUser, model.Password))
             {
-                return Ok(new ErrorViewModel
+                return Ok(new ErrorModel
                 {
                     TagName = "password",
                     ErrorMessage = "Wrong password. Try again or click forgot password to reset it",
@@ -110,7 +111,7 @@ namespace Egghead.Controllers
 
             if (!result.Succeeded)
             {
-                return StatusCode((int) HttpStatusCode.OK, new ErrorViewModel
+                return StatusCode((int) HttpStatusCode.OK, new ErrorModel
                 {
                     //todo: TagName
                     ErrorMessage = "An error occured",
@@ -118,7 +119,7 @@ namespace Egghead.Controllers
                 });
             }
 
-            return Ok(new ErrorViewModel
+            return Ok(new ErrorModel
             {
                 RedirectUrl = returnUrl,
                 ErrorStatusCode = ErrorStatusCode.Found
@@ -136,7 +137,7 @@ namespace Egghead.Controllers
             {
                 _logger.LogWarning("Model state is not valid: " + ModelState);
                 //todo: Highlight all input forms
-                return Ok(new ErrorViewModel
+                return Ok(new ErrorModel
                 {
                     TagName = "email",
                     ErrorMessage = "Enter your email",
@@ -147,7 +148,7 @@ namespace Egghead.Controllers
             if (!AccountValidation.IsEmailValid(model.Email))
             {
                 _logger.LogWarning("Email is null or not valid");
-                return Ok(new ErrorViewModel
+                return Ok(new ErrorModel
                 {
                     TagName = "email",
                     ErrorMessage = "Enter your email",
@@ -158,7 +159,7 @@ namespace Egghead.Controllers
             if (!AccountValidation.IsFisrtNameValid(model.FirstName))
             {
                 _logger.LogWarning("First Name is null or not valid");
-                return Ok(new ErrorViewModel
+                return Ok(new ErrorModel
                 {
                     TagName = "firstName",
                     ErrorMessage = "Enter your first name",
@@ -169,7 +170,7 @@ namespace Egghead.Controllers
             if (!AccountValidation.IsLastNameValid(model.LastName))
             {
                 _logger.LogWarning("Last Name is null or not valid");
-                return Ok(new ErrorViewModel
+                return Ok(new ErrorModel
                 {
                     TagName = "lastName",
                     ErrorMessage = "Enter your last name",
@@ -180,7 +181,7 @@ namespace Egghead.Controllers
             if (!AccountValidation.IsPasswordValid(model.Password))
             {
                 _logger.LogWarning("Password is null or not valid");
-                return Ok(new ErrorViewModel
+                return Ok(new ErrorModel
                 {
                     TagName = "password",
                     ErrorMessage = "Enter your password",
@@ -191,7 +192,7 @@ namespace Egghead.Controllers
             if (await _userManager.FindByEmailAsync(model.Email) != null)
             {
                 _logger.LogWarning("Email already exists");
-                return Ok(new ErrorViewModel
+                return Ok(new ErrorModel
                 {
                     TagName = "email",
                     ErrorMessage = "That email is taken. Try another one",
@@ -214,7 +215,7 @@ namespace Egghead.Controllers
             if (!result.Succeeded)
             {
                 _logger.LogError(string.Join(", ", result.Errors.Select(x => $"Error Code: {x.Code} Description: {x.Description}")));
-                return Ok(new ErrorViewModel
+                return Ok(new ErrorModel
                 {
                     TagName = "error",
                     ErrorMessage = "An error occurred",
@@ -227,7 +228,7 @@ namespace Egghead.Controllers
             await _signInManager.SignInAsync(identityUser, isPersistent: false);
             _logger.LogInformation("User authenticated: " + model);
 
-            return Ok(new ErrorViewModel
+            return Ok(new ErrorModel
             {
                 RedirectUrl = returnUrl,
                 ErrorStatusCode = ErrorStatusCode.Found

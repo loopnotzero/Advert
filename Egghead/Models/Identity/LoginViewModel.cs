@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Egghead.Models
+namespace Egghead.Models.Identity
 {
     public class LoginViewModel
     {

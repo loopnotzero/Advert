@@ -1,8 +1,8 @@
 using Egghead.Common;
 
-namespace Egghead.Models
+namespace Egghead.Models.Errors
 {
-    public class ErrorViewModel
+    public class ErrorModel
     {
         public string TagName { get; set; }       
         public string RedirectUrl { get; set; }

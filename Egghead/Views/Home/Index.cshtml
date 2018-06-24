@@ -3,7 +3,7 @@
 <div class="container-fluid">
     <div class="row">
         <div class="timeline">
-            @for (var i = 0; i < 5; i++)
+            @for (var i = 0; i < 1; i++)
             {
                 <article class="timeline-item">
                     <div class="timeline-desk">
@@ -42,11 +42,53 @@
 </div>
 
 <script>
-    $(document).ready(function() {
-        function resizeHeader() {
-            $("#header-bg").addClass("header-h75px");
+    $(document).ready(function() {      
+        function createArticle() {
+            
         }
+        
+        function getArticles() {
+            $("#get-articles").click(function(e) {
+                e.preventDefault();
+                var url = $("#form").attr("action");
+                console.log("Request url: " + url);
+                var token = requestVerificationToken.val();
+                console.log("Request verification token: " + token);
+                var email = emailInput.val();
+                console.log("Email: " + email);
+                var password = passwordInput.val();
+                console.log("Password: " + password);
 
-        resizeHeader();
+                var additionalHeaders = {};
+
+                if (token) {
+                    additionalHeaders["RequestVerificationToken"] = token;
+                }
+
+                $.ajax({
+                    url: url,
+                    type: "POST",
+                    data: JSON.stringify({ email: email, password: password }),
+                    headers: additionalHeaders,
+                    contentType: "application/json",
+                    error: function(jqXhr, textStatus, errorThrown) {
+                        onRequestError(jqXhr, textStatus, errorThrown);
+                    },
+                    success: function(response) {
+                        onRequestSuccess(response);
+                    }
+                });
+
+                return false;
+            });
+        }
+        
+        function removeArticles() {
+            
+        }
+        
+        function logOut() {
+            
+        }        
     });
 </script>
