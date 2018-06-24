@@ -1,6 +1,6 @@
 ﻿namespace Egghead.Models
 {
-    public class PasswordRestModel
+    public class PasswordResetModel
     {
         
     }

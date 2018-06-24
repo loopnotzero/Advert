@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Egghead.Validators
 {
-    public class EggheadUserValidator<T> : IUserValidator<T> where T : MongoDbUser
+    public class CustomUserValidator<T> : IUserValidator<T> where T : MongoDbUser
     {
         public Task<IdentityResult> ValidateAsync(UserManager<T> manager, T user)
         {

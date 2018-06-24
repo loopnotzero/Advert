@@ -1,4 +1,5 @@
-﻿using Egghead.MongoDbStorage.Common;
+﻿using Egghead.Managers;
+using Egghead.MongoDbStorage.Common;
 using Egghead.MongoDbStorage.Entities;
 using Egghead.MongoDbStorage.IStores;
 using Egghead.MongoDbStorage.Stores;
@@ -45,21 +46,22 @@ namespace Egghead
                 return new MongoDbSubjectStore<MongoDbSubject>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
             });
 
-            services.AddTransient<IUserValidator<MongoDbUser>, EggheadUserValidator<MongoDbUser>>();
-
+            services.AddTransient<IUserValidator<MongoDbUser>, CustomUserValidator<MongoDbUser>>();
+            
+            
             services.AddIdentity<MongoDbUser, MongoDbRole>(options =>
             {
                 options.User.RequireUniqueEmail = true;
                 options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-
                 options.Password.RequireDigit = true;
                 options.Password.RequiredLength = 8;
                 options.Password.RequireLowercase = false;
                 options.Password.RequireUppercase = false;
                 options.Password.RequiredUniqueChars = 1;
                 options.Password.RequireNonAlphanumeric = false;
-
-            }).AddDefaultTokenProviders().AddUserValidator<EggheadUserValidator<MongoDbUser>>();
+            }).AddDefaultTokenProviders().AddUserValidator<CustomUserValidator<MongoDbUser>>();
+            
+            services.AddScoped<SubjectsManager<MongoDbSubject>, SubjectsManager<MongoDbSubject>>();
 
             services.AddMvc();
         }

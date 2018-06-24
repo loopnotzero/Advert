@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Egghead.Common;
@@ -13,14 +12,12 @@ using Microsoft.Extensions.Logging;
 
 namespace Egghead.Controllers
 {
-    //todo: Added string constants to config file or as consts
-
     public class AccountController : Controller
     {
         private readonly ILogger _logger;
         private readonly UserManager<MongoDbUser> _userManager;
         private readonly SignInManager<MongoDbUser> _signInManager;
-
+       
         public AccountController(UserManager<MongoDbUser> userManager, SignInManager<MongoDbUser> signInManager, ILoggerFactory loggerFactory)
         {
             _logger = loggerFactory.CreateLogger<AccountController>();
@@ -40,15 +37,6 @@ namespace Egghead.Controllers
         [HttpGet]
         [AllowAnonymous]
         public IActionResult SignUp(string returnUrl = null)
-        {
-            ViewData["returnUrl"] = returnUrl;
-            _logger.LogInformation("ReturnUrl: {0}", returnUrl);
-            return View();
-        }
-
-        [HttpGet]
-        [AllowAnonymous]
-        public IActionResult ForgotPassword(string returnUrl = null)
         {
             ViewData["returnUrl"] = returnUrl;
             _logger.LogInformation("ReturnUrl: {0}", returnUrl);
@@ -244,13 +232,6 @@ namespace Egghead.Controllers
                 RedirectUrl = returnUrl,
                 ErrorStatusCode = ErrorStatusCode.Found
             });
-        }
-
-        [HttpPost]
-        [AllowAnonymous]
-        public async Task<IActionResult> ForgotPassword([FromBody] PasswordResetViewModel model, string returnUrl)
-        {
-            throw new NotImplementedException();
         }
     }
 }

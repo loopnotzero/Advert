@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Egghead.MongoDbStorage.IStores;
@@ -59,6 +60,12 @@ namespace Egghead.Managers
 
             return await Store.FindSubjectByTitleAsync(normalizedTitle, CancellationToken);
         }
+        
+        public async Task<List<T>> GetSubjects()
+        {
+            ThrowIfDisposed();          
+            return await Store.GetSubjects(CancellationToken);
+        }
 
         public async Task<IdentityResult> CreateSubjectAsync(T subject)
         {
@@ -118,6 +125,6 @@ namespace Egghead.Managers
             {
                 throw new ObjectDisposedException(GetType().Name);
             }
-        }
+        }     
     }
 }
