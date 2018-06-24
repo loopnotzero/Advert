@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Egghead.Managers
 {
-    public class SubjectsManager<T> : IDisposable where T : class
+    public class ArticlesManager<T> : IDisposable where T : class
     {
         private bool _disposed;
 
@@ -16,11 +16,11 @@ namespace Egghead.Managers
         /// Gets or sets the persistence store the manager operates over.
         /// </summary>
         /// <value>The persistence store the manager operates over.</value>
-        protected internal ISubjectStore<T> Store { get; set; }
+        protected internal IArticleStore<T> Store { get; set; }
 
         protected virtual CancellationToken CancellationToken => CancellationToken.None;
 
-        public SubjectsManager(ISubjectStore<T> store)
+        public ArticlesManager(IArticleStore<T> store)
         {
             Store = store ?? throw new ArgumentNullException(nameof(store));
         }

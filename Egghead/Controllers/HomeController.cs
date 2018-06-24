@@ -13,12 +13,12 @@ namespace Egghead.Controllers
     {
         private readonly ILogger _logger;
 
-        private readonly SubjectsManager<MongoDbSubject> _subjectsManager;
+        private readonly ArticlesManager<MongoDbArticle> _articlesManager;
 
-        public HomeController(SubjectsManager<MongoDbSubject> subjectsManager, ILoggerFactory loggerFactory)
+        public HomeController(ArticlesManager<MongoDbArticle> articlesManager, ILoggerFactory loggerFactory)
         {
             _logger = loggerFactory.CreateLogger<AccountController>();
-            _subjectsManager = subjectsManager;
+            _articlesManager = articlesManager;
         }
 
         [HttpGet]
@@ -32,9 +32,9 @@ namespace Egghead.Controllers
         [Authorize]
         public async Task<IActionResult> GetSubjects()
         {
-            var subjects = await _subjectsManager.GetSubjects();
+            var subjects = await _articlesManager.GetSubjects();
 
-            return Ok(subjects.Select(x => new SubjectModel
+            return Ok(subjects.Select(x => new ArticleModel
             {
                 Title = x.Title,
                 Text = x.Text,

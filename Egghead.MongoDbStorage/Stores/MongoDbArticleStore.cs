@@ -11,16 +11,16 @@ using MongoDB.Driver;
 
 namespace Egghead.MongoDbStorage.Stores
 {
-    public class MongoDbSubjectStore<T> : ISubjectStore<T> where T : MongoDbSubject
+    public class MongoDbArticleStore<T> : IArticleStore<T> where T : MongoDbArticle
     {
         private readonly IMongoCollection<T> _collection;
 
-        public MongoDbSubjectStore()
+        public MongoDbArticleStore()
         {
             RegisterMappings.EnsureConfigure();
         }
         
-        public MongoDbSubjectStore(IMongoDatabase mongoDatabase) : this()
+        public MongoDbArticleStore(IMongoDatabase mongoDatabase) : this()
         {          
             _collection = mongoDatabase.GetCollection<T>(MongoDbCollections.Subjects);          
             //todo: Create indices

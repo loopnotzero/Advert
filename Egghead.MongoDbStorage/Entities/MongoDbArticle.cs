@@ -4,9 +4,9 @@ using MongoDB.Bson;
 
 namespace Egghead.MongoDbStorage.Entities
 {
-    public class MongoDbSubject
+    public class MongoDbArticle
     {
-        public MongoDbSubject()
+        public MongoDbArticle()
         {
             Id = ObjectId.GenerateNewId().ToString();
         }

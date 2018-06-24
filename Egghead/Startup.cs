@@ -40,10 +40,10 @@ namespace Egghead
                 return new MongoDbRoleStore<MongoDbRole>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
             });
 
-            services.AddTransient<ISubjectStore<MongoDbSubject>>(provider =>
+            services.AddTransient<IArticleStore<MongoDbArticle>>(provider =>
             {
                 var options = provider.GetService<IOptions<MongoDbOptions>>();
-                return new MongoDbSubjectStore<MongoDbSubject>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+                return new MongoDbArticleStore<MongoDbArticle>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
             });
 
             services.AddTransient<IUserValidator<MongoDbUser>, CustomUserValidator<MongoDbUser>>();
@@ -61,7 +61,7 @@ namespace Egghead
                 options.Password.RequireNonAlphanumeric = false;
             }).AddDefaultTokenProviders().AddUserValidator<CustomUserValidator<MongoDbUser>>();
             
-            services.AddScoped<SubjectsManager<MongoDbSubject>, SubjectsManager<MongoDbSubject>>();
+            services.AddScoped<ArticlesManager<MongoDbArticle>, ArticlesManager<MongoDbArticle>>();
 
             services.AddMvc();
         }

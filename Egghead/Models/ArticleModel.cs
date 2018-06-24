@@ -3,7 +3,7 @@ using Egghead.Common;
 
 namespace Egghead.Models
 {
-    public class SubjectModel
+    public class ArticleModel
     {
         public string Title { get; set; }
         public string Text { get; set; } 
