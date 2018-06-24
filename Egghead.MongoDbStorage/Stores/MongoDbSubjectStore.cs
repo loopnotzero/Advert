@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Egghead.MongoDbStorage.Common;
@@ -69,6 +70,15 @@ namespace Egghead.MongoDbStorage.Stores
             var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.NormalizedTitle, normalizedTitle), cancellationToken: cancellationToken);
 
             return await cursor.FirstOrDefaultAsync(cancellationToken);
+        }
+
+        public async Task<List<T>> GetSubjects(CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var cursor = await _collection.FindAsync(Builders<T>.Filter.Empty, cancellationToken: cancellationToken);
+
+            return await cursor.ToListAsync(cancellationToken);
         }
 
         public async Task<IdentityResult> CreateSubjectAsync(T subject, CancellationToken cancellationToken)
