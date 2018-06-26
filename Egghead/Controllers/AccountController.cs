@@ -32,7 +32,7 @@ namespace Egghead.Controllers
         {
             ViewData["returnUrl"] = returnUrl;
             _logger.LogInformation("ReturnUrl: {0}", returnUrl);
-            return View();
+            return PartialView();
         }
 
         [HttpGet]
@@ -41,9 +41,22 @@ namespace Egghead.Controllers
         {
             ViewData["returnUrl"] = returnUrl;
             _logger.LogInformation("ReturnUrl: {0}", returnUrl);
-            return View();
+            return PartialView();
         }
 
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> LogOut(string returnUrl = null)
+        {
+            await _signInManager.SignOutAsync();
+            
+            return Ok(new ErrorModel
+            {
+                RedirectUrl = returnUrl,
+                ErrorStatusCode = ErrorStatusCode.TemporaryRedirect,               
+            });
+        }
+        
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]

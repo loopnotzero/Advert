@@ -77,5 +77,28 @@
 
             return false;
         });
+        
+        $("#logout").click(function(e) {
+            console.log("test");
+
+            e.preventDefault();
+
+            $.ajax({
+                url: "/Account/LogOut?returnUrl=" + window.location.pathname,
+                type: "GET",
+                contentType: "application/json",
+                error: function(jqXhr, textStatus, errorThrown) {
+                    console.log("jqXhr: " + jqXhr);
+                    console.log("textStatus: " + jqXhr);
+                    console.log("errorThrown: " + jqXhr);
+                },
+                success: function(response) {
+                    console.log(response);
+                    window.location.href = response.redirectUrl;
+                }
+            });
+
+            return false;
+        });
     });
 </script>
