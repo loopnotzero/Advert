@@ -1,4 +1,4 @@
-﻿namespace Egghead.Common
+﻿namespace Egghead.Common.Articles
 {
     public enum ReleaseType
     {
