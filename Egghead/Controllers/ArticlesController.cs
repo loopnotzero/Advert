@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Egghead.Common;
+using Egghead.Common.Articles;
 using Egghead.Managers;
 using Egghead.Models.Articles;
 using Egghead.Models.Errors;
@@ -12,13 +13,13 @@ using Microsoft.Extensions.Logging;
 
 namespace Egghead.Controllers
 {
-    public class HomeController : Controller
+    public class ArticlesController : Controller
     {
         private readonly ILogger _logger;
 
         private readonly ArticlesManager<MongoDbArticle> _articlesManager;
 
-        public HomeController(ArticlesManager<MongoDbArticle> articlesManager, ILoggerFactory loggerFactory)
+        public ArticlesController(ArticlesManager<MongoDbArticle> articlesManager, ILoggerFactory loggerFactory)
         {
             _logger = loggerFactory.CreateLogger<AccountController>();
             _articlesManager = articlesManager;
@@ -35,18 +36,28 @@ namespace Egghead.Controllers
         [Authorize]
         public async Task<IActionResult> GetArticles()
         {
-            var subjects = await _articlesManager.GetArticles();
+            var articles = await _articlesManager.GetArticles();
 
-            return Ok(subjects.Select(x => new Article
+            return Ok(articles.Select(x => new Article             
             {
                 Title = x.Title,
                 Text = x.Text,
+                CreatedAt = x.CreatedAt
             }));
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> RenderArticles()
+        {
+            var articles = await _articlesManager.GetArticles();    
+            _logger.LogInformation(articles.ToString());
+            return PartialView("PartialArticle", articles);
         }
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> CreateArticle([FromBody] CreateArticle article)
+        public async Task<IActionResult> CreateArticle([FromBody] Article article)
         {
             try
             {
@@ -54,7 +65,9 @@ namespace Egghead.Controllers
                 {
                     Title = article.Title,
                     NormalizedTitle = article.Title.ToUpper(),
-                    Text = article.Text
+                    Text = article.Text,
+                    CreatedAt = DateTime.UtcNow,
+                    ReleaseType = ReleaseType.PreModeration
                 });
 
                 return Ok(new ErrorModel
@@ -93,19 +106,31 @@ namespace Egghead.Controllers
         
         [HttpPut]
         [Authorize]
-        public async Task<IActionResult> UdpateArticleById(string id)
+        public async Task<IActionResult> UdpateArticleById(string id, [FromBody] Article article)
         {
-            var article = await _articlesManager.FindArticleByIdAsync(id);           
-            await _articlesManager.UpdateArticleAsync(article);
+            await _articlesManager.UpdateArticleAsync(new MongoDbArticle
+            {
+                Id = id,
+                Title = article.Title,
+                NormalizedTitle = article.Title.ToUpper(),
+                Text =  article.Text,
+                ChangedAt = DateTime.UtcNow
+            });
             return Ok();
         }
         
         [HttpPut]
         [Authorize]
-        public async Task<IActionResult> UdpateArticleByTitle(string title)
+        public async Task<IActionResult> UdpateArticleByTitle(string title, [FromBody] Article article)
         {
-            var article = await _articlesManager.FindArticleByTitleAsync(title);           
-            await _articlesManager.UpdateArticleAsync(article);
+            await _articlesManager.UpdateArticleAsync(new MongoDbArticle
+            {
+                Id = article.Id,
+                Title = title,
+                NormalizedTitle = article.Title.ToUpper(),
+                Text =  article.Text,
+                ChangedAt = DateTime.UtcNow
+            });
             return Ok();
         }
     }

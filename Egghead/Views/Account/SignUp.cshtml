@@ -102,7 +102,7 @@
             console.log("Error status code: " + response.responseStatusCode);
 
             switch (response.errorStatusCode) {
-            case 302:
+            case 307:
                 {
                     console.log("Redirect url: " + response.redirectUrl);
                     window.location.href = response.redirectUrl;

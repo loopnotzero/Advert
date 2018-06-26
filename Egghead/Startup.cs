@@ -84,7 +84,7 @@ namespace Egghead
 
             app.UseAuthentication();
 
-            app.UseMvc(routes => { routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}"); });
+            app.UseMvc(routes => { routes.MapRoute("default", "{controller=Articles}/{action=Index}/{id?}"); });
         }
     }
 }

@@ -1,0 +1,81 @@
+﻿@* @{ ViewData["Title"] = "Home Page"; } *@
+
+<div class="container-fluid">
+    <div class="row">
+        
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        console.log("Index page ready");
+
+        $("#create-article").click(function(e) {
+            console.log("test");
+
+            e.preventDefault();
+
+            $.ajax({
+                url: "/Articles/CreateArticle",
+                type: "POST",
+                data: JSON.stringify({ title: "Test Title", text: "Test text" }),
+                contentType: "application/json",
+                error: function(jqXhr, textStatus, errorThrown) {
+                    console.log("jqXhr: " + jqXhr);
+                    console.log("textStatus: " + jqXhr);
+                    console.log("errorThrown: " + jqXhr);
+                },
+                success: function(response) {
+                    console.log(response);
+                }
+            });
+
+            return false;
+        });
+
+        $("#get-articles").click(function(e) {
+            console.log("test");
+
+            e.preventDefault();
+
+            $.ajax({
+                url: "/Articles/RenderArticles",
+                type: "GET",
+                contentType: "application/json",
+                error: function(jqXhr, textStatus, errorThrown) {
+                    console.log("jqXhr: " + jqXhr);
+                    console.log("textStatus: " + jqXhr);
+                    console.log("errorThrown: " + jqXhr);
+                },
+                success: function(articles) {
+                    console.log("Articles: " + articles);
+                    $(".row").append(articles);            
+                }
+            });
+
+            return false;
+        });
+        
+        $("#delete-article-by-id").click(function(e) {
+            console.log("test");
+
+            e.preventDefault();
+
+            $.ajax({
+                url: "/Articles/DeleteArticleById?id=",
+                type: "DELETE",
+                contentType: "application/json",
+                error: function(jqXhr, textStatus, errorThrown) {
+                    console.log("jqXhr: " + jqXhr);
+                    console.log("textStatus: " + jqXhr);
+                    console.log("errorThrown: " + jqXhr);
+                },
+                success: function(response) {
+                    console.log(response);
+                }
+            });
+
+            return false;
+        });
+    });
+</script>

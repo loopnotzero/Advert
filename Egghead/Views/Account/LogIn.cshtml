@@ -91,11 +91,12 @@
         }
 
         function onRequestSuccess(response) {
+            console.log("Response: " + response);
             console.log("Error message: " + response.errorMessage);
             console.log("Error status code: " + response.errorStatusCode);
 
             switch (response.errorStatusCode) {
-            case 302:
+            case 307:
                 {
                     console.log("Redirect url: " + response.redirectUrl);
                     window.location.href = response.redirectUrl;
@@ -123,7 +124,7 @@
             }
         }
 
-        $("#next").click(function(e) {
+        $("#next").click(function(e) { 
             e.preventDefault();
             var url = $("#form").attr("action");
             console.log("Request url: " + url);

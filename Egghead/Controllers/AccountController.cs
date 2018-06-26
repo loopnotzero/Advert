@@ -122,7 +122,7 @@ namespace Egghead.Controllers
             return Ok(new ErrorModel
             {
                 RedirectUrl = returnUrl,
-                ErrorStatusCode = ErrorStatusCode.Found
+                ErrorStatusCode = ErrorStatusCode.TemporaryRedirect
             });
         }
 
@@ -231,7 +231,7 @@ namespace Egghead.Controllers
             return Ok(new ErrorModel
             {
                 RedirectUrl = returnUrl,
-                ErrorStatusCode = ErrorStatusCode.Found
+                ErrorStatusCode = ErrorStatusCode.TemporaryRedirect
             });
         }
     }
