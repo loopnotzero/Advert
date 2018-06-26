@@ -1,5 +1,6 @@
 ﻿using System;
 using Egghead.Common;
+using Egghead.Common.Articles;
 using MongoDB.Bson;
 
 namespace Egghead.MongoDbStorage.Entities
@@ -9,6 +10,7 @@ namespace Egghead.MongoDbStorage.Entities
         public MongoDbArticle()
         {
             Id = ObjectId.GenerateNewId().ToString();
+            //Create indeces
         }
 
         public string Id { get; set; }
@@ -17,7 +19,7 @@ namespace Egghead.MongoDbStorage.Entities
         public string Text { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime ChangedAt { get; set; }
-        public DateTime RemovedAt { get; set; }
+        public DateTime DeletedAt { get; set; }
         public ReleaseType ReleaseType { get; set; }
     }
 }
