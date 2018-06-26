@@ -32,7 +32,7 @@ namespace Egghead.Controllers
         {
             ViewData["returnUrl"] = returnUrl;
             _logger.LogInformation("ReturnUrl: {0}", returnUrl);
-            return PartialView();
+            return View();
         }
 
         [HttpGet]
@@ -41,7 +41,7 @@ namespace Egghead.Controllers
         {
             ViewData["returnUrl"] = returnUrl;
             _logger.LogInformation("ReturnUrl: {0}", returnUrl);
-            return PartialView();
+            return View();
         }
 
         [HttpGet]
