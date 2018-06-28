@@ -52,7 +52,7 @@ namespace Egghead.Controllers
         {
             var articles = await _articlesManager.GetArticles();    
             _logger.LogInformation(articles.ToString());
-            return PartialView("PartialArticle", articles);
+            return PartialView("ArticlePartial", articles);
         }
 
         [HttpPost]

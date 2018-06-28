@@ -11,10 +11,5 @@ namespace Egghead.Models.Identity
         [Required]
         [DataType(DataType.Password)]
         public string Password { get; set; }
-
-        public override string ToString()
-        {
-            return $"Email: {Email} Password: {Password}";
-        }
     }
 }

@@ -4,13 +4,13 @@ namespace Egghead.Utils
 {
     public static class AccountValidation
     {
-        public static bool IsEmailValid(string email)
+        public static bool IsEmailSyntacticallyValid(string email)
         {
             //todo: Add regex validation
             return !string.IsNullOrEmpty(email);
         }
 
-        public static bool IsPasswordValid(string password)
+        public static bool IsPasswordSyntacticallyValid(string password)
         {
             //todo: Add char, symbol, number validation
             return !string.IsNullOrEmpty(password);
