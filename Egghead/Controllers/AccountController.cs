@@ -78,7 +78,7 @@ namespace Egghead.Controllers
                 });
             }
 
-            if (!AccountValidation.IsEmailValid(model.Email))
+            if (!AccountValidation.IsEmailSyntacticallyValid(model.Email))
             {
                 return Ok(new ErrorModel
                 {
@@ -88,7 +88,7 @@ namespace Egghead.Controllers
                 });
             }
 
-            if (!AccountValidation.IsPasswordValid(model.Password))
+            if (!AccountValidation.IsPasswordSyntacticallyValid(model.Password))
             {
                 return Ok(new ErrorModel
                 {
@@ -158,7 +158,7 @@ namespace Egghead.Controllers
                 });
             }
 
-            if (!AccountValidation.IsEmailValid(model.Email))
+            if (!AccountValidation.IsEmailSyntacticallyValid(model.Email))
             {
                 _logger.LogWarning("Email is null or not valid");
                 return Ok(new ErrorModel
@@ -169,7 +169,7 @@ namespace Egghead.Controllers
                 });
             }
 
-            if (!AccountValidation.IsFisrtNameValid(model.FirstName))
+            if (!AccountValidation.IsFisrtNameSyntacticallyValid(model.FirstName))
             {
                 _logger.LogWarning("First Name is null or not valid");
                 return Ok(new ErrorModel
@@ -180,7 +180,7 @@ namespace Egghead.Controllers
                 });
             }
 
-            if (!AccountValidation.IsLastNameValid(model.LastName))
+            if (!AccountValidation.IsLastNameSyntacticallyValid(model.LastName))
             {
                 _logger.LogWarning("Last Name is null or not valid");
                 return Ok(new ErrorModel
@@ -191,7 +191,7 @@ namespace Egghead.Controllers
                 });
             }
 
-            if (!AccountValidation.IsPasswordValid(model.Password))
+            if (!AccountValidation.IsPasswordSyntacticallyValid(model.Password))
             {
                 _logger.LogWarning("Password is null or not valid");
                 return Ok(new ErrorModel

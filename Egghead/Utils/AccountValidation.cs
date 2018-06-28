@@ -16,12 +16,12 @@ namespace Egghead.Utils
             return !string.IsNullOrEmpty(password);
         }
 
-        public static bool IsFisrtNameValid(string firstName)
+        public static bool IsFisrtNameSyntacticallyValid(string firstName)
         {
             return !string.IsNullOrEmpty(firstName);
         }
 
-        public static bool IsLastNameValid(string lastName)
+        public static bool IsLastNameSyntacticallyValid(string lastName)
         {
             return !string.IsNullOrEmpty(lastName);
         }
