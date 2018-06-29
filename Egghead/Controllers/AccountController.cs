@@ -15,6 +15,8 @@ namespace Egghead.Controllers
 {
     public class AccountController : Controller
     {
+        //todo: Return back for ErrorModel list of errors
+        
         private readonly ILogger _logger;
         private readonly UserManager<MongoDbUser> _userManager;
         private readonly SignInManager<MongoDbUser> _signInManager;
