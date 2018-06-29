@@ -37,21 +37,6 @@ namespace Egghead.Controllers
         public async Task<IActionResult> GetArticles()
         {
             var articles = await _articlesManager.GetArticles();
-
-            return Ok(articles.Select(x => new Article             
-            {
-                Title = x.Title,
-                Text = x.Text,
-                CreatedAt = x.CreatedAt
-            }));
-        }
-
-        [HttpGet]
-        [Authorize]
-        public async Task<IActionResult> RenderArticles()
-        {
-            var articles = await _articlesManager.GetArticles();    
-            _logger.LogInformation(articles.ToString());
             return PartialView("ArticlePartial", articles);
         }
 

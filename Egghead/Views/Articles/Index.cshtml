@@ -20,6 +20,9 @@
 </header>
 
 <div class="container-fluid">
+    <div class="timeline" style="display: none">
+        
+    </div>
 </div>
 
 <script>
@@ -55,7 +58,7 @@
             e.preventDefault();
 
             $.ajax({
-                url: "/Articles/RenderArticles",
+                url: "/Articles/GetArticles",
                 type: "GET",
                 contentType: "application/json",
                 error: function(jqXhr, textStatus, errorThrown) {
@@ -65,17 +68,7 @@
                 },
                 success: function(articles) {
                     console.log("Articles: " + articles);
-
-                    var container = $(".container-fluid");
-
-                    if (!container.next().has()) {
-                        container.append("" +
-                            "<div class='timeline'>" +
-                            "</div"
-                        );
-                    }
-                    
-                    $(".timeline").append(articles);
+                    $(".timeline").removeAttr("style").append(articles);
                 }
             });
 
