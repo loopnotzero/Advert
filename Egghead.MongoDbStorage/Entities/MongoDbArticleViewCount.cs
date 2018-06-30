@@ -2,9 +2,9 @@
 
 namespace Egghead.MongoDbStorage.Entities
 {
-    public class MongoDbArticleViews
+    public class MongoDbArticleViewCount
     {
-        public MongoDbArticleViews()
+        public MongoDbArticleViewCount()
         {
             Id = ObjectId.GenerateNewId().ToString();
             //Create indeces

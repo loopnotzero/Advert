@@ -10,7 +10,7 @@ using MongoDB.Driver;
 
 namespace Egghead.MongoDbStorage.Stores
 {
-    public class MongoDbArticlesViewsStore<T> : IArticlesViewsStore<T> where T : MongoDbArticleViews
+    public class MongoDbArticlesViewCountStore<T> : IArticlesViewCountStore<T> where T : MongoDbArticleViewCount
     {
         private readonly IMongoCollection<T> _collection;
         
@@ -19,43 +19,43 @@ namespace Egghead.MongoDbStorage.Stores
             
         }
 
-        public MongoDbArticlesViewsStore()
+        public MongoDbArticlesViewCountStore()
         {
             EntityMappings.EnsureMongoDbArticleViewsConfigured();
         }
 
-        public MongoDbArticlesViewsStore(IMongoDatabase mongoDatabase) : this()
+        public MongoDbArticlesViewCountStore(IMongoDatabase mongoDatabase) : this()
         {
             _collection = mongoDatabase.GetCollection<T>(MongoDbCollections.ArticlesViews);          
             //todo: Create indices
         }
         
-        public async Task<T> FindArticlesViewsByArticleIdAsync(string articleId, CancellationToken cancellationToken)
+        public async Task<T> FindArticlesViewCountByArticleIdAsync(string id, CancellationToken cancellationToken)
         {
-            if (articleId == null)
+            if (id == null)
             {
-                throw new ArgumentNullException(nameof(articleId));
+                throw new ArgumentNullException(nameof(id));
             }
                     
             cancellationToken.ThrowIfCancellationRequested();
 
-            var filter = Builders<T>.Filter.Eq(x => x.ArticleId, articleId);
+            var filter = Builders<T>.Filter.Eq(x => x.ArticleId, id);
             
             var cursor = await _collection.FindAsync(filter, cancellationToken: cancellationToken);
 
             return await cursor.FirstOrDefaultAsync(cancellationToken);
         }
 
-        public async Task<long> CountArticlesViewsByArticleIdAsync(string articleId, CancellationToken cancellationToken)
+        public async Task<long> CountArticlesViewCountByArticleIdAsync(string id, CancellationToken cancellationToken)
         {
-            if (articleId == null)
+            if (id == null)
             {
-                throw new ArgumentNullException(nameof(articleId));
+                throw new ArgumentNullException(nameof(id));
             }
                     
             cancellationToken.ThrowIfCancellationRequested();
 
-            var filter = Builders<T>.Filter.Eq(x => x.ArticleId, articleId);
+            var filter = Builders<T>.Filter.Eq(x => x.ArticleId, id);
             
             return await _collection.CountAsync(filter, cancellationToken: cancellationToken);          
         }
