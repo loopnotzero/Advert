@@ -22,11 +22,11 @@ namespace Egghead.MongoDbStorage.Mappings
             });
         }
 
-        public static void EnsureMongoDbArticlesConfigured()
+        public static void EnsureMongoDbArticleConfigured()
         {
             LazyInitializer.EnsureInitialized(ref _initializationTarget, ref _initialized, ref _initializationLock, () =>
             {
-                ConfigureMongoDbArticles();
+                ConfigureMongoDbArticle();
                 return null;
             });
         }
@@ -59,7 +59,7 @@ namespace Egghead.MongoDbStorage.Mappings
             });
         }
 
-        private static void ConfigureMongoDbArticles()
+        private static void ConfigureMongoDbArticle()
         {
             BsonClassMap.RegisterClassMap<MongoDbArticle>(bsonClassMap =>
             {
