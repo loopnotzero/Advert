@@ -48,7 +48,7 @@ namespace Egghead.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> LogOut(string returnUrl = null)
+        public async Task<IActionResult> SignOut(string returnUrl = null)
         {
             await _signInManager.SignOutAsync();
             

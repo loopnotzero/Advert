@@ -1,0 +1,27 @@
+﻿@model List<Egghead.MongoDbStorage.Entities.MongoDbArticle>
+
+@if (Model.Any())
+{
+     foreach (var article in Model)
+     {
+         <article>
+             <div class="card m-b-20 text-xs-center">
+                 <span class="card-arrow"></span>
+                 <small>@article.CreatedAt</small>
+                 <div class="card-body">
+                     <span class="card-icon"></span>
+                     <a href="/Articles/Article?Id=@article.Id"><h4 class="card-title">@article.Title</h4></a>
+                     <p class="card-text card-pl">@article.Text</p>
+                 </div>
+                 <div class="card-footer text-muted">
+                     <div class="col-sm-4 col-md-4 col-lg-4">
+                         <i class="fa fa-thumbs-o-up m-r-10"> 14 тыс.</i> 
+                         <i class="fa fa-thumbs-o-down m-r-10"> 14 тыс.</i>                       
+                         <i class="fa fa-eye m-r-10"> 289 966 просмотров</i>
+                         <i class="fa fa-commenting-o"> <span class="text-success">332</span></i>
+                     </div>                    
+                 </div>                
+             </div> 
+         </article>       
+     }
+}

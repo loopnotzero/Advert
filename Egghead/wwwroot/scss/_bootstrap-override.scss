@@ -1,5 +1,9 @@
 .container-fluid {
-  max-width: 80%;
+  max-width: 90%;
+}
+
+.form-group {
+  margin-bottom: 0;
 }
 
 .row {
@@ -53,12 +57,9 @@ code, pre {
   background-color: #f4f8fb;
 }
 
-//Card
 .card {
   box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.14);
 }
-
-/* Background Colors */
 
 .bg-empty {
   background: transparent !important;
@@ -72,7 +73,7 @@ code, pre {
   background-color: $success !important;
 }
 
-.bg-info {
+.bg-infov {
   background-color: $info !important;
 }
 
@@ -104,7 +105,6 @@ code, pre {
   background-color: $white !important;
 }
 
-/* Text Colors */
 .text-white {
   color: $white;
 }
@@ -149,8 +149,6 @@ code, pre {
   color: $lightdark7 !important;
 }
 
-
-/* Dropcap */
 .dropcap {
   font-size: 3.1em;
 }

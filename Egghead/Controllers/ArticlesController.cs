@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Egghead.Common;
@@ -37,7 +38,7 @@ namespace Egghead.Controllers
         public async Task<IActionResult> GetArticles()
         {
             var articles = await _articlesManager.GetArticles();
-            return PartialView("ArticlePartial", articles);
+            return PartialView("ArticleDescriptionPartial", articles);
         }
 
         [HttpPost]
@@ -46,19 +47,22 @@ namespace Egghead.Controllers
         {
             try
             {
-                var result = await _articlesManager.CreateArticleAsync(new MongoDbArticle
+                var mongoDbArticle = new MongoDbArticle
                 {
                     Title = article.Title,
                     NormalizedTitle = article.Title.ToUpper(),
                     Text = article.Text,
                     CreatedAt = DateTime.UtcNow,
                     ReleaseType = ReleaseType.PreModeration
-                });
+                };
+                
+                await _articlesManager.CreateArticleAsync(mongoDbArticle);
 
-                return Ok(new ErrorModel
+                var result = await _articlesManager.FindArticleByIdAsync(mongoDbArticle.Id);
+
+                return PartialView("ArticleDescriptionPartial", new List<MongoDbArticle>
                 {
-                    RedirectUrl = "Redirect_To_Article_Page",
-                    ErrorStatusCode = ErrorStatusCode.Created,                 
+                    result
                 });
             }
             catch (Exception e)
@@ -77,9 +81,16 @@ namespace Egghead.Controllers
         
         [HttpDelete]
         [Authorize]
-        public async Task<IActionResult> DeleteArticleById(string id)
+        public async Task<IActionResult> DeleteArticleById(string objectId)
         {
-            throw new NotImplementedException();
+            var articles = await _articlesManager.GetArticles();
+            
+            foreach (var article in articles)
+            {
+                await _articlesManager.DeleteArticleByIdAsync(article.Id);
+            }
+            
+            return Ok();
         }
         
         [HttpDelete]
@@ -91,16 +102,16 @@ namespace Egghead.Controllers
         
         [HttpPut]
         [Authorize]
-        public async Task<IActionResult> UdpateArticleById(string id, [FromBody] Article article)
+        public async Task<IActionResult> UdpateArticleById(string objectId, [FromBody] Article article)
         {
-            await _articlesManager.UpdateArticleAsync(new MongoDbArticle
+            await _articlesManager.UpdateArticleByIdAsync(objectId, new MongoDbArticle
             {
-                Id = id,
                 Title = article.Title,
                 NormalizedTitle = article.Title.ToUpper(),
                 Text =  article.Text,
                 ChangedAt = DateTime.UtcNow
             });
+            
             return Ok();
         }
         
@@ -108,14 +119,14 @@ namespace Egghead.Controllers
         [Authorize]
         public async Task<IActionResult> UdpateArticleByTitle(string title, [FromBody] Article article)
         {
-            await _articlesManager.UpdateArticleAsync(new MongoDbArticle
+            await _articlesManager.UpdateArticleByTitleAsync(title, new MongoDbArticle
             {
-                Id = article.Id,
-                Title = title,
+                Title = article.Title,
                 NormalizedTitle = article.Title.ToUpper(),
-                Text =  article.Text,
-                ChangedAt = DateTime.UtcNow
+                Text = article.Text,
+                ChangedAt = DateTime.UtcNow,            
             });
+            
             return Ok();
         }
     }
