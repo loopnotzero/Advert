@@ -21,5 +21,9 @@ namespace Egghead.MongoDbStorage.Entities
         public DateTime ChangedAt { get; set; }
         public DateTime DeletedAt { get; set; }
         public ReleaseType ReleaseType { get; set; }
+        public int Views { get; set; }
+        public int Likes { get; set; }
+        public int Unlinkes { get; set; }
+        public int Comments { get; set; }       
     }
 }

@@ -6,7 +6,8 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Egghead.MongoDbStorage.IStores
 {
-    public interface IArticleStore<T> : IDisposable where T : class
+    //todo: Move this interface to Common
+    public interface IArticlesStore<T> : IDisposable where T : class
     {              
         Task SetNormalizedTitleAsync(T article, string normalizedTitle, CancellationToken cancellationToken);
         Task<T> FindArticleByIdAsync(string objectId, CancellationToken cancellationToken);

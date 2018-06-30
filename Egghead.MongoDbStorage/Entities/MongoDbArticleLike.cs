@@ -2,13 +2,14 @@
 
 namespace Egghead.MongoDbStorage.Entities
 {
-    public class MongoDbPost
+    public class MongoDbArticleLike
     {
-        public MongoDbPost()
+        public MongoDbArticleLike()
         {
             Id = ObjectId.GenerateNewId().ToString();
+            //Create indeces
         }
-        
+
         public string Id { get; set; }
     }
 }
