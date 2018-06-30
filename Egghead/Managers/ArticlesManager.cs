@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Egghead.Models.Articles;
+using Egghead.MongoDbStorage.Entities;
 using Egghead.MongoDbStorage.IStores;
 using Microsoft.AspNetCore.Identity;
 
@@ -15,11 +17,11 @@ namespace Egghead.Managers
         /// Gets or sets the persistence store the manager operates over.
         /// </summary>
         /// <value>The persistence store the manager operates over.</value>
-        protected internal IArticleStore<T> Store { get; set; }
+        protected internal IArticlesStore<T> Store { get; set; }
 
         protected virtual CancellationToken CancellationToken => CancellationToken.None;
 
-        public ArticlesManager(IArticleStore<T> store)
+        public ArticlesManager(IArticlesStore<T> store)
         {
             Store = store ?? throw new ArgumentNullException(nameof(store));
         }
@@ -57,7 +59,9 @@ namespace Egghead.Managers
                 throw new ArgumentNullException(nameof(title));
             }
 
-            return await Store.FindArticleByTitleAsync(title.ToUpper(), CancellationToken);
+            var article = await Store.FindArticleByTitleAsync(title.ToUpper(), CancellationToken);
+
+            return article;
         }
         
         public async Task<List<T>> GetArticles()

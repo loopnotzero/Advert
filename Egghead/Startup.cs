@@ -40,10 +40,10 @@ namespace Egghead
                 return new MongoDbRoleStore<MongoDbRole>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
             });
 
-            services.AddTransient<IArticleStore<MongoDbArticle>>(provider =>
+            services.AddTransient<IArticlesStore<MongoDbArticle>>(provider =>
             {
                 var options = provider.GetService<IOptions<MongoDbOptions>>();
-                return new MongoDbArticleStore<MongoDbArticle>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+                return new MongoDbArticlesStore<MongoDbArticle>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
             });
 
             services.AddTransient<IUserValidator<MongoDbUser>, CustomUserValidator<MongoDbUser>>();
