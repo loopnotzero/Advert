@@ -38,7 +38,7 @@ namespace Egghead.Controllers
         public async Task<IActionResult> GetArticles()
         {
             var articles = await _articlesManager.GetArticles();
-            return PartialView("ArticlesDescriptionPartial", articles);
+            return PartialView("ArticlesPreviewPartial", articles);
         }
 
         [HttpPost]
@@ -60,7 +60,7 @@ namespace Egghead.Controllers
 
                 var result = await _articlesManager.FindArticleByIdAsync(mongoDbArticle.Id);
 
-                return PartialView("ArticlesDescriptionPartial", new List<MongoDbArticle>
+                return PartialView("ArticlesPreviewPartial", new List<MongoDbArticle>
                 {
                     result
                 });
