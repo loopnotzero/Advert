@@ -17,7 +17,7 @@ namespace Egghead.MongoDbStorage.Stores
 
         public MongoDbArticlesStore()
         {
-            EntityMappings.EnsureMongoDbArticleConfigured();
+            EntityMappings.EnsureMongoDbArticlesConfigured();
         }
         
         public MongoDbArticlesStore(IMongoDatabase mongoDatabase) : this()

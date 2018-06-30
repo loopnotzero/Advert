@@ -11,5 +11,8 @@ namespace Egghead.MongoDbStorage.Entities
         }
 
         public string Id { get; set; }
+        public string ByWhom { get; set; }
+        public string ArticleId { get; set; }
+        public string AtWhichTime { get; set; }
     }
 }

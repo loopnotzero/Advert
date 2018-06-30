@@ -22,11 +22,29 @@ namespace Egghead.MongoDbStorage.Mappings
             });
         }
 
-        public static void EnsureMongoDbArticleConfigured()
+        public static void EnsureMongoDbArticlesConfigured()
         {
             LazyInitializer.EnsureInitialized(ref _initializationTarget, ref _initialized, ref _initializationLock, () =>
             {
-                ConfigureMongoDbUser();
+                ConfigureMongoDbArticles();
+                return null;
+            });
+        }
+
+        public static void EnsureMongoDbArticleLikeConfigured()
+        {
+            LazyInitializer.EnsureInitialized(ref _initializationTarget, ref _initialized, ref _initializationLock, () =>
+            {
+                ConfigureMongoDbArticleLike();
+                return null;
+            });
+        }
+
+        public static void EnsureMongoDbArticleViewsConfigured()
+        {
+            LazyInitializer.EnsureInitialized(ref _initializationTarget, ref _initialized, ref _initializationLock, () =>
+            {
+                ConfigureMongoDbArticleViews();
                 return null;
             });
         }
@@ -41,13 +59,33 @@ namespace Egghead.MongoDbStorage.Mappings
             });
         }
 
-        private static void ConfigureMongoDbArticle()
+        private static void ConfigureMongoDbArticles()
         {
             BsonClassMap.RegisterClassMap<MongoDbArticle>(bsonClassMap =>
             {
                 bsonClassMap.AutoMap();
                 bsonClassMap.MapIdMember(c => c.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
                 bsonClassMap.MapCreator(user => new MongoDbArticle());
+            });
+        }
+
+        private static void ConfigureMongoDbArticleLike()
+        {
+            BsonClassMap.RegisterClassMap<MongoDbArticleLike>(bsonClassMap =>
+            {
+                bsonClassMap.AutoMap();
+                bsonClassMap.MapIdMember(c => c.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
+                bsonClassMap.MapCreator(user => new MongoDbArticleLike());
+            });
+        }
+
+        private static void ConfigureMongoDbArticleViews()
+        {
+            BsonClassMap.RegisterClassMap<MongoDbArticleViews>(bsonClassMap =>
+            {
+                bsonClassMap.AutoMap();
+                bsonClassMap.MapIdMember(c => c.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
+                bsonClassMap.MapCreator(user => new MongoDbArticleViews());
             });
         }
     }

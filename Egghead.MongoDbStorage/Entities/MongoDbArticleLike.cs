@@ -1,4 +1,6 @@
-﻿using MongoDB.Bson;
+﻿using System;
+using Egghead.Common.Articles;
+using MongoDB.Bson;
 
 namespace Egghead.MongoDbStorage.Entities
 {
@@ -10,6 +12,10 @@ namespace Egghead.MongoDbStorage.Entities
             //Create indeces
         }
 
-        public string Id { get; set; }
+        public string Id { get; set; }       
+        public string ByWhom { get; set; }
+        public string ArticleId { get; set; }     
+        public LikeType LikeType { get; set; }
+        public DateTime CreatedAt { get; set; }
     }
 }
