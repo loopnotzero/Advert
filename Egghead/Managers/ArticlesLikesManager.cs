@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Egghead.Common;
 using Egghead.MongoDbStorage.IStores;
 
 namespace Egghead.Managers
@@ -15,12 +16,14 @@ namespace Egghead.Managers
         /// <value>The persistence store the manager operates over.</value>
         protected internal IArticlesLikesStore<T> Store { get; set; }
 
+        protected virtual CancellationToken CancellationToken => CancellationToken.None;
+
         public ArticlesLikesManager(IArticlesLikesStore<T> store)
         {
             Store = store ?? throw new ArgumentNullException(nameof(store));
         }
 
-        public async Task<T> FindArticlesLikesByArticleIdAsync(string id, CancellationToken cancellationToken)
+        public async Task<T> FindArticlesLikesByArticleIdAsync(string id)
         {
             ThrowIfDisposed();
 
@@ -29,10 +32,10 @@ namespace Egghead.Managers
                 throw new ArgumentNullException(nameof(id));
             }
 
-            return await Store.FindArticlesLikesByArticleIdAsync(id, cancellationToken);
+            return await Store.FindArticlesLikesByArticleIdAsync(id, CancellationToken);
         }
 
-        public async Task<T> FindArticlesUnlikesByArticleIdAsync(string id, CancellationToken cancellationToken)
+        public async Task<T> FindArticlesUnlikesByArticleIdAsync(string id)
         {
             ThrowIfDisposed();
 
@@ -41,10 +44,10 @@ namespace Egghead.Managers
                 throw new ArgumentNullException(nameof(id));
             }
 
-            return await Store.FindArticlesUnlikesByArticleIdAsync(id, cancellationToken);
+            return await Store.FindArticlesUnlikesByArticleIdAsync(id, CancellationToken);
         }
 
-        public async Task<long> CountArticlesLikesByArticleIdAsync(string id, CancellationToken cancellationToken)
+        public async Task<long> CountArticlesLikesByArticleIdAsync(string id)
         {
             ThrowIfDisposed();
 
@@ -53,10 +56,10 @@ namespace Egghead.Managers
                 throw new ArgumentNullException(nameof(id));
             }
 
-            return await Store.CountArticlesLikesByArticleIdAsync(id, cancellationToken);
+            return await Store.CountArticlesLikesByArticleIdAsync(id, CancellationToken);
         }
 
-        public async Task<long> CountArticlesUnlikesByArticleIdAsync(string id, CancellationToken cancellationToken)
+        public async Task<long> CountArticlesUnlikesByArticleIdAsync(string id)
         {
             ThrowIfDisposed();
 
@@ -65,7 +68,19 @@ namespace Egghead.Managers
                 throw new ArgumentNullException(nameof(id));
             }
 
-            return await Store.CountArticlesUnlikesByArticleIdAsync(id, cancellationToken);
+            return await Store.CountArticlesUnlikesByArticleIdAsync(id, CancellationToken);
+        }
+
+        public async Task<OperationResult> AddLikeAsync(T entity)
+        {
+            ThrowIfDisposed();
+
+            if (entity == null)
+            {
+                throw new ArgumentNullException(nameof(entity));
+            }
+
+            return await Store.AddLikeAsync(entity, CancellationToken);
         }
 
         public void Dispose()

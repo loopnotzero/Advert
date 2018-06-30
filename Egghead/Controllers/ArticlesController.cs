@@ -19,26 +19,15 @@ namespace Egghead.Controllers
         private readonly ILogger _logger;
 
         private readonly ArticlesManager<MongoDbArticle> _articlesManager;
+        private readonly ArticlesLikesManager<MongoDbArticleLike> _articlesLikesManager;
 
-        public ArticlesController(ArticlesManager<MongoDbArticle> articlesManager, ILoggerFactory loggerFactory)
+        public ArticlesController(ArticlesManager<MongoDbArticle> articlesManager, ArticlesLikesManager<MongoDbArticleLike> articlesLikesManager, ILoggerFactory loggerFactory)
         {
             _logger = loggerFactory.CreateLogger<AccountController>();
             _articlesManager = articlesManager;
+            _articlesLikesManager = articlesLikesManager;
         }
 
-        [HttpGet]
-        [Authorize]
-        public IActionResult Like()
-        {
-            throw new NotImplementedException();
-        }
-
-        [HttpGet]
-        public IActionResult Unlike()
-        {
-            throw new NotImplementedException();
-        }
-        
         [HttpGet]
         [Authorize]
         public IActionResult Index()
@@ -48,10 +37,72 @@ namespace Egghead.Controllers
        
         [HttpGet]
         [Authorize]
+        public async Task<IActionResult> Like(string byWhom, string articleId)
+        {
+            try
+            {
+                await _articlesLikesManager.AddLikeAsync(new MongoDbArticleLike
+                {
+                    ByWhom = byWhom,
+                    ArticleId = articleId,
+                    CreatedAt = DateTime.UtcNow,
+                    LikeType = LikeType.Like
+                });
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return Ok(new ErrorModel
+                {
+                    ErrorStatusCode = ErrorStatusCode.InternalServerError
+                });
+            }           
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Unlike(string byWhom, string articleId)
+        {
+            try
+            {
+                await _articlesLikesManager.AddLikeAsync(new MongoDbArticleLike
+                {
+                    ByWhom = byWhom,
+                    ArticleId = articleId,
+                    CreatedAt = DateTime.UtcNow,
+                    LikeType = LikeType.UnLike
+                });
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return Ok(new ErrorModel
+                {
+                    ErrorStatusCode = ErrorStatusCode.InternalServerError
+                });
+            }          
+        }
+        
+        [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetArticles()
         {
-            var articles = await _articlesManager.GetArticles();
-            return PartialView("ArticlesPreviewPartial", articles);
+            try
+            {
+                var articles = await _articlesManager.GetArticles();
+                return PartialView("ArticlesPreviewPartial", articles);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return Ok(new ErrorModel
+                {
+                    ErrorStatusCode = ErrorStatusCode.InternalServerError
+                });
+            }            
         }
 
         [HttpPost]
@@ -96,14 +147,25 @@ namespace Egghead.Controllers
         [Authorize]
         public async Task<IActionResult> DeleteArticleById(string objectId)
         {
-            var articles = await _articlesManager.GetArticles();
-            
-            foreach (var article in articles)
+            try
             {
-                await _articlesManager.DeleteArticleByIdAsync(article.Id);
-            }
+                var articles = await _articlesManager.GetArticles();
             
-            return Ok();
+                foreach (var article in articles)
+                {
+                    await _articlesManager.DeleteArticleByIdAsync(article.Id);
+                }
+            
+                return Ok(); 
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return Ok(new ErrorModel
+                {
+                    ErrorStatusCode = ErrorStatusCode.InternalServerError
+                });
+            }       
         }
         
         [HttpDelete]
@@ -117,30 +179,52 @@ namespace Egghead.Controllers
         [Authorize]
         public async Task<IActionResult> UdpateArticleById(string objectId, [FromBody] Article article)
         {
-            await _articlesManager.UpdateArticleByIdAsync(objectId, new MongoDbArticle
+            try
             {
-                Title = article.Title,
-                NormalizedTitle = article.Title.ToUpper(),
-                Text =  article.Text,
-                ChangedAt = DateTime.UtcNow
-            });
+                await _articlesManager.UpdateArticleByIdAsync(objectId, new MongoDbArticle
+                {
+                    Title = article.Title,
+                    NormalizedTitle = article.Title.ToUpper(),
+                    Text =  article.Text,
+                    ChangedAt = DateTime.UtcNow
+                });
             
-            return Ok();
+                return Ok();    
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return Ok(new ErrorModel
+                {
+                    ErrorStatusCode = ErrorStatusCode.InternalServerError
+                });
+            }
         }
         
         [HttpPut]
         [Authorize]
         public async Task<IActionResult> UdpateArticleByTitle(string title, [FromBody] Article article)
         {
-            await _articlesManager.UpdateArticleByTitleAsync(title, new MongoDbArticle
+            try
             {
-                Title = article.Title,
-                NormalizedTitle = article.Title.ToUpper(),
-                Text = article.Text,
-                ChangedAt = DateTime.UtcNow,            
-            });
+                await _articlesManager.UpdateArticleByTitleAsync(title, new MongoDbArticle
+                {
+                    Title = article.Title,
+                    NormalizedTitle = article.Title.ToUpper(),
+                    Text = article.Text,
+                    ChangedAt = DateTime.UtcNow,            
+                });
             
-            return Ok();
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return Ok(new ErrorModel
+                {
+                    ErrorStatusCode = ErrorStatusCode.InternalServerError
+                });
+            }            
         }
     }
 }

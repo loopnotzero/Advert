@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Egghead.Common;
@@ -25,7 +26,7 @@ namespace Egghead.Controllers
         {
             _logger = loggerFactory.CreateLogger<AccountController>();
             _userManager = userManager;
-            _signInManager = signInManager;                                 
+            _signInManager = signInManager;  
         }
 
         [HttpGet]
@@ -50,95 +51,117 @@ namespace Egghead.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> SignOut(string returnUrl = null)
         {
-            await _signInManager.SignOutAsync();
-            
-            return Ok(new ErrorModel
+            try
             {
-                RedirectUrl = returnUrl,
-                ErrorStatusCode = ErrorStatusCode.TemporaryRedirect,               
-            });
+                await _signInManager.SignOutAsync();
+            
+                return Ok(new ErrorModel
+                {
+                    RedirectUrl = returnUrl,
+                    ErrorStatusCode = ErrorStatusCode.TemporaryRedirect,               
+                });
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return Ok(new ErrorModel
+                {
+                    ErrorStatusCode = ErrorStatusCode.InternalServerError
+                });
+            }          
         }
-        
+
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> LogIn([FromBody] LoginViewModel model, string returnUrl = null)
         {
-            ViewData["returnUrl"] = returnUrl;
-
-            _logger.LogInformation($"Model: {model}");
-
-            if (!ModelState.IsValid)
+            try
             {
-                _logger.LogWarning("Model state is not valid: " + ModelState);
-                //todo: Highlight all input forms
+                ViewData["returnUrl"] = returnUrl;
+
+                _logger.LogInformation($"Model: {model}");
+
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogWarning("Model state is not valid: " + ModelState);
+                    //todo: Highlight all input forms
+                    return Ok(new ErrorModel
+                    {
+                        TagName = "email",
+                        ErrorMessage = "Enter your email",
+                        ErrorStatusCode = ErrorStatusCode.UnprocessableEntity
+                    });
+                }
+
+                if (!AccountValidation.IsEmailSyntacticallyValid(model.Email))
+                {
+                    return Ok(new ErrorModel
+                    {
+                        TagName = "email",
+                        ErrorMessage = "Enter your email",
+                        ErrorStatusCode = ErrorStatusCode.UnprocessableEntity
+                    });
+                }
+
+                if (!AccountValidation.IsPasswordSyntacticallyValid(model.Password))
+                {
+                    return Ok(new ErrorModel
+                    {
+                        TagName = "password",
+                        ErrorMessage = "Enter your password",
+                        ErrorStatusCode = ErrorStatusCode.UnprocessableEntity
+                    });
+                }
+
+                var identityUser = await _userManager.FindByEmailAsync(model.Email);
+
+                if (identityUser == null)
+                {
+                    return Ok(new ErrorModel
+                    {
+                        TagName = "email",
+                        ErrorMessage = "Couldn't find your Egghead account",
+                        ErrorStatusCode = ErrorStatusCode.Unauthorized
+                    });
+                }
+
+                if (!await _userManager.CheckPasswordAsync(identityUser, model.Password))
+                {
+                    return Ok(new ErrorModel
+                    {
+                        TagName = "password",
+                        ErrorMessage = "Wrong password. Try again or click forgot password to reset it",
+                        ErrorStatusCode = ErrorStatusCode.Unauthorized
+                    });
+                }
+
+                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, isPersistent: true, lockoutOnFailure: true);
+
+                if (!result.Succeeded)
+                {
+                    return StatusCode((int) HttpStatusCode.OK, new ErrorModel
+                    {
+                        //todo: TagName
+                        ErrorMessage = "An error occured",
+                        ErrorStatusCode = ErrorStatusCode.InternalServerError
+                    });
+                }
+
                 return Ok(new ErrorModel
                 {
-                    TagName = "email",
-                    ErrorMessage = "Enter your email",
-                    ErrorStatusCode = ErrorStatusCode.UnprocessableEntity
+                    RedirectUrl = returnUrl,
+                    ErrorStatusCode = ErrorStatusCode.TemporaryRedirect
                 });
             }
-
-            if (!AccountValidation.IsEmailSyntacticallyValid(model.Email))
+            catch (Exception e)
             {
+                _logger.LogError(e.Message, e);
                 return Ok(new ErrorModel
                 {
-                    TagName = "email",
-                    ErrorMessage = "Enter your email",
-                    ErrorStatusCode = ErrorStatusCode.UnprocessableEntity
-                });
-            }
-
-            if (!AccountValidation.IsPasswordSyntacticallyValid(model.Password))
-            {
-                return Ok(new ErrorModel
-                {
-                    TagName = "password",
-                    ErrorMessage = "Enter your password",
-                    ErrorStatusCode = ErrorStatusCode.UnprocessableEntity
-                });
-            }
-
-            var identityUser = await _userManager.FindByEmailAsync(model.Email);
-
-            if (identityUser == null)
-            {
-                return Ok(new ErrorModel
-                {
-                    TagName = "email",
-                    ErrorMessage = "Couldn't find your Egghead account",
-                    ErrorStatusCode = ErrorStatusCode.Unauthorized
-                });
-            }
-
-            if (!await _userManager.CheckPasswordAsync(identityUser, model.Password))
-            {
-                return Ok(new ErrorModel
-                {
-                    TagName = "password",
-                    ErrorMessage = "Wrong password. Try again or click forgot password to reset it",
-                    ErrorStatusCode = ErrorStatusCode.Unauthorized
-                });
-            }
-
-            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, isPersistent: true, lockoutOnFailure: true);
-
-            if (!result.Succeeded)
-            {
-                return StatusCode((int) HttpStatusCode.OK, new ErrorModel
-                {
-                    //todo: TagName
-                    ErrorMessage = "An error occured",
                     ErrorStatusCode = ErrorStatusCode.InternalServerError
                 });
             }
-
-            return Ok(new ErrorModel
-            {
-                RedirectUrl = returnUrl,
-                ErrorStatusCode = ErrorStatusCode.TemporaryRedirect
-            });
         }
 
         [HttpPost]
@@ -146,7 +169,9 @@ namespace Egghead.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SignUp([FromBody] SignUpViewModel model, string returnUrl = null)
         {
-            ViewData["returnUrl"] = returnUrl;
+            try
+            {
+              ViewData["returnUrl"] = returnUrl;
 
             if (!ModelState.IsValid)
             {
@@ -247,7 +272,16 @@ namespace Egghead.Controllers
             {
                 RedirectUrl = returnUrl,
                 ErrorStatusCode = ErrorStatusCode.TemporaryRedirect
-            });
+            });  
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return Ok(new ErrorModel
+                {
+                    ErrorStatusCode = ErrorStatusCode.InternalServerError
+                });
+            }                    
         }
     }
 }
