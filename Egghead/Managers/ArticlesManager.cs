@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Egghead.Models.Articles;
-using Egghead.MongoDbStorage.Entities;
+using Egghead.Common;
 using Egghead.MongoDbStorage.IStores;
-using Microsoft.AspNetCore.Identity;
 
 namespace Egghead.Managers
 {
@@ -26,28 +24,28 @@ namespace Egghead.Managers
             Store = store ?? throw new ArgumentNullException(nameof(store));
         }
 
-        public async Task SetNormalizedTitleAsync(T article, string normalizedTitle)
+        public async Task SetNormalizedTitleAsync(T entity, string normalizedTitle)
         {
             ThrowIfDisposed();
 
-            if (article == null)
+            if (entity == null)
             {
-                throw new ArgumentNullException(nameof(article));
+                throw new ArgumentNullException(nameof(entity));
             }
 
-            await Store.SetNormalizedTitleAsync(article, normalizedTitle, CancellationToken);
+            await Store.SetNormalizedTitleAsync(entity, normalizedTitle, CancellationToken);
         }
 
-        public async Task<T> FindArticleByIdAsync(string objectId)
+        public async Task<T> FindArticleByIdAsync(string id)
         {
             ThrowIfDisposed();
 
-            if (objectId == null)
+            if (id == null)
             {
-                throw new ArgumentNullException(nameof(objectId));
+                throw new ArgumentNullException(nameof(id));
             }
 
-            return await Store.FindArticleByIdAsync(objectId, CancellationToken);
+            return await Store.FindArticleByIdAsync(id, CancellationToken);
         }
 
         public async Task<T> FindArticleByTitleAsync(string title)
@@ -70,31 +68,31 @@ namespace Egghead.Managers
             return await Store.GetArticles(CancellationToken);
         }
 
-        public async Task<IdentityResult> CreateArticleAsync(T article)
+        public async Task<OperationResult> CreateArticleAsync(T entity)
         {
             ThrowIfDisposed();
 
-            if (article == null)
+            if (entity == null)
             {
-                throw new ArgumentNullException(nameof(article));
+                throw new ArgumentNullException(nameof(entity));
             }
 
-            return await Store.CreateArticleAsync(article, CancellationToken);
+            return await Store.CreateArticleAsync(entity, CancellationToken);
         }
 
-        public async Task<IdentityResult> UpdateArticleByIdAsync(string objectId, T article)
+        public async Task<OperationResult> UpdateArticleByIdAsync(string id, T entity)
         {
             ThrowIfDisposed();
 
-            if (objectId == null)
+            if (id == null)
             {
-                throw new ArgumentNullException(nameof(objectId));
+                throw new ArgumentNullException(nameof(id));
             }
 
-            return await Store.UpdateArticleByIdAsync(objectId, article, CancellationToken);
+            return await Store.UpdateArticleByIdAsync(id, entity, CancellationToken);
         }
 
-        public async Task<IdentityResult> UpdateArticleByTitleAsync(string title, T article)
+        public async Task<OperationResult> UpdateArticleByTitleAsync(string title, T entity)
         {
             ThrowIfDisposed();
 
@@ -103,22 +101,22 @@ namespace Egghead.Managers
                 throw new ArgumentNullException(nameof(title));
             }
 
-            return await Store.UpdateArticleByTitleAsync(title.ToUpper(), article, CancellationToken);
+            return await Store.UpdateArticleByTitleAsync(title.ToUpper(), entity, CancellationToken);
         }
 
-        public async Task<IdentityResult> DeleteArticleByIdAsync(string objectId)
+        public async Task<OperationResult> DeleteArticleByIdAsync(string id)
         {
             ThrowIfDisposed();
 
-            if (string.IsNullOrEmpty(objectId))
+            if (string.IsNullOrEmpty(id))
             {
-                throw new ArgumentNullException(nameof(objectId));
+                throw new ArgumentNullException(nameof(id));
             }
 
-            return await Store.DeleteArticleByIdAsync(objectId, CancellationToken);
+            return await Store.DeleteArticleByIdAsync(id, CancellationToken);
         }
 
-        public async Task<IdentityResult> DeleteArticleByTitleAsync(string title)
+        public async Task<OperationResult> DeleteArticleByTitleAsync(string title)
         {
             ThrowIfDisposed();
 

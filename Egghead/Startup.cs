@@ -28,7 +28,7 @@ namespace Egghead
         {
             if (!env.IsDevelopment())
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/Errors/ErrorPartial");
             }
             else
             {
@@ -51,7 +51,7 @@ namespace Egghead
 
             services.AddScoped<ArticlesManager<MongoDbArticle>, ArticlesManager<MongoDbArticle>>();
             services.AddScoped<ArticlesLikesManager<MongoDbArticleLike>, ArticlesLikesManager<MongoDbArticleLike>>();
-            services.AddScoped<ArticlesViewsManager<MongoDbArticleViews>, ArticlesViewsManager<MongoDbArticleViews>>();
+            services.AddScoped<ArticlesViewCountManager<MongoDbArticleViewCount>, ArticlesViewCountManager<MongoDbArticleViewCount>>();
 
             services.AddIdentity<MongoDbUser, MongoDbRole>(options =>
             {
@@ -87,10 +87,10 @@ namespace Egghead
                 var options = provider.GetService<IOptions<MongoDbOptions>>();
                 return new MongoDbArticlesLikesStore<MongoDbArticleLike>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
             });           
-            services.AddTransient<IArticlesViewsStore<MongoDbArticleViews>>(provider =>
+            services.AddTransient<IArticlesViewCountStore<MongoDbArticleViewCount>>(provider =>
             {
                 var options = provider.GetService<IOptions<MongoDbOptions>>();
-                return new MongoDbArticlesViewsStore<MongoDbArticleViews>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+                return new MongoDbArticlesViewCountStore<MongoDbArticleViewCount>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
             });
                                                        
             services.AddMvc();

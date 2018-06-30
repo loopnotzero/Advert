@@ -28,11 +28,24 @@ namespace Egghead.Controllers
 
         [HttpGet]
         [Authorize]
+        public IActionResult Like()
+        {
+            throw new NotImplementedException();
+        }
+
+        [HttpGet]
+        public IActionResult Unlike()
+        {
+            throw new NotImplementedException();
+        }
+        
+        [HttpGet]
+        [Authorize]
         public IActionResult Index()
         {
             return View();
         }
-
+       
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> GetArticles()

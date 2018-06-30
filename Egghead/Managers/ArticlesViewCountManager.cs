@@ -6,7 +6,7 @@ using MongoDB.Driver;
 
 namespace Egghead.Managers
 {
-    public class ArticlesViewsManager<T> : IDisposable where T : class
+    public class ArticlesViewCountManager<T> : IDisposable where T : class
     {
         private bool _disposed;
         
@@ -14,35 +14,35 @@ namespace Egghead.Managers
         /// Gets or sets the persistence store the manager operates over.
         /// </summary>
         /// <value>The persistence store the manager operates over.</value>
-        protected internal IArticlesViewsStore<T> Store { get; set; }
+        protected internal IArticlesViewCountStore<T> Store { get; set; }
 
-        public ArticlesViewsManager(IArticlesViewsStore<T> store)
+        public ArticlesViewCountManager(IArticlesViewCountStore<T> store)
         {
             Store = store ?? throw new ArgumentNullException(nameof(store));
         }
         
-        public async Task<T> FindArticlesViewsByArticleIdAsync(string articleId, CancellationToken cancellationToken)
+        public async Task<T> FindArticlesViewCountByArticleIdAsync(string id, CancellationToken cancellationToken)
         {
             ThrowIfDisposed();
 
-            if (articleId == null)
+            if (id == null)
             {
-                throw new ArgumentNullException(nameof(articleId));
+                throw new ArgumentNullException(nameof(id));
             }
 
-            return await Store.FindArticlesViewsByArticleIdAsync(articleId, cancellationToken);
+            return await Store.FindArticlesViewCountByArticleIdAsync(id, cancellationToken);
         }
 
-        public async Task<long> CountArticlesViewsByArticleIdAsync(string articleId, CancellationToken cancellationToken)
+        public async Task<long> CountArticlesViewCountByArticleIdAsync(string id, CancellationToken cancellationToken)
         {
             ThrowIfDisposed();
 
-            if (articleId == null)
+            if (id == null)
             {
-                throw new ArgumentNullException(nameof(articleId));
+                throw new ArgumentNullException(nameof(id));
             }
 
-            return await Store.CountArticlesViewsByArticleIdAsync(articleId, cancellationToken);
+            return await Store.CountArticlesViewCountByArticleIdAsync(id, cancellationToken);
         }
         
         public void Dispose()

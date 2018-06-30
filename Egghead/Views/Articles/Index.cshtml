@@ -25,7 +25,20 @@
 <script>
     $(document).ready(function() {
         function like() {
-            
+            $.ajax({
+                url: "/Articles/GetArticles",
+                type: "GET",
+                contentType: "application/json",
+                error: function(jqXhr, textStatus, errorThrown) {
+                    console.log("jqXhr: " + jqXhr);
+                    console.log("textStatus: " + jqXhr);
+                    console.log("errorThrown: " + jqXhr);
+                },
+                success: function(response) {
+                    console.log("Articles: " + response);         
+                    $(".container-fluid").prepend(response);
+                }
+            });
         }
         
         function unlike() {
@@ -107,11 +120,15 @@
         }
 
         $("#like").click(function(e) {
-            
+            e.preventDefault();
+            like();
+            return false;
         });
               
         $("#unlike").click(function(e) {
-            
+            e.preventDefault();
+            unlike();
+            return false;
         });
         
         $("#sign-out").click(function(e) {
