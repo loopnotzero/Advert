@@ -9,11 +9,13 @@ namespace Egghead.MongoDbStorage.IStores
     public interface IArticleStore<T> : IDisposable where T : class
     {              
         Task SetNormalizedTitleAsync(T article, string normalizedTitle, CancellationToken cancellationToken);
-        Task<T> FindArticleByIdAsync(string articleId, CancellationToken cancellationToken);
-        Task<T> FindArticleByTitleAsync(string normalizedTitle, CancellationToken cancellationToken);
+        Task<T> FindArticleByIdAsync(string objectId, CancellationToken cancellationToken);
+        Task<T> FindArticleByTitleAsync(string title, CancellationToken cancellationToken);
         Task<List<T>> GetArticles(CancellationToken cancellationToken);
         Task<IdentityResult> CreateArticleAsync(T article, CancellationToken cancellationToken);
-        Task<IdentityResult> DeleteArticleAsync(T article, CancellationToken cancellationToken);
-        Task<IdentityResult> UpdateArticleAsync(T article, CancellationToken cancellationToken);
+        Task<IdentityResult> UpdateArticleByIdAsync(string objectId, T article, CancellationToken cancellationToken);
+        Task<IdentityResult> UpdateArticleByTitleAsync(string title, T article, CancellationToken cancellationToken);
+        Task<IdentityResult> DeleteArticleByIdAsync(string objectId, CancellationToken cancellationToken);      
+        Task<IdentityResult> DeleteArticleByTitleAsync(string title, CancellationToken cancellationToken);       
     }
 }
