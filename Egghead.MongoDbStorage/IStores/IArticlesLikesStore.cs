@@ -14,6 +14,5 @@ namespace Egghead.MongoDbStorage.IStores
         Task<long> CountArticlesLikesByArticleIdAsync(string id, CancellationToken cancellationToken);
         Task<long> CountArticlesUnlikesByArticleIdAsync(string id, CancellationToken cancellationToken);
         Task<OperationResult> AddLikeAsync(T entity , CancellationToken cancellationToken);
-        Task<OperationResult> AddUnlikeAsync(T entity, CancellationToken cancellationToken);
     }
 }

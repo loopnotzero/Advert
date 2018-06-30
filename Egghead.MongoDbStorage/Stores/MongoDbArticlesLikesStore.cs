@@ -48,11 +48,6 @@ namespace Egghead.MongoDbStorage.Stores
             return OperationResult.Success;
         }
 
-        public async Task<OperationResult> AddUnlikeAsync(T entity, CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<T> FindArticlesLikesByArticleIdAsync(string id, CancellationToken cancellationToken)
         {
             if (id == null)
