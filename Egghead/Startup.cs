@@ -49,26 +49,10 @@ namespace Egghead
         {
             services.Configure<MongoDbOptions>(Configuration.GetSection("MongoDbOptions"));
 
-            services.AddTransient<IUserStore<MongoDbUser>>(provider =>
-            {
-                var options = provider.GetService<IOptions<MongoDbOptions>>();
-                return new MongoDbUserStore<MongoDbUser>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
-            });
+            services.AddScoped<ArticlesManager<MongoDbArticle>, ArticlesManager<MongoDbArticle>>();
+            services.AddScoped<ArticlesLikesManager<MongoDbArticleLike>, ArticlesLikesManager<MongoDbArticleLike>>();
+            services.AddScoped<ArticlesViewsManager<MongoDbArticleViews>, ArticlesViewsManager<MongoDbArticleViews>>();
 
-            services.AddTransient<IRoleStore<MongoDbRole>>(provider =>
-            {
-                var options = provider.GetService<IOptions<MongoDbOptions>>();
-                return new MongoDbRoleStore<MongoDbRole>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
-            });
-
-            services.AddTransient<IArticlesStore<MongoDbArticle>>(provider =>
-            {
-                var options = provider.GetService<IOptions<MongoDbOptions>>();
-                return new MongoDbArticlesStore<MongoDbArticle>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
-            });
-
-            services.AddTransient<IUserValidator<MongoDbUser>, CustomUserValidator<MongoDbUser>>();
-                        
             services.AddIdentity<MongoDbUser, MongoDbRole>(options =>
             {
                 options.User.RequireUniqueEmail = true;
@@ -80,9 +64,35 @@ namespace Egghead
                 options.Password.RequiredUniqueChars = 1;
                 options.Password.RequireNonAlphanumeric = false;
             }).AddDefaultTokenProviders().AddUserValidator<CustomUserValidator<MongoDbUser>>();
-            
-            services.AddScoped<ArticlesManager<MongoDbArticle>, ArticlesManager<MongoDbArticle>>();
 
+            services.AddTransient<IUserStore<MongoDbUser>>(provider =>
+            {
+                var options = provider.GetService<IOptions<MongoDbOptions>>();
+                return new MongoDbUserStore<MongoDbUser>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+            });
+            services.AddTransient<IRoleStore<MongoDbRole>>(provider =>
+            {
+                var options = provider.GetService<IOptions<MongoDbOptions>>();
+                return new MongoDbRoleStore<MongoDbRole>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+            });
+            services.AddTransient<IUserValidator<MongoDbUser>, CustomUserValidator<MongoDbUser>>();
+           
+            services.AddTransient<IArticlesStore<MongoDbArticle>>(provider =>
+            {
+                var options = provider.GetService<IOptions<MongoDbOptions>>();
+                return new MongoDbArticlesStore<MongoDbArticle>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+            });
+            services.AddTransient<IArticlesLikesStore<MongoDbArticleLike>>(provider =>
+            {
+                var options = provider.GetService<IOptions<MongoDbOptions>>();
+                return new MongoDbArticlesLikesStore<MongoDbArticleLike>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+            });           
+            services.AddTransient<IArticlesViewsStore<MongoDbArticleViews>>(provider =>
+            {
+                var options = provider.GetService<IOptions<MongoDbOptions>>();
+                return new MongoDbArticlesViewsStore<MongoDbArticleViews>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+            });
+                                                       
             services.AddMvc();
         }
     }
