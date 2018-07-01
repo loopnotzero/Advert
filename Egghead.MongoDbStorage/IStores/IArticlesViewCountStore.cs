@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Egghead.Common;
 
 namespace Egghead.MongoDbStorage.IStores
 {
@@ -9,5 +10,6 @@ namespace Egghead.MongoDbStorage.IStores
     {
         Task<T> FindArticlesViewCountByArticleIdAsync(string id, CancellationToken cancellationToken);
         Task<long> CountArticlesViewCountByArticleIdAsync(string id, CancellationToken cancellationToken);
+        Task<OperationResult> AddArticleViewAsync(T entity , CancellationToken cancellationToken);
     }
 }

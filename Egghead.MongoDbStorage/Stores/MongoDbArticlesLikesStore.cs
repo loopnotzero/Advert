@@ -31,7 +31,7 @@ namespace Egghead.MongoDbStorage.Stores
             //todo: Create indices
         }
 
-        public async Task<OperationResult> AddLikeAsync(T entity, CancellationToken cancellationToken)
+        public async Task<OperationResult> AddArticleLikeAsync(T entity, CancellationToken cancellationToken)
         {
             if (entity == null)
             {
