@@ -10,9 +10,9 @@ namespace Egghead.MongoDbStorage.IStores
     public interface IArticlesLikesStore<T> : IDisposable where T : class
     {        
         Task<T> FindArticlesLikesByArticleIdAsync(string id, CancellationToken cancellationToken);
-        Task<T> FindArticlesUnlikesByArticleIdAsync(string id, CancellationToken cancellationToken);
+        Task<T> FindArticlesDislikesByArticleIdAsync(string id, CancellationToken cancellationToken);
         Task<long> CountArticlesLikesByArticleIdAsync(string id, CancellationToken cancellationToken);
-        Task<long> CountArticlesUnlikesByArticleIdAsync(string id, CancellationToken cancellationToken);
+        Task<long> CountArticlesDislikesByArticleIdAsync(string id, CancellationToken cancellationToken);
         Task<OperationResult> AddLikeAsync(T entity , CancellationToken cancellationToken);
     }
 }

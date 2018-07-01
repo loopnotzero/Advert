@@ -64,7 +64,7 @@ namespace Egghead.MongoDbStorage.Stores
             return await cursor.FirstOrDefaultAsync(cancellationToken);
         }
 
-        public async Task<T> FindArticlesUnlikesByArticleIdAsync(string id, CancellationToken cancellationToken)
+        public async Task<T> FindArticlesDislikesByArticleIdAsync(string id, CancellationToken cancellationToken)
         {
             if (id == null)
             {
@@ -73,7 +73,7 @@ namespace Egghead.MongoDbStorage.Stores
                     
             cancellationToken.ThrowIfCancellationRequested();
 
-            var filter = Builders<T>.Filter.And(Builders<T>.Filter.Eq(x => x.ArticleId, id), Builders<T>.Filter.Eq(x => x.LikeType, LikeType.UnLike));
+            var filter = Builders<T>.Filter.And(Builders<T>.Filter.Eq(x => x.ArticleId, id), Builders<T>.Filter.Eq(x => x.LikeType, LikeType.Dislike));
             
             var cursor = await _collection.FindAsync(filter, cancellationToken: cancellationToken);
 
@@ -94,7 +94,7 @@ namespace Egghead.MongoDbStorage.Stores
             return await _collection.CountAsync(filter, cancellationToken: cancellationToken);
         }
 
-        public async Task<long> CountArticlesUnlikesByArticleIdAsync(string id, CancellationToken cancellationToken)
+        public async Task<long> CountArticlesDislikesByArticleIdAsync(string id, CancellationToken cancellationToken)
         {
             if (id == null)
             {
@@ -103,7 +103,7 @@ namespace Egghead.MongoDbStorage.Stores
                     
             cancellationToken.ThrowIfCancellationRequested();
 
-            var filter = Builders<T>.Filter.And(Builders<T>.Filter.Eq(x => x.ArticleId, id), Builders<T>.Filter.Eq(x => x.LikeType, LikeType.UnLike));
+            var filter = Builders<T>.Filter.And(Builders<T>.Filter.Eq(x => x.ArticleId, id), Builders<T>.Filter.Eq(x => x.LikeType, LikeType.Dislike));
             
             return await _collection.CountAsync(filter, cancellationToken: cancellationToken);
         }
