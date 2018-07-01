@@ -51,8 +51,9 @@ namespace Egghead
 
             services.AddScoped<ArticlesManager<MongoDbArticle>, ArticlesManager<MongoDbArticle>>();
             services.AddScoped<ArticlesLikesManager<MongoDbArticleLike>, ArticlesLikesManager<MongoDbArticleLike>>();
+            services.AddScoped<ArticlesCommentsManager<MongoDbArticleComment>, ArticlesCommentsManager<MongoDbArticleComment>>();
             services.AddScoped<ArticlesViewCountManager<MongoDbArticleViewCount>, ArticlesViewCountManager<MongoDbArticleViewCount>>();
-
+            
             services.AddIdentity<MongoDbUser, MongoDbRole>(options =>
             {
                 options.User.RequireUniqueEmail = true;
@@ -87,12 +88,17 @@ namespace Egghead
                 var options = provider.GetService<IOptions<MongoDbOptions>>();
                 return new MongoDbArticlesLikesStore<MongoDbArticleLike>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
             });           
+            services.AddTransient<IArticlesCommentsStore<MongoDbArticleComment>>(provider =>
+            {
+                var options = provider.GetService<IOptions<MongoDbOptions>>();
+                return new MongoDbArticlesCommentsStore<MongoDbArticleComment>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+            });
             services.AddTransient<IArticlesViewCountStore<MongoDbArticleViewCount>>(provider =>
             {
                 var options = provider.GetService<IOptions<MongoDbOptions>>();
                 return new MongoDbArticlesViewCountStore<MongoDbArticleViewCount>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
             });
-                                                       
+
             services.AddMvc();
         }
     }
