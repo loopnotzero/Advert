@@ -26,9 +26,9 @@ namespace Egghead.Controllers
         {
             _logger = loggerFactory.CreateLogger<AccountController>();
             _userManager = userManager;
-            _signInManager = signInManager;  
+            _signInManager = signInManager;
         }
-
+       
         [HttpGet]
         [AllowAnonymous]
         public IActionResult LogIn(string returnUrl = null)

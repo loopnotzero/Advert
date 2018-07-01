@@ -35,7 +35,7 @@ namespace Egghead.Managers
             return await Store.FindArticlesLikesByArticleIdAsync(id, CancellationToken);
         }
 
-        public async Task<T> FindArticlesUnlikesByArticleIdAsync(string id)
+        public async Task<T> FindArticlesDislikesByArticleIdAsync(string id)
         {
             ThrowIfDisposed();
 
@@ -44,7 +44,7 @@ namespace Egghead.Managers
                 throw new ArgumentNullException(nameof(id));
             }
 
-            return await Store.FindArticlesUnlikesByArticleIdAsync(id, CancellationToken);
+            return await Store.FindArticlesDislikesByArticleIdAsync(id, CancellationToken);
         }
 
         public async Task<long> CountArticlesLikesByArticleIdAsync(string id)
@@ -59,7 +59,7 @@ namespace Egghead.Managers
             return await Store.CountArticlesLikesByArticleIdAsync(id, CancellationToken);
         }
 
-        public async Task<long> CountArticlesUnlikesByArticleIdAsync(string id)
+        public async Task<long> CountArticlesDislikesByArticleIdAsync(string id)
         {
             ThrowIfDisposed();
 
@@ -68,7 +68,7 @@ namespace Egghead.Managers
                 throw new ArgumentNullException(nameof(id));
             }
 
-            return await Store.CountArticlesUnlikesByArticleIdAsync(id, CancellationToken);
+            return await Store.CountArticlesDislikesByArticleIdAsync(id, CancellationToken);
         }
 
         public async Task<OperationResult> AddLikeAsync(T entity)

@@ -3,16 +3,16 @@
 <header id="topnav">
     <div id="navigation">
         <ul class="navigation-menu">
-            <li class="has-submenu">
-                <a id="create-article" href="#"><i class="mdi mdi-book-open-page-variant"></i>Create article</a>
-            </li>
-            <li class="has-submenu">
-                <a id="get-articles" href="#"><i class="mdi mdi-download"></i>Get articles</a>
-            </li>
-            <li class="has-submenu">
-                <a id="delete-articles" href="#"><i class="mdi mdi-comment-remove-outline"></i>Delete articles</a>
-            </li>
-            <li class="has-submenu">
+            @* <li class="has-submenu"> *@
+            @*     <a id="create-article" href="#"><i class="mdi mdi-book-open-page-variant"></i>Create article</a> *@
+            @* </li> *@
+            @* <li class="has-submenu"> *@
+            @*     <a id="get-articles" href="#"><i class="mdi mdi-download"></i>Get articles</a> *@
+            @* </li> *@
+            @* <li class="has-submenu"> *@
+            @*     <a id="delete-articles" href="#"><i class="mdi mdi-comment-remove-outline"></i>Delete articles</a> *@
+            @* </li> *@
+            <li class="has-submenu float-right">
                 <a id="sign-out" href="#"><i class="mdi mdi-logout"></i>Sign Out</a>
             </li>
         </ul>
@@ -23,28 +23,7 @@
 </div>
 
 <script>
-    $(document).ready(function() {
-        function like() {
-            $.ajax({
-                url: "/Articles/Like?byWhom=ID&articleId=",
-                type: "GET",
-                contentType: "application/json",
-                error: function(jqXhr, textStatus, errorThrown) {
-                    console.log("jqXhr: " + jqXhr);
-                    console.log("textStatus: " + jqXhr);
-                    console.log("errorThrown: " + jqXhr);
-                },
-                success: function(response) {
-                    console.log("Articles: " + response);         
-                    $(".container-fluid").prepend(response);
-                }
-            });
-        }
-        
-        function unlike() {
-            
-        }
-        
+    $(document).ready(function() {              
         function signOut(returnUrl) {
             $.ajax({
                 url: "/Account/SignOut?returnUrl=" + returnUrl,
@@ -56,7 +35,6 @@
                     console.log("errorThrown: " + jqXhr);
                 },
                 success: function(response) {
-                    console.log(response);
                     window.location.href = response.redirectUrl;
                 }
             });
@@ -73,7 +51,6 @@
                     console.log("errorThrown: " + jqXhr);
                 },
                 success: function(response) {
-                    console.log("Articles: " + response);         
                     $(".container-fluid").prepend(response);
                 }
             });
@@ -91,7 +68,6 @@
                     console.log("errorThrown: " + jqXhr);
                 },
                 success: function(response) {
-                    console.log("Article: " + response);
                     $(".container-fluid").prepend(response);
                 }
             });
@@ -109,7 +85,6 @@
                     console.log("errorThrown: " + jqXhr);
                 },
                 success: function(response) {
-                    console.log(response);
                     $(".container-fluid").empty();
                 }
             });
@@ -119,18 +94,6 @@
             
         }
 
-        $("#like").click(function(e) {
-            e.preventDefault();
-            like();
-            return false;
-        });
-              
-        $("#unlike").click(function(e) {
-            e.preventDefault();
-            unlike();
-            return false;
-        });
-        
         $("#sign-out").click(function(e) {
             e.preventDefault();
             signOut(window.location.pathname);
@@ -158,7 +121,7 @@
             deleteArticles();
             return false;
         });
-
+       
         getArticles();
     });
 </script>

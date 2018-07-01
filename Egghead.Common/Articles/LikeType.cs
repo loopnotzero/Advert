@@ -3,6 +3,6 @@
     public enum LikeType
     {
         Like,
-        UnLike
+        Dislike
     }
 }

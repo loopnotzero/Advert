@@ -25,7 +25,7 @@ namespace Egghead.Controllers
         {
             _logger = loggerFactory.CreateLogger<AccountController>();
             _articlesManager = articlesManager;
-            _articlesLikesManager = articlesLikesManager;
+            _articlesLikesManager = articlesLikesManager;           
         }
 
         [HttpGet]
@@ -37,19 +37,21 @@ namespace Egghead.Controllers
        
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> Like(string byWhom, string articleId)
+        public async Task<IActionResult> Like(string articleId)
         {
             try
-            {
+            {                            
                 await _articlesLikesManager.AddLikeAsync(new MongoDbArticleLike
                 {
-                    ByWhom = byWhom,
+                    ByWhom = HttpContext.User.Identity.Name,
                     ArticleId = articleId,
+                    LikeType = LikeType.Like,
                     CreatedAt = DateTime.UtcNow,
-                    LikeType = LikeType.Like
                 });
 
-                return Ok();
+                var result = await _articlesLikesManager.CountArticlesLikesByArticleIdAsync(articleId);
+
+                return Ok(result);
             }
             catch (Exception e)
             {
@@ -62,19 +64,21 @@ namespace Egghead.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Unlike(string byWhom, string articleId)
+        public async Task<IActionResult> Dislike(string articleId)
         {
             try
             {
                 await _articlesLikesManager.AddLikeAsync(new MongoDbArticleLike
                 {
-                    ByWhom = byWhom,
+                    ByWhom = HttpContext.User.Identity.Name,
                     ArticleId = articleId,
+                    LikeType = LikeType.Dislike,
                     CreatedAt = DateTime.UtcNow,
-                    LikeType = LikeType.UnLike
                 });
+                
+                var result = await _articlesLikesManager.CountArticlesDislikesByArticleIdAsync(articleId);
 
-                return Ok();
+                return Ok(result);
             }
             catch (Exception e)
             {
@@ -92,7 +96,26 @@ namespace Egghead.Controllers
         {
             try
             {
-                var articles = await _articlesManager.GetArticles();
+                var articles = new List<Article>();
+
+                foreach (var article in await _articlesManager.GetArticles())
+                {
+                    var likes = await _articlesLikesManager.CountArticlesLikesByArticleIdAsync(article.Id);
+                    var dislikes = await _articlesLikesManager.CountArticlesDislikesByArticleIdAsync(article.Id);
+                                       
+                    articles.Add(new Article
+                    {
+                        Id = article.Id,
+                        Title = article.Title,
+                        Text = article.Text,
+                        CreatedAt = article.CreatedAt,
+                        Likes = likes,
+                        Dislikes = dislikes,
+                        ViewCount = 0,
+                        CommentsCount = 0
+                    });
+                }
+
                 return PartialView("ArticlesPreviewPartial", articles);
             }
             catch (Exception e)
@@ -111,7 +134,7 @@ namespace Egghead.Controllers
         {
             try
             {
-                var mongoDbArticle = new MongoDbArticle
+                var newEntity = new MongoDbArticle
                 {
                     Title = article.Title,
                     NormalizedTitle = article.Title.ToUpper(),
@@ -119,30 +142,36 @@ namespace Egghead.Controllers
                     CreatedAt = DateTime.UtcNow,
                     ReleaseType = ReleaseType.PreModeration
                 };
-                
-                await _articlesManager.CreateArticleAsync(mongoDbArticle);
 
-                var result = await _articlesManager.FindArticleByIdAsync(mongoDbArticle.Id);
+                await _articlesManager.CreateArticleAsync(newEntity);
 
-                return PartialView("ArticlesPreviewPartial", new List<MongoDbArticle>
+                var entity = await _articlesManager.FindArticleByIdAsync(newEntity.Id);
+
+                return PartialView("ArticlesPreviewPartial", new List<Article>
                 {
-                    result
+                    new Article
+                    {
+                        Id = entity.Id,
+                        Title = entity.Title,
+                        Text = entity.Text,
+                        CreatedAt = entity.CreatedAt,
+                    }
                 });
             }
             catch (Exception e)
             {
                 _logger.LogError(e.Message, e);
-                
+
                 return Ok(new ErrorModel
                 {
                     TagName = "",
                     RedirectUrl = "/Redirect_To_Error_Page",
                     ErrorMessage = e.Message,
-                    ErrorStatusCode = ErrorStatusCode.InternalServerError,                 
+                    ErrorStatusCode = ErrorStatusCode.InternalServerError,
                 });
-            }          
+            }
         }
-        
+
         [HttpDelete]
         [Authorize]
         public async Task<IActionResult> DeleteArticleById(string objectId)

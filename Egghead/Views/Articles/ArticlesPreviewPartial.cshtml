@@ -1,11 +1,11 @@
-﻿@model List<Egghead.MongoDbStorage.Entities.MongoDbArticle>
+﻿@model IEnumerable<Egghead.Models.Articles.Article>
 
 @if (Model.Any())
 {
      foreach (var article in Model)
      {
          <article>
-             <div class="card m-b-20 text-xs-center">
+             <div class="card m-b-20">
                  <span class="card-arrow"></span>
                  <small>@article.CreatedAt</small>
                  <div class="card-body">
@@ -13,15 +13,59 @@
                      <a href="/Articles/Article?Id=@article.Id"><h4 class="card-title">@article.Title</h4></a>
                      <p class="card-text card-pl">@article.Text</p>
                  </div>
-                 <div class="card-footer text-muted">
+                 <div class="card-footer text-muted">                     
                      <div class="col-sm-4 col-md-4 col-lg-4">
-                         <i class="fa fa-thumbs-o-up m-r-10"> 14 тыс.</i> 
-                         <i class="fa fa-thumbs-o-down m-r-10"> 14 тыс.</i>                       
-                         <i class="fa fa-eye m-r-10"> 289 966 просмотров</i>
-                         <i class="fa fa-commenting-o"> <span class="text-success">332</span></i>
-                     </div>                    
+                         <button class="btn waves-effect waves-light btn-success" onclick="like(this, '@article.Id')">
+                             <i class="fa fa-thumbs-o-up"> @article.Likes</i>
+                         </button>
+                         <button class="btn waves-effect waves-light btn-danger" onclick="dislike(this, '@article.Id')">
+                             <i class="fa fa-thumbs-o-down"> @article.Dislikes</i>
+                         </button>
+                         <i class="fa fa-eye m-l-10"> @article.ViewCount просмотр(ов)</i>
+                         <i class="fa fa-commenting-o m-l-10">
+                             <span class="text-success"> @article.CommentsCount</span>
+                         </i>
+                     </div>
                  </div>                
              </div> 
          </article>       
      }
 }
+
+<script>
+    function like(object, param) {
+        $.ajax({           
+            url: "/Articles/Like?articleId=" + param,
+            type: "GET",
+            contentType: "application/json",
+            error: function(jqXhr, textStatus, errorThrown) {
+                console.log("jqXhr: " + jqXhr);
+                console.log("textStatus: " + jqXhr);
+                console.log("errorThrown: " + jqXhr);
+            },
+            success: function(response) {
+                console.log(response);
+                var queryResult = object.querySelector(".fa");
+                queryResult.innerHTML = " " + response;
+            }
+        });
+    }
+         
+    function dislike(object, param) {    
+
+        $.ajax({
+            url: "/Articles/Dislike?articleId=" + param,
+            type: "GET",
+            contentType: "application/json",
+            error: function(jqXhr, textStatus, errorThrown) {
+                console.log("jqXhr: " + jqXhr);
+                console.log("textStatus: " + jqXhr);
+                console.log("errorThrown: " + jqXhr);
+            },
+            success: function(response) {
+                var queryResult = object.querySelector(".fa");
+                queryResult.innerHTML = " " + response;
+            }
+        });
+    }
+</script>
