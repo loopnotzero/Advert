@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Egghead.Common;
 using Egghead.Common.Articles;
 using Egghead.MongoDbStorage.Common;
 using Egghead.MongoDbStorage.Entities;
@@ -58,6 +59,23 @@ namespace Egghead.MongoDbStorage.Stores
             var filter = Builders<T>.Filter.Eq(x => x.ArticleId, id);
             
             return await _collection.CountAsync(filter, cancellationToken: cancellationToken);          
+        }
+
+        public async Task<OperationResult> AddArticleViewAsync(T entity, CancellationToken cancellationToken)
+        {
+            if (entity == null)
+            {
+                throw new ArgumentNullException(nameof(entity));
+            }
+           
+            cancellationToken.ThrowIfCancellationRequested();
+
+            await _collection.InsertOneAsync(entity, new InsertOneOptions
+            {
+                BypassDocumentValidation = false
+            }, cancellationToken);
+            
+            return OperationResult.Success;
         }
     }
 }
