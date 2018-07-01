@@ -10,13 +10,13 @@ namespace Egghead.Managers
     {
         private bool _disposed;
 
+        protected virtual CancellationToken CancellationToken => CancellationToken.None;
+
         /// <summary>
         /// Gets or sets the persistence store the manager operates over.
         /// </summary>
         /// <value>The persistence store the manager operates over.</value>
         protected internal IArticlesLikesStore<T> Store { get; set; }
-
-        protected virtual CancellationToken CancellationToken => CancellationToken.None;
 
         public ArticlesLikesManager(IArticlesLikesStore<T> store)
         {
@@ -71,7 +71,7 @@ namespace Egghead.Managers
             return await Store.CountArticlesDislikesByArticleIdAsync(id, CancellationToken);
         }
 
-        public async Task<OperationResult> AddLikeAsync(T entity)
+        public async Task<OperationResult> AddArticleLikeAsync(T entity)
         {
             ThrowIfDisposed();
 
@@ -80,7 +80,7 @@ namespace Egghead.Managers
                 throw new ArgumentNullException(nameof(entity));
             }
 
-            return await Store.AddLikeAsync(entity, CancellationToken);
+            return await Store.AddArticleLikeAsync(entity, CancellationToken);
         }
 
         public void Dispose()

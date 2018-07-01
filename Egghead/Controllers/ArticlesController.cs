@@ -18,14 +18,16 @@ namespace Egghead.Controllers
     {
         private readonly ILogger _logger;
 
-        private readonly ArticlesManager<MongoDbArticle> _articlesManager;
+        private readonly ArticlesManager<MongoDbArticle> _articlesManager;       
         private readonly ArticlesLikesManager<MongoDbArticleLike> _articlesLikesManager;
+        private readonly ArticlesViewCountManager<MongoDbArticleViewCount> _articlesViewCountManager;
 
-        public ArticlesController(ArticlesManager<MongoDbArticle> articlesManager, ArticlesLikesManager<MongoDbArticleLike> articlesLikesManager, ILoggerFactory loggerFactory)
+        public ArticlesController(ArticlesManager<MongoDbArticle> articlesManager, ArticlesLikesManager<MongoDbArticleLike> articlesLikesManager, ArticlesViewCountManager<MongoDbArticleViewCount> articlesViewCountManager, ILoggerFactory loggerFactory)
         {
             _logger = loggerFactory.CreateLogger<AccountController>();
             _articlesManager = articlesManager;
-            _articlesLikesManager = articlesLikesManager;           
+            _articlesLikesManager = articlesLikesManager;
+            _articlesViewCountManager = articlesViewCountManager;
         }
 
         [HttpGet]
@@ -41,7 +43,7 @@ namespace Egghead.Controllers
         {
             try
             {                            
-                await _articlesLikesManager.AddLikeAsync(new MongoDbArticleLike
+                await _articlesLikesManager.AddArticleLikeAsync(new MongoDbArticleLike
                 {
                     ByWhom = HttpContext.User.Identity.Name,
                     ArticleId = articleId,
@@ -68,7 +70,7 @@ namespace Egghead.Controllers
         {
             try
             {
-                await _articlesLikesManager.AddLikeAsync(new MongoDbArticleLike
+                await _articlesLikesManager.AddArticleLikeAsync(new MongoDbArticleLike
                 {
                     ByWhom = HttpContext.User.Identity.Name,
                     ArticleId = articleId,
@@ -102,6 +104,7 @@ namespace Egghead.Controllers
                 {
                     var likes = await _articlesLikesManager.CountArticlesLikesByArticleIdAsync(article.Id);
                     var dislikes = await _articlesLikesManager.CountArticlesDislikesByArticleIdAsync(article.Id);
+                    var viewCount = await _articlesViewCountManager.CountArticlesViewCountByArticleIdAsync(article.Id);
                                        
                     articles.Add(new Article
                     {
@@ -111,7 +114,7 @@ namespace Egghead.Controllers
                         CreatedAt = article.CreatedAt,
                         Likes = likes,
                         Dislikes = dislikes,
-                        ViewCount = 0,
+                        ViewCount = viewCount,
                         CommentsCount = 0
                     });
                 }
