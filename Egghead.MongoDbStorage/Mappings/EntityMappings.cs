@@ -49,6 +49,15 @@ namespace Egghead.MongoDbStorage.Mappings
             });
         }
 
+        public static void EnsureMongoDbArticleCommentConfigured()
+        {
+            LazyInitializer.EnsureInitialized(ref _initializationTarget, ref _initialized, ref _initializationLock, () =>
+            {
+                ConfigureMongoDbArticleComment();
+                return null;
+            });
+        }
+
         private static void ConfigureMongoDbUser()
         {
             BsonClassMap.RegisterClassMap<MongoDbUser>(bsonClassMap =>
@@ -86,6 +95,16 @@ namespace Egghead.MongoDbStorage.Mappings
                 bsonClassMap.AutoMap();
                 bsonClassMap.MapIdMember(c => c.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
                 bsonClassMap.MapCreator(user => new MongoDbArticleViewCount());
+            });
+        }
+
+        private static void ConfigureMongoDbArticleComment()
+        {
+            BsonClassMap.RegisterClassMap<MongoDbArticleComment>(bsonClassMap =>
+            {
+                bsonClassMap.AutoMap();
+                bsonClassMap.MapIdMember(c => c.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
+                bsonClassMap.MapCreator(user => new MongoDbArticleComment());
             });
         }
     }
