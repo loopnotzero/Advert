@@ -1,0 +1,29 @@
+﻿@model Egghead.Models.Articles.Article
+
+<article id="@Model.Id" on>
+    Test article
+</article>
+
+<script>
+    $(document).ready(function() {
+        function addArticleView() {
+            var articleId = $("article").attr("id");
+
+            $.ajax({
+                url: "/Articles/AddArticleView?articleId=" + articleId,
+                type: "GET",
+                contentType: "application/json",
+                error: function(jqXhr, textStatus, errorThrown) {
+                    console.log("jqXhr: " + jqXhr);
+                    console.log("textStatus: " + jqXhr);
+                    console.log("errorThrown: " + jqXhr);
+                },
+                success: function(response) {
+                    console.log(response);
+                }
+            });
+        }
+
+        addArticleView();
+    });
+</script>

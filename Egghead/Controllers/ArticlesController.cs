@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Egghead.Common;
 using Egghead.Common.Articles;
@@ -9,6 +8,7 @@ using Egghead.Models.Articles;
 using Egghead.Models.Errors;
 using Egghead.MongoDbStorage.Entities;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -18,15 +18,19 @@ namespace Egghead.Controllers
     {
         private readonly ILogger _logger;
 
+        private readonly UserManager<MongoDbUser> _userManager;
         private readonly ArticlesManager<MongoDbArticle> _articlesManager;       
         private readonly ArticlesLikesManager<MongoDbArticleLike> _articlesLikesManager;
+        private readonly ArticlesCommentsManager<MongoDbArticleComment> _articlesCommentsManager;
         private readonly ArticlesViewCountManager<MongoDbArticleViewCount> _articlesViewCountManager;
 
-        public ArticlesController(ArticlesManager<MongoDbArticle> articlesManager, ArticlesLikesManager<MongoDbArticleLike> articlesLikesManager, ArticlesViewCountManager<MongoDbArticleViewCount> articlesViewCountManager, ILoggerFactory loggerFactory)
+        public ArticlesController(UserManager<MongoDbUser> userManager, ArticlesManager<MongoDbArticle> articlesManager, ArticlesCommentsManager<MongoDbArticleComment> articlesCommentsManager, ArticlesLikesManager<MongoDbArticleLike> articlesLikesManager, ArticlesViewCountManager<MongoDbArticleViewCount> articlesViewCountManager, ILoggerFactory loggerFactory)
         {
             _logger = loggerFactory.CreateLogger<AccountController>();
+            _userManager = userManager;
             _articlesManager = articlesManager;
             _articlesLikesManager = articlesLikesManager;
+            _articlesCommentsManager = articlesCommentsManager;
             _articlesViewCountManager = articlesViewCountManager;
         }
 
@@ -36,86 +40,47 @@ namespace Egghead.Controllers
         {
             return View();
         }
-       
+
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> Like(string articleId)
+        public async Task<IActionResult> Article(string id)
         {
-            try
-            {                            
-                await _articlesLikesManager.AddArticleLikeAsync(new MongoDbArticleLike
-                {
-                    ByWhom = HttpContext.User.Identity.Name,
-                    ArticleId = articleId,
-                    LikeType = LikeType.Like,
-                    CreatedAt = DateTime.UtcNow,
-                });
+            var article = await _articlesManager.FindArticleByIdAsync(id);
 
-                var result = await _articlesLikesManager.CountArticlesLikesByArticleIdAsync(articleId);
-
-                return Ok(result);
-            }
-            catch (Exception e)
+            return View(new Article
             {
-                _logger.LogError(e.Message, e);
-                return Ok(new ErrorModel
-                {
-                    ErrorStatusCode = ErrorStatusCode.InternalServerError
-                });
-            }           
+                Id = article.Id
+            });
         }
-
-        [HttpGet]
-        public async Task<IActionResult> Dislike(string articleId)
-        {
-            try
-            {
-                await _articlesLikesManager.AddArticleLikeAsync(new MongoDbArticleLike
-                {
-                    ByWhom = HttpContext.User.Identity.Name,
-                    ArticleId = articleId,
-                    LikeType = LikeType.Dislike,
-                    CreatedAt = DateTime.UtcNow,
-                });
-                
-                var result = await _articlesLikesManager.CountArticlesDislikesByArticleIdAsync(articleId);
-
-                return Ok(result);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e.Message, e);
-                return Ok(new ErrorModel
-                {
-                    ErrorStatusCode = ErrorStatusCode.InternalServerError
-                });
-            }          
-        }
-        
+            
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> GetArticles()
         {
             try
             {
-                var articles = new List<Article>();
-
+                var user = await _userManager.FindByEmailAsync(HttpContext.User.Identity.Name);
+                
+                var articles = new List<ArticlePreview>();
+                
                 foreach (var article in await _articlesManager.GetArticles())
                 {
                     var likes = await _articlesLikesManager.CountArticlesLikesByArticleIdAsync(article.Id);
                     var dislikes = await _articlesLikesManager.CountArticlesDislikesByArticleIdAsync(article.Id);
                     var viewCount = await _articlesViewCountManager.CountArticlesViewCountByArticleIdAsync(article.Id);
-                                       
-                    articles.Add(new Article
+                    var commentsCount = await _articlesCommentsManager.CountArticlesCommentsByArticleId(article.Id);
+               
+                    articles.Add(new ArticlePreview
                     {
                         Id = article.Id,
                         Title = article.Title,
                         Text = article.Text,
+                        Author = $"{user.FirstName} {user.LastName}",
                         CreatedAt = article.CreatedAt,
                         Likes = likes,
                         Dislikes = dislikes,
                         ViewCount = viewCount,
-                        CommentsCount = 0
+                        CommentsCount = commentsCount,
                     });
                 }
 
@@ -133,31 +98,31 @@ namespace Egghead.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> CreateArticle([FromBody] Article article)
+        public async Task<IActionResult> CreateArticle([FromBody] ArticlePreview articlePreview)
         {
             try
             {
-                var newEntity = new MongoDbArticle
+                var article = new MongoDbArticle
                 {
-                    Title = article.Title,
-                    NormalizedTitle = article.Title.ToUpper(),
-                    Text = article.Text,
+                    Title = articlePreview.Title,
+                    NormalizedTitle = articlePreview.Title.ToUpper(),
+                    Text = articlePreview.Text,
                     CreatedAt = DateTime.UtcNow,
                     ReleaseType = ReleaseType.PreModeration
                 };
 
-                await _articlesManager.CreateArticleAsync(newEntity);
+                await _articlesManager.CreateArticleAsync(article);
 
-                var entity = await _articlesManager.FindArticleByIdAsync(newEntity.Id);
+                var result = await _articlesManager.FindArticleByIdAsync(article.Id);
 
-                return PartialView("ArticlesPreviewPartial", new List<Article>
+                return PartialView("ArticlesPreviewPartial", new List<ArticlePreview>
                 {
-                    new Article
+                    new ArticlePreview
                     {
-                        Id = entity.Id,
-                        Title = entity.Title,
-                        Text = entity.Text,
-                        CreatedAt = entity.CreatedAt,
+                        Id = result.Id,
+                        Title = result.Title,
+                        Text = result.Text,
+                        CreatedAt = result.CreatedAt,
                     }
                 });
             }
@@ -209,15 +174,15 @@ namespace Egghead.Controllers
         
         [HttpPut]
         [Authorize]
-        public async Task<IActionResult> UdpateArticleById(string objectId, [FromBody] Article article)
+        public async Task<IActionResult> UdpateArticleById(string objectId, [FromBody] ArticlePreview articlePreview)
         {
             try
             {
                 await _articlesManager.UpdateArticleByIdAsync(objectId, new MongoDbArticle
                 {
-                    Title = article.Title,
-                    NormalizedTitle = article.Title.ToUpper(),
-                    Text =  article.Text,
+                    Title = articlePreview.Title,
+                    NormalizedTitle = articlePreview.Title.ToUpper(),
+                    Text =  articlePreview.Text,
                     ChangedAt = DateTime.UtcNow
                 });
             
@@ -235,15 +200,15 @@ namespace Egghead.Controllers
         
         [HttpPut]
         [Authorize]
-        public async Task<IActionResult> UdpateArticleByTitle(string title, [FromBody] Article article)
+        public async Task<IActionResult> UdpateArticleByTitle(string title, [FromBody] ArticlePreview articlePreview)
         {
             try
             {
                 await _articlesManager.UpdateArticleByTitleAsync(title, new MongoDbArticle
                 {
-                    Title = article.Title,
-                    NormalizedTitle = article.Title.ToUpper(),
-                    Text = article.Text,
+                    Title = articlePreview.Title,
+                    NormalizedTitle = articlePreview.Title.ToUpper(),
+                    Text = articlePreview.Text,
                     ChangedAt = DateTime.UtcNow,            
                 });
             
@@ -258,5 +223,88 @@ namespace Egghead.Controllers
                 });
             }            
         }
+       
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> AddArticleView(string articleId)
+        {
+            try
+            {                            
+                await _articlesViewCountManager.AddArticlesViewAsync(new MongoDbArticleViewCount
+                {
+                    ByWhom = HttpContext.User.Identity.Name,
+                    ArticleId = articleId,
+                    AddedAt = DateTime.UtcNow
+                });
+
+                var result = await _articlesViewCountManager.CountArticlesViewCountByArticleIdAsync(articleId);
+
+                return Ok(result);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return Ok(new ErrorModel
+                {
+                    ErrorStatusCode = ErrorStatusCode.InternalServerError
+                });
+            }    
+        }
+        
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> AddArticleLike(string articleId)
+        {
+            try
+            {                            
+                await _articlesLikesManager.AddArticleLikeAsync(new MongoDbArticleLike
+                {
+                    ByWhom = HttpContext.User.Identity.Name,
+                    ArticleId = articleId,
+                    LikeType = LikeType.Like,
+                    CreatedAt = DateTime.UtcNow,
+                });
+
+                var result = await _articlesLikesManager.CountArticlesLikesByArticleIdAsync(articleId);
+
+                return Ok(result);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return Ok(new ErrorModel
+                {
+                    ErrorStatusCode = ErrorStatusCode.InternalServerError
+                });
+            }           
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> AddArticleDislike(string articleId)
+        {
+            try
+            {
+                await _articlesLikesManager.AddArticleLikeAsync(new MongoDbArticleLike
+                {
+                    ByWhom = HttpContext.User.Identity.Name,
+                    ArticleId = articleId,
+                    LikeType = LikeType.Dislike,
+                    CreatedAt = DateTime.UtcNow,
+                });
+                
+                var result = await _articlesLikesManager.CountArticlesDislikesByArticleIdAsync(articleId);
+
+                return Ok(result);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return Ok(new ErrorModel
+                {
+                    ErrorStatusCode = ErrorStatusCode.InternalServerError
+                });
+            }          
+        }      
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 using Egghead.MongoDbStorage.IStores;
 
 namespace Egghead.Managers
@@ -20,10 +21,41 @@ namespace Egghead.Managers
         {
             Store = store ?? throw new ArgumentNullException(nameof(store));
         }
+       
+        public async Task<long> CountArticlesCommentsByArticleId(string id)
+        {
+            ThrowIfDisposed();
+
+            if (id == null)
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            return await Store.CountArticlesCommentsByArticleIdAsync(id, CancellationToken);
+        }
         
         public void Dispose()
         {
-            throw new NotImplementedException();
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (!disposing || _disposed)
+                return;
+
+            Store.Dispose();
+
+            _disposed = true;
+        }
+
+        protected void ThrowIfDisposed()
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(GetType().Name);
+            }
         }
     }
 }

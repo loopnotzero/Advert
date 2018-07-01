@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Egghead.Models.Articles.Article>
+﻿@model IEnumerable<Egghead.Models.Articles.ArticlePreview>
 
 @if (Model.Any())
 {
@@ -7,11 +7,12 @@
          <article>
              <div class="card m-b-20">
                  <span class="card-arrow"></span>
-                 <small>@article.CreatedAt</small>
+                 <small class="text-muted m-l-10 m-t-10">Created by <ins>@article.Author</ins> today at @article.CreatedAt.ToShortTimeString()</small>           
                  <div class="card-body">
                      <span class="card-icon"></span>
-                     <a href="/Articles/Article?Id=@article.Id"><h4 class="card-title">@article.Title</h4></a>
+                     <a href="/Articles/Article?id=@article.Id"><h4 class="card-title">@article.Title</h4></a>
                      <p class="card-text card-pl">@article.Text</p>
+                     <small class="text-muted m-l-10 m-t-10 float-right"><a href="/Articles/Article?id=@article.Id">READ MORE...</a></small>
                  </div>
                  <div class="card-footer text-muted">                     
                      <div class="col-sm-4 col-md-4 col-lg-4">
@@ -23,7 +24,7 @@
                          </button>
                          <i class="fa fa-eye m-l-10"> @article.ViewCount просмотр(ов)</i>
                          <i class="fa fa-commenting-o m-l-10">
-                             <span class="text-success"> @article.CommentsCount</span>
+                             <span> @article.CommentsCount</span>
                          </i>
                      </div>
                  </div>                
@@ -35,7 +36,7 @@
 <script>
     function like(object, param) {
         $.ajax({           
-            url: "/Articles/Like?articleId=" + param,
+            url: "/Articles/AddArticleLike?articleId=" + param,
             type: "GET",
             contentType: "application/json",
             error: function(jqXhr, textStatus, errorThrown) {
@@ -54,7 +55,7 @@
     function dislike(object, param) {    
 
         $.ajax({
-            url: "/Articles/Dislike?articleId=" + param,
+            url: "/Articles/AddArticleDislike?articleId=" + param,
             type: "GET",
             contentType: "application/json",
             error: function(jqXhr, textStatus, errorThrown) {
