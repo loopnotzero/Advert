@@ -98,22 +98,22 @@ namespace Egghead.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> CreateArticle([FromBody] ArticlePreview articlePreview)
+        public async Task<IActionResult> CreateArticle([FromBody] ArticlePreview article)
         {
             try
             {
-                var article = new MongoDbArticle
+                var newArticle = new MongoDbArticle
                 {
-                    Title = articlePreview.Title,
-                    NormalizedTitle = articlePreview.Title.ToUpper(),
-                    Text = articlePreview.Text,
+                    Title = article.Title,
+                    NormalizedTitle = article.Title.ToUpper(),
+                    Text = article.Text,
                     CreatedAt = DateTime.UtcNow,
                     ReleaseType = ReleaseType.PreModeration
                 };
 
-                await _articlesManager.CreateArticleAsync(article);
+                await _articlesManager.CreateArticleAsync(newArticle);
 
-                var result = await _articlesManager.FindArticleByIdAsync(article.Id);
+                var result = await _articlesManager.FindArticleByIdAsync(newArticle.Id);
 
                 return PartialView("ArticlesPreviewPartial", new List<ArticlePreview>
                 {
@@ -174,15 +174,15 @@ namespace Egghead.Controllers
         
         [HttpPut]
         [Authorize]
-        public async Task<IActionResult> UdpateArticleById(string objectId, [FromBody] ArticlePreview articlePreview)
+        public async Task<IActionResult> UdpateArticleById(string objectId, [FromBody] ArticlePreview article)
         {
             try
             {
                 await _articlesManager.UpdateArticleByIdAsync(objectId, new MongoDbArticle
                 {
-                    Title = articlePreview.Title,
-                    NormalizedTitle = articlePreview.Title.ToUpper(),
-                    Text =  articlePreview.Text,
+                    Title = article.Title,
+                    NormalizedTitle = article.Title.ToUpper(),
+                    Text =  article.Text,
                     ChangedAt = DateTime.UtcNow
                 });
             
@@ -200,15 +200,15 @@ namespace Egghead.Controllers
         
         [HttpPut]
         [Authorize]
-        public async Task<IActionResult> UdpateArticleByTitle(string title, [FromBody] ArticlePreview articlePreview)
+        public async Task<IActionResult> UdpateArticleByTitle(string title, [FromBody] ArticlePreview article)
         {
             try
             {
                 await _articlesManager.UpdateArticleByTitleAsync(title, new MongoDbArticle
                 {
-                    Title = articlePreview.Title,
-                    NormalizedTitle = articlePreview.Title.ToUpper(),
-                    Text = articlePreview.Text,
+                    Title = article.Title,
+                    NormalizedTitle = article.Title.ToUpper(),
+                    Text = article.Text,
                     ChangedAt = DateTime.UtcNow,            
                 });
             
@@ -229,7 +229,7 @@ namespace Egghead.Controllers
         public async Task<IActionResult> AddArticleView(string articleId)
         {
             try
-            {                            
+            {
                 await _articlesViewCountManager.AddArticlesViewAsync(new MongoDbArticleViewCount
                 {
                     ByWhom = HttpContext.User.Identity.Name,
@@ -248,7 +248,7 @@ namespace Egghead.Controllers
                 {
                     ErrorStatusCode = ErrorStatusCode.InternalServerError
                 });
-            }    
+            }
         }
         
         [HttpGet]
@@ -256,14 +256,19 @@ namespace Egghead.Controllers
         public async Task<IActionResult> AddArticleLike(string articleId)
         {
             try
-            {                            
-                await _articlesLikesManager.AddArticleLikeAsync(new MongoDbArticleLike
+            {         
+                var article = await _articlesLikesManager.FindArticlesLikesByArticleIdAsync(articleId);
+
+                if (article == null)
                 {
-                    ByWhom = HttpContext.User.Identity.Name,
-                    ArticleId = articleId,
-                    LikeType = LikeType.Like,
-                    CreatedAt = DateTime.UtcNow,
-                });
+                    await _articlesLikesManager.AddArticleLikeAsync(new MongoDbArticleLike
+                    {
+                        ByWhom = HttpContext.User.Identity.Name,
+                        ArticleId = articleId,
+                        LikeType = LikeType.Like,
+                        CreatedAt = DateTime.UtcNow,
+                    });
+                }
 
                 var result = await _articlesLikesManager.CountArticlesLikesByArticleIdAsync(articleId);
 
@@ -285,14 +290,19 @@ namespace Egghead.Controllers
         {
             try
             {
-                await _articlesLikesManager.AddArticleLikeAsync(new MongoDbArticleLike
+                var article = await _articlesLikesManager.FindArticlesDislikesByArticleIdAsync(articleId);
+
+                if (article == null)
                 {
-                    ByWhom = HttpContext.User.Identity.Name,
-                    ArticleId = articleId,
-                    LikeType = LikeType.Dislike,
-                    CreatedAt = DateTime.UtcNow,
-                });
-                
+                    await _articlesLikesManager.AddArticleLikeAsync(new MongoDbArticleLike
+                    {
+                        ByWhom = HttpContext.User.Identity.Name,
+                        ArticleId = articleId,
+                        LikeType = LikeType.Dislike,
+                        CreatedAt = DateTime.UtcNow,
+                    });
+                }
+
                 var result = await _articlesLikesManager.CountArticlesDislikesByArticleIdAsync(articleId);
 
                 return Ok(result);

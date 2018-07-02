@@ -16,10 +16,10 @@
                  </div>
                  <div class="card-footer text-muted">                     
                      <div class="col-sm-4 col-md-4 col-lg-4">
-                         <button class="btn waves-effect waves-light btn-success" onclick="like(this, '@article.Id')">
+                         <button class="btn waves-effect waves-light btn-success" onclick="addLike(this, '@article.Id')">
                              <i class="fa fa-thumbs-o-up"> @article.Likes</i>
                          </button>
-                         <button class="btn waves-effect waves-light btn-danger" onclick="dislike(this, '@article.Id')">
+                         <button class="btn waves-effect waves-light btn-danger" onclick="addDislike(this, '@article.Id')">
                              <i class="fa fa-thumbs-o-down"> @article.Dislikes</i>
                          </button>
                          <i class="fa fa-eye m-l-10"> @article.ViewCount просмотр(ов)</i>
@@ -34,7 +34,7 @@
 }
 
 <script>
-    function like(object, param) {
+    function addLike(object, param) {
         $.ajax({           
             url: "/Articles/AddArticleLike?articleId=" + param,
             type: "GET",
@@ -52,7 +52,7 @@
         });
     }
          
-    function dislike(object, param) {    
+    function addDislike(object, param) {    
 
         $.ajax({
             url: "/Articles/AddArticleDislike?articleId=" + param,
