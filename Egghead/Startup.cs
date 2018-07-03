@@ -49,24 +49,7 @@ namespace Egghead
         {
             services.Configure<MongoDbOptions>(Configuration.GetSection("MongoDbOptions"));
 
-            services.AddScoped<ArticlesManager<MongoDbArticle>, ArticlesManager<MongoDbArticle>>();
-            services.AddScoped<ArticlesLikesManager<MongoDbArticleLike>, ArticlesLikesManager<MongoDbArticleLike>>();
-            services.AddScoped<ArticlesCommentsManager<MongoDbArticleComment>, ArticlesCommentsManager<MongoDbArticleComment>>();
-            services.AddScoped<ArticlesViewCountManager<MongoDbArticleViewCount>, ArticlesViewCountManager<MongoDbArticleViewCount>>();
-            
-            services.AddIdentity<MongoDbUser, MongoDbRole>(options =>
-            {
-                options.User.RequireUniqueEmail = true;
-                options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-                options.Password.RequireDigit = true;
-                options.Password.RequiredLength = 8;
-                options.Password.RequireLowercase = false;
-                options.Password.RequireUppercase = false;
-                options.Password.RequiredUniqueChars = 1;
-                options.Password.RequireNonAlphanumeric = false;
-            }).AddDefaultTokenProviders().AddUserValidator<CustomUserValidator<MongoDbUser>>();
-
-            services.AddTransient<IUserStore<MongoDbUser>>(provider =>
+             services.AddTransient<IUserStore<MongoDbUser>>(provider =>
             {
                 var options = provider.GetService<IOptions<MongoDbOptions>>();
                 return new MongoDbUserStore<MongoDbUser>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
@@ -99,6 +82,23 @@ namespace Egghead
                 return new MongoDbArticlesViewCountStore<MongoDbArticleViewCount>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
             });
 
+            services.AddIdentity<MongoDbUser, MongoDbRole>(options =>
+            {
+                options.User.RequireUniqueEmail = true;
+                options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+                options.Password.RequireDigit = true;
+                options.Password.RequiredLength = 8;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequiredUniqueChars = 1;
+                options.Password.RequireNonAlphanumeric = false;
+            }).AddDefaultTokenProviders().AddUserValidator<CustomUserValidator<MongoDbUser>>();
+
+            services.AddScoped<ArticlesManager<MongoDbArticle>, ArticlesManager<MongoDbArticle>>();
+            services.AddScoped<ArticlesLikesManager<MongoDbArticleLike>, ArticlesLikesManager<MongoDbArticleLike>>();
+            services.AddScoped<ArticlesCommentsManager<MongoDbArticleComment>, ArticlesCommentsManager<MongoDbArticleComment>>();
+            services.AddScoped<ArticlesViewCountManager<MongoDbArticleViewCount>, ArticlesViewCountManager<MongoDbArticleViewCount>>();
+                   
             services.AddMvc();
         }
     }
