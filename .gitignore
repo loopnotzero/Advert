@@ -29,3 +29,9 @@ Egghead\.Common/obj/
 Egghead/wwwroot/css/style\.css
 
 Egghead/wwwroot/css/style\.css\.map
+
+Egghead\.Common/bin/Debug/netcoreapp2\.1/
+
+Egghead\.MongoDbStorage/bin/Debug/netcoreapp2\.1/
+
+Egghead/bin/Debug/netcoreapp2\.1/
