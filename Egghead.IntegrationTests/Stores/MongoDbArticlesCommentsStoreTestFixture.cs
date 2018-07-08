@@ -46,8 +46,8 @@ namespace Egghead.IntegrationTests.Stores
             var newArticleComment = new MongoDbArticleComment
             {
                 Text = "New comment",
-                ByWho = "victor.chicu@hotmail.com",
-                ByWhoNormalized = "victor.chicu@hotmail.com".ToUpper(),
+                ByWho = "fake@email.com",
+                ByWhoNormalized = "vfake@email.com".ToUpper(),
                 ReplyTo = null,
                 Depth = 0,
                 CreatedAt = DateTime.UtcNow
@@ -66,8 +66,8 @@ namespace Egghead.IntegrationTests.Stores
             var newArticleComment = new MongoDbArticleComment
             {
                 Text = "New comment",
-                ByWho = "victor.chicu@hotmail.com",
-                ByWhoNormalized = "victor.chicu@hotmail.com".ToUpper(),
+                ByWho = "fake@email.com",
+                ByWhoNormalized = "fake@email.com".ToUpper(),
                 ReplyTo = null,
                 Depth = 0,
                 CreatedAt = DateTime.UtcNow
@@ -94,8 +94,8 @@ namespace Egghead.IntegrationTests.Stores
             var newArticleComment = new MongoDbArticleComment
             {
                 Text = "New comment",
-                ByWho = "victor.chicu@hotmail.com",
-                ByWhoNormalized = "victor.chicu@hotmail.com".ToUpper(),
+                ByWho = "fake@email.com",
+                ByWhoNormalized = "fake@email.com".ToUpper(),
                 ReplyTo = null,
                 Depth = 0,
                 CreatedAt = DateTime.UtcNow
@@ -117,8 +117,8 @@ namespace Egghead.IntegrationTests.Stores
             var newArticleComment = new MongoDbArticleComment
             {
                 Text = "New comment",
-                ByWho = "victor.chicu@hotmail.com",
-                ByWhoNormalized = "victor.chicu@hotmail.com".ToUpper(),
+                ByWho = "fake@email.com",
+                ByWhoNormalized = "fake@email.com".ToUpper(),
                 ReplyTo = null,
                 Depth = 0,
                 CreatedAt = DateTime.UtcNow
@@ -130,8 +130,8 @@ namespace Egghead.IntegrationTests.Stores
             var newArticleCommentReply = new MongoDbArticleComment
             {
                 Text = "Comment reply",
-                ByWho = "victor.chicu@hotmail.com",
-                ByWhoNormalized = "victor.chicu@hotmail.com".ToUpper(),
+                ByWho = "fake@email.com",
+                ByWhoNormalized = "fake@email.com".ToUpper(),
                 ReplyTo = newArticleComment.Id,
                 Depth = 1,
                 CreatedAt = DateTime.UtcNow
