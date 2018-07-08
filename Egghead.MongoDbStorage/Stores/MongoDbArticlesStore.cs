@@ -15,18 +15,18 @@ namespace Egghead.MongoDbStorage.Stores
     public class MongoDbArticlesStore<T> : IArticlesStore<T> where T : MongoDbArticle
     {
         private readonly IMongoCollection<T> _collection;
-
-        public MongoDbArticlesStore()
-        {
-            EntityMappings.EnsureMongoDbArticleConfigured();
-        }
         
         public MongoDbArticlesStore(IMongoDatabase mongoDatabase) : this()
         {          
             _collection = mongoDatabase.GetCollection<T>(MongoDbCollections.Articles);          
             //todo: Create indices
         }
-               
+         
+        private MongoDbArticlesStore()
+        {
+            EntityMappings.EnsureMongoDbArticleConfigured();
+        }
+
         public void Dispose()
         {
         }

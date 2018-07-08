@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson;
+﻿using System;
+using MongoDB.Bson;
 
 namespace Egghead.MongoDbStorage.Entities
 {
@@ -12,10 +13,12 @@ namespace Egghead.MongoDbStorage.Entities
 
         public string Id { get; set; }
         public string Text { get; set; }
-        public string ByWhom { get; set; }
-        public string ArticleId { get; set; }
-        public string CreatedAt { get; set; }
-        public string ChangedAt { get; set; }
-        public string DeletedAt { get; set; }
+        public string ByWho { get; set; }
+        public string ByWhoNormalized { get; set; }
+        public string ReplyTo { get; set; }
+        public int Depth { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime ChangedAt { get; set; }
+        public DateTime DeletedAt { get; set; }
     }
 }

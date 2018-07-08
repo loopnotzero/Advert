@@ -1,6 +1,4 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
-
-namespace Egghead.MongoDbStorage.Common
+﻿namespace Egghead.MongoDbStorage.Common
 {
     public static class MongoDbCollections
     {

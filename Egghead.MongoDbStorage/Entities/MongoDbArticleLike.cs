@@ -12,8 +12,9 @@ namespace Egghead.MongoDbStorage.Entities
             //Create indeces
         }
 
-        public string Id { get; set; }       
-        public string ByWhom { get; set; }
+        public string Id { get; set; }    
+        public string ByWho { get; set; }
+        public string ByWhoNormalized { get; set; }
         public string ArticleId { get; set; }     
         public LikeType LikeType { get; set; }
         public DateTime CreatedAt { get; set; }

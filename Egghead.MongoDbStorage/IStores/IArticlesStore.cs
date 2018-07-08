@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Egghead.Common;
-using Microsoft.AspNetCore.Identity;
 
 namespace Egghead.MongoDbStorage.IStores
 {

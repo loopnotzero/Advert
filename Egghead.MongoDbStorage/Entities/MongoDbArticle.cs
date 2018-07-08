@@ -1,5 +1,4 @@
 ﻿using System;
-using Egghead.Common;
 using Egghead.Common.Articles;
 using MongoDB.Bson;
 

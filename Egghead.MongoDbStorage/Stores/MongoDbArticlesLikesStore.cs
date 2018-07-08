@@ -20,15 +20,15 @@ namespace Egghead.MongoDbStorage.Stores
             
         }
 
-        public MongoDbArticlesLikesStore()
-        {
-            EntityMappings.EnsureMongoDbArticleLikeConfigured();
-        }
-
         public MongoDbArticlesLikesStore(IMongoDatabase mongoDatabase) : this()
         {
             _collection = mongoDatabase.GetCollection<T>(MongoDbCollections.ArticlesLikes);          
             //todo: Create indices
+        }
+
+        private MongoDbArticlesLikesStore()
+        {
+            EntityMappings.EnsureMongoDbArticleLikeConfigured();
         }
 
         public async Task<OperationResult> AddArticleLikeAsync(T entity, CancellationToken cancellationToken)

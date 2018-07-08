@@ -1,5 +1,6 @@
 ﻿using System;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization.IdGenerators;
 
 namespace Egghead.MongoDbStorage.Entities
 {
@@ -12,7 +13,8 @@ namespace Egghead.MongoDbStorage.Entities
         }
 
         public string Id { get; set; }
-        public string ByWhom { get; set; }
+        public string ByWho { get; set; }
+        public string ByWhoNormalized { get; set; }
         public string ArticleId { get; set; }
         public DateTime AddedAt { get; set; }
     }

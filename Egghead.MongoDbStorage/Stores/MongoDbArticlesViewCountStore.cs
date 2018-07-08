@@ -20,15 +20,15 @@ namespace Egghead.MongoDbStorage.Stores
             
         }
 
-        public MongoDbArticlesViewCountStore()
-        {
-            EntityMappings.EnsureMongoDbArticleViewsConfigured();
-        }
-
         public MongoDbArticlesViewCountStore(IMongoDatabase mongoDatabase) : this()
         {
             _collection = mongoDatabase.GetCollection<T>(MongoDbCollections.ArticlesViews);          
             //todo: Create indices
+        }
+        
+        private MongoDbArticlesViewCountStore()
+        {
+            EntityMappings.EnsureMongoDbArticleViewsConfigured();
         }
         
         public async Task<T> FindArticlesViewCountByArticleIdAsync(string id, CancellationToken cancellationToken)
