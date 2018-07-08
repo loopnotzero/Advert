@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Egghead.Common;
 using Egghead.Common.Stores;
-using Egghead.MongoDbStorage.Common;
 using Egghead.MongoDbStorage.Entities;
 using Egghead.MongoDbStorage.Stores;
 using Microsoft.Extensions.Configuration;
