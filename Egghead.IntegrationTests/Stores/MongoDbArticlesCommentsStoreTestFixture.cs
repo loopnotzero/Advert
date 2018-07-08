@@ -33,10 +33,12 @@ namespace Egghead.IntegrationTests.Stores
             _articlesCommentsCollection = _articlesCommentsStore.CreateArticleCommentsCollection(_articleCommentsCollectionName, _cancellationToken);
         }
         
+        
         public void Dispose()
         {
             Assert.Equal(OperationResult.Success, _articlesCommentsStore.DeleteArticleCommentsCollection(_articleCommentsCollectionName, _cancellationToken));
         }
+        
         
         [Fact]
         public async Task CreateArticleComment()
