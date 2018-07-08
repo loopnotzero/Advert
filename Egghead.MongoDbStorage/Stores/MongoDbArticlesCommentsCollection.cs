@@ -32,13 +32,8 @@ namespace Egghead.MongoDbStorage.Stores
             return await cursor.FirstOrDefaultAsync(cancellationToken);
         }
 
-        public async Task<long> CountArticleComments(string commentId, CancellationToken cancellationToken)
+        public async Task<long> EstimatedArticleCommentsCountAsync(CancellationToken cancellationToken)
         {
-            if (commentId == null)
-            {
-                throw new ArgumentNullException(nameof(commentId));
-            }
-
             cancellationToken.ThrowIfCancellationRequested();
 
             return await _collection.EstimatedDocumentCountAsync(cancellationToken: cancellationToken);
