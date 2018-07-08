@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Egghead.MongoDbStorage", "E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Egghead.Common", "Egghead.Common\Egghead.Common.csproj", "{132CA30F-D64A-47B4-80C7-74C6FD338396}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Egghead.IntegrationTests", "Egghead.IntegrationTests\Egghead.IntegrationTests.csproj", "{A09494AD-C9DD-46A6-8809-B15D730E6D52}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{132CA30F-D64A-47B4-80C7-74C6FD338396}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{132CA30F-D64A-47B4-80C7-74C6FD338396}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{132CA30F-D64A-47B4-80C7-74C6FD338396}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A09494AD-C9DD-46A6-8809-B15D730E6D52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A09494AD-C9DD-46A6-8809-B15D730E6D52}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A09494AD-C9DD-46A6-8809-B15D730E6D52}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A09494AD-C9DD-46A6-8809-B15D730E6D52}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

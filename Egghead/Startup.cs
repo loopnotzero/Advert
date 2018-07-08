@@ -43,13 +43,13 @@ namespace Egghead
 
             app.UseMvc(routes => { routes.MapRoute("default", "{controller=Articles}/{action=Index}/{id?}"); });
         }
-        
+
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<MongoDbOptions>(Configuration.GetSection("MongoDbOptions"));
 
-             services.AddTransient<IUserStore<MongoDbUser>>(provider =>
+            services.AddTransient<IUserStore<MongoDbUser>>(provider =>
             {
                 var options = provider.GetService<IOptions<MongoDbOptions>>();
                 return new MongoDbUserStore<MongoDbUser>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
@@ -60,7 +60,7 @@ namespace Egghead
                 return new MongoDbRoleStore<MongoDbRole>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
             });
             services.AddTransient<IUserValidator<MongoDbUser>, CustomUserValidator<MongoDbUser>>();
-           
+
             services.AddTransient<IArticlesStore<MongoDbArticle>>(provider =>
             {
                 var options = provider.GetService<IOptions<MongoDbOptions>>();
@@ -70,7 +70,7 @@ namespace Egghead
             {
                 var options = provider.GetService<IOptions<MongoDbOptions>>();
                 return new MongoDbArticlesLikesStore<MongoDbArticleLike>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
-            });           
+            });
             services.AddTransient<IArticlesCommentsStore<MongoDbArticleComment>>(provider =>
             {
                 var options = provider.GetService<IOptions<MongoDbOptions>>();
@@ -98,7 +98,7 @@ namespace Egghead
             services.AddScoped<ArticlesLikesManager<MongoDbArticleLike>, ArticlesLikesManager<MongoDbArticleLike>>();
             services.AddScoped<ArticlesCommentsManager<MongoDbArticleComment>, ArticlesCommentsManager<MongoDbArticleComment>>();
             services.AddScoped<ArticlesViewCountManager<MongoDbArticleViewCount>, ArticlesViewCountManager<MongoDbArticleViewCount>>();
-                   
+
             services.AddMvc();
         }
     }

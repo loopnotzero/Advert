@@ -19,12 +19,17 @@
 <script src="~/js/jquery.min.js"></script>
 <script src="~/js/bootstrap.js"></script>
 <script src="~/js/waves.js"></script>
-<script src="~/js/nested-comments.js"></script>
 
-<div class="wrapper">
+<div class="wrapper" style="display: none">
     @RenderBody()
 </div>
 </body>
 </html>
+
+<script>
+    $(document).ready(function() {
+        $(".wrapper").fadeIn(100);
+    });
+</script>
 
 

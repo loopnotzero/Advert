@@ -75,7 +75,8 @@ namespace Egghead.Controllers
                         Id = article.Id,
                         Title = article.Title,
                         Text = article.Text,
-                        Author = $"{user.FirstName} {user.LastName}",
+                        FirstName = user.FirstName,
+                        LastName = user.LastName,
                         CreatedAt = article.CreatedAt,
                         Likes = likes,
                         Dislikes = dislikes,
@@ -231,10 +232,11 @@ namespace Egghead.Controllers
             try
             {
                 await _articlesViewCountManager.AddArticlesViewAsync(new MongoDbArticleViewCount
-                {
-                    ByWhom = HttpContext.User.Identity.Name,
+                {                  
                     ArticleId = articleId,
-                    AddedAt = DateTime.UtcNow
+                    AddedAt = DateTime.UtcNow,
+                    ByWho = HttpContext.User.Identity.Name,
+                    ByWhoNormalized = HttpContext.User.Identity.Name.ToUpper(),
                 });
 
                 var result = await _articlesViewCountManager.CountArticlesViewCountByArticleIdAsync(articleId);
@@ -263,10 +265,11 @@ namespace Egghead.Controllers
                 {
                     await _articlesLikesManager.AddArticleLikeAsync(new MongoDbArticleLike
                     {
-                        ByWhom = HttpContext.User.Identity.Name,
                         ArticleId = articleId,
                         LikeType = LikeType.Like,
                         CreatedAt = DateTime.UtcNow,
+                        ByWho = HttpContext.User.Identity.Name,
+                        ByWhoNormalized = HttpContext.User.Identity.Name.ToUpper(),
                     });
                 }
 
@@ -296,10 +299,11 @@ namespace Egghead.Controllers
                 {
                     await _articlesLikesManager.AddArticleLikeAsync(new MongoDbArticleLike
                     {
-                        ByWhom = HttpContext.User.Identity.Name,
                         ArticleId = articleId,
                         LikeType = LikeType.Dislike,
                         CreatedAt = DateTime.UtcNow,
+                        ByWho = HttpContext.User.Identity.Name,
+                        ByWhoNormalized = HttpContext.User.Identity.Name.ToUpper(),
                     });
                 }
 
