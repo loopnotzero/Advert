@@ -3,9 +3,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Egghead.Common;
 using Egghead.Common.Articles;
+using Egghead.Common.Stores;
 using Egghead.MongoDbStorage.Common;
 using Egghead.MongoDbStorage.Entities;
-using Egghead.MongoDbStorage.IStores;
 using Egghead.MongoDbStorage.Mappings;
 using MongoDB.Driver;
 
@@ -48,62 +48,62 @@ namespace Egghead.MongoDbStorage.Stores
             return OperationResult.Success;
         }
 
-        public async Task<T> FindArticlesLikesByArticleIdAsync(string id, CancellationToken cancellationToken)
+        public async Task<T> FindArticlesLikesByArticleIdAsync(string articleId, CancellationToken cancellationToken)
         {
-            if (id == null)
+            if (articleId == null)
             {
-                throw new ArgumentNullException(nameof(id));
+                throw new ArgumentNullException(nameof(articleId));
             }
                     
             cancellationToken.ThrowIfCancellationRequested();
 
-            var filter = Builders<T>.Filter.And(Builders<T>.Filter.Eq(x => x.ArticleId, id), Builders<T>.Filter.Eq(x => x.LikeType, LikeType.Like));
+            var filter = Builders<T>.Filter.And(Builders<T>.Filter.Eq(x => x.ArticleId, articleId), Builders<T>.Filter.Eq(x => x.LikeType, LikeType.Like));
             
             var cursor = await _collection.FindAsync(filter, cancellationToken: cancellationToken);
 
             return await cursor.FirstOrDefaultAsync(cancellationToken);
         }
 
-        public async Task<T> FindArticlesDislikesByArticleIdAsync(string id, CancellationToken cancellationToken)
+        public async Task<T> FindArticlesDislikesByArticleIdAsync(string articleId, CancellationToken cancellationToken)
         {
-            if (id == null)
+            if (articleId == null)
             {
-                throw new ArgumentNullException(nameof(id));
+                throw new ArgumentNullException(nameof(articleId));
             }
                     
             cancellationToken.ThrowIfCancellationRequested();
 
-            var filter = Builders<T>.Filter.And(Builders<T>.Filter.Eq(x => x.ArticleId, id), Builders<T>.Filter.Eq(x => x.LikeType, LikeType.Dislike));
+            var filter = Builders<T>.Filter.And(Builders<T>.Filter.Eq(x => x.ArticleId, articleId), Builders<T>.Filter.Eq(x => x.LikeType, LikeType.Dislike));
             
             var cursor = await _collection.FindAsync(filter, cancellationToken: cancellationToken);
 
             return await cursor.FirstOrDefaultAsync(cancellationToken);
         }
 
-        public async Task<long> CountArticlesLikesByArticleIdAsync(string id, CancellationToken cancellationToken)
+        public async Task<long> CountArticlesLikesByArticleIdAsync(string articleId, CancellationToken cancellationToken)
         {
-            if (id == null)
+            if (articleId == null)
             {
-                throw new ArgumentNullException(nameof(id));
+                throw new ArgumentNullException(nameof(articleId));
             }
                     
             cancellationToken.ThrowIfCancellationRequested();
 
-            var filter = Builders<T>.Filter.And(Builders<T>.Filter.Eq(x => x.ArticleId, id), Builders<T>.Filter.Eq(x => x.LikeType, LikeType.Like));
+            var filter = Builders<T>.Filter.And(Builders<T>.Filter.Eq(x => x.ArticleId, articleId), Builders<T>.Filter.Eq(x => x.LikeType, LikeType.Like));
            
             return await _collection.CountAsync(filter, cancellationToken: cancellationToken);
         }
 
-        public async Task<long> CountArticlesDislikesByArticleIdAsync(string id, CancellationToken cancellationToken)
+        public async Task<long> CountArticlesDislikesByArticleIdAsync(string articleId, CancellationToken cancellationToken)
         {
-            if (id == null)
+            if (articleId == null)
             {
-                throw new ArgumentNullException(nameof(id));
+                throw new ArgumentNullException(nameof(articleId));
             }
                     
             cancellationToken.ThrowIfCancellationRequested();
 
-            var filter = Builders<T>.Filter.And(Builders<T>.Filter.Eq(x => x.ArticleId, id), Builders<T>.Filter.Eq(x => x.LikeType, LikeType.Dislike));
+            var filter = Builders<T>.Filter.And(Builders<T>.Filter.Eq(x => x.ArticleId, articleId), Builders<T>.Filter.Eq(x => x.LikeType, LikeType.Dislike));
             
             return await _collection.CountAsync(filter, cancellationToken: cancellationToken);
         }

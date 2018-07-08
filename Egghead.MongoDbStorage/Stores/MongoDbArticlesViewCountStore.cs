@@ -3,9 +3,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Egghead.Common;
 using Egghead.Common.Articles;
+using Egghead.Common.Stores;
 using Egghead.MongoDbStorage.Common;
 using Egghead.MongoDbStorage.Entities;
-using Egghead.MongoDbStorage.IStores;
 using Egghead.MongoDbStorage.Mappings;
 using MongoDB.Driver;
 
@@ -31,32 +31,32 @@ namespace Egghead.MongoDbStorage.Stores
             EntityMappings.EnsureMongoDbArticleViewsConfigured();
         }
         
-        public async Task<T> FindArticlesViewCountByArticleIdAsync(string id, CancellationToken cancellationToken)
+        public async Task<T> FindArticlesViewCountByArticleIdAsync(string articleId, CancellationToken cancellationToken)
         {
-            if (id == null)
+            if (articleId == null)
             {
-                throw new ArgumentNullException(nameof(id));
+                throw new ArgumentNullException(nameof(articleId));
             }
                     
             cancellationToken.ThrowIfCancellationRequested();
 
-            var filter = Builders<T>.Filter.Eq(x => x.ArticleId, id);
+            var filter = Builders<T>.Filter.Eq(x => x.ArticleId, articleId);
             
             var cursor = await _collection.FindAsync(filter, cancellationToken: cancellationToken);
 
             return await cursor.FirstOrDefaultAsync(cancellationToken);
         }
 
-        public async Task<long> CountArticlesViewCountByArticleIdAsync(string id, CancellationToken cancellationToken)
+        public async Task<long> CountArticlesViewCountByArticleIdAsync(string articleId, CancellationToken cancellationToken)
         {
-            if (id == null)
+            if (articleId == null)
             {
-                throw new ArgumentNullException(nameof(id));
+                throw new ArgumentNullException(nameof(articleId));
             }
                     
             cancellationToken.ThrowIfCancellationRequested();
 
-            var filter = Builders<T>.Filter.Eq(x => x.ArticleId, id);
+            var filter = Builders<T>.Filter.Eq(x => x.ArticleId, articleId);
             
             return await _collection.CountAsync(filter, cancellationToken: cancellationToken);          
         }

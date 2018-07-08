@@ -1,11 +1,8 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Egghead.Common;
-using Egghead.Common.Articles;
-using Egghead.MongoDbStorage.Common;
+using Egghead.Common.Stores;
 using Egghead.MongoDbStorage.Entities;
-using Egghead.MongoDbStorage.IStores;
 using Egghead.MongoDbStorage.Mappings;
 using MongoDB.Driver;
 
@@ -13,64 +10,51 @@ namespace Egghead.MongoDbStorage.Stores
 {
     public class MongoDbArticlesCommentsStore<T> : IArticlesCommentsStore<T> where T : MongoDbArticleComment
     {
-        private readonly IMongoCollection<T> _collection;
-             
+        private readonly IMongoDatabase _mongoDatabase;
+
         public MongoDbArticlesCommentsStore(IMongoDatabase mongoDatabase) : this()
         {
-            _collection = mongoDatabase.GetCollection<T>(MongoDbCollections.ArticlesComments);          
-            //todo: Create indices
+            _mongoDatabase = mongoDatabase;
         }
-        
+
         private MongoDbArticlesCommentsStore()
         {
             EntityMappings.EnsureMongoDbArticleCommentConfigured();
         }
         
-        public void Dispose()
+        public OperationResult DeleteArticleCommentsCollection(string collectionName, CancellationToken cancellationToken)
         {
-        }
-        
-        public async Task<T> FindArticleCommentById(string id, CancellationToken cancellationToken)
-        {
-            if (id == null)
-            {
-                throw new ArgumentNullException(nameof(id));
-            }
-                    
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.Id, id), cancellationToken: cancellationToken);
-
-            return await cursor.FirstOrDefaultAsync(cancellationToken);
-        }
-
-        public async Task<long> CountArticlesCommentsByArticleIdAsync(string id, CancellationToken cancellationToken)
-        {
-            if (id == null)
-            {
-                throw new ArgumentNullException(nameof(id));
-            }
-                    
-            cancellationToken.ThrowIfCancellationRequested();
-
-            return await _collection.EstimatedDocumentCountAsync(cancellationToken: cancellationToken);
-        }
-
-        public async Task<OperationResult> CreateArticleCommentAsync(T entity, CancellationToken cancellationToken)
-        {
-            if (entity == null)
-            {
-                throw new ArgumentNullException(nameof(entity));
-            }
-
-            cancellationToken.ThrowIfCancellationRequested();
-
-            await _collection.InsertOneAsync(entity, new InsertOneOptions
-            {
-                BypassDocumentValidation = false
-            }, cancellationToken);
-
+            _mongoDatabase.DropCollection(collectionName, cancellationToken);
             return OperationResult.Success;
         }
+
+        public IArticlesCommentsCollection<T> GetArticleCommentsCollection(string collectionName)
+        {
+            var collection = _mongoDatabase.GetCollection<T>(collectionName, new MongoCollectionSettings
+            {
+                //todo: maybe some options?
+            });
+            
+            return new MongoDbArticlesCommentsCollection<T>(collection);
+        }
+
+        public IArticlesCommentsCollection<T> CreateArticleCommentsCollection(string collectionName, CancellationToken cancellationToken)
+        {
+            _mongoDatabase.CreateCollection(collectionName, new CreateCollectionOptions
+            {
+                //todo: maybe some options?
+            }, cancellationToken);
+
+            var collection = _mongoDatabase.GetCollection<T>(collectionName, new MongoCollectionSettings
+            {
+                //todo: maybe some options?
+            });
+            
+            return new MongoDbArticlesCommentsCollection<T>(collection);
+        }
+
+        public void Dispose()
+        {
+        }   
     }
 }
