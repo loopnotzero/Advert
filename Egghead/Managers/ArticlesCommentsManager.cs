@@ -22,7 +22,7 @@ namespace Egghead.Managers
             Store = store ?? throw new ArgumentNullException(nameof(store));
         }
        
-        public async Task<long> CountArticlesCommentsByArticleId(string articleId)
+        public async Task<long> CountArticleCommentsByArticleId(string articleId)
         {
             ThrowIfDisposed();
 

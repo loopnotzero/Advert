@@ -65,10 +65,10 @@ namespace Egghead.Controllers
                 
                 foreach (var article in await _articlesManager.GetArticles())
                 {
-                    var likes = await _articlesLikesManager.CountArticlesLikesByArticleIdAsync(article.Id);
-                    var dislikes = await _articlesLikesManager.CountArticlesDislikesByArticleIdAsync(article.Id);
-                    var viewCount = await _articlesViewCountManager.CountArticlesViewCountByArticleIdAsync(article.Id);
-                    var commentsCount = await _articlesCommentsManager.CountArticlesCommentsByArticleId(article.Id);
+                    var articleLikes = await _articlesLikesManager.CountArticlesLikesByArticleIdAsync(article.Id);
+                    var articleDislikes = await _articlesLikesManager.CountArticlesDislikesByArticleIdAsync(article.Id);
+                    var articleViewCount = await _articlesViewCountManager.CountArticlesViewCountByArticleIdAsync(article.Id);
+                    var articleCommentsCount = await _articlesCommentsManager.CountArticleCommentsByArticleId(article.Id);
                
                     articles.Add(new ArticlePreview
                     {
@@ -78,10 +78,10 @@ namespace Egghead.Controllers
                         FirstName = user.FirstName,
                         LastName = user.LastName,
                         CreatedAt = article.CreatedAt,
-                        Likes = likes,
-                        Dislikes = dislikes,
-                        ViewCount = viewCount,
-                        CommentsCount = commentsCount,
+                        Likes = articleLikes,
+                        Dislikes = articleDislikes,
+                        ViewCount = articleViewCount,
+                        CommentsCount = articleCommentsCount,
                     });
                 }
 

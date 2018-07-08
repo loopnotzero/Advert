@@ -78,7 +78,7 @@
         
         function deleteArticles() {
             $.ajax({
-                url: "/Articles/DeleteArticleById?objectId=test",
+                url: "/Articles/DeleteArticleById?articleId=test",
                 type: "DELETE",
                 contentType: "application/json",
                 error: function(jqXhr, textStatus, errorThrown) {
