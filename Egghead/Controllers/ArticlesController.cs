@@ -65,9 +65,9 @@ namespace Egghead.Controllers
                 
                 foreach (var article in await _articlesManager.GetArticles())
                 {
-                    var articleLikes = await _articlesLikesManager.CountArticlesLikesByArticleIdAsync(article.Id);
-                    var articleDislikes = await _articlesLikesManager.CountArticlesDislikesByArticleIdAsync(article.Id);
-                    var articleViewCount = await _articlesViewCountManager.CountArticlesViewCountByArticleIdAsync(article.Id);
+                    var articleLikes = await _articlesLikesManager.CountArticleLikesByArticleIdAsync(article.Id);
+                    var articleDislikes = await _articlesLikesManager.CountArticleDislikesByArticleIdAsync(article.Id);
+                    var articleViewCount = await _articlesViewCountManager.CountArticleViewCountByArticleIdAsync(article.Id);
                     var articleCommentsCount = await _articlesCommentsManager.CountArticleCommentsByArticleId(article.Id);
                
                     articles.Add(new ArticlePreview
@@ -233,7 +233,7 @@ namespace Egghead.Controllers
         {
             try
             {
-                await _articlesViewCountManager.AddArticlesViewAsync(new MongoDbArticleViewCount
+                await _articlesViewCountManager.AddArticleViewAsync(new MongoDbArticleViewCount
                 {                  
                     ArticleId = articleId,
                     AddedAt = DateTime.UtcNow,
@@ -241,7 +241,7 @@ namespace Egghead.Controllers
                     ByWhoNormalized = HttpContext.User.Identity.Name.ToUpper(),
                 });
 
-                var result = await _articlesViewCountManager.CountArticlesViewCountByArticleIdAsync(articleId);
+                var result = await _articlesViewCountManager.CountArticleViewCountByArticleIdAsync(articleId);
 
                 return Ok(result);
             }
@@ -261,7 +261,7 @@ namespace Egghead.Controllers
         {
             try
             {         
-                var article = await _articlesLikesManager.FindArticlesLikesByArticleIdAsync(articleId);
+                var article = await _articlesLikesManager.FindArticleLikesByArticleIdAsync(articleId);
 
                 if (article == null)
                 {
@@ -275,7 +275,7 @@ namespace Egghead.Controllers
                     });
                 }
 
-                var result = await _articlesLikesManager.CountArticlesLikesByArticleIdAsync(articleId);
+                var result = await _articlesLikesManager.CountArticleLikesByArticleIdAsync(articleId);
 
                 return Ok(result);
             }
@@ -295,7 +295,7 @@ namespace Egghead.Controllers
         {
             try
             {
-                var article = await _articlesLikesManager.FindArticlesDislikesByArticleIdAsync(articleId);
+                var article = await _articlesLikesManager.FindArticleDislikesByArticleIdAsync(articleId);
 
                 if (article == null)
                 {
@@ -309,7 +309,7 @@ namespace Egghead.Controllers
                     });
                 }
 
-                var result = await _articlesLikesManager.CountArticlesDislikesByArticleIdAsync(articleId);
+                var result = await _articlesLikesManager.CountArticleDislikesByArticleIdAsync(articleId);
 
                 return Ok(result);
             }

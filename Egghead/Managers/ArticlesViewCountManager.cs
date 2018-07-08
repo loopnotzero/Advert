@@ -24,7 +24,7 @@ namespace Egghead.Managers
             Store = store ?? throw new ArgumentNullException(nameof(store));
         }
         
-        public async Task<T> FindArticlesViewCountByArticleIdAsync(string articleId)
+        public async Task<T> FindArticleViewCountByArticleIdAsync(string articleId)
         {
             ThrowIfDisposed();
 
@@ -33,10 +33,10 @@ namespace Egghead.Managers
                 throw new ArgumentNullException(nameof(articleId));
             }
 
-            return await Store.FindArticlesViewCountByArticleIdAsync(articleId, CancellationToken);
+            return await Store.FindArticleViewCountByArticleIdAsync(articleId, CancellationToken);
         }
 
-        public async Task<long> CountArticlesViewCountByArticleIdAsync(string articleId)
+        public async Task<long> CountArticleViewCountByArticleIdAsync(string articleId)
         {
             ThrowIfDisposed();
 
@@ -45,10 +45,10 @@ namespace Egghead.Managers
                 throw new ArgumentNullException(nameof(articleId));
             }
 
-            return await Store.CountArticlesViewCountByArticleIdAsync(articleId, CancellationToken);
+            return await Store.CountArticleViewCountByArticleIdAsync(articleId, CancellationToken);
         }
         
-        public async Task<OperationResult> AddArticlesViewAsync(T entity)
+        public async Task<OperationResult> AddArticleViewAsync(T entity)
         {
             ThrowIfDisposed();
 

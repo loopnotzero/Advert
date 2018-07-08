@@ -48,7 +48,7 @@ namespace Egghead.MongoDbStorage.Stores
             return OperationResult.Success;
         }
 
-        public async Task<T> FindArticlesLikesByArticleIdAsync(string articleId, CancellationToken cancellationToken)
+        public async Task<T> FindArticleLikesByArticleIdAsync(string articleId, CancellationToken cancellationToken)
         {
             if (articleId == null)
             {
@@ -64,7 +64,7 @@ namespace Egghead.MongoDbStorage.Stores
             return await cursor.FirstOrDefaultAsync(cancellationToken);
         }
 
-        public async Task<T> FindArticlesDislikesByArticleIdAsync(string articleId, CancellationToken cancellationToken)
+        public async Task<T> FindArticleDislikesByArticleIdAsync(string articleId, CancellationToken cancellationToken)
         {
             if (articleId == null)
             {
@@ -80,7 +80,7 @@ namespace Egghead.MongoDbStorage.Stores
             return await cursor.FirstOrDefaultAsync(cancellationToken);
         }
 
-        public async Task<long> CountArticlesLikesByArticleIdAsync(string articleId, CancellationToken cancellationToken)
+        public async Task<long> CountArticleLikesByArticleIdAsync(string articleId, CancellationToken cancellationToken)
         {
             if (articleId == null)
             {
@@ -94,7 +94,7 @@ namespace Egghead.MongoDbStorage.Stores
             return await _collection.CountAsync(filter, cancellationToken: cancellationToken);
         }
 
-        public async Task<long> CountArticlesDislikesByArticleIdAsync(string articleId, CancellationToken cancellationToken)
+        public async Task<long> CountArticleDislikesByArticleIdAsync(string articleId, CancellationToken cancellationToken)
         {
             if (articleId == null)
             {

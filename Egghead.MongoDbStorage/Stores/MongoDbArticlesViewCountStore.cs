@@ -31,7 +31,7 @@ namespace Egghead.MongoDbStorage.Stores
             EntityMappings.EnsureMongoDbArticleViewsConfigured();
         }
         
-        public async Task<T> FindArticlesViewCountByArticleIdAsync(string articleId, CancellationToken cancellationToken)
+        public async Task<T> FindArticleViewCountByArticleIdAsync(string articleId, CancellationToken cancellationToken)
         {
             if (articleId == null)
             {
@@ -47,7 +47,7 @@ namespace Egghead.MongoDbStorage.Stores
             return await cursor.FirstOrDefaultAsync(cancellationToken);
         }
 
-        public async Task<long> CountArticlesViewCountByArticleIdAsync(string articleId, CancellationToken cancellationToken)
+        public async Task<long> CountArticleViewCountByArticleIdAsync(string articleId, CancellationToken cancellationToken)
         {
             if (articleId == null)
             {
