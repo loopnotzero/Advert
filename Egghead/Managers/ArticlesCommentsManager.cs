@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Egghead.MongoDbStorage.IStores;
+using Egghead.Common.Stores;
 
 namespace Egghead.Managers
 {
@@ -22,16 +22,16 @@ namespace Egghead.Managers
             Store = store ?? throw new ArgumentNullException(nameof(store));
         }
        
-        public async Task<long> CountArticlesCommentsByArticleId(string id)
+        public async Task<long> CountArticlesCommentsByArticleId(string articleId)
         {
             ThrowIfDisposed();
 
-            if (id == null)
+            if (articleId == null)
             {
-                throw new ArgumentNullException(nameof(id));
+                throw new ArgumentNullException(nameof(articleId));
             }
 
-            return await Store.CountArticlesCommentsByArticleIdAsync(id, CancellationToken);
+            return await Store.GetArticleCommentsCollection(articleId).CountArticleComments(articleId, CancellationToken);
         }
         
         public void Dispose()

@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Egghead.Common;
-using Egghead.MongoDbStorage.IStores;
+using Egghead.Common.Stores;
 
 namespace Egghead.Managers
 {
@@ -23,52 +23,52 @@ namespace Egghead.Managers
             Store = store ?? throw new ArgumentNullException(nameof(store));
         }
 
-        public async Task<T> FindArticlesLikesByArticleIdAsync(string id)
+        public async Task<T> FindArticlesLikesByArticleIdAsync(string articleId)
         {
             ThrowIfDisposed();
 
-            if (id == null)
+            if (articleId == null)
             {
-                throw new ArgumentNullException(nameof(id));
+                throw new ArgumentNullException(nameof(articleId));
             }
 
-            return await Store.FindArticlesLikesByArticleIdAsync(id, CancellationToken);
+            return await Store.FindArticlesLikesByArticleIdAsync(articleId, CancellationToken);
         }
 
-        public async Task<T> FindArticlesDislikesByArticleIdAsync(string id)
+        public async Task<T> FindArticlesDislikesByArticleIdAsync(string articleId)
         {
             ThrowIfDisposed();
 
-            if (id == null)
+            if (articleId == null)
             {
-                throw new ArgumentNullException(nameof(id));
+                throw new ArgumentNullException(nameof(articleId));
             }
 
-            return await Store.FindArticlesDislikesByArticleIdAsync(id, CancellationToken);
+            return await Store.FindArticlesDislikesByArticleIdAsync(articleId, CancellationToken);
         }
 
-        public async Task<long> CountArticlesLikesByArticleIdAsync(string id)
+        public async Task<long> CountArticlesLikesByArticleIdAsync(string articleId)
         {
             ThrowIfDisposed();
 
-            if (id == null)
+            if (articleId == null)
             {
-                throw new ArgumentNullException(nameof(id));
+                throw new ArgumentNullException(nameof(articleId));
             }
 
-            return await Store.CountArticlesLikesByArticleIdAsync(id, CancellationToken);
+            return await Store.CountArticlesLikesByArticleIdAsync(articleId, CancellationToken);
         }
 
-        public async Task<long> CountArticlesDislikesByArticleIdAsync(string id)
+        public async Task<long> CountArticlesDislikesByArticleIdAsync(string articleId)
         {
             ThrowIfDisposed();
 
-            if (id == null)
+            if (articleId == null)
             {
-                throw new ArgumentNullException(nameof(id));
+                throw new ArgumentNullException(nameof(articleId));
             }
 
-            return await Store.CountArticlesDislikesByArticleIdAsync(id, CancellationToken);
+            return await Store.CountArticlesDislikesByArticleIdAsync(articleId, CancellationToken);
         }
 
         public async Task<OperationResult> AddArticleLikeAsync(T entity)

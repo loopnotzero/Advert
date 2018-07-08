@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Egghead.Common;
-using Egghead.MongoDbStorage.IStores;
+using Egghead.Common.Stores;
 using MongoDB.Driver;
 
 namespace Egghead.Managers
@@ -24,28 +24,28 @@ namespace Egghead.Managers
             Store = store ?? throw new ArgumentNullException(nameof(store));
         }
         
-        public async Task<T> FindArticlesViewCountByArticleIdAsync(string id)
+        public async Task<T> FindArticlesViewCountByArticleIdAsync(string articleId)
         {
             ThrowIfDisposed();
 
-            if (id == null)
+            if (articleId == null)
             {
-                throw new ArgumentNullException(nameof(id));
+                throw new ArgumentNullException(nameof(articleId));
             }
 
-            return await Store.FindArticlesViewCountByArticleIdAsync(id, CancellationToken);
+            return await Store.FindArticlesViewCountByArticleIdAsync(articleId, CancellationToken);
         }
 
-        public async Task<long> CountArticlesViewCountByArticleIdAsync(string id)
+        public async Task<long> CountArticlesViewCountByArticleIdAsync(string articleId)
         {
             ThrowIfDisposed();
 
-            if (id == null)
+            if (articleId == null)
             {
-                throw new ArgumentNullException(nameof(id));
+                throw new ArgumentNullException(nameof(articleId));
             }
 
-            return await Store.CountArticlesViewCountByArticleIdAsync(id, CancellationToken);
+            return await Store.CountArticlesViewCountByArticleIdAsync(articleId, CancellationToken);
         }
         
         public async Task<OperationResult> AddArticlesViewAsync(T entity)

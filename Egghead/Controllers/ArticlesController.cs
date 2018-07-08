@@ -43,9 +43,9 @@ namespace Egghead.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> Article(string id)
+        public async Task<IActionResult> Article(string articleId)
         {
-            var article = await _articlesManager.FindArticleByIdAsync(id);
+            var article = await _articlesManager.FindArticleByIdAsync(articleId);
 
             return View(new Article
             {
@@ -97,6 +97,13 @@ namespace Egghead.Controllers
             }            
         }
 
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> GetArticleCommentsByArticleId(string articleId)
+        {
+            throw new NotImplementedException();
+        }
+
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> CreateArticle([FromBody] ArticlePreview article)
@@ -143,17 +150,11 @@ namespace Egghead.Controllers
 
         [HttpDelete]
         [Authorize]
-        public async Task<IActionResult> DeleteArticleById(string objectId)
+        public async Task<IActionResult> DeleteArticleById(string articleId)
         {
             try
             {
-                var articles = await _articlesManager.GetArticles();
-            
-                foreach (var article in articles)
-                {
-                    await _articlesManager.DeleteArticleByIdAsync(article.Id);
-                }
-            
+                await _articlesManager.DeleteArticleByIdAsync(articleId);           
                 return Ok(); 
             }
             catch (Exception e)
@@ -165,21 +166,22 @@ namespace Egghead.Controllers
                 });
             }       
         }
-        
+
         [HttpDelete]
         [Authorize]
-        public async Task<IActionResult> DeleteArticleByTitle(string title)
+        public async Task<IActionResult> DeleteArticleByTitle(string articleTitle)
         {
-            throw new NotImplementedException();
+            await _articlesManager.DeleteArticleByTitleAsync(articleTitle);
+            return Ok();
         }
-        
+
         [HttpPut]
         [Authorize]
-        public async Task<IActionResult> UdpateArticleById(string objectId, [FromBody] ArticlePreview article)
+        public async Task<IActionResult> UdpateArticleById(string articleId, [FromBody] ArticlePreview article)
         {
             try
             {
-                await _articlesManager.UpdateArticleByIdAsync(objectId, new MongoDbArticle
+                await _articlesManager.UpdateArticleByIdAsync(articleId, new MongoDbArticle
                 {
                     Title = article.Title,
                     NormalizedTitle = article.Title.ToUpper(),
@@ -201,11 +203,11 @@ namespace Egghead.Controllers
         
         [HttpPut]
         [Authorize]
-        public async Task<IActionResult> UdpateArticleByTitle(string title, [FromBody] ArticlePreview article)
+        public async Task<IActionResult> UdpateArticleByTitle(string articleTitle, [FromBody] ArticlePreview article)
         {
             try
             {
-                await _articlesManager.UpdateArticleByTitleAsync(title, new MongoDbArticle
+                await _articlesManager.UpdateArticleByTitleAsync(articleTitle, new MongoDbArticle
                 {
                     Title = article.Title,
                     NormalizedTitle = article.Title.ToUpper(),
