@@ -21,6 +21,10 @@ namespace Egghead.MongoDbStorage.Users
         public string Id { get; set; }
         public string UserName { get; set; }
         public string NormalizedUserName { get; set; }
+        public string FirstName { get; set; }
+        public string NormalizedFirstName { get; set; }
+        public string LastName { get; set; }
+        public string NormalizedLastName { get; set; }
         public string Email { get; set; }
         public string NormalizedEmail { get; set; }
         public bool EmailConfirmed { get; set; }
@@ -34,10 +38,6 @@ namespace Egghead.MongoDbStorage.Users
         public bool LockoutEnabled { get; set; }
         public int AccessFailedCount { get; set; }
         
-        //Egghead
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-
         public bool Equals(MongoDbUser other)
         {
             if (ReferenceEquals(null, other)) return false;
@@ -60,6 +60,10 @@ namespace Egghead.MongoDbStorage.Users
                 var hashCode = (Id != null ? Id.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (UserName != null ? UserName.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (NormalizedUserName != null ? NormalizedUserName.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (FirstName != null ? FirstName.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (NormalizedFirstName != null ? NormalizedFirstName.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (LastName != null ? LastName.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (NormalizedLastName != null ? NormalizedLastName.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (Email != null ? Email.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (NormalizedEmail != null ? NormalizedEmail.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ EmailConfirmed.GetHashCode();
