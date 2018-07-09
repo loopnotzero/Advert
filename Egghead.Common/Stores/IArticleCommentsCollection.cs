@@ -7,9 +7,9 @@ namespace Egghead.Common.Stores
 {
     public interface IArticleCommentsCollection<T> : IDisposable where T : class
     {
-        Task<T> FindArticleCommentById(string commentId, CancellationToken cancellationToken);
+        Task<T> FindArticleCommentByIdAsync(string commentId, CancellationToken cancellationToken);
         Task<long> EstimatedArticleCommentsCountAsync(CancellationToken cancellationToken);
-        Task<List<T>> GetArticleComments(CancellationToken cancellationToken);
+        Task<List<T>> GetArticleCommentsAsync(CancellationToken cancellationToken);
         Task<OperationResult> CreateArticleCommentAsync(T entity, CancellationToken cancellationToken);
         Task<OperationResult> UpdateArticleCommentByIdAsync(string commentId, T entity, CancellationToken cancellationToken);
         Task<OperationResult> DeleteArticleCommentByIdAsync(string commentId, CancellationToken cancellationToken);
