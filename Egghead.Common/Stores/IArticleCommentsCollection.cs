@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Egghead.Common.Stores
 {
-    public interface IArticlesCommentsCollection<T> : IDisposable where T : class
+    public interface IArticleCommentsCollection<T> : IDisposable where T : class
     {
         Task<T> FindArticleCommentById(string commentId, CancellationToken cancellationToken);
         Task<long> EstimatedArticleCommentsCountAsync(CancellationToken cancellationToken);

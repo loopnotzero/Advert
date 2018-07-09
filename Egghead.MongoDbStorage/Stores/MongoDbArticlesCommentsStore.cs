@@ -28,17 +28,17 @@ namespace Egghead.MongoDbStorage.Stores
             return OperationResult.Success;
         }
 
-        public IArticlesCommentsCollection<T> GetArticleCommentsCollection(string collectionName)
+        public IArticleCommentsCollection<T> GetArticleCommentsCollection(string collectionName)
         {
             var collection = _mongoDatabase.GetCollection<T>(collectionName, new MongoCollectionSettings
             {
                 //todo: maybe some options?
             });
             
-            return new MongoDbArticlesCommentsCollection<T>(collection);
+            return new MongoDbArticleCommentsCollection<T>(collection);
         }
 
-        public IArticlesCommentsCollection<T> CreateArticleCommentsCollection(string collectionName, CancellationToken cancellationToken)
+        public IArticleCommentsCollection<T> CreateArticleCommentsCollection(string collectionName, CancellationToken cancellationToken)
         {
             _mongoDatabase.CreateCollection(collectionName, new CreateCollectionOptions
             {
@@ -50,7 +50,7 @@ namespace Egghead.MongoDbStorage.Stores
                 //todo: maybe some options?
             });
             
-            return new MongoDbArticlesCommentsCollection<T>(collection);
+            return new MongoDbArticleCommentsCollection<T>(collection);
         }
 
         public void Dispose()

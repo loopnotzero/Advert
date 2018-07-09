@@ -8,7 +8,7 @@ namespace Egghead.Common.Stores
     public interface IArticlesCommentsStore<T> : IDisposable where T : class
     {
         OperationResult DeleteArticleCommentsCollection(string collectionName, CancellationToken cancellationToken);
-        IArticlesCommentsCollection<T> GetArticleCommentsCollection(string collectionName);
-        IArticlesCommentsCollection<T> CreateArticleCommentsCollection(string collectionName, CancellationToken cancellationToken);
+        IArticleCommentsCollection<T> GetArticleCommentsCollection(string collectionName);
+        IArticleCommentsCollection<T> CreateArticleCommentsCollection(string collectionName, CancellationToken cancellationToken);
     }
 }

@@ -19,7 +19,7 @@ namespace Egghead.IntegrationTests.Stores
         private readonly CancellationToken _cancellationToken = CancellationToken.None;
 
         private readonly IArticlesCommentsStore<MongoDbArticleComment> _articlesCommentsStore;
-        private readonly IArticlesCommentsCollection<MongoDbArticleComment> _articlesCommentsCollection;
+        private readonly IArticleCommentsCollection<MongoDbArticleComment> _articleCommentsCollection;
 
         public MongoDbArticlesCommentsStoreTestFixture()
         {
@@ -29,7 +29,7 @@ namespace Egghead.IntegrationTests.Stores
                
             _articlesCommentsStore = new MongoDbArticlesCommentsStore<MongoDbArticleComment>( new MongoClient(configuration["ConnectionString"]).GetDatabase(configuration["DatabaseName"]));
             
-            _articlesCommentsCollection = _articlesCommentsStore.CreateArticleCommentsCollection(_articleCommentsCollectionName, _cancellationToken);
+            _articleCommentsCollection = _articlesCommentsStore.CreateArticleCommentsCollection(_articleCommentsCollectionName, _cancellationToken);
         }
         
         
@@ -46,16 +46,16 @@ namespace Egghead.IntegrationTests.Stores
             {
                 Text = "New comment",
                 ByWho = "fake@email.com",
-                ByWhoNormalized = "vfake@email.com".ToUpper(),
+                ByWhoNormalized = "fake@email.com".ToUpper(),
                 ReplyTo = null,
                 Depth = 0,
                 CreatedAt = DateTime.UtcNow
             };
             
-            var articleCommentCreatingResult = await _articlesCommentsCollection.CreateArticleCommentAsync(newArticleComment, _cancellationToken);          
+            var articleCommentCreatingResult = await _articleCommentsCollection.CreateArticleCommentAsync(newArticleComment, _cancellationToken);          
             Assert.Equal(OperationResult.Success, articleCommentCreatingResult);
             
-            var articleCommentFindingResult = await _articlesCommentsCollection.FindArticleCommentById(newArticleComment.Id, _cancellationToken);           
+            var articleCommentFindingResult = await _articleCommentsCollection.FindArticleCommentById(newArticleComment.Id, _cancellationToken);           
             Assert.NotNull(articleCommentFindingResult);
         }
 
@@ -72,16 +72,16 @@ namespace Egghead.IntegrationTests.Stores
                 CreatedAt = DateTime.UtcNow
             };
 
-            var articleCommentCreatingResult = await _articlesCommentsCollection.CreateArticleCommentAsync(newArticleComment, _cancellationToken);           
+            var articleCommentCreatingResult = await _articleCommentsCollection.CreateArticleCommentAsync(newArticleComment, _cancellationToken);           
             Assert.Equal(OperationResult.Success, articleCommentCreatingResult);
 
-            var articleCommentFindingResult = await _articlesCommentsCollection.FindArticleCommentById(newArticleComment.Id, _cancellationToken);
+            var articleCommentFindingResult = await _articleCommentsCollection.FindArticleCommentById(newArticleComment.Id, _cancellationToken);
             articleCommentFindingResult.Text = "Changed comment";
             
-            var articleCommentChangingResult = await _articlesCommentsCollection.UpdateArticleCommentByIdAsync(articleCommentFindingResult.Id, articleCommentFindingResult, _cancellationToken);                    
+            var articleCommentChangingResult = await _articleCommentsCollection.UpdateArticleCommentByIdAsync(articleCommentFindingResult.Id, articleCommentFindingResult, _cancellationToken);                    
             Assert.Equal(OperationResult.Success, articleCommentChangingResult);
 
-            var changedArticleCommentFindingResult = await _articlesCommentsCollection.FindArticleCommentById(articleCommentFindingResult.Id, _cancellationToken);           
+            var changedArticleCommentFindingResult = await _articleCommentsCollection.FindArticleCommentById(articleCommentFindingResult.Id, _cancellationToken);           
             Assert.NotNull(changedArticleCommentFindingResult);
             
             Assert.Equal(articleCommentFindingResult.Text, changedArticleCommentFindingResult.Text);
@@ -100,13 +100,13 @@ namespace Egghead.IntegrationTests.Stores
                 CreatedAt = DateTime.UtcNow
             };
 
-            var articleCommentCreatingResult = await _articlesCommentsCollection.CreateArticleCommentAsync(newArticleComment, _cancellationToken);           
+            var articleCommentCreatingResult = await _articleCommentsCollection.CreateArticleCommentAsync(newArticleComment, _cancellationToken);           
             Assert.Equal(OperationResult.Success, articleCommentCreatingResult);
 
-            var articleCommentDeletingResult = await _articlesCommentsCollection.DeleteArticleCommentByIdAsync(newArticleComment.Id, _cancellationToken);
+            var articleCommentDeletingResult = await _articleCommentsCollection.DeleteArticleCommentByIdAsync(newArticleComment.Id, _cancellationToken);
             Assert.Equal(OperationResult.Success, articleCommentDeletingResult);
 
-            var articleCommentFindingResult = await _articlesCommentsCollection.FindArticleCommentById(newArticleComment.Id, _cancellationToken);
+            var articleCommentFindingResult = await _articleCommentsCollection.FindArticleCommentById(newArticleComment.Id, _cancellationToken);
             Assert.Null(articleCommentFindingResult);
         }
 
@@ -123,7 +123,7 @@ namespace Egghead.IntegrationTests.Stores
                 CreatedAt = DateTime.UtcNow
             };
             
-            var articleCommentCreatingResult = await _articlesCommentsCollection.CreateArticleCommentAsync(newArticleComment, _cancellationToken);          
+            var articleCommentCreatingResult = await _articleCommentsCollection.CreateArticleCommentAsync(newArticleComment, _cancellationToken);          
             Assert.Equal(OperationResult.Success, articleCommentCreatingResult);
 
             var newArticleCommentReply = new MongoDbArticleComment
@@ -136,10 +136,10 @@ namespace Egghead.IntegrationTests.Stores
                 CreatedAt = DateTime.UtcNow
             };
             
-            var articleCommentReplyCreatingResult = await _articlesCommentsCollection.CreateArticleCommentAsync(newArticleCommentReply, _cancellationToken);             
+            var articleCommentReplyCreatingResult = await _articleCommentsCollection.CreateArticleCommentAsync(newArticleCommentReply, _cancellationToken);             
             Assert.Equal(OperationResult.Success, articleCommentReplyCreatingResult);
 
-            var articleComments = await _articlesCommentsCollection.GetArticleComments(_cancellationToken);
+            var articleComments = await _articleCommentsCollection.GetArticleComments(_cancellationToken);
             Assert.Equal(2, articleComments.Count);
         }
     } 

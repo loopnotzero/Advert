@@ -9,11 +9,11 @@ using MongoDB.Driver;
 
 namespace Egghead.MongoDbStorage.Stores
 {
-    public class MongoDbArticlesCommentsCollection<T> : IArticlesCommentsCollection<T> where T : MongoDbArticleComment
+    public class MongoDbArticleCommentsCollection<T> : IArticleCommentsCollection<T> where T : MongoDbArticleComment
     {
         private readonly IMongoCollection<T> _collection;
         
-        public MongoDbArticlesCommentsCollection(IMongoCollection<T> collection)
+        public MongoDbArticleCommentsCollection(IMongoCollection<T> collection)
         {
             _collection = collection;
         }
