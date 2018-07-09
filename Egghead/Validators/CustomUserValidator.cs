@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Egghead.MongoDbStorage.Entities;
+using Egghead.MongoDbStorage.Users;
 using Microsoft.AspNetCore.Identity;
 
 namespace Egghead.Validators

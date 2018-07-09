@@ -1,8 +1,10 @@
 ﻿using Egghead.Common.Stores;
 using Egghead.Managers;
+using Egghead.MongoDbStorage.Articles;
 using Egghead.MongoDbStorage.Common;
-using Egghead.MongoDbStorage.Entities;
+using Egghead.MongoDbStorage.Roles;
 using Egghead.MongoDbStorage.Stores;
+using Egghead.MongoDbStorage.Users;
 using Egghead.Validators;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Egghead.Common;
 using Egghead.Models.Errors;
 using Egghead.Models.Identity;
-using Egghead.MongoDbStorage.Entities;
+using Egghead.MongoDbStorage.Users;
 using Egghead.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
