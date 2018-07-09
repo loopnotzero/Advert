@@ -48,7 +48,7 @@ namespace Egghead.Controllers
         {
             var article = await _articlesManager.FindArticleByIdAsync(articleId);
 
-            return View(new Article
+            return View(new ArticleModel
             {
                 Id = article.Id
             });
@@ -62,7 +62,7 @@ namespace Egghead.Controllers
             {
                 var user = await _userManager.FindByEmailAsync(HttpContext.User.Identity.Name);
                 
-                var articles = new List<ArticlePreview>();
+                var articles = new List<ArticlePreviewModel>();
                 
                 foreach (var article in await _articlesManager.GetArticles())
                 {
@@ -71,7 +71,7 @@ namespace Egghead.Controllers
                     var articleViewCount = await _articlesViewCountManager.CountArticleViewCountByArticleIdAsync(article.Id);
                     var articleCommentsCount = await _articlesCommentsManager.CountArticleCommentsByArticleId(article.Id);
                
-                    articles.Add(new ArticlePreview
+                    articles.Add(new ArticlePreviewModel
                     {
                         Id = article.Id,
                         Title = article.Title,
@@ -107,7 +107,7 @@ namespace Egghead.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> CreateArticle([FromBody] ArticlePreview article)
+        public async Task<IActionResult> CreateArticle([FromBody] ArticlePreviewModel article)
         {
             try
             {
@@ -124,9 +124,9 @@ namespace Egghead.Controllers
 
                 var result = await _articlesManager.FindArticleByIdAsync(newArticle.Id);
 
-                return PartialView("ArticlesPreviewPartial", new List<ArticlePreview>
+                return PartialView("ArticlesPreviewPartial", new List<ArticlePreviewModel>
                 {
-                    new ArticlePreview
+                    new ArticlePreviewModel
                     {
                         Id = result.Id,
                         Title = result.Title,
@@ -178,7 +178,7 @@ namespace Egghead.Controllers
 
         [HttpPut]
         [Authorize]
-        public async Task<IActionResult> UdpateArticleById(string articleId, [FromBody] ArticlePreview article)
+        public async Task<IActionResult> UdpateArticleById(string articleId, [FromBody] ArticlePreviewModel article)
         {
             try
             {
@@ -204,7 +204,7 @@ namespace Egghead.Controllers
         
         [HttpPut]
         [Authorize]
-        public async Task<IActionResult> UdpateArticleByTitle(string articleTitle, [FromBody] ArticlePreview article)
+        public async Task<IActionResult> UdpateArticleByTitle(string articleTitle, [FromBody] ArticlePreviewModel article)
         {
             try
             {

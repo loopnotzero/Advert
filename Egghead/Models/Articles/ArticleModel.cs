@@ -1,6 +1,6 @@
 ﻿namespace Egghead.Models.Articles
 {
-    public class Article
+    public class ArticleModel
     {
         public string Id { get; set; }
     }

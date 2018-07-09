@@ -1,6 +1,6 @@
 ﻿namespace Egghead.Models.Articles
 {
-    public class ArticleComment
+    public class ArticleCommentModel
     {
         
     }

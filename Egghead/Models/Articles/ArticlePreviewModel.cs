@@ -2,7 +2,7 @@
 
 namespace Egghead.Models.Articles
 {   
-    public class ArticlePreview
+    public class ArticlePreviewModel
     {
         public string Id { get; set; }
         public string Title { get; set; }

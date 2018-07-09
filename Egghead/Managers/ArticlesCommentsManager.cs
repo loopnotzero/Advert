@@ -31,7 +31,7 @@ namespace Egghead.Managers
                 throw new ArgumentNullException(nameof(articleId));
             }
 
-            return await Store.GetArticleCommentsCollection(articleId).EstimatedArticleCommentsCountAsync(CancellationToken);
+            return await Store.GetArticleCommentsCollection(articleId, CancellationToken).EstimatedArticleCommentsCountAsync(CancellationToken);
         }
         
         public void Dispose()

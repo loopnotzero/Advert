@@ -1,6 +1,6 @@
 ﻿namespace Egghead.Models.Articles
 {
-    public class ArticleViewCount
+    public class ArticleLikeModel
     {
         
     }
