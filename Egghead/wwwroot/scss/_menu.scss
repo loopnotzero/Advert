@@ -1,5 +1,5 @@
 .wrapper {
-  padding-top: 100px;
+  padding-top: 80px;
 }
 
 .page-title-box {
@@ -18,7 +18,7 @@
   left: 0;
   top: 0;
   z-index: 10;
-  height: 75px;
+  //height: 75px;
   background-color: $primary;
   border: 0;
   -webkit-transition: all .3s ease;
@@ -42,11 +42,8 @@
   }
 
   .topbar-main {
-    background-color: $white;
-    border-bottom: 1px solid $light;
-
     .logo {
-      color: $dark !important;
+      color: $white !important;
       font-size: 20px;
       font-weight: 700;
       letter-spacing: 1px;
@@ -58,6 +55,7 @@
     .logo-small {
       display: none;
     }
+    
     .badge-topbar {
       position: absolute;
       top: 7px;
@@ -81,6 +79,7 @@
         color: $dark;
       }
     }
+    
     .navbar-nav > .open > a {
       background-color: rgba($dark,0.1) !important;
     }
@@ -677,7 +676,7 @@
     font-size: 22px;
     padding: 0 12px;
     vertical-align: middle;
-    color: rgba($dark,0.8);
+    color: $white
   }
   .noti-icon-badge {
     display: inline-block;

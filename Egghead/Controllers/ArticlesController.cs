@@ -37,7 +37,7 @@ namespace Egghead.Controllers
 
         [HttpGet]
         [Authorize]
-        public IActionResult Index()
+        public IActionResult ArticlesPreview()
         {
             return View();
         }

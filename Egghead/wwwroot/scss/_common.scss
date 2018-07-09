@@ -1,8 +1,9 @@
 body {
+  //background: url("/images/bg.jpg");
   background: darken($light,1%);
   margin: 0;
   color: #4c5667;
-  overflow-x: hidden !important;
+  overflow-x: auto !important;
   font-family: $font-primary;
   font-size: 0.95rem;
   padding-bottom: 65px;
@@ -10,21 +11,21 @@ body {
 }
 
 html {
-  overflow: scroll;
-  overflow-x: hidden;
+  //overflow: scroll;
+  //overflow-x: auto;
   position: relative;
   height: 100%;
+  //background: url("/images/bg.jpg");
   background: darken($light,1%);
 }
 
-::-webkit-scrollbar {
-  width: 0;  /* remove scrollbar space */
-  background: transparent;  /* optional: just make scrollbar invisible */
-}
-
-/* optional: show position indicator in red */
+//::-webkit-scrollbar {
+//  width: 20px;  /* remove scrollbar space */
+//  background: $primary;  /* optional: just make scrollbar invisible */
+//}
+//
 //::-webkit-scrollbar-thumb {
-//  background: #FF0000;
+//  background: black;
 //}
 
 h1 {

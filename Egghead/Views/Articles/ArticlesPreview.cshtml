@@ -1,31 +1,26 @@
 ﻿@* @{ ViewData["Title"] = "Home Page"; } *@
 
 <header id="topnav">
-    <a href="/"><span class="float-left m-l-25 m-t-10" style="color: white; font-size: 38px;">EH</span></a>
-
-    <div id="navigation">
-        <ul class="navigation-menu">
-            @* <li class="has-submenu"> *@
-            @*     <a id="create-article" href="#"><i class="mdi mdi-book-open-page-variant"></i>Create article</a> *@
-            @* </li> *@
-            @* <li class="has-submenu"> *@
-            @*     <a id="get-articles" href="#"><i class="mdi mdi-download"></i>Get articles</a> *@
-            @* </li> *@
-            @* <li class="has-submenu"> *@
-            @*     <a id="delete-articles" href="#"><i class="mdi mdi-comment-remove-outline"></i>Delete articles</a> *@
-            @* </li> *@
-            <li class="has-submenu float-right">
-                <a id="sign-out" href="#"><i class="mdi mdi-logout"></i>Sign Out</a>
-            </li>
-        </ul>
+    <div class="topbar-main">
+        <div class="container-fluid">
+            <div class="logo">
+                <a href="/" class="logo">
+                    <span class="logo-large"><i class="mdi mdi-android-head"></i> EGGHEAD</span>
+                </a>
+            </div>
+            <div id="profile">
+                @Html.Partial("ArticleProfilePartial")
+            </div>         
+        </div>
     </div>
 </header>
 
-<div class="container-fluid"> 
+<div id="articles-preview" class="container-fluid">
+    @* @Html.Partial("ArticlesPreviewPartial") *@
 </div>
 
 <script>
-    $(document).ready(function() {              
+    $(document).ready(function() {
         function signOut(returnUrl) {
             $.ajax({
                 url: "/Account/SignOut?returnUrl=" + returnUrl,
@@ -41,7 +36,7 @@
                 }
             });
         }
-        
+
         function getArticles() {
             $.ajax({
                 url: "/Articles/GetArticles",
@@ -53,11 +48,11 @@
                     console.log("errorThrown: " + jqXhr);
                 },
                 success: function(response) {
-                    $(".container-fluid").prepend(response);
+                    $("#articles-preview").prepend(response);
                 }
             });
         }
-        
+
         function createArticle(article) {
             $.ajax({
                 url: "/Articles/CreateArticle",
@@ -75,7 +70,7 @@
             });
 
         }
-        
+
         function deleteArticles() {
             $.ajax({
                 url: "/Articles/DeleteArticleById?articleId=test",
@@ -92,16 +87,12 @@
             });
         }
         
-        function deleteArticleById(objectId) {
-            
-        }
-
         $("#sign-out").click(function(e) {
             e.preventDefault();
             signOut(window.location.pathname);
             return false;
         });
-        
+       
         $("#get-articles").click(function(e) {
             e.preventDefault();
             getArticles();
@@ -111,19 +102,20 @@
         $("#create-article").click(function(e) {
             e.preventDefault();
             var article = JSON.stringify({
-                 title: "Ловушка, в которую загнали себя инженеры Apple с клавиатурой MacBook Pro", 
-                 text: "Новый ноутбук получил всеобщее одобрение от технофилов, за одним заметным исключением: наша группа в компании iFixit. В отличие от остальных технических СМИ, мы не судим о продуктах по их удобству использования или эстетике. Мы концентрируемся на том, что произойдёт, когда устройство (неизбежно) выйдет из строя. Сколько времени (и поэтому средств) требует его вскрытие? Можно ли заменить по отдельности сломанные компоненты, или придётся менять более дорогие большие модули? Наша оценка даёт потребителю обоснованно предположить стоимость ремонта, прежде чем он покупает продукт. В наших глазах новый дизайн был провалом по ремонтопригодности. Мы понизили рейтинг Apple с семи по десятибалльной шкале до двух. Последующее обновление 2013 года отправило линейку MacBook в свободное падение с оценкой 1/10: самая низкая оценка для ноутбуков в истории. С тех пор она не повысилась."
+                title: "Ловушка, в которую загнали себя инженеры Apple с клавиатурой MacBook Pro",
+                text:
+                    "Новый ноутбук получил всеобщее одобрение от технофилов, за одним заметным исключением: наша группа в компании iFixit. В отличие от остальных технических СМИ, мы не судим о продуктах по их удобству использования или эстетике. Мы концентрируемся на том, что произойдёт, когда устройство (неизбежно) выйдет из строя. Сколько времени (и поэтому средств) требует его вскрытие? Можно ли заменить по отдельности сломанные компоненты, или придётся менять более дорогие большие модули? Наша оценка даёт потребителю обоснованно предположить стоимость ремонта, прежде чем он покупает продукт. В наших глазах новый дизайн был провалом по ремонтопригодности. Мы понизили рейтинг Apple с семи по десятибалльной шкале до двух. Последующее обновление 2013 года отправило линейку MacBook в свободное падение с оценкой 1/10: самая низкая оценка для ноутбуков в истории. С тех пор она не повысилась."
             });
             createArticle(article);
             return false;
         });
-        
+              
         $("#delete-articles").click(function(e) {
             e.preventDefault();
             deleteArticles();
             return false;
         });
-       
+
         getArticles();
     });
 </script>

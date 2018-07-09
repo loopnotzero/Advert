@@ -1,5 +1,5 @@
 ﻿@using Egghead.Models.Identity
-@model LoginViewModel
+@model LoginModel
 
 @* @{ ViewData["Title"] = "Login on Egghead"; } *@
 
@@ -58,11 +58,7 @@
         var labelTransform = "label-transform";
         var labelErrorTransform = "label-error-transform";
         var requestVerificationToken = $("input[name=__RequestVerificationToken]");
-        
-        function resizeHeader() {
-            //$("#topnav").addClass("header-h226px");
-        }
-      
+            
         function handleFocusFor(element) {
             element.focusin(function() {
                 var self = $(this);
@@ -160,7 +156,6 @@
             return false;
         });
 
-        resizeHeader();
         handleFocusFor(emailInput);
         handleFocusFor(passwordInput);
     });

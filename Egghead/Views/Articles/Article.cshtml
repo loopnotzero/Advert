@@ -1,28 +1,5 @@
 ﻿@model Egghead.Models.Articles.ArticleModel
 
-<header id="topnav">
-  <a href="/">
-    <span class="float-left m-l-25 m-t-10" style="color: white; font-size: 38px;">EH</span>
-  </a>
-
-  <div id="navigation">
-    <ul class="navigation-menu">
-      @* <li class="has-submenu"> *@
-      @*     <a id="create-article" href="#"><i class="mdi mdi-book-open-page-variant"></i>Create article</a> *@
-      @* </li> *@
-      @* <li class="has-submenu"> *@
-      @*     <a id="get-articles" href="#"><i class="mdi mdi-download"></i>Get articles</a> *@
-      @* </li> *@
-      @* <li class="has-submenu"> *@
-      @*     <a id="delete-articles" href="#"><i class="mdi mdi-comment-remove-outline"></i>Delete articles</a> *@
-      @* </li> *@
-      <li class="has-submenu float-right">
-        <a id="sign-out" href="#"><i class="mdi mdi-logout"></i>Sign Out</a>
-      </li>
-    </ul>
-  </div>
-</header>
-
 <div class="container-fluid">
   <article id="@Model.Id">
     <div class="card m-b-20">

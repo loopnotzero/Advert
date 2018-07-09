@@ -74,7 +74,7 @@ namespace Egghead.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> LogIn([FromBody] LoginViewModel model, string returnUrl = null)
+        public async Task<IActionResult> LogIn([FromBody] LoginModel model, string returnUrl = null)
         {
             try
             {
@@ -167,7 +167,7 @@ namespace Egghead.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SignUp([FromBody] SignUpViewModel model, string returnUrl = null)
+        public async Task<IActionResult> SignUp([FromBody] SignUpModel model, string returnUrl = null)
         {
             try
             {
@@ -247,7 +247,9 @@ namespace Egghead.Controllers
                 UserName = model.Email,
                 NormalizedUserName = model.Email,
                 FirstName = model.FirstName,
-                LastName = model.LastName             
+                NormalizedFirstName = model.FirstName.ToUpper(),
+                LastName = model.LastName,             
+                NormalizedLastName = model.LastName.ToUpper()
             };
 
             var result = await _userManager.CreateAsync(identityUser, model.Password);

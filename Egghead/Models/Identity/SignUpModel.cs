@@ -2,7 +2,7 @@
 
 namespace Egghead.Models.Identity
 {
-    public class SignUpViewModel
+    public class SignUpModel
     {
         [Required]
         [EmailAddress]

@@ -9,17 +9,17 @@
                  <span class="card-arrow"></span>
                  <small class="text-muted m-l-10 m-t-10">Created by <ins>@article.FirstName @article.LastName</ins> at @article.CreatedAt</small>           
                  <div class="card-body">
-                     <span class="card-icon"></span>
+                     @* <span class="card-icon"></span> *@
                      <a href="/Articles/Article?articleId=@article.Id"><h4 class="card-title">@article.Title</h4></a>
-                     <p class="card-text card-pl">@article.Text</p>
+                     <p class="card-text">@article.Text</p>
                      <small class="text-muted m-l-10 m-t-10 float-right"><a href="/Articles/Article?articleId=@article.Id">READ MORE...</a></small>
                  </div>
                  <div class="card-footer text-muted">                     
                      <div class="col-sm-4 col-md-4 col-lg-4">
-                         <button class="btn waves-effect waves-light btn-success" onclick="addLike(this, '@article.Id')">
+                         <button class="btn waves-effect waves-light" onclick="addLike(this, '@article.Id')">
                              <i class="fa fa-thumbs-o-up"> @article.Likes</i>
                          </button>
-                         <button class="btn waves-effect waves-light btn-danger" onclick="addDislike(this, '@article.Id')">
+                         <button class="btn waves-effect waves-light m-l-5" onclick="addDislike(this, '@article.Id')">
                              <i class="fa fa-thumbs-o-down"> @article.Dislikes</i>
                          </button>
                          <i class="fa fa-eye m-l-10"> @article.ViewCount views</i>
