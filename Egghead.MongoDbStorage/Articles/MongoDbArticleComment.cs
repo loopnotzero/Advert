@@ -1,7 +1,7 @@
 ﻿using System;
 using MongoDB.Bson;
 
-namespace Egghead.MongoDbStorage.Entities
+namespace Egghead.MongoDbStorage.Articles
 {
     public class MongoDbArticleComment
     {

@@ -2,7 +2,7 @@
 using Egghead.Common.Articles;
 using MongoDB.Bson;
 
-namespace Egghead.MongoDbStorage.Entities
+namespace Egghead.MongoDbStorage.Articles
 {
     public class MongoDbArticleLike
     {

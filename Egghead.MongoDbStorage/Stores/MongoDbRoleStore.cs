@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Egghead.MongoDbStorage.Common;
-using Egghead.MongoDbStorage.Entities;
+using Egghead.MongoDbStorage.Roles;
 using Microsoft.AspNetCore.Identity;
 using MongoDB.Driver;
 

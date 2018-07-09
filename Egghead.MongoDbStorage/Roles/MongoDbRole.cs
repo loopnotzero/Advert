@@ -1,6 +1,6 @@
 ﻿using MongoDB.Bson;
 
-namespace Egghead.MongoDbStorage.Entities
+namespace Egghead.MongoDbStorage.Roles
 {
     public class MongoDbRole
     {

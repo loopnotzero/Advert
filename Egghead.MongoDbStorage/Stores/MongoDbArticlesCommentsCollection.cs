@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Egghead.Common;
 using Egghead.Common.Stores;
-using Egghead.MongoDbStorage.Entities;
+using Egghead.MongoDbStorage.Articles;
 using MongoDB.Driver;
 
 namespace Egghead.MongoDbStorage.Stores

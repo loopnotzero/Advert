@@ -1,8 +1,7 @@
 ﻿using System;
 using MongoDB.Bson;
-using MongoDB.Bson.Serialization.IdGenerators;
 
-namespace Egghead.MongoDbStorage.Entities
+namespace Egghead.MongoDbStorage.Articles
 {
     public class MongoDbArticleViewCount
     {

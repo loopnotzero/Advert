@@ -1,5 +1,6 @@
 ﻿using System.Threading;
-using Egghead.MongoDbStorage.Entities;
+using Egghead.MongoDbStorage.Articles;
+using Egghead.MongoDbStorage.Users;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.IdGenerators;

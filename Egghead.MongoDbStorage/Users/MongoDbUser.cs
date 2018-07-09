@@ -2,7 +2,7 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace Egghead.MongoDbStorage.Entities
+namespace Egghead.MongoDbStorage.Users
 {
     [BsonIgnoreExtraElements]
     public class MongoDbUser : IEquatable<MongoDbUser>
