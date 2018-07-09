@@ -18,7 +18,7 @@ namespace Egghead.MongoDbStorage.Stores
             _collection = collection;
         }
         
-        public async Task<T> FindArticleCommentById(string commentId, CancellationToken cancellationToken)
+        public async Task<T> FindArticleCommentByIdAsync(string commentId, CancellationToken cancellationToken)
         {
             if (commentId == null)
             {
@@ -39,7 +39,7 @@ namespace Egghead.MongoDbStorage.Stores
             return await _collection.EstimatedDocumentCountAsync(cancellationToken: cancellationToken);
         }
 
-        public async Task<List<T>> GetArticleComments(CancellationToken cancellationToken)
+        public async Task<List<T>> GetArticleCommentsAsync(CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 

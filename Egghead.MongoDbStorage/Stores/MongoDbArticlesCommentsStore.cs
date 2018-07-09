@@ -1,9 +1,12 @@
-﻿using System.Threading;
+﻿using System;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Egghead.Common;
 using Egghead.Common.Stores;
 using Egghead.MongoDbStorage.Articles;
 using Egghead.MongoDbStorage.Mappings;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace Egghead.MongoDbStorage.Stores
@@ -21,36 +24,63 @@ namespace Egghead.MongoDbStorage.Stores
         {
             EntityMappings.EnsureMongoDbArticleCommentConfigured();
         }
-        
-        public OperationResult DeleteArticleCommentsCollection(string collectionName, CancellationToken cancellationToken)
+
+        public bool ArticleCommentsCollectionExists(string collectionName, CancellationToken cancellationToken)
         {
-            _mongoDatabase.DropCollection(collectionName, cancellationToken);
-            return OperationResult.Success;
+            if (string.IsNullOrEmpty(collectionName)) 
+            { 
+                throw new ArgumentNullException(nameof(collectionName)); 
+            } 
+ 
+            //todo: Improve filter 
+            var cursor = _mongoDatabase.ListCollectionNames(new ListCollectionNamesOptions 
+            { 
+                Filter = FilterDefinition<BsonDocument>.Empty 
+            }, cancellationToken); 
+ 
+            while (cursor.MoveNext()) 
+            { 
+                if (cursor.Current.Any(x => x.Equals(collectionName))) 
+                { 
+                    return true; 
+                } 
+            } 
+ 
+            return false; 
         }
 
-        public IArticleCommentsCollection<T> GetArticleCommentsCollection(string collectionName)
+        public OperationResult DeleteArticleCommentsCollection(string collectionName, CancellationToken cancellationToken)
         {
-            var collection = _mongoDatabase.GetCollection<T>(collectionName, new MongoCollectionSettings
+            if (string.IsNullOrEmpty(collectionName)) 
+            { 
+                throw new ArgumentNullException(nameof(collectionName)); 
+            } 
+ 
+            _mongoDatabase.DropCollection(collectionName, cancellationToken); 
+             
+            return OperationResult.Success; 
+        }
+
+        public IArticleCommentsCollection<T> GetArticleCommentsCollection(string collectionName, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrEmpty(collectionName))
             {
-                //todo: maybe some options?
-            });
-            
-            return new MongoDbArticleCommentsCollection<T>(collection);
+                throw new ArgumentNullException(nameof(collectionName));
+            }
+ 
+            return new MongoDbArticleCommentsCollection<T>(_mongoDatabase.GetCollection<T>(collectionName));
         }
 
         public IArticleCommentsCollection<T> CreateArticleCommentsCollection(string collectionName, CancellationToken cancellationToken)
         {
-            _mongoDatabase.CreateCollection(collectionName, new CreateCollectionOptions
+            if (string.IsNullOrEmpty(collectionName))
             {
-                //todo: maybe some options?
-            }, cancellationToken);
-
-            var collection = _mongoDatabase.GetCollection<T>(collectionName, new MongoCollectionSettings
-            {
-                //todo: maybe some options?
-            });
+                throw new ArgumentNullException(nameof(collectionName));
+            }
             
-            return new MongoDbArticleCommentsCollection<T>(collection);
+            _mongoDatabase.CreateCollection(collectionName, new CreateCollectionOptions(), cancellationToken);
+ 
+            return new MongoDbArticleCommentsCollection<T>(_mongoDatabase.GetCollection<T>(collectionName));
         }
 
         public void Dispose()
