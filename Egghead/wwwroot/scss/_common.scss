@@ -122,6 +122,18 @@ a {
   z-index: 10;
 }
 
+.publish-article-card-box {
+  padding: 40px;
+  box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.14);
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+  -moz-border-radius: 3px;
+  background-clip: padding-box;
+  margin-bottom: 20px;
+  background-color: $white;
+  z-index: 10;
+}
+
 .header-title {
   text-transform: uppercase;
   font-size: 15px;
@@ -145,4 +157,10 @@ a {
       width: 30px;
     }
   }
+}
+
+.q-a__stat {
+  margin: .35rem 2rem 0 0;
+  -ms-flex-item-align: start;
+  align-self: flex-start
 }

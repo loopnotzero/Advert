@@ -1,14 +1,73 @@
-﻿@* @model TModel *@
-@* *@
-@* <!DOCTYPE html> *@
-@* *@
-@* <html> *@
-@* <head> *@
-@*     <title>title</title> *@
-@* </head> *@
-@* <body> *@
-@* <div> *@
-@*        *@
-@* </div> *@
-@* </body> *@
-@* </html> *@
+﻿
+
+<header id="topnav">
+    <div class="topbar-main">
+        <div class="container-fluid">
+            <div class="logo">
+                <a href="/" class="logo">
+                    <span class="logo-large"><i class="mdi mdi-android-head"></i> EGGHEAD</span>
+                </a>
+            </div>
+            <div id="article-profile">
+                <div class="menu-extras topbar-custom">
+                    <ul class="list-inline float-right mb-0">
+                        <li class="list-inline-item">
+                            <button id="publish-article" class="btn btn-light waves-effect waves-light btn-sm">Publish an article</button>
+                        </li>
+                        @Html.Partial("ArticleProfilePartial")
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="publish-article-card-box">
+                <h4 class="header-title m-t-0 m-b-30">A publication that claims to success</h4>
+                <ul class="nav nav-tabs tabs-bordered">
+                    <li class="nav-item">
+                        <a id="editor-link" href="#editor" data-toggle="tab" aria-expanded="true" class="nav-link active show">
+                            Editor
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a id="preview-link" href="#preview" data-toggle="tab" aria-expanded="false" class="nav-link">
+                            Preview
+                        </a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div id="editor" class="tab-pane fade active show">
+                        <div id="summernote"></div>
+                    </div>
+                    <div id="preview" class="tab-pane fade">
+                        <script>
+                            console.log("test");
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>        
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function() {
+        $("#summernote").summernote({
+            height: 400,
+            focus: true
+        });
+
+        $("#editor-link").click(function() {
+            $("#preview").clear();
+        });
+
+        $("#preview-link").click(function() {
+            $("#preview").html($('#summernote').summernote('code'));
+        });
+    });
+</script>

@@ -1,25 +1,3 @@
-/* ========================================================
-	Floating Form with Bootstrap 4 
-===========================================================
-
-	— Defaults
-    — Label
-	— Input
-	— Checkbox 
-    — Radio
-    — File Input
-	— Buttons
-    — Alert Border
-    — Alerts
-    — Ratings
-    — Tab Panel
-    — Bootstrap DatePicker
-
-======================================================== */
-
-
-/* ============ DEFAULTS =========== */
-
 .form-heading {
   margin-top: -70px;
   padding: 20px;
@@ -690,15 +668,12 @@ input[type=file] {
   vertical-align: middle;
 }
 
-
-/* ============ TAB PANEL =========== */
-
-.nav-tabs {
-  position: relative;
-  margin: 40px auto;
-  margin-bottom: 0;
-  box-sizing: border-box;
-}
+//.nav-tabs {
+//  position: relative;
+//  margin: 40px auto;
+//  margin-bottom: 0;
+//  box-sizing: border-box;
+//}
 
 p.narrow {
   width: 60%;
@@ -717,14 +692,14 @@ p.narrow {
   z-index: 1;
 }
 
-.nav-tabs > li.active > a,
-.nav-tabs > li.active > a:hover,
-.nav-tabs > li.active > a:focus {
-  color: #555555;
-  cursor: default;
-  border: 0;
-  border-bottom-color: transparent;
-}
+//.nav-tabs > li.active > a,
+//.nav-tabs > li.active > a:hover,
+//.nav-tabs > li.active > a:focus {
+//  color: #555555;
+//  cursor: default;
+//  border: 0;
+//  border-bottom-color: transparent;
+//}
 
 .fa-plane {
   color: #00d3ee;
@@ -773,13 +748,13 @@ p.narrow {
   box-shadow: 0 12px 20px -10px rgba(244, 67, 54, 0.28), 0 4px 20px 0px rgba(0, 0, 0, 0.12), 0 7px 8px -5px rgba(244, 67, 54, 0.2);
 }
 
-.nav-tabs > li.active > a span.round-tabs {
-  background: red;
-}
-
-.nav-tabs > li {
-  width: 25%;
-}
+//.nav-tabs > li.active > a span.round-tabs {
+//  background: red;
+//}
+//
+//.nav-tabs > li {
+//  width: 25%;
+//}
 
 li.active:before {
   content: " ";
@@ -794,40 +769,40 @@ li.active:before {
   transition: 0.2s ease-in-out;
 }
 
-.nav-tabs > li:after {
-  content: " ";
-  position: absolute;
-  left: 45%;
-  opacity: 0;
-  margin: 0 auto;
-  bottom: 0px;
-  border: 5px solid transparent;
-  border-bottom-color: #ddd;
-  transition: 0.1s ease-in-out;
-}
-
-.nav-tabs > li.active:after {
-  content: " ";
-  position: absolute;
-  left: 45%;
-  opacity: 1;
-  margin: 0 auto;
-  bottom: 0px;
-  border: 10px solid transparent;
-  border-bottom-color: #ddd;
-}
-
-.nav-tabs > li a {
-  width: 70px;
-  height: 70px;
-  margin: 20px auto;
-  border-radius: 100%;
-  padding: 0;
-}
-
-.nav-tabs > li a:hover {
-  background: transparent;
-}
+//.nav-tabs > li:after {
+//  content: " ";
+//  position: absolute;
+//  left: 45%;
+//  opacity: 0;
+//  margin: 0 auto;
+//  bottom: 0px;
+//  border: 5px solid transparent;
+//  border-bottom-color: #ddd;
+//  transition: 0.1s ease-in-out;
+//}
+//
+//.nav-tabs > li.active:after {
+//  content: " ";
+//  position: absolute;
+//  left: 45%;
+//  opacity: 1;
+//  margin: 0 auto;
+//  bottom: 0px;
+//  border: 10px solid transparent;
+//  border-bottom-color: #ddd;
+//}
+//
+//.nav-tabs > li a {
+//  width: 70px;
+//  height: 70px;
+//  margin: 20px auto;
+//  border-radius: 100%;
+//  padding: 0;
+//}
+//
+//.nav-tabs > li a:hover {
+//  background: transparent;
+//}
 
 .tab-content {}
 
@@ -869,16 +844,16 @@ li.active:before {
   .tab-content .head {
     font-size: 20px;
   }
-  .nav-tabs > li a {
-    width: 50px;
-    height: 50px;
-    line-height: 50px;
-  }
-  .nav-tabs > li.active:after {
-    content: " ";
-    position: absolute;
-    left: 35%;
-  }
+  //.nav-tabs > li a {
+  //  width: 50px;
+  //  height: 50px;
+  //  line-height: 50px;
+  //}
+  //.nav-tabs > li.active:after {
+  //  content: " ";
+  //  position: absolute;
+  //  left: 35%;
+  //}
   .btn-outline-rounded {
     padding: 12px 20px;
   }

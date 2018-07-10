@@ -1,45 +1,38 @@
 ﻿ 
-<div class="menu-extras topbar-custom">
-    <ul class="list-inline float-right mb-0">
-        <li class="list-inline-item">
-            <button id="publish-article" class="btn btn-light waves-effect waves-light btn-sm">Publish an article</button>
-        </li>
-        <li class="list-inline-item dropdown notification-list">
-            <a class="nav-link dropdown-toggle arrow-none waves-effect" data-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
-                <img src="~/images/users/avatar-1.jpg" style="width: 40px; height: 40px; border: 2px solid #ddd; border-radius: 4px;" alt="user" class="rounded-circle">
-                @* <span class="badge badge-pink noti-icon-badge">4</span> *@
-            </a>
-            <div class="dropdown-menu dropdown-menu-right dropdown-arrow dropdown-menu-lg" aria-labelledby="Preview" x-placement="bottom-end" style="position: absolute; transform: translate3d(46px, 59px, 0px); top: 0px; left: 0px; will-change: transform;">
-                <!-- item-->
-                <a href="javascript:void(0);" class="dropdown-item notify-item">
-                    <div class="notify-icon bg-success">
-                        <i class="mdi mdi-comment-account"></i>
-                    </div>
-                    <p class="notify-details">Robert S. Taylor commented on Admin<small class="text-muted">1 min ago</small></p>
-                </a>
-
-                <!-- item-->
-                <a href="javascript:void(0);" class="dropdown-item notify-item">
-                    <div class="notify-icon bg-info">
-                        <i class="mdi mdi-account"></i>
-                    </div>
-                    <p class="notify-details">New user registered.<small class="text-muted">1 min ago</small></p>
-                </a>
-
-                <!-- item-->
-                <a href="javascript:void(0);" class="dropdown-item notify-item">
-                    <div class="notify-icon bg-danger">
-                        <i class="mdi mdi-airplane"></i>
-                    </div>
-                    <p class="notify-details">Carlos Crouch liked <b>Admin</b><small class="text-muted">1 min ago</small></p>
-                </a>
-
-                <!-- All-->
-                <a id="sign-out" href="javascript:void(0);" class="dropdown-item notify-item notify-all">
-                    Sign Out
-                </a>
-
+<li class="list-inline-item dropdown notification-list">
+    <a class="nav-link dropdown-toggle arrow-none waves-effect" data-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
+        <img src="~/images/users/avatar-1.jpg" style="width: 40px; height: 40px; border: 2px solid #ddd; border-radius: 4px;" alt="user" class="rounded-circle">
+        @* <span class="badge badge-pink noti-icon-badge">4</span> *@
+    </a>
+    <div class="dropdown-menu dropdown-menu-right dropdown-arrow dropdown-menu-lg" aria-labelledby="Preview" x-placement="bottom-end" style="position: absolute; transform: translate3d(46px, 59px, 0px); top: 0px; left: 0px; will-change: transform;">
+        <!-- item-->
+        <a href="javascript:void(0);" class="dropdown-item notify-item">
+            <div class="notify-icon bg-success">
+                <i class="mdi mdi-comment-account"></i>
             </div>
-        </li>
-    </ul>
-</div>
+            <p class="notify-details">Robert S. Taylor commented on Admin<small class="text-muted">1 min ago</small></p>
+        </a>
+
+        <!-- item-->
+        <a href="javascript:void(0);" class="dropdown-item notify-item">
+            <div class="notify-icon bg-info">
+                <i class="mdi mdi-account"></i>
+            </div>
+            <p class="notify-details">New user registered.<small class="text-muted">1 min ago</small></p>
+        </a>
+
+        <!-- item-->
+        <a href="javascript:void(0);" class="dropdown-item notify-item">
+            <div class="notify-icon bg-danger">
+                <i class="mdi mdi-airplane"></i>
+            </div>
+            <p class="notify-details">Carlos Crouch liked <b>Admin</b><small class="text-muted">1 min ago</small></p>
+        </a>
+
+        <!-- All-->
+        <a id="sign-out" href="javascript:void(0);" class="dropdown-item notify-item notify-all">
+            Sign Out
+        </a>
+
+    </div>
+</li>

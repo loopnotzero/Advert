@@ -44,19 +44,7 @@ namespace Egghead.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> Article(string articleId)
-        {
-            var article = await _articlesManager.FindArticleByIdAsync(articleId);
-
-            return View(new ArticleModel
-            {
-                Id = article.Id
-            });
-        }
-            
-        [HttpGet]
-        [Authorize]
-        public async Task<IActionResult> GetArticles()
+        public async Task<IActionResult> GetArticlesPreview(int articlesCount)
         {
             try
             {
@@ -64,7 +52,7 @@ namespace Egghead.Controllers
                 
                 var articles = new List<ArticlePreviewModel>();
                 
-                foreach (var article in await _articlesManager.GetArticles())
+                foreach (var article in await _articlesManager.GetArticlesAsync(articlesCount))
                 {
                     var articleLikes = await _articlesLikesManager.CountArticleLikesByArticleIdAsync(article.Id);
                     var articleDislikes = await _articlesLikesManager.CountArticleDislikesByArticleIdAsync(article.Id);
@@ -98,13 +86,29 @@ namespace Egghead.Controllers
             }            
         }
 
+        
+        
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> GetArticleCommentsByArticleId(string articleId)
+        public IActionResult ArticlePublication()
         {
-            throw new NotImplementedException();
+            return View();
         }
 
+        
+              
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> Article(string articleId)
+        {
+            var article = await _articlesManager.FindArticleByIdAsync(articleId);
+
+            return View(new ArticleModel
+            {
+                Id = article.Id
+            });
+        }
+                  
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> CreateArticle([FromBody] ArticlePreviewModel article)
@@ -228,6 +232,17 @@ namespace Egghead.Controllers
             }            
         }
        
+        
+        
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> GetArticleCommentsByArticleId(string articleId)
+        {
+            throw new NotImplementedException();
+        }
+
+        
+        
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> AddArticleView(string articleId)
@@ -255,6 +270,8 @@ namespace Egghead.Controllers
                 });
             }
         }
+        
+        
         
         [HttpGet]
         [Authorize]

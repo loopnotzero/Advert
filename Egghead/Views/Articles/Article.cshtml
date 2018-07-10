@@ -1,5 +1,27 @@
 ﻿@model Egghead.Models.Articles.ArticleModel
 
+<header id="topnav">
+  <div class="topbar-main">
+    <div class="container-fluid">
+      <div class="logo">
+        <a href="/" class="logo">
+          <span class="logo-large"><i class="mdi mdi-android-head"></i> EGGHEAD</span>
+        </a>
+      </div>
+      <div id="article-profile">
+        <div class="menu-extras topbar-custom">
+          <ul class="list-inline float-right mb-0">
+            <li class="list-inline-item">
+              <button id="publish-article" class="btn btn-light waves-effect waves-light btn-sm">Publish an article</button>
+            </li>
+            @Html.Partial("ArticleProfilePartial")
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
 <div class="container-fluid">
   <article id="@Model.Id">
     <div class="card m-b-20">

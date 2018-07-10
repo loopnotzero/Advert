@@ -62,10 +62,10 @@ namespace Egghead.Managers
             return article;
         }
         
-        public async Task<List<T>> GetArticles()
+        public async Task<List<T>> GetArticlesAsync(int articlesCount)
         {
             ThrowIfDisposed();          
-            return await Store.GetArticles(CancellationToken);
+            return await Store.GetArticles(articlesCount, CancellationToken);
         }
 
         public async Task<OperationResult> CreateArticleAsync(T entity)
