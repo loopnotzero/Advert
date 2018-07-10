@@ -73,11 +73,15 @@ namespace Egghead.MongoDbStorage.Stores
             return await cursor.FirstOrDefaultAsync(cancellationToken);
         }
 
-        public async Task<List<T>> GetArticles(CancellationToken cancellationToken)
+        public async Task<List<T>> GetArticles(int articlesCount, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var findOptions = new FindOptions<T> {Sort = Builders<T>.Sort.Descending(field => field.CreatedAt)};
+            var findOptions = new FindOptions<T>
+            {
+                Sort = Builders<T>.Sort.Descending(field => field.CreatedAt),
+                Limit = articlesCount
+            };
 
             var cursor = await _collection.FindAsync(Builders<T>.Filter.Empty, findOptions, cancellationToken: cancellationToken);
 
