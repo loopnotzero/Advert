@@ -23,51 +23,26 @@
 </header>
 
 <div class="container-fluid">
-    <div class="row">
-        <div class="col-md-12">
-            <div class="publish-article-card-box">
-                <h4 class="header-title m-t-0 m-b-30">A publication that claims to success</h4>
-                <ul class="nav nav-tabs tabs-bordered">
-                    <li class="nav-item">
-                        <a id="editor-link" href="#editor" data-toggle="tab" aria-expanded="true" class="nav-link active show">
-                            Editor
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a id="preview-link" href="#preview" data-toggle="tab" aria-expanded="false" class="nav-link">
-                            Preview
-                        </a>
-                    </li>
-                </ul>
-                <div class="tab-content">
-                    <div id="editor" class="tab-pane fade active show">
-                        <div id="summernote"></div>
-                    </div>
-                    <div id="preview" class="tab-pane fade">
-                        <script>
-                            console.log("test");
-                        </script>
-                    </div>
-                </div>
-            </div>
-        </div>        
-    </div>
+    <textarea id="article-editor" style="display: none;"></textarea>
 </div>
 
 
 <script>
     $(document).ready(function() {
-        $("#summernote").summernote({
-            height: 400,
-            focus: true
+        var simplemde = new SimpleMDE({
+            status: false,
+            element: $("#article-editor")[0],
+            placeholder: "Type here...",
+            fullScreen: true,
+            withPreview: true
         });
-
+        
         $("#editor-link").click(function() {
-            $("#preview").clear();
+            //$("#preview").clear();
         });
 
         $("#preview-link").click(function() {
-            $("#preview").html($('#summernote').summernote('code'));
+            //$("#preview").html($('#summernote').summernote('code'));
         });
     });
 </script>

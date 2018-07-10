@@ -288,7 +288,4 @@
     <_ContentIncludedByDefault Remove="wwwroot\plugins\toggles\toggles.css" />
     <_ContentIncludedByDefault Remove="wwwroot\plugins\toggles\toggles.min.js" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="wwwroot\plugins" />
-  </ItemGroup>
 </Project>
