@@ -82,6 +82,9 @@
             <div class="media-body">
               <h5 class="mt-0">Media heading</h5>
               Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
+              <p>
+                <a href="#">Reply</a>
+              </p>
               <div class="media mt-3">
                 <a class="pr-3" href="#">
                   <img src="~/images/64x64.svg" alt="Generic placeholder image">
@@ -89,6 +92,9 @@
                 <div class="media-body">
                   <h5 class="mt-0">Media heading</h5>
                   Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
+                  <p>
+                    <a href="#">Reply</a>
+                  </p>
                 </div>
               </div>
             </div>
@@ -98,6 +104,9 @@
             <div class="media-body">
               <h5 class="mt-0">Media heading</h5>
               Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
+              <p>
+                <a href="#">Reply</a>
+              </p>
               <div class="media mt-3">
                 <a class="pr-3" href="#">
                   <img src="~/images/64x64.svg" alt="Generic placeholder image">
@@ -105,15 +114,18 @@
                 <div class="media-body">
                   <h5 class="mt-0">Media heading</h5>
                   Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
+                  <p>
+                    <a href="#">Reply</a>
+                  </p>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <h4>Add a public comment...</h4>
+        <p><h4>Add a public comment...</h4></p>
         <div id="add-public-comment">
-          <div id="summernote">Hello Summernote</div>
-        </div>    
+          <textarea id="article-editor" style="display: none;"></textarea>
+        </div>
       </div>
     </div>
   </article>
@@ -121,7 +133,13 @@
 
 <script>
   $(document).ready(function() {
-    $('#summernote').summernote();
+    var simplemde = new SimpleMDE({
+      status: false,
+      element: $("#article-editor")[0],
+      placeholder: "Type here...",
+      fullScreen: false,
+      withPreview: false
+    });
 
     function addArticleView() {
       var articleId = $("article").attr("id");
