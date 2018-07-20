@@ -121,7 +121,7 @@ namespace Egghead.Controllers
                     NormalizedTitle = article.Title.ToUpper(),
                     Text = article.Text,
                     CreatedAt = DateTime.UtcNow,
-                    ReleaseType = ReleaseType.PreModeration
+                    ReleaseType = ReleaseType.PreModeration,                  
                 };
 
                 await _articlesManager.CreateArticleAsync(newArticle);
@@ -245,16 +245,16 @@ namespace Egghead.Controllers
         
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> AddArticleView(string articleId)
+        public async Task<IActionResult> SetArticleViewCount(string articleId)
         {
             try
             {
-                await _articlesViewCountManager.AddArticleViewAsync(new MongoDbArticleViewCount
-                {                  
-                    ArticleId = articleId,
-                    AddedAt = DateTime.UtcNow,
+                await _articlesViewCountManager.SetArticleViewCountAsync(new MongoDbArticleViewCount
+                {                                     
                     ByWho = HttpContext.User.Identity.Name,
                     ByWhoNormalized = HttpContext.User.Identity.Name.ToUpper(),
+                    ArticleId = articleId,
+                    CreatedAt = DateTime.UtcNow
                 });
 
                 var result = await _articlesViewCountManager.CountArticleViewCountByArticleIdAsync(articleId);
@@ -275,7 +275,7 @@ namespace Egghead.Controllers
         
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> AddArticleLike(string articleId)
+        public async Task<IActionResult> SetArticleLike(string articleId)
         {
             try
             {         
@@ -283,7 +283,7 @@ namespace Egghead.Controllers
 
                 if (article == null)
                 {
-                    await _articlesLikesManager.AddArticleLikeAsync(new MongoDbArticleLike
+                    await _articlesLikesManager.SetArticleLikeAsync(new MongoDbArticleLike
                     {
                         ArticleId = articleId,
                         LikeType = LikeType.Like,
@@ -309,7 +309,7 @@ namespace Egghead.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> AddArticleDislike(string articleId)
+        public async Task<IActionResult> SetArticleDislike(string articleId)
         {
             try
             {
@@ -317,7 +317,7 @@ namespace Egghead.Controllers
 
                 if (article == null)
                 {
-                    await _articlesLikesManager.AddArticleLikeAsync(new MongoDbArticleLike
+                    await _articlesLikesManager.SetArticleLikeAsync(new MongoDbArticleLike
                     {
                         ArticleId = articleId,
                         LikeType = LikeType.Dislike,

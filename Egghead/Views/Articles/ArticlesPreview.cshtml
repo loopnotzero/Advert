@@ -1,36 +1,16 @@
 ﻿@* @{ ViewData["Title"] = "Home Page"; } *@
 
-<header id="topnav">
-    <div class="topbar-main">
-        <div class="container-fluid">
-            <div class="logo">
-                <a href="/" class="logo">
-                    <span class="logo-large"><i class="mdi mdi-android-head"></i> EGGHEAD</span>
-                </a>
-            </div>
-            <div id="article-profile">
-                <div class="menu-extras topbar-custom">
-                    <ul class="list-inline float-right mb-0">
-                        <li class="list-inline-item">
-                            <button id="publish-article" class="btn btn-light waves-effect waves-light btn-sm">Publish an article</button>
-                        </li>
-                        @Html.Partial("ArticleProfilePartial")
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-</header>
+@Html.Partial("ArticlesPreviewNavigationPartial")
 
 <div id="articles-preview" class="container-fluid">
-    @* @Html.Partial("ArticlesPreviewPartial") *@
 </div>
 
 <script>
     $(document).ready(function() {
-        function signOut(returnUrl) {
+        function getArticlesPreview() {
+            //todo: Get articles count
             $.ajax({
-                url: "/Account/SignOut?returnUrl=" + returnUrl,
+                url: "/Articles/GetArticlesPreview?articlesCount=10",
                 type: "GET",
                 contentType: "application/json",
                 error: function(jqXhr, textStatus, errorThrown) {
@@ -39,32 +19,11 @@
                     console.log("errorThrown: " + jqXhr);
                 },
                 success: function(response) {
-                    window.location.href = response.redirectUrl;
+//                    var html = $.parseHTML(response);
+                    $("#articles-preview").html(response);
                 }
             });
         }
-
-        function loadArticlesPreview() {
-            $.ajax({
-                url: "/Articles/GetArticlesPreview?articlesCount=25",
-                type: "GET",
-                contentType: "application/json",
-                error: function(jqXhr, textStatus, errorThrown) {
-                    console.log("jqXhr: " + jqXhr);
-                    console.log("textStatus: " + jqXhr);
-                    console.log("errorThrown: " + jqXhr);
-                },
-                success: function(response) {
-                    $("#articles-preview").prepend(response);
-                }
-            });
-        }
-
-        $("#sign-out").click(function(e) {
-            e.preventDefault();
-            signOut(window.location.pathname);
-            return false;
-        });
 
         $("#publish-article").click(function(e) {
             e.preventDefault();
@@ -72,6 +31,6 @@
             return false;
         });
 
-        loadArticlesPreview();
+        getArticlesPreview();
     });
 </script>

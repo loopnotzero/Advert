@@ -1,28 +1,8 @@
 ﻿@model Egghead.Models.Articles.ArticleModel
 
-<header id="topnav">
-  <div class="topbar-main">
-    <div class="container-fluid">
-      <div class="logo">
-        <a href="/" class="logo">
-          <span class="logo-large"><i class="mdi mdi-android-head"></i> EGGHEAD</span>
-        </a>
-      </div>
-      <div id="article-profile">
-        <div class="menu-extras topbar-custom">
-          <ul class="list-inline float-right mb-0">
-            <li class="list-inline-item">
-              <button id="publish-article" class="btn btn-light waves-effect waves-light btn-sm">Publish an article</button>
-            </li>
-            @Html.Partial("ArticleProfilePartial")
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-</header>
+@Html.Partial("ArticlesPreviewNavigationPartial")
 
-<div class="container-fluid">
+<div id="article" class="container-fluid">
   <article id="@Model.Id">
     <div class="card m-b-20">
       <small class="text-muted m-l-10 m-t-10">Created by <ins>Chicu Victor</ins> today at 17:15</small>
@@ -124,7 +104,7 @@
         </div>
         <p><h4>Add a public comment...</h4></p>
         <div id="add-public-comment">
-          <textarea id="article-editor" style="display: none;"></textarea>
+          <textarea id="article-editor" style="display: none"></textarea>
         </div>
       </div>
     </div>
@@ -141,11 +121,11 @@
       withPreview: false
     });
 
-    function addArticleView() {
+    function setArticleViewCount() {
       var articleId = $("article").attr("id");
 
       $.ajax({
-        url: "/Articles/AddArticleView?articleId=" + articleId,
+        url: "/Articles/SetArticleViewCount?articleId=" + articleId,
         type: "GET",
         contentType: "application/json",
         error: function(jqXhr, textStatus, errorThrown) {
@@ -159,6 +139,6 @@
       });
     }
 
-    addArticleView();
+    setArticleViewCount();
   });
 </script>

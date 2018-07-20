@@ -48,7 +48,7 @@ namespace Egghead.Managers
             return await Store.CountArticleViewCountByArticleIdAsync(articleId, CancellationToken);
         }
         
-        public async Task<OperationResult> AddArticleViewAsync(T entity)
+        public async Task<OperationResult> SetArticleViewCountAsync(T entity)
         {
             ThrowIfDisposed();
 
@@ -57,7 +57,7 @@ namespace Egghead.Managers
                 throw new ArgumentNullException(nameof(entity));
             }
 
-            return await Store.AddArticleViewAsync(entity, CancellationToken);
+            return await Store.SetArticleViewCountAsync(entity, CancellationToken);
         }
         
         public void Dispose()

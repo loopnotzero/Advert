@@ -1,0 +1,43 @@
+﻿<header id="topnav">
+    <div class="topbar-main">
+        <div class="container-fluid">
+            <div class="logo">
+                <a href="/" class="logo">
+                    <span class="logo-large"><i class="mdi mdi-android-head"></i> EGGHEAD</span>
+                </a>
+            </div>
+            <div id="article-profile">
+                <div class="menu-extras topbar-custom">
+                    <ul class="list-inline float-right mb-0">
+                        <li class="list-inline-item">
+                            <button id="submit-article" class="btn btn-light waves-effect waves-light btn-sm">Submit your article</button>
+                        </li>
+                        @Html.Partial("ArticleProfilePartial")
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<script>            
+    $("#sign-out").click(function(e) {
+        e.preventDefault();       
+        $.ajax({
+            url: "/Account/SignOut?returnUrl=" + window.location.pathname,
+            type: "GET",
+            contentType: "application/json",
+            error: function(jqXhr, textStatus, errorThrown) {
+                console.log("jqXhr: " + jqXhr);
+                console.log("textStatus: " + jqXhr);
+                console.log("errorThrown: " + jqXhr);
+            },
+            success: function(response) {
+                window.location.href = response.redirectUrl;
+            }
+        });     
+        return false;
+    });    
+</script>
+
+

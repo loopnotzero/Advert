@@ -6,14 +6,13 @@
     {
         <article>
             <div class="card m-b-20">
-                @* <span class="card-arrow"></span> *@
                 <small class="text-muted m-l-10 m-t-10">Created by <ins>@article.FirstName @article.LastName</ins> at @article.CreatedAt</small>
                 <div class="card-body">
-                    @* <span class="card-icon"></span> *@
                     <a href="/Articles/Article?articleId=@article.Id">
                         <h4 class="card-title">@article.Title</h4>
                     </a>
-                    <p class="card-text">@article.Text</p>
+                    <p class="card-text">@Html.Raw(article.Text)</p>
+                    @* <p class="card-text">@article.Text</p> *@
                     <small class="text-muted m-l-10 m-t-10 float-right">
                         <a href="/Articles/Article?articleId=@article.Id">READ MORE...</a>
                     </small>
@@ -36,17 +35,17 @@
                                     <div class="r-btn r-btn-light r-btn--icon">
                                         <i class="fa fa-bookmark"></i>
                                     </div>
-                                    <small id="bookmarks" class="m-l-5 m-r-5">0 bookmarks</small>
+                                    <small id="bookmarks" class="m-l-5 m-r-5">@article.BookmarksCount</small>
                                 
                                     <div class="r-btn r-btn-light-no-hover r-btn--icon-no-hover">
                                         <i class="fa fa-eye"></i>
                                     </div>
-                                    <small id="article-view-count" class="m-l-5 m-r-5">@article.ViewCount views</small>
+                                    <small id="article-view-count" class="m-l-5 m-r-5">@article.ViewCount</small>
                                 
                                     <div class="r-btn r-btn-light-no-hover r-btn--icon-no-hover">
                                         <i class="fa fa-weixin"></i>
                                     </div>
-                                    <small id="article-comments" class="m-l-5 m-r-5">@article.CommentsCount comments</small>   
+                                    <small id="article-comments" class="m-l-5 m-r-5">@article.CommentsCount</small>   
                                 </div>                              
                             </div>
                         </div>
@@ -57,54 +56,39 @@
     }
 }
 
-<script>
-    $(document).ready(function() {
-        var btnLike = $("div[name=btn-like]");
-        
-        btnLike.click(function() {
-            var articleId = $(this).attr("id");
-            console.log(articleId);
-            setLike(articleId);
+<script> 
+    $("div[name=btn-like]").click(function() {
+        var articleId = $(this).attr("id");
+        $.ajax({
+            url: "/Articles/SetArticleDislike?articleId=" + articleId,
+            type: "GET",
+            contentType: "application/json",
+            error: function(jqXhr, textStatus, errorThrown) {
+                console.log("jqXhr: " + jqXhr);
+                console.log("textStatus: " + jqXhr);
+                console.log("errorThrown: " + jqXhr);
+            },
+            success: function(response) {
+                $("#dislikes-" + articleId).text(response);
+            }
         });
+    });      
+  
+    $("div[name=btn-dislike]").click(function() {
+        var articleId = $(this).attr("id");
         
-        var btnDislike = $("div[name=btn-dislike]");       
-        
-        btnDislike.click(function() {
-            var articleId = $(this).attr("id");
-            console.log(articleId);
-            setDislike(articleId);
+        $.ajax({
+            url: "/Articles/SetArticleLike?articleId=" + articleId,
+            type: "GET",
+            contentType: "application/json",
+            error: function(jqXhr, textStatus, errorThrown) {
+                console.log("jqXhr: " + jqXhr);
+                console.log("textStatus: " + jqXhr);
+                console.log("errorThrown: " + jqXhr);
+            },
+            success: function(response) {
+                $("#likes-" + articleId).text(response);
+            }
         });
-              
-        function setLike(articleId) {
-            $.ajax({
-                url: "/Articles/AddArticleLike?articleId=" + articleId,
-                type: "GET",
-                contentType: "application/json",
-                error: function(jqXhr, textStatus, errorThrown) {
-                    console.log("jqXhr: " + jqXhr);
-                    console.log("textStatus: " + jqXhr);
-                    console.log("errorThrown: " + jqXhr);
-                },
-                success: function(response) {
-                    $("#likes-" + articleId).text(response);
-                }
-            });
-        }
-        
-        function setDislike(articleId) {
-            $.ajax({
-                url: "/Articles/AddArticleDislike?articleId=" + articleId,
-                type: "GET",
-                contentType: "application/json",
-                error: function(jqXhr, textStatus, errorThrown) {
-                    console.log("jqXhr: " + jqXhr);
-                    console.log("textStatus: " + jqXhr);
-                    console.log("errorThrown: " + jqXhr);
-                },
-                success: function(response) {
-                    $("#dislikes-" + articleId).text(response);
-                }
-            });
-        }
-    });   
+    });
 </script>

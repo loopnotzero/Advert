@@ -71,7 +71,7 @@ namespace Egghead.Managers
             return await Store.CountArticleDislikesByArticleIdAsync(articleId, CancellationToken);
         }
 
-        public async Task<OperationResult> AddArticleLikeAsync(T entity)
+        public async Task<OperationResult> SetArticleLikeAsync(T entity)
         {
             ThrowIfDisposed();
 
@@ -80,7 +80,7 @@ namespace Egghead.Managers
                 throw new ArgumentNullException(nameof(entity));
             }
 
-            return await Store.AddArticleLikeAsync(entity, CancellationToken);
+            return await Store.SetArticleLikeAsync(entity, CancellationToken);
         }
 
         public void Dispose()
