@@ -31,7 +31,7 @@ namespace Egghead.MongoDbStorage.Stores
             EntityMappings.EnsureMongoDbArticleLikeConfigured();
         }
 
-        public async Task<OperationResult> AddArticleLikeAsync(T entity, CancellationToken cancellationToken)
+        public async Task<OperationResult> SetArticleLikeAsync(T entity, CancellationToken cancellationToken)
         {
             if (entity == null)
             {

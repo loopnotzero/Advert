@@ -15,6 +15,6 @@ namespace Egghead.MongoDbStorage.Articles
         public string ByWho { get; set; }
         public string ByWhoNormalized { get; set; }
         public string ArticleId { get; set; }
-        public DateTime AddedAt { get; set; }
+        public DateTime CreatedAt { get; set; }
     }
 }

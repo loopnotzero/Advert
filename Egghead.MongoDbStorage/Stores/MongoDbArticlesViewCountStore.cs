@@ -61,7 +61,7 @@ namespace Egghead.MongoDbStorage.Stores
             return await _collection.CountAsync(filter, cancellationToken: cancellationToken);          
         }
 
-        public async Task<OperationResult> AddArticleViewAsync(T entity, CancellationToken cancellationToken)
+        public async Task<OperationResult> SetArticleViewCountAsync(T entity, CancellationToken cancellationToken)
         {
             if (entity == null)
             {
