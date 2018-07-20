@@ -11,6 +11,6 @@ namespace Egghead.Common.Stores
         Task<T> FindArticleDislikesByArticleIdAsync(string articleId, CancellationToken cancellationToken);
         Task<long> CountArticleLikesByArticleIdAsync(string articleId, CancellationToken cancellationToken);
         Task<long> CountArticleDislikesByArticleIdAsync(string articleId, CancellationToken cancellationToken);
-        Task<OperationResult> AddArticleLikeAsync(T entity , CancellationToken cancellationToken);
+        Task<OperationResult> SetArticleLikeAsync(T entity , CancellationToken cancellationToken);
     }
 }

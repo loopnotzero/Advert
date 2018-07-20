@@ -9,6 +9,6 @@ namespace Egghead.Common.Stores
     {
         Task<T> FindArticleViewCountByArticleIdAsync(string articleId, CancellationToken cancellationToken);
         Task<long> CountArticleViewCountByArticleIdAsync(string articleId, CancellationToken cancellationToken);
-        Task<OperationResult> AddArticleViewAsync(T entity , CancellationToken cancellationToken);
+        Task<OperationResult> SetArticleViewCountAsync(T entity , CancellationToken cancellationToken);
     }
 }
