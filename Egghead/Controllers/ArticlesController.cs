@@ -35,13 +35,28 @@ namespace Egghead.Controllers
             _articlesViewCountManager = articlesViewCountManager;
         }
 
+        
+        [HttpGet]
+        [Authorize]
+        public IActionResult ArticleContent(string articleId)
+        {
+            return View();
+        }
+
         [HttpGet]
         [Authorize]
         public IActionResult ArticlesPreview()
         {
             return View();
         }
-
+                      
+        [HttpGet]
+        [Authorize]
+        public IActionResult ArticlePublication()
+        {
+            return View();
+        }
+             
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> GetArticlesPreview(int articlesCount)
@@ -86,29 +101,102 @@ namespace Egghead.Controllers
             }            
         }
 
-        
-        
         [HttpGet]
         [Authorize]
-        public IActionResult ArticlePublication()
+        public async Task<IActionResult> SetArticleLike(string articleId)
         {
-            return View();
-        }
+            try
+            {         
+                var article = await _articlesLikesManager.FindArticleLikesByArticleIdAsync(articleId);
 
-        
-              
-        [HttpGet]
-        [Authorize]
-        public async Task<IActionResult> Article(string articleId)
-        {
-            var article = await _articlesManager.FindArticleByIdAsync(articleId);
+                if (article == null)
+                {
+                    await _articlesLikesManager.SetArticleLikeAsync(new MongoDbArticleLike
+                    {
+                        ArticleId = articleId,
+                        LikeType = LikeType.Like,
+                        CreatedAt = DateTime.UtcNow,
+                        ByWho = HttpContext.User.Identity.Name,
+                        ByWhoNormalized = HttpContext.User.Identity.Name.ToUpper(),
+                    });
+                }
 
-            return View(new ArticleModel
+                var result = await _articlesLikesManager.CountArticleLikesByArticleIdAsync(articleId);
+
+                return Ok(result);
+            }
+            catch (Exception e)
             {
-                Id = article.Id
-            });
+                _logger.LogError(e.Message, e);
+                return Ok(new ErrorModel
+                {
+                    ErrorStatusCode = ErrorStatusCode.InternalServerError
+                });
+            }           
         }
-                  
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> SetArticleDislike(string articleId)
+        {
+            try
+            {
+                var article = await _articlesLikesManager.FindArticleDislikesByArticleIdAsync(articleId);
+
+                if (article == null)
+                {
+                    await _articlesLikesManager.SetArticleLikeAsync(new MongoDbArticleLike
+                    {
+                        ArticleId = articleId,
+                        LikeType = LikeType.Dislike,
+                        CreatedAt = DateTime.UtcNow,
+                        ByWho = HttpContext.User.Identity.Name,
+                        ByWhoNormalized = HttpContext.User.Identity.Name.ToUpper(),
+                    });
+                }
+
+                var result = await _articlesLikesManager.CountArticleDislikesByArticleIdAsync(articleId);
+
+                return Ok(result);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return Ok(new ErrorModel
+                {
+                    ErrorStatusCode = ErrorStatusCode.InternalServerError
+                });
+            }          
+        }     
+        
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> SetArticleViewCount(string articleId)
+        {
+            try
+            {
+                await _articlesViewCountManager.SetArticleViewCountAsync(new MongoDbArticleViewCount
+                {                                     
+                    ByWho = HttpContext.User.Identity.Name,
+                    ByWhoNormalized = HttpContext.User.Identity.Name.ToUpper(),
+                    ArticleId = articleId,
+                    CreatedAt = DateTime.UtcNow
+                });
+
+                var result = await _articlesViewCountManager.CountArticleViewCountByArticleIdAsync(articleId);
+
+                return Ok(result);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return Ok(new ErrorModel
+                {
+                    ErrorStatusCode = ErrorStatusCode.InternalServerError
+                });
+            }
+        }
+               
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> CreateArticle([FromBody] ArticlePreviewModel article)
@@ -153,6 +241,25 @@ namespace Egghead.Controllers
             }
         }
 
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> GetArticleById(string articleId)
+        {
+            try
+            {
+                var article = await _articlesManager.FindArticleByIdAsync(articleId);           
+                return Ok(article); 
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return Ok(new ErrorModel
+                {
+                    ErrorStatusCode = ErrorStatusCode.InternalServerError
+                });
+            }
+        }
+        
         [HttpDelete]
         [Authorize]
         public async Task<IActionResult> DeleteArticleById(string articleId)
@@ -231,114 +338,12 @@ namespace Egghead.Controllers
                 });
             }            
         }
-       
-        
-        
+                 
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> GetArticleCommentsByArticleId(string articleId)
         {
             throw new NotImplementedException();
-        }
-
-        
-        
-        [HttpGet]
-        [Authorize]
-        public async Task<IActionResult> SetArticleViewCount(string articleId)
-        {
-            try
-            {
-                await _articlesViewCountManager.SetArticleViewCountAsync(new MongoDbArticleViewCount
-                {                                     
-                    ByWho = HttpContext.User.Identity.Name,
-                    ByWhoNormalized = HttpContext.User.Identity.Name.ToUpper(),
-                    ArticleId = articleId,
-                    CreatedAt = DateTime.UtcNow
-                });
-
-                var result = await _articlesViewCountManager.CountArticleViewCountByArticleIdAsync(articleId);
-
-                return Ok(result);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e.Message, e);
-                return Ok(new ErrorModel
-                {
-                    ErrorStatusCode = ErrorStatusCode.InternalServerError
-                });
-            }
-        }
-        
-        
-        
-        [HttpGet]
-        [Authorize]
-        public async Task<IActionResult> SetArticleLike(string articleId)
-        {
-            try
-            {         
-                var article = await _articlesLikesManager.FindArticleLikesByArticleIdAsync(articleId);
-
-                if (article == null)
-                {
-                    await _articlesLikesManager.SetArticleLikeAsync(new MongoDbArticleLike
-                    {
-                        ArticleId = articleId,
-                        LikeType = LikeType.Like,
-                        CreatedAt = DateTime.UtcNow,
-                        ByWho = HttpContext.User.Identity.Name,
-                        ByWhoNormalized = HttpContext.User.Identity.Name.ToUpper(),
-                    });
-                }
-
-                var result = await _articlesLikesManager.CountArticleLikesByArticleIdAsync(articleId);
-
-                return Ok(result);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e.Message, e);
-                return Ok(new ErrorModel
-                {
-                    ErrorStatusCode = ErrorStatusCode.InternalServerError
-                });
-            }           
-        }
-
-        [HttpGet]
-        [Authorize]
-        public async Task<IActionResult> SetArticleDislike(string articleId)
-        {
-            try
-            {
-                var article = await _articlesLikesManager.FindArticleDislikesByArticleIdAsync(articleId);
-
-                if (article == null)
-                {
-                    await _articlesLikesManager.SetArticleLikeAsync(new MongoDbArticleLike
-                    {
-                        ArticleId = articleId,
-                        LikeType = LikeType.Dislike,
-                        CreatedAt = DateTime.UtcNow,
-                        ByWho = HttpContext.User.Identity.Name,
-                        ByWhoNormalized = HttpContext.User.Identity.Name.ToUpper(),
-                    });
-                }
-
-                var result = await _articlesLikesManager.CountArticleDislikesByArticleIdAsync(articleId);
-
-                return Ok(result);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e.Message, e);
-                return Ok(new ErrorModel
-                {
-                    ErrorStatusCode = ErrorStatusCode.InternalServerError
-                });
-            }          
-        }      
+        }                              
     }
 }
