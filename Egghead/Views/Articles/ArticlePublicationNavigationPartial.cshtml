@@ -24,7 +24,7 @@
     $("#sign-out").click(function(e) {
         e.preventDefault();       
         $.ajax({
-            url: "/Account/SignOut?returnUrl=" + window.location.pathname,
+            url: "/Account/SignOut?returnUrl=" + window.location.pathname + window.location.search,
             type: "GET",
             contentType: "application/json",
             error: function(jqXhr, textStatus, errorThrown) {
