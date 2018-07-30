@@ -34,8 +34,7 @@ namespace Egghead.Controllers
             _articlesCommentsManager = articlesCommentsManager;
             _articlesViewCountManager = articlesViewCountManager;
         }
-
-        
+       
         [HttpGet]
         [Authorize]
         public IActionResult ArticleContent()
@@ -78,7 +77,7 @@ namespace Egghead.Controllers
                     {
                         Id = article.Id,
                         Title = article.Title,
-                        Text = article.Text,
+                        Text = article.Text.Substring(0, 1000),
                         FirstName = user.FirstName,
                         LastName = user.LastName,
                         CreatedAt = article.CreatedAt,
