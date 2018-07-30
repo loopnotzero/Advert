@@ -17,33 +17,29 @@
                     </small>
                 </div>
                 <div class="card-footer text-muted">
-                    <div class="container-fluid">
+                    <div class="card-fluid">
                         <div class="row">
                             <div class="col-sm-12">
                                 <div id="@article.Id" name="btn-like" class="r-btn r-btn-light r-btn--icon">
                                     <i class="fa fa-thumbs-o-up"></i>
                                 </div>
-                                <small id="@article.Id" name="likes" class="m-l-5 m-r-5">@article.Likes</small>
+                                <small id="@article.Id" name="likes">@article.Likes</small>
                                 <div id="@article.Id" name="btn-dislike" class="r-btn r-btn-light r-btn--icon">
                                     <i class="fa fa-thumbs-o-down"></i>
                                 </div>
-                                <small id="@article.Id" name="dislikes" class="m-l-5 m-r-5">@article.Dislikes</small>                               
-                                <div class="float-right">
-                                    <div id="@article.Id" name="btn-bookmark" class="r-btn r-btn-light r-btn--icon">
-                                        <i class="fa fa-bookmark"></i>
-                                    </div>
-                                    <small name="bookmarks" class="m-l-5 m-r-5">@article.BookmarksCount</small>
-                                
-                                    <div class="r-btn r-btn-light-no-hover r-btn--icon-no-hover">
-                                        <i class="fa fa-eye"></i>
-                                    </div>
-                                    <small id="article-view-count" class="m-l-5 m-r-5">@article.ViewCount</small>
-                                
-                                    <div class="r-btn r-btn-light-no-hover r-btn--icon-no-hover">
-                                        <i class="fa fa-weixin"></i>
-                                    </div>
-                                    <small id="article-comments" class="m-l-5 m-r-5">@article.CommentsCount</small>   
-                                </div>                              
+                                <small id="@article.Id" name="dislikes">@article.Dislikes</small>                               
+                                <div id="@article.Id" name="btn-bookmark" class="r-btn r-btn-light r-btn--icon">
+                                    <i class="fa fa-bookmark"></i>
+                                </div>
+                                <small name="bookmarks">@article.BookmarksCount</small>       
+                                <div class="r-btn r-btn-light-no-hover r-btn--icon-no-hover">
+                                    <i class="fa fa-eye"></i>
+                                </div>
+                                <small id="article-view-count" >@article.ViewCount</small>                               
+                                <div class="r-btn r-btn-light-no-hover r-btn--icon-no-hover">
+                                    <i class="fa fa-weixin"></i>
+                                </div>
+                                <small id="article-comments">@article.CommentsCount</small>                              
                             </div>
                         </div>
                     </div>

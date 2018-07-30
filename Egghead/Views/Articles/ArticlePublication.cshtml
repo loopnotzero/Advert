@@ -1,10 +1,25 @@
 ﻿
 @Html.Partial("ArticlePublicationNavigationPartial")
 
+
 <div class="container-fluid">
     <div class="row">
-        <input type="text"/> 
-        <textarea id="article-editor" style="display: none;"></textarea>
+        <div class="col-12">
+            <div class="card m-b-20">
+                <div class="card-body">
+                    <input id="title" type="text" placeholder="Title..."/>
+                </div>
+            </div>
+        </div>       
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card m-b-20">
+                <div class="card-body">
+                    <textarea id="article-editor" style="display: none;"></textarea>
+                </div>
+            </div>
+        </div>        
     </div>
 </div>
 
@@ -14,8 +29,8 @@
             status: false,
             element: $("#article-editor")[0],
             placeholder: "Type here...",
-            fullScreen: true,
-            withPreview: true
+            fullScreen: false,
+            withPreview: false
         });
 
         function createArticle(article) {
@@ -34,20 +49,15 @@
                 }
             });
         }
-        
+
         $("#submit-article").click(function(e) {
             e.preventDefault();
-            
-            var html = simplemde.options.previewRender(simplemde.value());
-            
             var article = JSON.stringify({
-                title: "Ловушка, в которую загнали себя инженеры Apple с клавиатурой MacBook Pro",
-                text: html
-            });    
-            
+                title: $("#title").val(),
+                text: simplemde.options.previewRender(simplemde.value())
+            });
             createArticle(article);
-            
-            return false;           
+            return false;
         });
     });
 </script>

@@ -1,5 +1,15 @@
-.container-fluid {
+
+.card-fluid {
+  width: 100%;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
   max-width: 100%;
+}
+
+.container-fluid {
+  max-width: 80%;
 }
 
 .form-group {
