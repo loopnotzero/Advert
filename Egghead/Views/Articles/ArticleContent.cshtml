@@ -58,7 +58,9 @@
             </div>
           </div>
         </div>
-        <p><h4>Add a public comment...</h4></p>
+        <p>
+          <h4>Add a public comment...</h4>
+        </p>
         <div id="add-public-comment">
           <textarea id="article-editor" style="display: none"></textarea>
         </div>
@@ -67,8 +69,43 @@
   </article>
 </div>
 
+<button id="myBtn" onclick="scrollDown()">
+  <i class="fa fa-2x fa-arrow-down"></i>
+</button>
+
 <script>
+  function scrollDown() {
+    var max = Math.max(document.body.scrollHeight,
+      document.body.offsetHeight,
+      document.documentElement.clientHeight,
+      document.documentElement.scrollHeight,
+      document.documentElement.offsetHeight);
+    document.body.scrollTop = max; // For Safari
+    document.documentElement.scrollTop = max; // For Chrome, Firefox, IE and Opera
+
+//    $("#myBtn").empty();   
+//    $("#myBtn").next().addClass("fa-arrow-up");
+
+  }
+
   $(document).ready(function() {
+    window.onscroll = function() { onScroll() };
+
+    function onScroll() {
+      var max = Math.max(document.body.scrollHeight,
+        document.body.offsetHeight,
+        document.documentElement.clientHeight,
+        document.documentElement.scrollHeight,
+        document.documentElement.offsetHeight);
+
+      if ((document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) &&
+        document.documentElement.scrollTop < (max - document.documentElement.clientHeight)) {
+        document.getElementById("myBtn").style.display = "block";
+      } else {
+        document.getElementById("myBtn").style.display = "none";
+      }
+    }
+
     var simplemde = new SimpleMDE({
       status: false,
       element: $("#article-editor")[0],
@@ -84,12 +121,12 @@
         url = window.location.href;
       }
       var results = new RegExp('[\\?&]' + name + '=([^&#]*)').exec(url);
-      if (!results) { 
+      if (!results) {
         return undefined;
       }
       return results[1] || undefined;
     }
-    
+
     var articleId = $.urlParam('articleId');
 
     $.ajax({
