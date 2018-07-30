@@ -16870,8 +16870,7 @@
                 cm.setSelection(startPoint, endPoint);
                 cm.focus();
             }
-
-
+            
             function _toggleHeading(cm, direction, size) {
                 if (/editor-preview-active/.test(cm.getWrapperElement().lastChild.className))
                     return;
@@ -16940,8 +16939,7 @@
                 }
                 cm.focus();
             }
-
-
+            
             function _toggleLine(cm, name) {
                 if (/editor-preview-active/.test(cm.getWrapperElement().lastChild.className))
                     return;
@@ -17069,8 +17067,8 @@
                     });
                 }
             }
-
-// Merge the properties of one object into another.
+            
+            // Merge the properties of one object into another.
             function _mergeProperties(target, source) {
                 for (var property in source) {
                     if (source.hasOwnProperty(property)) {
@@ -17090,8 +17088,8 @@
 
                 return target;
             }
-
-// Merge an arbitrary number of objects into one.
+            
+            // Merge an arbitrary number of objects into one.
             function extend(target) {
                 for (var i = 1; i < arguments.length; i++) {
                     target = _mergeProperties(target, arguments[i]);
@@ -17320,31 +17318,31 @@
                 options.parent = this;
 
 
-                // Check if Font Awesome needs to be auto downloaded
-                var autoDownloadFA = true;
+                // // Check if Font Awesome needs to be auto downloaded
+                // var autoDownloadFA = true;
+                //
+                // if (options.autoDownloadFontAwesome === false) {
+                //     autoDownloadFA = false;
+                // }
+                //
+                // if (options.autoDownloadFontAwesome !== true) {
+                //     var styleSheets = document.styleSheets;
+                //     for (var i = 0; i < styleSheets.length; i++) {
+                //         if (!styleSheets[i].href)
+                //             continue;
+                //
+                //         if (styleSheets[i].href.indexOf("//maxcdn.bootstrapcdn.com/font-awesome/") > -1) {
+                //             autoDownloadFA = false;
+                //         }
+                //     }
+                // }
 
-                if (options.autoDownloadFontAwesome === false) {
-                    autoDownloadFA = false;
-                }
-
-                if (options.autoDownloadFontAwesome !== true) {
-                    var styleSheets = document.styleSheets;
-                    for (var i = 0; i < styleSheets.length; i++) {
-                        if (!styleSheets[i].href)
-                            continue;
-
-                        if (styleSheets[i].href.indexOf("//maxcdn.bootstrapcdn.com/font-awesome/") > -1) {
-                            autoDownloadFA = false;
-                        }
-                    }
-                }
-
-                if (autoDownloadFA) {
-                    var link = document.createElement("link");
-                    link.rel = "stylesheet";
-                    link.href = "https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css";
-                    document.getElementsByTagName("head")[0].appendChild(link);
-                }
+                // if (autoDownloadFA) {
+                //     var link = document.createElement("link");
+                //     link.rel = "stylesheet";
+                //     link.href = "https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css";
+                //     document.getElementsByTagName("head")[0].appendChild(link);
+                // }
 
 
                 // Find the textarea to use
@@ -17482,6 +17480,7 @@
                 }
 
                 this.element = el;
+                
                 var options = this.options;
 
                 var self = this;
@@ -17583,8 +17582,9 @@
                     temp_cm.refresh();
                 }.bind(temp_cm), 0);
             };
-
-// Safari, in Private Browsing Mode, looks like it supports localStorage but all calls to setItem throw QuotaExceededError. We're going to detect this and set a variable accordingly.
+            
+            // Safari, in Private Browsing Mode, looks like it supports localStorage but all calls to setItem throw QuotaExceededError. 
+            // We're going to detect this and set a variable accordingly.
             function isLocalStorageAvailable() {
                 if (typeof localStorage === "object") {
                     try {
