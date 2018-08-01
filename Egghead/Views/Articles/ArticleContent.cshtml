@@ -6,156 +6,82 @@
   <article>
     <div class="card m-b-20">
       <small class="text-muted m-l-10 m-t-10">Created by <ins>Chicu Victor</ins> today at 17:15</small>
-      <div class="card-body">
-        <h4 class="card-title">Test</h4>
-        <p class="card-text">Test</p>
-        <div style="border-bottom: 1px solid #e3e3e3;">
-          <h4>Comments (454)</h4>
-        </div>
-        <div class="article-comments">
-          <div class="media">
-            <img class="mr-3" src="~/images/64x64.svg" alt="Generic placeholder image">
-            <div class="media-body">
-              <h5 class="mt-0">Media heading</h5>
-              Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
-              <p>
-                <a href="#">Reply</a>
-              </p>
-              <div class="media mt-3">
-                <a class="pr-3" href="#">
-                  <img src="~/images/64x64.svg" alt="Generic placeholder image">
-                </a>
-                <div class="media-body">
-                  <h5 class="mt-0">Media heading</h5>
-                  Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
-                  <p>
-                    <a href="#">Reply</a>
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="media">
-            <img class="mr-3" src="~/images/64x64.svg" alt="Generic placeholder image">
-            <div class="media-body">
-              <h5 class="mt-0">Media heading</h5>
-              Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
-              <p>
-                <a href="#">Reply</a>
-              </p>
-              <div class="media mt-3">
-                <a class="pr-3" href="#">
-                  <img src="~/images/64x64.svg" alt="Generic placeholder image">
-                </a>
-                <div class="media-body">
-                  <h5 class="mt-0">Media heading</h5>
-                  Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
-                  <p>
-                    <a href="#">Reply</a>
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <p>
-          <h4>Add a public comment...</h4>
-        </p>
-        <div id="add-public-comment">
-          <textarea id="article-editor" style="display: none"></textarea>
-        </div>
-      </div>
+      @Html.Partial("ArticleContentPartial")
     </div>
   </article>
 </div>
 
-<button id="myBtn" onclick="scrollDown()">
-  <i class="fa fa-2x fa-arrow-down"></i>
+<button id="scroll-up" onclick="scrollUp()" style="display:none">
+    <i class="fa fa-2x fa-angle-double-up"></i>
 </button>
 
+<button id="scroll-down" onclick="scrollDown()" style="display:none">
+    <i class="fa fa-2x fa-angle-double-down"></i>
+</button>
+
+
 <script>
-  function scrollDown() {
-    var max = Math.max(document.body.scrollHeight,
-      document.body.offsetHeight,
-      document.documentElement.clientHeight,
-      document.documentElement.scrollHeight,
-      document.documentElement.offsetHeight);
-    document.body.scrollTop = max; // For Safari
-    document.documentElement.scrollTop = max; // For Chrome, Firefox, IE and Opera
-
-//    $("#myBtn").empty();   
-//    $("#myBtn").next().addClass("fa-arrow-up");
-
-  }
-
-  $(document).ready(function() {
-    window.onscroll = function() { onScroll() };
-
-    function onScroll() {
-      var max = Math.max(document.body.scrollHeight,
-        document.body.offsetHeight,
-        document.documentElement.clientHeight,
-        document.documentElement.scrollHeight,
-        document.documentElement.offsetHeight);
-
-      if ((document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) &&
-        document.documentElement.scrollTop < (max - document.documentElement.clientHeight)) {
-        document.getElementById("myBtn").style.display = "block";
-      } else {
-        document.getElementById("myBtn").style.display = "none";
-      }
+    function scrollUp() {
+        document.documentElement.scrollTop = 0;
+    }
+    
+    function scrollDown() {
+        if (document.documentElement.scrollHeight > document.documentElement.scrollTop) {
+            document.documentElement.scrollTop = document.documentElement.scrollHeight;
+        }
     }
 
-    var simplemde = new SimpleMDE({
-      status: false,
-      element: $("#article-editor")[0],
-      placeholder: "Type here...",
-      fullScreen: false,
-      withPreview: false
+    $(document).ready(function() {
+        onScroll();
+        
+        window.onscroll = function() { onScroll() };
+
+        function onScroll() {                              
+            var max = (document.documentElement.scrollHeight - document.documentElement.clientHeight);
+                
+            if (max > 0 && document.documentElement.scrollTop >= max) {
+                document.getElementById("scroll-up").style.display = "block";
+                document.getElementById("scroll-down").style.display = "none";
+            } else {
+                if (document.documentElement.scrollTop >= 0) {
+                    document.getElementById("scroll-down").style.display = "block";
+                }
+            }
+        }
+
+        new SimpleMDE({
+            status: false,
+            element: $("#article-editor")[0],
+            placeholder: "Type here...",
+            fullScreen: false,
+            withPreview: false
+        });
+
+        $.urlParam = function(name, url) {
+            if (!url) {
+                url = window.location.href;
+            }
+            var results = new RegExp('[\\?&]' + name + '=([^&#]*)').exec(url);
+            if (!results) {
+                return undefined;
+            }
+            return results[1] || undefined;
+        }
+
+        var articleId = $.urlParam('articleId');
+
+        $.ajax({
+            url: "/Articles/SetArticleViewCount?articleId=" + articleId,
+            type: "GET",
+            contentType: "application/json",
+            error: function(jqXhr, textStatus, errorThrown) {
+                console.log("jqXhr: " + jqXhr);
+                console.log("textStatus: " + jqXhr);
+                console.log("errorThrown: " + jqXhr);
+            },
+            success: function(response) {
+                console.log("Article view count: " + response);
+            }
+        });
     });
-
-    console.log(window.location.href);
-
-    $.urlParam = function(name, url) {
-      if (!url) {
-        url = window.location.href;
-      }
-      var results = new RegExp('[\\?&]' + name + '=([^&#]*)').exec(url);
-      if (!results) {
-        return undefined;
-      }
-      return results[1] || undefined;
-    }
-
-    var articleId = $.urlParam('articleId');
-
-    $.ajax({
-      url: "/Articles/SetArticleViewCount?articleId=" + articleId,
-      type: "GET",
-      contentType: "application/json",
-      error: function(jqXhr, textStatus, errorThrown) {
-        console.log("jqXhr: " + jqXhr);
-        console.log("textStatus: " + jqXhr);
-        console.log("errorThrown: " + jqXhr);
-      },
-      success: function(response) {
-        console.log(response);
-      }
-    });
-
-    $.ajax({
-      url: "/Articles/GetArticleById?articleId=" + articleId,
-      type: "GET",
-      contentType: "application/json",
-      error: function(jqXhr, textStatus, errorThrown) {
-        console.log("jqXhr: " + jqXhr);
-        console.log("textStatus: " + jqXhr);
-        console.log("errorThrown: " + jqXhr);
-      },
-      success: function(response) {
-        $(".card-title").html(response.title);
-        $(".card-text").html(response.text);
-      }
-    });
-  });
 </script>

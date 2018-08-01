@@ -3,8 +3,43 @@
 <div id="articles-preview" class="container-fluid">
 </div>
 
+<button id="scroll-up" onclick="scrollUp()" style="display:none">
+    <i class="fa fa-2x fa-angle-double-up"></i>
+</button>
+
+<button id="scroll-down" onclick="scrollDown()" style="display:none">
+    <i class="fa fa-2x fa-angle-double-down"></i>
+</button>
+
 <script>
+    function scrollUp() {
+        document.documentElement.scrollTop = 0;
+    }
+    
+    function scrollDown() {
+        if (document.documentElement.scrollHeight > document.documentElement.scrollTop) {
+            document.documentElement.scrollTop = document.documentElement.scrollHeight;
+        }
+    }
+
     $(document).ready(function() {
+        window.onscroll = function() { onScroll() };
+
+        function onScroll() {
+            function onScroll() {            
+                var max = (document.documentElement.scrollHeight - document.documentElement.clientHeight);
+                
+                if (max > 0 && document.documentElement.scrollTop >= max) {
+                    document.getElementById("scroll-up").style.display = "block";
+                    document.getElementById("scroll-down").style.display = "none";
+                } else {
+                    if (document.documentElement.scrollTop >= 0) {
+                        document.getElementById("scroll-down").style.display = "block";
+                    }
+                }
+            }
+        }
+
         function getArticlesPreview() {
             //todo: Get articles count
             $.ajax({

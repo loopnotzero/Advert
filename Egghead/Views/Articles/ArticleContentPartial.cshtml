@@ -1,0 +1,35 @@
+﻿<div class="card-body">
+    <h4 class="card-title"></h4>
+    <p class="card-text"></p>
+    @Html.Partial("ArticleCommentsPartial")
+</div>
+
+<script>
+    $.urlParam = function(name, url) {
+        if (!url) {
+            url = window.location.href;
+        }
+        var results = new RegExp('[\\?&]' + name + '=([^&#]*)').exec(url);
+        if (!results) {
+            return undefined;
+        }
+        return results[1] || undefined;
+    }
+
+    var articleId = $.urlParam('articleId');
+
+    $.ajax({
+        url: "/Articles/GetArticleById?articleId=" + articleId,
+        type: "GET",
+        contentType: "application/json",
+        error: function(jqXhr, textStatus, errorThrown) {
+            console.log("jqXhr: " + jqXhr);
+            console.log("textStatus: " + jqXhr);
+            console.log("errorThrown: " + jqXhr);
+        },
+        success: function(response) {
+            $(".card-title").html("<h2>" + response.title + "</h2>");
+            $(".card-text").html(response.text);
+        }
+    });
+</script>

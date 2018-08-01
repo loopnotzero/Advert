@@ -1,0 +1,114 @@
+﻿        
+<div style="border-bottom: 1px solid #e3e3e3;">
+  <h4 id="comments-count"></h4>
+</div>
+<div class="article-comments">
+  <div class="media">
+    <img class="mr-3" src="~/images/64x64.svg" width="48" height="48" alt="Generic placeholder image">
+    <div class="media-body">
+      <h5 class="mt-0">Media heading</h5>
+      Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
+      <p>
+        <a id="reply1" href="#reply" onclick="showReplyForm('reply1')">Reply</a>
+      </p>
+      <div class="media mt-3">
+        <a class="pr-3" href="#">
+          <img src="~/images/64x64.svg" width="48" height="48" alt="Generic placeholder image">
+        </a>
+        <div class="media-body">
+          <h5 class="mt-0">Media heading</h5>
+          Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
+          <p>
+            <a id="reply2" href="#reply" onclick="showReplyForm('reply2')">Reply</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="media">
+    <img class="mr-3" src="~/images/64x64.svg" width="48" height="48" alt="Generic placeholder image">
+    <div class="media-body">
+      <h5 class="mt-0">Media heading</h5>
+      Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
+      <p>
+        <a id="reply3" href="#reply" onclick="showReplyForm('reply3')">Reply</a>
+      </p>
+      <div class="media mt-3">
+        <a class="pr-3" href="#">
+          <img src="~/images/64x64.svg" width="48" height="48" alt="Generic placeholder image">
+        </a>
+        <div class="media-body">
+          <h5 class="mt-0">Media heading</h5>
+          Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
+          <p>
+            <a id="reply4" href="#reply" onclick="showReplyForm('reply4')">Reply</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p>
+  <h4>Add a public comment...</h4>
+</p>
+
+<textarea id="article-editor" style="display: none"></textarea>
+
+<script> 
+    function showReplyForm(commentId) {
+        var simpleEditor;
+        if ($("#comment-editor").length === 0) {
+            $("#" + commentId).after("<textarea id='comment-editor' style='display: none'></textarea>");
+            new SimpleMDE({
+                status: false,
+                element: $("#comment-editor")[0],
+                placeholder: "Type here...",
+                fullScreen: false,
+                withPreview: false
+            });
+        } else {
+            emptySimpleEditor();
+            $("#" + commentId).after("<textarea id='comment-editor' style='display: none'></textarea>");
+            new SimpleMDE({
+                status: false,
+                element: $("#comment-editor")[0],
+                placeholder: "Type here...",
+                fullScreen: false,
+                withPreview: false
+            });
+        }
+    }
+    
+    function emptySimpleEditor() {
+        $("#comment-editor, .editor-toolbar, .CodeMirror, .editor-preview-side").remove();
+    }
+
+    $.urlParam = function(name, url) {
+        if (!url) {
+            url = window.location.href;
+        }
+        var results = new RegExp('[\\?&]' + name + '=([^&#]*)').exec(url);
+        if (!results) {
+            return undefined;
+        }
+        return results[1] || undefined;
+    }
+
+    var articleId = $.urlParam('articleId');
+
+    $.ajax({
+        url: "/Articles/GetArticleCommentsByArticleId?articleId=" + articleId,
+        type: "GET",
+        contentType: "application/json",
+        error: function(jqXhr, textStatus, errorThrown) {
+            console.log("jqXhr: " + jqXhr);
+            console.log("textStatus: " + jqXhr);
+            console.log("errorThrown: " + jqXhr);
+        },
+        success: function(response) {
+            console.log("Article comments: " + response);
+            $("#comments-count").html("Comments (" + response + ")");
+        }
+    });
+</script>

@@ -55,7 +55,14 @@ namespace Egghead.Controllers
         {
             return View();
         }
-             
+            
+        [HttpGet]
+        [Authorize]
+        public async Task<long> GetArticleCommentsByArticleId(string articleId)
+        {
+            return await _articlesCommentsManager.CountArticleCommentsByArticleId(articleId);
+        }
+        
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> GetArticlesPreview(int articlesCount)
@@ -336,13 +343,6 @@ namespace Egghead.Controllers
                     ErrorStatusCode = ErrorStatusCode.InternalServerError
                 });
             }            
-        }
-                 
-        [HttpGet]
-        [Authorize]
-        public async Task<IActionResult> GetArticleCommentsByArticleId(string articleId)
-        {
-            throw new NotImplementedException();
-        }                              
+        }                          
     }
 }
