@@ -62,6 +62,12 @@ namespace Egghead.Controllers
         {
             return await _articlesCommentsManager.CountArticleCommentsByArticleId(articleId);
         }
+
+        [HttpPost]
+        public async Task<long> CreatedArticleComment()
+        {
+            throw new NotImplementedException();
+        }
         
         [HttpGet]
         [Authorize]

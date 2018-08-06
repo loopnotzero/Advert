@@ -246,6 +246,13 @@ a {
   font-size: 18px; /* Increase font size */
 }
 
-//#scroll-updown:hover {
-  //background-color: $primary; /* Add a dark-grey background on hover */
-//}
+.reply-link {
+  margin-top: 5px;
+  margin-bottom: 10px;
+}
+
+.text-dashed {
+  cursor: pointer;
+  border-bottom: 1px dashed;
+  color: $primary;
+}

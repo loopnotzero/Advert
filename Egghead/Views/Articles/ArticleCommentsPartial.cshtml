@@ -1,89 +1,21 @@
 ﻿        
 <div style="border-bottom: 1px solid #e3e3e3;">
-  <h4 id="comments-count"></h4>
-</div>
-<div class="article-comments">
-  <div class="media">
-    <img class="mr-3" src="~/images/64x64.svg" width="48" height="48" alt="Generic placeholder image">
-    <div class="media-body">
-      <h5 class="mt-0">Media heading</h5>
-      Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
-      <p>
-        <a id="reply1" href="#reply" onclick="showReplyForm('reply1')">Reply</a>
-      </p>
-      <div class="media mt-3">
-        <a class="pr-3" href="#">
-          <img src="~/images/64x64.svg" width="48" height="48" alt="Generic placeholder image">
-        </a>
-        <div class="media-body">
-          <h5 class="mt-0">Media heading</h5>
-          Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
-          <p>
-            <a id="reply2" href="#reply" onclick="showReplyForm('reply2')">Reply</a>
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="media">
-    <img class="mr-3" src="~/images/64x64.svg" width="48" height="48" alt="Generic placeholder image">
-    <div class="media-body">
-      <h5 class="mt-0">Media heading</h5>
-      Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
-      <p>
-        <a id="reply3" href="#reply" onclick="showReplyForm('reply3')">Reply</a>
-      </p>
-      <div class="media mt-3">
-        <a class="pr-3" href="#">
-          <img src="~/images/64x64.svg" width="48" height="48" alt="Generic placeholder image">
-        </a>
-        <div class="media-body">
-          <h5 class="mt-0">Media heading</h5>
-          Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
-          <p>
-            <a id="reply4" href="#reply" onclick="showReplyForm('reply4')">Reply</a>
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
+    <h4 id="comments-count"></h4>
 </div>
 
-<p>
-  <h4>Add a public comment...</h4>
-</p>
+<div id="article-comments" class="mt-4">
+      
+</div>
 
-<textarea id="article-editor" style="display: none"></textarea>
+<div class="media p-2">
+    <div class="media-body">
+        <div id="reply">
+            <h4><a href="#reply" class="text-dashed" onclick="showReplyForm('reply')">Add a public comment</a></h4>
+        </div>
+    </div>
+</div>
 
-<script> 
-    function showReplyForm(commentId) {
-        var simpleEditor;
-        if ($("#comment-editor").length === 0) {
-            $("#" + commentId).after("<textarea id='comment-editor' style='display: none'></textarea>");
-            new SimpleMDE({
-                status: false,
-                element: $("#comment-editor")[0],
-                placeholder: "Type here...",
-                fullScreen: false,
-                withPreview: false
-            });
-        } else {
-            emptySimpleEditor();
-            $("#" + commentId).after("<textarea id='comment-editor' style='display: none'></textarea>");
-            new SimpleMDE({
-                status: false,
-                element: $("#comment-editor")[0],
-                placeholder: "Type here...",
-                fullScreen: false,
-                withPreview: false
-            });
-        }
-    }
-    
-    function emptySimpleEditor() {
-        $("#comment-editor, .editor-toolbar, .CodeMirror, .editor-preview-side").remove();
-    }
-
+<script>
     $.urlParam = function(name, url) {
         if (!url) {
             url = window.location.href;
@@ -96,19 +28,105 @@
     }
 
     var articleId = $.urlParam('articleId');
+    
+    function showReplyForm(replyId) {
+        removeFormById("comment-form");
+       
+        $(`#${replyId}`).append(
+            `<div id='comment-form'>   
+                <textarea id='md-editor' style='display: none'></textarea>    
+                <div class='row mt-3'>
+                    <div class='col-12'>            
+                        <input id='submit-comment' type='button' class='btn btn-light waves-effect waves-light btn-sm mr-2' value='Comment''/>
+                        <input type='button' class='btn btn-light waves-effect waves-light btn-sm mr-2' value='Cancel' onclick='removeFormById("comment-form")'/>
+                    </div>    
+                </div>
+            </div>`
+        );
+        
+        var simpleEditor = new SimpleMDE({
+            status: false,
+            element: $("#md-editor")[0],
+            placeholder: "Type here...",
+            fullScreen: false,
+            withPreview: false
+        });
+             
+        $(".CodeMirror, .CodeMirror-scroll").css('min-height', '150px');
 
-    $.ajax({
-        url: "/Articles/GetArticleCommentsByArticleId?articleId=" + articleId,
-        type: "GET",
-        contentType: "application/json",
-        error: function(jqXhr, textStatus, errorThrown) {
-            console.log("jqXhr: " + jqXhr);
-            console.log("textStatus: " + jqXhr);
-            console.log("errorThrown: " + jqXhr);
-        },
-        success: function(response) {
-            console.log("Article comments: " + response);
-            $("#comments-count").html("Comments (" + response + ")");
+        $("#submit-comment").click(function() {
+            var text = simpleEditor.options.previewRender(simpleEditor.value());
+            submitComment(replyId, text);
+        });
+    }
+
+    function submitComment(replyId, text) {
+        var comment = JSON.stringify({
+            text: text
+        });
+ 
+        //createArticleCommentAsync(articleId, comment);
+        
+        //todo: add append in response of create article comment
+        
+        $("#article-comments").append(
+            `<div class="media p-2">
+                <img class="mr-3" src="/images/64x64.svg" width="48" height="48" alt="Generic placeholder image">
+                <div class="media-body">
+                    <h5 class="mt-0">Media heading</h5>
+                    ${text}         
+                    <div id="${replyId}">
+                        <p class="reply-link"><a href="#reply" onclick="showReplyForm('${replyId}')">Reply</a></p>                
+                    </div>
+                </div>
+            </div>`
+        );
+    }
+    
+    function removeFormById(formId) {
+        var form = $(`#${formId}`);      
+        if (form.length !== 0) {
+            form.remove();
         }
-    });
+    }
+    
+    function replyArticleComment() {
+        
+    }
+    
+    function createArticleCommentAsync(articleId, comment) {
+        $.ajax({
+            url: `/Articles/CreateArticleComment?articleId=${articleId}`,
+            type: "POST",
+            data: comment,
+            contentType: "application/json",
+            error: function(jqXhr, textStatus, errorThrown) {
+                console.log("jqXhr: " + jqXhr);
+                console.log("textStatus: " + jqXhr);
+                console.log("errorThrown: " + jqXhr);
+            },
+            success: function(response) {
+                //todo: append first
+            }
+        });
+    }
+   
+    function getArticleCommentsByArticleId(articleId) {
+        $.ajax({
+            url: "/Articles/GetArticleCommentsByArticleId?articleId=" + articleId,
+            type: "GET",
+            contentType: "application/json",
+            error: function(jqXhr, textStatus, errorThrown) {
+                console.log("jqXhr: " + jqXhr);
+                console.log("textStatus: " + jqXhr);
+                console.log("errorThrown: " + jqXhr);
+            },
+            success: function(response) {
+                console.log("Article comments: " + response);
+                $("#comments-count").html("Comments (" + response + ")");
+            }
+        });
+    }
+
+    getArticleCommentsByArticleId(articleId);
 </script>
