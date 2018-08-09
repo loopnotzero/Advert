@@ -127,7 +127,6 @@
                 console.log("errorThrown: " + jqXhr);
             },
             success: function(response) {
-                console.log(response);
                 $("#article-comments").prepend(
                     `<div class="media p-2">
                         <img class="mr-3" src="/images/64x64.svg" width="64" height="64" alt="Generic placeholder image">
@@ -139,6 +138,7 @@
                         </div>
                     </div>`
                 );
+                countArticleCommentsByArticleIdAsync(articleId);
             }
         });
     }
