@@ -52,7 +52,6 @@
                     console.log("errorThrown: " + jqXhr);
                 },
                 success: function(response) {
-//                    var html = $.parseHTML(response);
                     $("#articles-preview").html(response);
                 }
             });

@@ -5,8 +5,23 @@
 <div id="article" class="container-fluid">
   <article>
     <div class="card m-b-20">
-      <small class="text-muted m-l-10 m-t-10">Created by <ins>Chicu Victor</ins> today at 17:15</small>
-      @Html.Partial("ArticleContentPartial")
+      <small class="text-muted m-l-10 m-t-10">Created by <ins>Chicu Victor</ins> today at 17:15</small>    
+        
+        @Html.Partial("ArticleContentPartial")
+        
+        <div style="border-bottom: 1px solid #e3e3e3; padding-left: 20px; padding-bottom: 20px">
+            <h4 id="comments-count">
+            </h4>
+        </div>
+        
+        <div class="media p-4">
+            <div class="media-body">              
+            </div>
+        </div>
+        
+        <div id="article-comments" class="pl-4 pr-4">
+            @Html.Partial("ArticleCommentsPartial")
+        </div>      
     </div>
   </article>
 </div>
@@ -19,8 +34,20 @@
     <i class="fa fa-2x fa-angle-double-down"></i>
 </button>
 
-
 <script>
+    $.urlParam = function(name, url) {
+        if (!url) {
+            url = window.location.href;
+        }
+        var results = new RegExp('[\\?&]' + name + '=([^&#]*)').exec(url);
+        if (!results) {
+            return undefined;
+        }
+        return results[1] || undefined;
+    }
+    
+    var articleId = $.urlParam('articleId');
+    
     function scrollUp() {
         document.documentElement.scrollTop = 0;
     }
@@ -29,6 +56,124 @@
         if (document.documentElement.scrollHeight > document.documentElement.scrollTop) {
             document.documentElement.scrollTop = document.documentElement.scrollHeight;
         }
+    }
+    
+    function showPublicCommentForm() {
+        removePublicCommentForm();
+        
+        $(".media-body").append(
+            `<div id="comment-form">   
+                <textarea id="comment-editor" style="display: none"></textarea>    
+                <div class="row mt-3">
+                    <div class="col-12">            
+                        <input id="submit-comment" type="button" class="btn btn-light waves-effect waves-light btn-sm mr-2" value="Publish a comment"/>
+                    </div>    
+                </div>
+            </div>`
+        );
+
+        var simpleEditor = new SimpleMDE({
+            status: false,
+            element: $("#comment-editor")[0],
+            placeholder: "Type here...",
+            fullScreen: false,
+            withPreview: false
+        });
+
+        $(".CodeMirror, .CodeMirror-scroll").css('min-height', '150px');
+
+        $("#submit-comment").click(function() {
+            var text = simpleEditor.options.previewRender(simpleEditor.value());           
+            console.log(`Article id: ${articleId}`);
+            console.log(`Comment text: ${text}`);       
+            createArticleCommentAsync(articleId, JSON.stringify({
+                text: text
+            }));
+        });
+    }
+    
+    function removePublicCommentForm() {
+        var form = $("#comment-form");
+        if (form.length !== 0) {
+            form.remove();
+        }
+    }
+
+    function setArticleViewCountAsync(articleId) {
+        $.ajax({
+            url: "/Articles/SetArticleViewCount?articleId=" + articleId,
+            type: "GET",
+            contentType: "application/json",
+            error: function(jqXhr, textStatus, errorThrown) {
+                console.log("jqXhr: " + jqXhr);
+                console.log("textStatus: " + jqXhr);
+                console.log("errorThrown: " + jqXhr);
+            },
+            success: function(response) {
+                console.log("Article view count: " + response);
+            }
+        });
+    }
+  
+    function createArticleCommentAsync(articleId, comment) {
+        $.ajax({
+            url: `/Articles/CreateArticleComment?articleId=${articleId}`,
+            type: "POST",
+            data: comment,
+            contentType: "application/json",
+            error: function(jqXhr, textStatus, errorThrown) {
+                console.log("jqXhr: " + jqXhr);
+                console.log("textStatus: " + jqXhr);
+                console.log("errorThrown: " + jqXhr);
+            },
+            success: function(response) {
+                console.log(response);
+                $("#article-comments").prepend(
+                    `<div class="media p-2">
+                        <img class="mr-3" src="/images/64x64.svg" width="64" height="64" alt="Generic placeholder image">
+                        <div class="media-body">                           
+                            ${response.text}         
+                            <div id="${response.id}">
+                                <p class="reply-link"><a href="#reply" onclick="showReplyCommentForm('${response.id}')">Reply</a></p>                
+                            </div>
+                        </div>
+                    </div>`
+                );
+            }
+        });
+    }
+
+    function findArticleCommentsByArticleId(articleId) {
+        $.ajax({
+            url: `/Articles/FindArticleCommentsByArticleId?articleId=${articleId}`,
+            type: "GET",
+            contentType: "application/json",
+            error: function(jqXhr, textStatus, errorThrown) {
+                console.log("jqXhr: " + jqXhr);
+                console.log("textStatus: " + jqXhr);
+                console.log("errorThrown: " + jqXhr);
+            },
+            success: function(response) {
+                console.log(response);
+                $("#article-comments").html(response);
+            }
+        });
+    }
+
+    function countArticleCommentsByArticleIdAsync(articleId) {
+        $.ajax({
+            url: `/Articles/CountArticleCommentsByArticleId?articleId=${articleId}`,
+            type: "GET",
+            contentType: "application/json",
+            error: function(jqXhr, textStatus, errorThrown) {
+                console.log("jqXhr: " + jqXhr);
+                console.log("textStatus: " + jqXhr);
+                console.log("errorThrown: " + jqXhr);
+            },
+            success: function(response) {
+                $("#comments-count").html(`Comments (${response})`);
+            }
+        });
     }
 
     $(document).ready(function() {
@@ -61,19 +206,10 @@
         }
 
         var articleId = $.urlParam('articleId');
-
-        $.ajax({
-            url: "/Articles/SetArticleViewCount?articleId=" + articleId,
-            type: "GET",
-            contentType: "application/json",
-            error: function(jqXhr, textStatus, errorThrown) {
-                console.log("jqXhr: " + jqXhr);
-                console.log("textStatus: " + jqXhr);
-                console.log("errorThrown: " + jqXhr);
-            },
-            success: function(response) {
-                console.log("Article view count: " + response);
-            }
-        });
+        
+        showPublicCommentForm();
+        setArticleViewCountAsync(articleId);
+        findArticleCommentsByArticleId(articleId);
+        countArticleCommentsByArticleIdAsync(articleId);      
     });
 </script>

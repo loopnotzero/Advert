@@ -1,132 +1,58 @@
-﻿        
-<div style="border-bottom: 1px solid #e3e3e3;">
-    <h4 id="comments-count"></h4>
-</div>
+﻿@model IEnumerable<Egghead.Models.Articles.ArticleCommentModel>
 
-<div id="article-comments" class="mt-4">
-      
-</div>
-
-<div class="media p-2">
-    <div class="media-body">
-        <div id="reply">
-            <h4><a href="#reply" class="text-dashed" onclick="showReplyForm('reply')">Add a public comment</a></h4>
+@if (Model != null && Model.Any())
+{
+    foreach (var articleComment in Model)
+    {
+        <div class="media p-2">
+            <img class="mr-3" src="/images/64x64.svg" width="64" height="64" alt="Generic placeholder image">
+            <div class="media-body">                           
+                @Html.Raw(articleComment.Text)
+                <div id="@articleComment.Id">
+                    <p class="reply-link"><a href="#reply" onclick="showReplyCommentForm('@articleComment.Id')">Reply</a></p>                
+                </div>
+            </div>
         </div>
-    </div>
-</div>
+    }
+}
 
 <script>
-    $.urlParam = function(name, url) {
-        if (!url) {
-            url = window.location.href;
-        }
-        var results = new RegExp('[\\?&]' + name + '=([^&#]*)').exec(url);
-        if (!results) {
-            return undefined;
-        }
-        return results[1] || undefined;
-    }
-
-    var articleId = $.urlParam('articleId');
-    
-    function showReplyForm(replyId) {
-        removeFormById("comment-form");
-       
-        $(`#${replyId}`).append(
-            `<div id='comment-form'>   
-                <textarea id='md-editor' style='display: none'></textarea>    
-                <div class='row mt-3'>
-                    <div class='col-12'>            
-                        <input id='submit-comment' type='button' class='btn btn-light waves-effect waves-light btn-sm mr-2' value='Comment''/>
-                        <input type='button' class='btn btn-light waves-effect waves-light btn-sm mr-2' value='Cancel' onclick='removeFormById("comment-form")'/>
+    function showReplyCommentForm(commentId) {
+        removeReplyCommentForm("reply-form");
+        
+        $(`#${commentId}`).append(
+            `<div id="reply-form">   
+                <textarea id="reply-editor" style="display: none"></textarea>    
+                <div class="row mt-3">
+                    <div class="col-12">            
+                        <input id="submit-reply" type="button" class="btn btn-light waves-effect waves-light btn-sm mr-2" value="Reply"/>
+                        <input type="button" class="btn btn-light waves-effect waves-light btn-sm mr-2" value="Cancel" onclick="removeReplyCommentForm('comment-form')"/>
                     </div>    
                 </div>
             </div>`
         );
-        
+
         var simpleEditor = new SimpleMDE({
             status: false,
-            element: $("#md-editor")[0],
+            element: $("#reply-editor")[0],
             placeholder: "Type here...",
             fullScreen: false,
             withPreview: false
         });
-             
+
         $(".CodeMirror, .CodeMirror-scroll").css('min-height', '150px');
 
         $("#submit-comment").click(function() {
             var text = simpleEditor.options.previewRender(simpleEditor.value());
-            submitComment(replyId, text);
+            console.log(`Reply text: ${text}`);
         });
     }
-
-    function submitComment(replyId, text) {
-        var comment = JSON.stringify({
-            text: text
-        });
- 
-        //createArticleCommentAsync(articleId, comment);
-        
-        //todo: add append in response of create article comment
-        
-        $("#article-comments").append(
-            `<div class="media p-2">
-                <img class="mr-3" src="/images/64x64.svg" width="48" height="48" alt="Generic placeholder image">
-                <div class="media-body">
-                    <h5 class="mt-0">Media heading</h5>
-                    ${text}         
-                    <div id="${replyId}">
-                        <p class="reply-link"><a href="#reply" onclick="showReplyForm('${replyId}')">Reply</a></p>                
-                    </div>
-                </div>
-            </div>`
-        );
-    }
-    
-    function removeFormById(formId) {
-        var form = $(`#${formId}`);      
+   
+    function removeReplyCommentForm(commentId) {
+        var form = $(`#${commentId}`);
         if (form.length !== 0) {
             form.remove();
         }
     }
-    
-    function replyArticleComment() {
-        
-    }
-    
-    function createArticleCommentAsync(articleId, comment) {
-        $.ajax({
-            url: `/Articles/CreateArticleComment?articleId=${articleId}`,
-            type: "POST",
-            data: comment,
-            contentType: "application/json",
-            error: function(jqXhr, textStatus, errorThrown) {
-                console.log("jqXhr: " + jqXhr);
-                console.log("textStatus: " + jqXhr);
-                console.log("errorThrown: " + jqXhr);
-            },
-            success: function(response) {
-                //todo: append first
-            }
-        });
-    }
-   
-    function getArticleCommentsByArticleId(articleId) {
-        $.ajax({
-            url: "/Articles/GetArticleCommentsByArticleId?articleId=" + articleId,
-            type: "GET",
-            contentType: "application/json",
-            error: function(jqXhr, textStatus, errorThrown) {
-                console.log("jqXhr: " + jqXhr);
-                console.log("textStatus: " + jqXhr);
-                console.log("errorThrown: " + jqXhr);
-            },
-            success: function(response) {
-                console.log("Article comments: " + response);
-                $("#comments-count").html("Comments (" + response + ")");
-            }
-        });
-    }
 
-    getArticleCommentsByArticleId(articleId);
 </script>

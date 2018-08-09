@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Egghead.Common;
 using Egghead.Common.Articles;
@@ -58,17 +59,67 @@ namespace Egghead.Controllers
             
         [HttpGet]
         [Authorize]
-        public async Task<long> GetArticleCommentsByArticleId(string articleId)
+        public async Task<long> CountArticleCommentsByArticleId(string articleId)
         {
             return await _articlesCommentsManager.CountArticleCommentsByArticleId(articleId);
         }
 
-        [HttpPost]
-        public async Task<long> CreatedArticleComment()
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> FindArticleCommentsByArticleId(string articleId)
         {
-            throw new NotImplementedException();
+            var articleComments = await _articlesCommentsManager.FindArticleCommentsByArticleId(articleId);
+
+            return PartialView("ArticleCommentsPartial", articleComments.Select(x => new ArticleCommentModel
+            {
+                Id = x.Id,
+                Text = x.Text,
+                ReplyTo = x.ReplyTo,
+                Level = x.Level,
+                CreatedAt = x.CreatedAt
+            }));
         }
-        
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> CreateArticleComment(string articleId, [FromBody] ArticleCommentModel article)
+        {
+            try
+            {
+                var articleComment = new MongoDbArticleComment
+                {
+                    Text = article.Text,
+                    ByWho = HttpContext.User.Identity.Name,
+                    ByWhoNormalized = HttpContext.User.Identity.Name.ToUpper(),
+                    ReplyTo = null,
+                    Level = 0,
+                    CreatedAt = DateTime.UtcNow
+                };
+                
+                await _articlesCommentsManager.CreateArticleComment(articleId, articleComment);
+
+                var entity = await _articlesCommentsManager.FindArticleCommentById(articleId, articleComment.Id);
+
+                return Ok(new ArticleCommentModel
+                {
+                    Id = entity.Id,
+                    Text = entity.Text,
+                    ReplyTo = entity.ReplyTo,
+                    Level = entity.Level,
+                    CreatedAt = entity.CreatedAt
+                });
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return Ok(new ErrorModel
+                {
+                    ErrorMessage = e.Message,
+                    ErrorStatusCode = ErrorStatusCode.InternalServerError
+                });
+            }
+        }
+
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> GetArticlesPreview(int articlesCount)
@@ -76,17 +127,12 @@ namespace Egghead.Controllers
             try
             {
                 var user = await _userManager.FindByEmailAsync(HttpContext.User.Identity.Name);
-                
-                var articles = new List<ArticlePreviewModel>();
-                
-                foreach (var article in await _articlesManager.GetArticlesAsync(articlesCount))
+                var articles = await _articlesManager.GetArticlesAsync(articlesCount);
+                var articlesPreview = new List<ArticlePreviewModel>();
+
+                foreach (var article in articles)
                 {
-                    var articleLikes = await _articlesLikesManager.CountArticleLikesByArticleIdAsync(article.Id);
-                    var articleDislikes = await _articlesLikesManager.CountArticleDislikesByArticleIdAsync(article.Id);
-                    var articleViewCount = await _articlesViewCountManager.CountArticleViewCountByArticleIdAsync(article.Id);
-                    var articleCommentsCount = await _articlesCommentsManager.CountArticleCommentsByArticleId(article.Id);
-               
-                    articles.Add(new ArticlePreviewModel
+                    articlesPreview.Add(new ArticlePreviewModel
                     {
                         Id = article.Id,
                         Title = article.Title,
@@ -94,14 +140,14 @@ namespace Egghead.Controllers
                         FirstName = user.FirstName,
                         LastName = user.LastName,
                         CreatedAt = article.CreatedAt,
-                        Likes = articleLikes,
-                        Dislikes = articleDislikes,
-                        ViewCount = articleViewCount,
-                        CommentsCount = articleCommentsCount,
+                        Likes = await _articlesLikesManager.CountArticleLikesByArticleIdAsync(article.Id),
+                        Dislikes = await _articlesLikesManager.CountArticleDislikesByArticleIdAsync(article.Id),
+                        ViewCount = await _articlesViewCountManager.CountArticleViewCountByArticleIdAsync(article.Id),
+                        CommentsCount = await _articlesCommentsManager.CountArticleCommentsByArticleId(article.Id),
                     });
                 }
 
-                return PartialView("ArticlesPreviewPartial", articles);
+                return PartialView("ArticlesPreviewPartial", articlesPreview);
             }
             catch (Exception e)
             {
