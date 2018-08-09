@@ -9,7 +9,7 @@ namespace Egghead.Common.Stores
     {
         Task<T> FindArticleCommentByIdAsync(string commentId, CancellationToken cancellationToken);
         Task<long> EstimatedArticleCommentsCountAsync(CancellationToken cancellationToken);
-        Task<List<T>> GetArticleCommentsAsync(CancellationToken cancellationToken);
+        Task<List<T>> FindArticleCommentsAsync(CancellationToken cancellationToken);
         Task<OperationResult> CreateArticleCommentAsync(T entity, CancellationToken cancellationToken);
         Task<OperationResult> UpdateArticleCommentByIdAsync(string commentId, T entity, CancellationToken cancellationToken);
         Task<OperationResult> DeleteArticleCommentByIdAsync(string commentId, CancellationToken cancellationToken);
