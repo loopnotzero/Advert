@@ -91,8 +91,8 @@ namespace Egghead.Controllers
                     Text = article.Text,
                     ByWho = HttpContext.User.Identity.Name,
                     ByWhoNormalized = HttpContext.User.Identity.Name.ToUpper(),
-                    ReplyTo = null,
-                    Level = 0,
+                    ReplyTo = article.ReplyTo,
+                    Level = article.Level,
                     CreatedAt = DateTime.UtcNow
                 };
                 

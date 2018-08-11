@@ -9,50 +9,9 @@
             <div class="media-body">                           
                 @Html.Raw(articleComment.Text)
                 <div id="@articleComment.Id">
-                    <p class="reply-link"><a href="#reply" onclick="showReplyCommentForm('@articleComment.Id')">Reply</a></p>                
+                    <p class="reply-link"><a href="#reply" onclick="showReplyForm('@articleComment.Id')">Reply</a></p>                
                 </div>
             </div>
         </div>
     }
 }
-
-<script>
-    function showReplyCommentForm(commentId) {
-        removeReplyCommentForm("reply-form");
-        
-        $(`#${commentId}`).append(
-            `<div id="reply-form">   
-                <textarea id="reply-editor" style="display: none"></textarea>    
-                <div class="row mt-3">
-                    <div class="col-12">            
-                        <input id="submit-reply" type="button" class="btn btn-light waves-effect waves-light btn-sm mr-2" value="Reply"/>
-                        <input type="button" class="btn btn-light waves-effect waves-light btn-sm mr-2" value="Cancel" onclick="removeReplyCommentForm('comment-form')"/>
-                    </div>    
-                </div>
-            </div>`
-        );
-
-        var simpleEditor = new SimpleMDE({
-            status: false,
-            element: $("#reply-editor")[0],
-            placeholder: "Type here...",
-            fullScreen: false,
-            withPreview: false
-        });
-
-        $(".CodeMirror, .CodeMirror-scroll").css('min-height', '150px');
-
-        $("#submit-comment").click(function() {
-            var text = simpleEditor.options.previewRender(simpleEditor.value());
-            console.log(`Reply text: ${text}`);
-        });
-    }
-   
-    function removeReplyCommentForm(commentId) {
-        var form = $(`#${commentId}`);
-        if (form.length !== 0) {
-            form.remove();
-        }
-    }
-
-</script>

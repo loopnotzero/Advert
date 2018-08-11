@@ -3,76 +3,123 @@
 @Html.Partial("ArticlesPreviewNavigationPartial")
 
 <div id="article" class="container-fluid">
-  <article>
-    <div class="card m-b-20">
-      <small class="text-muted m-l-10 m-t-10">Created by <ins>Chicu Victor</ins> today at 17:15</small>    
-        
-        @Html.Partial("ArticleContentPartial")
-        
-        <div style="border-bottom: 1px solid #e3e3e3; padding-left: 20px; padding-bottom: 20px">
-            <h4 id="comments-count">
-            </h4>
-        </div>
-        
-        <div class="media p-4">
-            <div class="media-body">              
+    <article>
+        <div class="card m-b-20">
+            <small class="text-muted m-l-10 m-t-10">Created by <ins>Chicu Victor</ins> today at 17:15</small>
+
+            @Html.Partial("ArticleContentPartial")
+
+            <div style="border-bottom: 1px solid #e3e3e3; padding-left: 20px; padding-bottom: 20px">
+                <h4 id="comments-count">
+                </h4>
+            </div>
+
+            <div id="comment-section" class="p-4">
+
+            </div>
+
+            <div id="article-comments" class="container" class="pl-4 pr-4">
+                @* @Html.Partial("ArticleCommentsPartial") *@
+
+                <div class="media p-3">
+                    <img src="/images/64x64.svg" width="48" height="48" alt="Generic placeholder image">
+                    <div class="media-body">
+                        <div class="col-6">
+                            <h6 class="mt-0">Media heading</h6>
+                        </div>
+                        <div class="col-auto">
+                            <h6>
+                                Что такое Lorem Ipsum?
+                                Lorem Ipsum - это текст-"рыба", часто используемый в печати и вэб-дизайне. Lorem Ipsum является стандартной "рыбой" для текстов на латинице с начала XVI века. В то время некий безымянный печатник создал большую коллекцию размеров и форм шрифтов, используя Lorem Ipsum для распечатки образцов. Lorem Ipsum не только успешно пережил без заметных изменений пять веков, но и перешагнул в электронный дизайн. Его популяризации в новое время послужили публикация листов Letraset с образцами Lorem Ipsum в 60-х годах и, в более недавнее время, программы электронной вёрстки типа Aldus PageMaker, в шаблонах которых используется Lorem Ipsum.
+                            </h6>
+                        </div>
+                        <div class="col-sm-12">
+                            <a href="#reply">Reply</a> <span>(78)</span>
+                            <div name="btn-like" class="r-btn r-btn-light r-btn--icon">
+                                <i class="fa fa-thumbs-o-up"></i>
+                            </div>
+                            <div name="btn-dislike" class="r-btn r-btn-light r-btn--icon">
+                                <i class="fa fa-thumbs-o-down"></i>
+                            </div>
+                        </div>
+
+                        
+                    </div>
+                </div>
             </div>
         </div>
-        
-        <div id="article-comments" class="pl-4 pr-4">
-            @Html.Partial("ArticleCommentsPartial")
-        </div>      
-    </div>
-  </article>
+    </article>
 </div>
 
-<button id="scroll-up" onclick="scrollUp()" style="display:none">
-    <i class="fa fa-2x fa-angle-double-up"></i>
-</button>
-
-<button id="scroll-down" onclick="scrollDown()" style="display:none">
-    <i class="fa fa-2x fa-angle-double-down"></i>
-</button>
-
 <script>
-    $.urlParam = function(name, url) {
-        if (!url) {
-            url = window.location.href;
-        }
-        var results = new RegExp('[\\?&]' + name + '=([^&#]*)').exec(url);
-        if (!results) {
-            return undefined;
-        }
-        return results[1] || undefined;
-    }
-    
-    var articleId = $.urlParam('articleId');
-    
-    function scrollUp() {
-        document.documentElement.scrollTop = 0;
-    }
-    
-    function scrollDown() {
-        if (document.documentElement.scrollHeight > document.documentElement.scrollTop) {
-            document.documentElement.scrollTop = document.documentElement.scrollHeight;
-        }
-    }
-    
-    function showPublicCommentForm() {
-        removePublicCommentForm();
-        
-        $(".media-body").append(
-            `<div id="comment-form">   
-                <textarea id="comment-editor" style="display: none"></textarea>    
+    function showReplyForm(commentId) {
+        removeReplyForm("reply-form");
+
+        $(`#${commentId}`).append(
+            `<div id="reply-form">   
+                <textarea id="reply-editor" style="display: none"></textarea>    
                 <div class="row mt-3">
                     <div class="col-12">            
-                        <input id="submit-comment" type="button" class="btn btn-light waves-effect waves-light btn-sm mr-2" value="Publish a comment"/>
+                        <input id="submit-reply" type="button" class="btn btn-light waves-effect waves-light btn-sm" value="Reply"/>
+                        <input type="button" class="btn btn-light waves-effect waves-light btn-sm mr-2" value="Cancel" onclick="removeReplyForm('comment-form')"/>
                     </div>    
                 </div>
             </div>`
         );
 
-        var simpleEditor = new SimpleMDE({
+        var editor = new SimpleMDE({
+            status: false,
+            element: $("#reply-editor")[0],
+            placeholder: "Type here...",
+            fullScreen: false,
+            withPreview: false
+        });
+
+        $(".CodeMirror, .CodeMirror-scroll").css('min-height', '150px');
+
+        $.urlParam = function(name, url) {
+            if (!url) {
+                url = window.location.href;
+            }
+            var results = new RegExp('[\\?&]' + name + '=([^&#]*)').exec(url);
+            if (!results) {
+                return undefined;
+            }
+            return results[1] || undefined;
+        }
+
+        $("#submit-reply").click(function() {
+            var text = editor.options.previewRender(editor.value());
+            createArticleCommentReplyAsync($.urlParam('articleId'),
+                {
+                    text: text,
+                    replyTo: commentId
+                });
+        });
+    }
+
+    function removeReplyForm(commentId) {
+        var form = $(`#${commentId}`);
+        if (form.length !== 0) {
+            form.remove();
+        }
+    }
+
+    function showCommentForm() {
+        removeCommentForm();
+
+        $("#comment-section").append(
+            `<div id="comment-form">   
+                <textarea id="comment-editor" style="display: none"></textarea>    
+                <div class="row mt-3">
+                    <div class="col-12">            
+                        <input id="publish-comment" type="button" class="btn btn-light waves-effect waves-light btn-sm mr-2" value="Publish a comment"/>
+                    </div>    
+                </div>
+            </div>`
+        );
+
+        var editor = new SimpleMDE({
             status: false,
             element: $("#comment-editor")[0],
             placeholder: "Type here...",
@@ -82,17 +129,18 @@
 
         $(".CodeMirror, .CodeMirror-scroll").css('min-height', '150px');
 
-        $("#submit-comment").click(function() {
-            var text = simpleEditor.options.previewRender(simpleEditor.value());           
-            console.log(`Article id: ${articleId}`);
-            console.log(`Comment text: ${text}`);       
-            createArticleCommentAsync(articleId, JSON.stringify({
-                text: text
-            }));
+        var articleId = $.urlParam('articleId');
+
+        $("#publish-comment").click(function() {
+            var text = editor.options.previewRender(editor.value());
+            createArticleCommentAsync(articleId,
+                {
+                    text: text
+                });
         });
     }
-    
-    function removePublicCommentForm() {
+
+    function removeCommentForm() {
         var form = $("#comment-form");
         if (form.length !== 0) {
             form.remove();
@@ -114,12 +162,12 @@
             }
         });
     }
-  
+
     function createArticleCommentAsync(articleId, comment) {
         $.ajax({
             url: `/Articles/CreateArticleComment?articleId=${articleId}`,
             type: "POST",
-            data: comment,
+            data: JSON.stringify(comment),
             contentType: "application/json",
             error: function(jqXhr, textStatus, errorThrown) {
                 console.log("jqXhr: " + jqXhr);
@@ -133,7 +181,8 @@
                         <div class="media-body">                           
                             ${response.text}         
                             <div id="${response.id}">
-                                <p class="reply-link"><a href="#reply" onclick="showReplyCommentForm('${response.id}')">Reply</a></p>                
+                                <p class="reply-link"><a href="#reply" onclick="showReplyCommentForm('${response.id
+                    }')">Reply</a></p>                
                             </div>
                         </div>
                     </div>`
@@ -143,7 +192,36 @@
         });
     }
 
-    function findArticleCommentsByArticleId(articleId) {
+    function createArticleCommentReplyAsync(articleId, comment) {
+        $.ajax({
+            url: `/Articles/CreateArticleComment?articleId=${articleId}`,
+            type: "POST",
+            data: JSON.stringify(comment),
+            contentType: "application/json",
+            error: function(jqXhr, textStatus, errorThrown) {
+                console.log("jqXhr: " + jqXhr);
+                console.log("textStatus: " + jqXhr);
+                console.log("errorThrown: " + jqXhr);
+            },
+            success: function(response) {
+                $(`#${comment.id}`).prepend(
+                    `<div class="media p-2">
+                        <img class="mr-3" src="/images/64x64.svg" width="64" height="64" alt="Generic placeholder image">
+                        <div class="media-body">                           
+                            ${response.text}         
+                            <div id="${response.id}">
+                                <p class="reply-link"><a href="#reply" onclick="showReplyCommentForm('${response.id
+                    }')">Reply</a></p>                
+                            </div>
+                        </div>
+                    </div>`
+                );
+                countArticleCommentsByArticleIdAsync(articleId);
+            }
+        });
+    }
+
+    function findArticleCommentsByArticleIdAync(articleId) {
         $.ajax({
             url: `/Articles/FindArticleCommentsByArticleId?articleId=${articleId}`,
             type: "GET",
@@ -154,7 +232,6 @@
                 console.log("errorThrown: " + jqXhr);
             },
             success: function(response) {
-                console.log(response);
                 $("#article-comments").html(response);
             }
         });
@@ -177,23 +254,6 @@
     }
 
     $(document).ready(function() {
-        onScroll();
-        
-        window.onscroll = function() { onScroll() };
-
-        function onScroll() {                              
-            var max = (document.documentElement.scrollHeight - document.documentElement.clientHeight);
-                
-            if (max > 0 && document.documentElement.scrollTop >= max) {
-                document.getElementById("scroll-up").style.display = "block";
-                document.getElementById("scroll-down").style.display = "none";
-            } else {
-                if (document.documentElement.scrollTop >= 0) {
-                    document.getElementById("scroll-down").style.display = "block";
-                }
-            }
-        }
-
         $.urlParam = function(name, url) {
             if (!url) {
                 url = window.location.href;
@@ -206,10 +266,10 @@
         }
 
         var articleId = $.urlParam('articleId');
-        
-        showPublicCommentForm();
-        setArticleViewCountAsync(articleId);
-        findArticleCommentsByArticleId(articleId);
-        countArticleCommentsByArticleIdAsync(articleId);      
+
+        showCommentForm();
+//        setArticleViewCountAsync(articleId);
+//        findArticleCommentsByArticleIdAync(articleId);
+//        countArticleCommentsByArticleIdAsync(articleId);      
     });
 </script>
