@@ -98,7 +98,6 @@ namespace Egghead.IntegrationTests.Stores
                 ByWho = "fake@email.com",
                 ByWhoNormalized = "fake@email.com".ToUpper(),
                 ReplyTo = ObjectId.Empty.ToString(),
-                Level = 0,
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -118,7 +117,6 @@ namespace Egghead.IntegrationTests.Stores
                 ByWho = "fake@email.com",
                 ByWhoNormalized = "fake@email.com".ToUpper(),
                 ReplyTo = ObjectId.Empty.ToString(),
-                Level = 0,
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -145,7 +143,6 @@ namespace Egghead.IntegrationTests.Stores
                 ByWho = "fake@email.com",
                 ByWhoNormalized = "fake@email.com".ToUpper(),
                 ReplyTo = ObjectId.Empty.ToString(),
-                Level = 0,
                 CreatedAt = DateTime.UtcNow
             };
 

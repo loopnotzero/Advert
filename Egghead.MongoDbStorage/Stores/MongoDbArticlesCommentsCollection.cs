@@ -43,7 +43,7 @@ namespace Egghead.MongoDbStorage.Stores
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var findOptions = new FindOptions<T> {Sort = Builders<T>.Sort.Descending(field => field.CreatedAt)};
+            var findOptions = new FindOptions<T> {Sort = Builders<T>.Sort.Ascending(field => field.CreatedAt)};
 
             var cursor = await _collection.FindAsync(Builders<T>.Filter.Empty, findOptions, cancellationToken);
 
