@@ -75,7 +75,6 @@ namespace Egghead.Controllers
                 Id = x.Id,
                 Text = x.Text,
                 ReplyTo = x.ReplyTo,
-                Level = x.Level,
                 CreatedAt = x.CreatedAt
             }));
         }
@@ -92,7 +91,6 @@ namespace Egghead.Controllers
                     ByWho = HttpContext.User.Identity.Name,
                     ByWhoNormalized = HttpContext.User.Identity.Name.ToUpper(),
                     ReplyTo = article.ReplyTo,
-                    Level = article.Level,
                     CreatedAt = DateTime.UtcNow
                 };
                 
@@ -105,7 +103,6 @@ namespace Egghead.Controllers
                     Id = entity.Id,
                     Text = entity.Text,
                     ReplyTo = entity.ReplyTo,
-                    Level = entity.Level,
                     CreatedAt = entity.CreatedAt
                 });
             }

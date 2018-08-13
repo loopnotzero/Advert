@@ -4,14 +4,57 @@
 {
     foreach (var articleComment in Model)
     {
-        <div class="media p-2">
-            <img class="mr-3" src="/images/64x64.svg" width="64" height="64" alt="Generic placeholder image">
-            <div class="media-body">                           
-                @Html.Raw(articleComment.Text)
-                <div id="@articleComment.Id">
-                    <p class="reply-link"><a href="#reply" onclick="showReplyForm('@articleComment.Id')">Reply</a></p>                
+        if (articleComment.ReplyTo == null)
+        {
+            <div id="@articleComment.Id" class="media p-3">
+                <img src="/images/64x64.svg" width="48" height="48">
+                <div class="media-body">
+                    <div class="col-auto">
+                        <h6 class="mt-0">Victor Chicu, 1 month ago</h6>
+                    </div>
+                    <div class="col-auto">
+                        <h6>@Html.Raw(articleComment.Text)</h6>
+                    </div>
+                    <div class="col-auto">
+                        <a href="#reply" onclick="showReplyForm('@articleComment.Id')">Reply</a> <span>(78)</span>
+                        <div name="btn-like" class="r-btn r-btn-light r-btn--icon">
+                            <i class="fa fa-thumbs-o-up"></i>
+                        </div>
+                        <div name="btn-dislike" class="r-btn r-btn-light r-btn--icon">
+                            <i class="fa fa-thumbs-o-down"></i>
+                        </div>
+                    </div>
+                    <div class="reply-footer"></div>
                 </div>
             </div>
-        </div>
+        }
+        else
+        { 
+            <script>
+                $("#@articleComment.ReplyTo .media-body").append(`
+                    <div id='@articleComment.Id' class='media p-3'>
+                        <img src="/images/64x64.svg" width="48" height="48">
+                        <div class="media-body">
+                            <div class="col-auto">
+                                <h6 class="mt-0">Victor Chicu, 1 month ago</h6>
+                            </div>
+                            <div class="col-auto">
+                                <h6>@Html.Raw(articleComment.Text)</h6>
+                            </div>
+                            <div class="col-auto">
+                                <a href="#reply" onclick="showReplyForm('@articleComment.Id')">Reply</a> <span>(78)</span>
+                                <div name="btn-like" class="r-btn r-btn-light r-btn--icon">
+                                    <i class="fa fa-thumbs-o-up"></i>
+                                </div>
+                                <div name="btn-dislike" class="r-btn r-btn-light r-btn--icon">
+                                    <i class="fa fa-thumbs-o-down"></i>
+                                </div>
+                            </div>
+                            <div class="reply-footer"></div>
+                        </div>
+                    </div>`
+                );
+            </script>
+        }
     }
 }
