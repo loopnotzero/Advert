@@ -31,10 +31,12 @@
 </div>
 
 <script>
-    function showReplyForm(commentId) {
+    function showReplyForm(replyTo, commentId) {
         removeReplyForm("reply-form");
 
-        $(`#${commentId} .reply-footer`).append(
+        console.log(`Reply To: ${replyTo} Comment ID: ${commentId}`);
+
+        $(`#${commentId} .reply-footer:first`).append(
             `<div id="reply-form">   
                 <textarea id="reply-editor" style="display: none"></textarea>    
                 <div class="row mt-3">
@@ -74,10 +76,12 @@
 
             var text = editor.options.previewRender(editor.value());
 
-            createCommentReplyAsync(articleId, commentId,
+            var parentId = (replyTo == null ? commentId : replyTo);
+
+            createCommentReplyAsync(articleId, parentId,
                 {
                     text: text,
-                    replyTo: commentId
+                    replyTo: parentId
                 });
         });
     }
@@ -105,7 +109,7 @@
         });
     }
 
-    function createCommentReplyAsync(articleId, commentId, comment) {
+    function createCommentReplyAsync(articleId, replyTo, comment) {
         $.ajax({
             url: `/Articles/CreateArticleComment?articleId=${articleId}`,
             type: "POST",
@@ -117,7 +121,7 @@
                 console.log("errorThrown: " + jqXhr);
             },
             success: function(response) {
-                $(`#${commentId} .media-body`).append(`
+                $(`#${replyTo} .media-body:first`).append(`
                 <div id="${response.id}" class="media p-3">
                     <img src="/images/64x64.svg" width="48" height="48" alt="">
                     <div class="media-body">
@@ -128,10 +132,11 @@
                             <h6>${response.text}</h6>
                         </div>
                         <div class="col-auto">
-                            <a href="#reply" onclick="showReplyForm('${commentId}')">Reply</a> <span>(78)</span>
+                            <a href="#reply" onclick="showReplyForm('${replyTo}', '${response.id}')">Reply</a>
                             <div name="btn-like" class="r-btn r-btn-light r-btn--icon">
                                 <i class="fa fa-thumbs-o-up"></i>
                             </div>
+                            <span>78</span>
                             <div name="btn-dislike" class="r-btn r-btn-light r-btn--icon">
                                 <i class="fa fa-thumbs-o-down"></i>
                             </div>
@@ -168,7 +173,7 @@
                         <h6>${response.text}</h6>
                         </div>
                         <div class="col-auto">
-                            <a href="#reply" onclick="showReplyForm('${response.id}')">Reply</a> <span>(78)</span>
+                            <a href="#reply" onclick="showReplyForm(null, '${response.id}')">Reply</a> <span>(78)</span>
                             <div name="btn-like" class="r-btn r-btn-light r-btn--icon">
                                 <i class="fa fa-thumbs-o-up"></i>
                             </div>
@@ -228,8 +233,6 @@
             return results[1] || undefined;
         }
 
-        var articleId = $.urlParam('articleId');
-
         var editor = new SimpleMDE({
             status: false,
             element: $("#comment-editor")[0],
@@ -240,10 +243,11 @@
 
         $(".CodeMirror, .CodeMirror-scroll").css('min-height', '150px');
 
+        var articleId = $.urlParam('articleId');
+
         $("#publish-comment").click(function() {
             var text = editor.options.previewRender(editor.value());
-            createArticleCommentAsync(articleId,
-                {
+            createArticleCommentAsync(articleId, {
                     text: text
                 });
         });

@@ -16,10 +16,11 @@
                         <h6>@Html.Raw(articleComment.Text)</h6>
                     </div>
                     <div class="col-auto">
-                        <a href="#reply" onclick="showReplyForm('@articleComment.Id')">Reply</a> <span>(78)</span>
+                        <a href="#reply" onclick="showReplyForm(null, '@articleComment.Id')">Reply</a>
                         <div name="btn-like" class="r-btn r-btn-light r-btn--icon">
                             <i class="fa fa-thumbs-o-up"></i>
                         </div>
+                        <span>78</span>
                         <div name="btn-dislike" class="r-btn r-btn-light r-btn--icon">
                             <i class="fa fa-thumbs-o-down"></i>
                         </div>
@@ -30,8 +31,9 @@
         }
         else
         { 
-            <script>
-                $("#@articleComment.ReplyTo .media-body").append(`
+             <script>
+                console.log(`Reply To: @articleComment.ReplyTo`);
+                $("#@articleComment.ReplyTo .media-body:first").append(`
                     <div id='@articleComment.Id' class='media p-3'>
                         <img src="/images/64x64.svg" width="48" height="48">
                         <div class="media-body">
@@ -42,10 +44,11 @@
                                 <h6>@Html.Raw(articleComment.Text)</h6>
                             </div>
                             <div class="col-auto">
-                                <a href="#reply" onclick="showReplyForm('@articleComment.Id')">Reply</a> <span>(78)</span>
+                                <a href="#reply" onclick="showReplyForm('@articleComment.ReplyTo', '@articleComment.Id')">Reply</a>
                                 <div name="btn-like" class="r-btn r-btn-light r-btn--icon">
                                     <i class="fa fa-thumbs-o-up"></i>
                                 </div>
+                                <span>78</span>
                                 <div name="btn-dislike" class="r-btn r-btn-light r-btn--icon">
                                     <i class="fa fa-thumbs-o-down"></i>
                                 </div>
