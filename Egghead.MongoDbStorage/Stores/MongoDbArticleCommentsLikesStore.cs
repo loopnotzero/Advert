@@ -31,24 +31,7 @@ namespace Egghead.MongoDbStorage.Stores
             EntityMappings.EnsureMongoDbArticleLikeConfigured();
         }
 
-        public async Task<OperationResult> SetArticleLikeAsync(T entity, CancellationToken cancellationToken)
-        {
-            if (entity == null)
-            {
-                throw new ArgumentNullException(nameof(entity));
-            }
-           
-            cancellationToken.ThrowIfCancellationRequested();
-
-            await _collection.InsertOneAsync(entity, new InsertOneOptions
-            {
-                BypassDocumentValidation = false
-            }, cancellationToken);
-            
-            return OperationResult.Success;
-        }
-
-        public async Task<T> FindArticleCommentLikesByArticleIdAsync(string articleId, CancellationToken cancellationToken)
+        public async Task<T> FindArticleCommentLikesByArticleCommentIdAsync(string articleId, string commentId, CancellationToken cancellationToken)
         {
             if (articleId == null)
             {
@@ -57,14 +40,18 @@ namespace Egghead.MongoDbStorage.Stores
                     
             cancellationToken.ThrowIfCancellationRequested();
 
-            var filter = Builders<T>.Filter.And(Builders<T>.Filter.Eq(x => x.ArticleId, articleId), Builders<T>.Filter.Eq(x => x.LikeType, LikeType.Like));
+            var filter = Builders<T>.Filter.And(
+                Builders<T>.Filter.Eq(x => x.ArticleId, articleId),
+                Builders<T>.Filter.Eq(x => x.CommentId, commentId),
+                Builders<T>.Filter.Eq(x => x.LikeType, LikeType.Like)
+                );
             
             var cursor = await _collection.FindAsync(filter, cancellationToken: cancellationToken);
 
             return await cursor.FirstOrDefaultAsync(cancellationToken);
         }
 
-        public async Task<T> FindArticleCommentDislikesByArticleIdAsync(string articleId, CancellationToken cancellationToken)
+        public async Task<T> FindArticleCommentDislikesByArticleCommentIdAsync(string articleId, string commentId, CancellationToken cancellationToken)
         {
             if (articleId == null)
             {
@@ -73,14 +60,18 @@ namespace Egghead.MongoDbStorage.Stores
                     
             cancellationToken.ThrowIfCancellationRequested();
 
-            var filter = Builders<T>.Filter.And(Builders<T>.Filter.Eq(x => x.ArticleId, articleId), Builders<T>.Filter.Eq(x => x.LikeType, LikeType.Dislike));
+            var filter = Builders<T>.Filter.And(
+                Builders<T>.Filter.Eq(x => x.ArticleId, articleId),
+                Builders<T>.Filter.Eq(x => x.CommentId, commentId),
+                Builders<T>.Filter.Eq(x => x.LikeType, LikeType.Dislike)
+            );
             
             var cursor = await _collection.FindAsync(filter, cancellationToken: cancellationToken);
 
             return await cursor.FirstOrDefaultAsync(cancellationToken);
         }
 
-        public async Task<long> CountArticleCommentLikesByArticleIdAsync(string articleId, CancellationToken cancellationToken)
+        public async Task<long> CountArticleCommentLikesByArticleCommentIdAsync(string articleId, string commentId, CancellationToken cancellationToken)
         {
             if (articleId == null)
             {
@@ -89,12 +80,16 @@ namespace Egghead.MongoDbStorage.Stores
                     
             cancellationToken.ThrowIfCancellationRequested();
 
-            var filter = Builders<T>.Filter.And(Builders<T>.Filter.Eq(x => x.ArticleId, articleId), Builders<T>.Filter.Eq(x => x.LikeType, LikeType.Like));
-                      
+            var filter = Builders<T>.Filter.And(
+                Builders<T>.Filter.Eq(x => x.ArticleId, articleId),
+                Builders<T>.Filter.Eq(x => x.CommentId, commentId),
+                Builders<T>.Filter.Eq(x => x.LikeType, LikeType.Like)
+            );
+            
             return await _collection.CountDocumentsAsync(filter, cancellationToken: cancellationToken);
         }
 
-        public async Task<long> CountArticleCommentDislikesByArticleIdAsync(string articleId, CancellationToken cancellationToken)
+        public async Task<long> CountArticleCommentDislikesByArticleCommentIdAsync(string articleId, string commentId, CancellationToken cancellationToken)
         {
             if (articleId == null)
             {
@@ -103,7 +98,11 @@ namespace Egghead.MongoDbStorage.Stores
                     
             cancellationToken.ThrowIfCancellationRequested();
 
-            var filter = Builders<T>.Filter.And(Builders<T>.Filter.Eq(x => x.ArticleId, articleId), Builders<T>.Filter.Eq(x => x.LikeType, LikeType.Dislike));
+            var filter = Builders<T>.Filter.And(
+                Builders<T>.Filter.Eq(x => x.ArticleId, articleId),
+                Builders<T>.Filter.Eq(x => x.CommentId, commentId),
+                Builders<T>.Filter.Eq(x => x.LikeType, LikeType.Dislike)
+            );
             
             return await _collection.CountDocumentsAsync(filter, cancellationToken: cancellationToken);
         }

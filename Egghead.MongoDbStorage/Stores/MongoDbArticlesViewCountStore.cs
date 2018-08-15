@@ -58,7 +58,7 @@ namespace Egghead.MongoDbStorage.Stores
 
             var filter = Builders<T>.Filter.Eq(x => x.ArticleId, articleId);
             
-            return await _collection.CountAsync(filter, cancellationToken: cancellationToken);          
+            return await _collection.CountDocumentsAsync(filter, cancellationToken: cancellationToken);          
         }
 
         public async Task<OperationResult> SetArticleViewCountAsync(T entity, CancellationToken cancellationToken)
