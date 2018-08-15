@@ -25,8 +25,15 @@ namespace Egghead.Controllers
         private readonly ArticlesLikesManager<MongoDbArticleLike> _articlesLikesManager;
         private readonly ArticlesCommentsManager<MongoDbArticleComment> _articlesCommentsManager;
         private readonly ArticlesViewCountManager<MongoDbArticleViewCount> _articlesViewCountManager;
+        private readonly ArticleCommentsLikesManager<MongoDbArticleCommentLike> _articleCommentsLikesManager;
 
-        public ArticlesController(UserManager<MongoDbUser> userManager, ArticlesManager<MongoDbArticle> articlesManager, ArticlesCommentsManager<MongoDbArticleComment> articlesCommentsManager, ArticlesLikesManager<MongoDbArticleLike> articlesLikesManager, ArticlesViewCountManager<MongoDbArticleViewCount> articlesViewCountManager, ILoggerFactory loggerFactory)
+        public ArticlesController(UserManager<MongoDbUser> userManager, 
+            ArticlesManager<MongoDbArticle> articlesManager, 
+            ArticlesLikesManager<MongoDbArticleLike> articlesLikesManager, 
+            ArticlesCommentsManager<MongoDbArticleComment> articlesCommentsManager, 
+            ArticlesViewCountManager<MongoDbArticleViewCount> articlesViewCountManager, 
+            ArticleCommentsLikesManager<MongoDbArticleCommentLike> articleCommentsLikesManager, ILoggerFactory loggerFactory
+            )
         {
             _logger = loggerFactory.CreateLogger<AccountController>();
             _userManager = userManager;
@@ -34,6 +41,7 @@ namespace Egghead.Controllers
             _articlesLikesManager = articlesLikesManager;
             _articlesCommentsManager = articlesCommentsManager;
             _articlesViewCountManager = articlesViewCountManager;
+            _articleCommentsLikesManager = articleCommentsLikesManager;
         }
        
         [HttpGet]
@@ -56,75 +64,17 @@ namespace Egghead.Controllers
         {
             return View();
         }
-            
+         
+        
+        
         [HttpGet]
         [Authorize]
-        public async Task<long> CountArticleCommentsByArticleId(string articleId)
-        {
-            return await _articlesCommentsManager.CountArticleCommentsByArticleId(articleId);
-        }
-
-        [HttpGet]
-        [Authorize]
-        public async Task<IActionResult> FindArticleCommentsByArticleId(string articleId)
-        {
-            var articleComments = await _articlesCommentsManager.FindArticleCommentsByArticleId(articleId);
-
-            return PartialView("ArticleCommentsPartial", articleComments.Select(x => new ArticleCommentModel
-            {
-                Id = x.Id,
-                Text = x.Text,
-                ReplyTo = x.ReplyTo,
-                CreatedAt = x.CreatedAt
-            }));
-        }
-
-        [HttpPost]
-        [Authorize]
-        public async Task<IActionResult> CreateArticleComment(string articleId, [FromBody] ArticleCommentModel article)
-        {
-            try
-            {
-                var articleComment = new MongoDbArticleComment
-                {
-                    Text = article.Text,
-                    ByWho = HttpContext.User.Identity.Name,
-                    ByWhoNormalized = HttpContext.User.Identity.Name.ToUpper(),
-                    ReplyTo = article.ReplyTo,
-                    CreatedAt = DateTime.UtcNow
-                };
-                
-                await _articlesCommentsManager.CreateArticleComment(articleId, articleComment);
-
-                var entity = await _articlesCommentsManager.FindArticleCommentById(articleId, articleComment.Id);
-
-                return Ok(new ArticleCommentModel
-                {
-                    Id = entity.Id,
-                    Text = entity.Text,
-                    ReplyTo = entity.ReplyTo,
-                    CreatedAt = entity.CreatedAt
-                });
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e.Message, e);
-                return Ok(new ErrorModel
-                {
-                    ErrorMessage = e.Message,
-                    ErrorStatusCode = ErrorStatusCode.InternalServerError
-                });
-            }
-        }
-
-        [HttpGet]
-        [Authorize]
-        public async Task<IActionResult> GetArticlesPreview(int articlesCount)
+        public async Task<IActionResult> ArticlesPreviewPartial()
         {
             try
             {
                 var user = await _userManager.FindByEmailAsync(HttpContext.User.Identity.Name);
-                var articles = await _articlesManager.GetArticlesAsync(articlesCount);
+                var articles = await _articlesManager.GetArticlesAsync(20);
                 var articlesPreview = new List<ArticlePreviewModel>();
 
                 foreach (var article in articles)
@@ -156,7 +106,9 @@ namespace Egghead.Controllers
             }            
         }
 
-        [HttpGet]
+        
+        
+        [HttpGet]       
         [Authorize]
         public async Task<IActionResult> SetArticleLike(string articleId)
         {
@@ -224,6 +176,8 @@ namespace Egghead.Controllers
             }          
         }     
         
+        
+        
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> SetArticleViewCount(string articleId)
@@ -251,7 +205,9 @@ namespace Egghead.Controllers
                 });
             }
         }
-               
+        
+           
+        
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> CreateArticle([FromBody] ArticlePreviewModel article)
@@ -314,34 +270,7 @@ namespace Egghead.Controllers
                 });
             }
         }
-        
-        [HttpDelete]
-        [Authorize]
-        public async Task<IActionResult> DeleteArticleById(string articleId)
-        {
-            try
-            {
-                await _articlesManager.DeleteArticleByIdAsync(articleId);           
-                return Ok(); 
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e.Message, e);
-                return Ok(new ErrorModel
-                {
-                    ErrorStatusCode = ErrorStatusCode.InternalServerError
-                });
-            }       
-        }
-
-        [HttpDelete]
-        [Authorize]
-        public async Task<IActionResult> DeleteArticleByTitle(string articleTitle)
-        {
-            await _articlesManager.DeleteArticleByTitleAsync(articleTitle);
-            return Ok();
-        }
-
+             
         [HttpPut]
         [Authorize]
         public async Task<IActionResult> UdpateArticleById(string articleId, [FromBody] ArticlePreviewModel article)
@@ -392,6 +321,104 @@ namespace Egghead.Controllers
                     ErrorStatusCode = ErrorStatusCode.InternalServerError
                 });
             }            
-        }                          
+        } 
+        
+        [HttpDelete]
+        [Authorize]
+        public async Task<IActionResult> DeleteArticleById(string articleId)
+        {
+            try
+            {
+                await _articlesManager.DeleteArticleByIdAsync(articleId);           
+                return Ok(); 
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return Ok(new ErrorModel
+                {
+                    ErrorStatusCode = ErrorStatusCode.InternalServerError
+                });
+            }       
+        }
+
+        [HttpDelete]
+        [Authorize]
+        public async Task<IActionResult> DeleteArticleByTitle(string articleTitle)
+        {
+            await _articlesManager.DeleteArticleByTitleAsync(articleTitle);
+            return Ok();
+        }
+        
+        
+        [HttpGet]
+        [Authorize]
+        public async Task<long> CountArticleCommentsByArticleId(string articleId)
+        {
+            return await _articlesCommentsManager.CountArticleCommentsByArticleId(articleId);
+        }
+        
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> CreateArticleComment(string articleId, [FromBody] ArticleCommentModel article)
+        {
+            try
+            {
+                var articleComment = new MongoDbArticleComment
+                {
+                    Text = article.Text,
+                    ByWho = HttpContext.User.Identity.Name,
+                    ByWhoNormalized = HttpContext.User.Identity.Name.ToUpper(),
+                    ReplyTo = article.ReplyTo,
+                    CreatedAt = DateTime.UtcNow
+                };
+                
+                await _articlesCommentsManager.CreateArticleComment(articleId, articleComment);
+
+                var entity = await _articlesCommentsManager.FindArticleCommentById(articleId, articleComment.Id);
+
+                return Ok(new ArticleCommentModel
+                {
+                    Id = entity.Id,
+                    Text = entity.Text,
+                    ReplyTo = entity.ReplyTo,
+                    CreatedAt = entity.CreatedAt
+                });
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return Ok(new ErrorModel
+                {
+                    ErrorMessage = e.Message,
+                    ErrorStatusCode = ErrorStatusCode.InternalServerError
+                });
+            }
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> FindArticleCommentsByArticleId(string articleId)
+        {
+            var articleComments = await _articlesCommentsManager.FindArticleCommentsByArticleId(articleId);
+
+            var articleCommentModels = new List<ArticleCommentModel>();
+            
+            foreach (var articleComment in articleComments)
+            {
+                var likes = await _articleCommentsLikesManager.CountArticleCommentLikesByArticleCommentIdAsync(articleId, articleComment.Id);
+                var dislikes = await _articleCommentsLikesManager.CountArticleCommentDislikesByArticleCommentIdAsync(articleId, articleComment.Id);
+                articleCommentModels.Add(new ArticleCommentModel
+                {
+                    Id = articleComment.Id,
+                    Text = articleComment.Text,
+                    ReplyTo = articleComment.ReplyTo,
+                    CreatedAt = articleComment.CreatedAt,
+                    VotingPoints = likes - dislikes
+                });
+            }
+            
+            return PartialView("ArticleCommentsPartial", articleCommentModels);
+        }              
     }
 }

@@ -55,7 +55,7 @@ namespace Egghead.Managers
             return await Store.GetArticleCommentsCollection(articleId, CancellationToken).EstimatedArticleCommentsCountAsync(CancellationToken);
         }
         
-        public async Task<List<T>> FindArticleCommentsByArticleId(string articleId)     
+        public async Task<List<T>> FindArticleCommentsByArticleId(string articleId)
         {
             ThrowIfDisposed();
 

@@ -50,40 +50,25 @@ namespace Egghead
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<MongoDbOptions>(Configuration.GetSection("MongoDbOptions"));
+            
+            
 
             services.AddTransient<IUserStore<MongoDbUser>>(provider =>
             {
                 var options = provider.GetService<IOptions<MongoDbOptions>>();
                 return new MongoDbUserStore<MongoDbUser>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
             });
+            
             services.AddTransient<IRoleStore<MongoDbRole>>(provider =>
             {
                 var options = provider.GetService<IOptions<MongoDbOptions>>();
                 return new MongoDbRoleStore<MongoDbRole>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
             });
+            
             services.AddTransient<IUserValidator<MongoDbUser>, CustomUserValidator<MongoDbUser>>();
-
-            services.AddTransient<IArticlesStore<MongoDbArticle>>(provider =>
-            {
-                var options = provider.GetService<IOptions<MongoDbOptions>>();
-                return new MongoDbArticlesStore<MongoDbArticle>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
-            });
-            services.AddTransient<IArticlesLikesStore<MongoDbArticleLike>>(provider =>
-            {
-                var options = provider.GetService<IOptions<MongoDbOptions>>();
-                return new MongoDbArticlesLikesStore<MongoDbArticleLike>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
-            });
-            services.AddTransient<IArticlesCommentsStore<MongoDbArticleComment>>(provider =>
-            {
-                var options = provider.GetService<IOptions<MongoDbOptions>>();
-                return new MongoDbArticlesCommentsStore<MongoDbArticleComment>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
-            });
-            services.AddTransient<IArticlesViewCountStore<MongoDbArticleViewCount>>(provider =>
-            {
-                var options = provider.GetService<IOptions<MongoDbOptions>>();
-                return new MongoDbArticlesViewCountStore<MongoDbArticleViewCount>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
-            });
-
+            
+            
+            
             services.AddIdentity<MongoDbUser, MongoDbRole>(options =>
             {
                 options.User.RequireUniqueEmail = true;
@@ -95,10 +80,44 @@ namespace Egghead
                 options.Password.RequiredUniqueChars = 1;
                 options.Password.RequireNonAlphanumeric = false;
             }).AddDefaultTokenProviders().AddUserValidator<CustomUserValidator<MongoDbUser>>();
+            
+            
+            
+            services.AddTransient<IArticleCommentsLikesStore<MongoDbArticleCommentLike>>(provider =>
+            {
+                var options = provider.GetService<IOptions<MongoDbOptions>>();
+                return new MongoDbArticleCommentsLikesStore<MongoDbArticleCommentLike>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+            });
 
-            services.AddScoped<ArticlesManager<MongoDbArticle>, ArticlesManager<MongoDbArticle>>();
-            services.AddScoped<ArticlesLikesManager<MongoDbArticleLike>, ArticlesLikesManager<MongoDbArticleLike>>();
+            services.AddTransient<IArticlesCommentsStore<MongoDbArticleComment>>(provider =>
+            {
+                var options = provider.GetService<IOptions<MongoDbOptions>>();
+                return new MongoDbArticlesCommentsStore<MongoDbArticleComment>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+            });
+                      
+            services.AddTransient<IArticlesLikesStore<MongoDbArticleLike>>(provider =>
+            {
+                var options = provider.GetService<IOptions<MongoDbOptions>>();
+                return new MongoDbArticlesLikesStore<MongoDbArticleLike>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+            });
+            
+            services.AddTransient<IArticlesStore<MongoDbArticle>>(provider =>
+            {
+                var options = provider.GetService<IOptions<MongoDbOptions>>();
+                return new MongoDbArticlesStore<MongoDbArticle>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+            });
+                  
+            services.AddTransient<IArticlesViewCountStore<MongoDbArticleViewCount>>(provider =>
+            {
+                var options = provider.GetService<IOptions<MongoDbOptions>>();
+                return new MongoDbArticlesViewCountStore<MongoDbArticleViewCount>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+            });
+            
+
+            services.AddScoped<ArticleCommentsLikesManager<MongoDbArticleCommentLike>, ArticleCommentsLikesManager<MongoDbArticleCommentLike>>();
             services.AddScoped<ArticlesCommentsManager<MongoDbArticleComment>, ArticlesCommentsManager<MongoDbArticleComment>>();
+            services.AddScoped<ArticlesLikesManager<MongoDbArticleLike>, ArticlesLikesManager<MongoDbArticleLike>>();
+            services.AddScoped<ArticlesManager<MongoDbArticle>, ArticlesManager<MongoDbArticle>>();
             services.AddScoped<ArticlesViewCountManager<MongoDbArticleViewCount>, ArticlesViewCountManager<MongoDbArticleViewCount>>();
 
             services.AddMvc();
