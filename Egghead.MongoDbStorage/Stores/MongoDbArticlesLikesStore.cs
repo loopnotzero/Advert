@@ -31,23 +31,6 @@ namespace Egghead.MongoDbStorage.Stores
             EntityMappings.EnsureMongoDbArticleLikeConfigured();
         }
 
-        public async Task<OperationResult> SetArticleLikeAsync(T entity, CancellationToken cancellationToken)
-        {
-            if (entity == null)
-            {
-                throw new ArgumentNullException(nameof(entity));
-            }
-           
-            cancellationToken.ThrowIfCancellationRequested();
-
-            await _collection.InsertOneAsync(entity, new InsertOneOptions
-            {
-                BypassDocumentValidation = false
-            }, cancellationToken);
-            
-            return OperationResult.Success;
-        }
-
         public async Task<T> FindArticleLikesByArticleIdAsync(string articleId, CancellationToken cancellationToken)
         {
             if (articleId == null)
@@ -91,9 +74,9 @@ namespace Egghead.MongoDbStorage.Stores
 
             var filter = Builders<T>.Filter.And(Builders<T>.Filter.Eq(x => x.ArticleId, articleId), Builders<T>.Filter.Eq(x => x.LikeType, LikeType.Like));
            
-            return await _collection.CountAsync(filter, cancellationToken: cancellationToken);
+            return await _collection.CountDocumentsAsync(filter, cancellationToken: cancellationToken);
         }
-
+       
         public async Task<long> CountArticleDislikesByArticleIdAsync(string articleId, CancellationToken cancellationToken)
         {
             if (articleId == null)
@@ -105,7 +88,24 @@ namespace Egghead.MongoDbStorage.Stores
 
             var filter = Builders<T>.Filter.And(Builders<T>.Filter.Eq(x => x.ArticleId, articleId), Builders<T>.Filter.Eq(x => x.LikeType, LikeType.Dislike));
             
-            return await _collection.CountAsync(filter, cancellationToken: cancellationToken);
+            return await _collection.CountDocumentsAsync(filter, cancellationToken: cancellationToken);
+        }
+        
+        public async Task<OperationResult> SetArticleLikeAsync(T entity, CancellationToken cancellationToken)
+        {
+            if (entity == null)
+            {
+                throw new ArgumentNullException(nameof(entity));
+            }
+           
+            cancellationToken.ThrowIfCancellationRequested();
+
+            await _collection.InsertOneAsync(entity, new InsertOneOptions
+            {
+                BypassDocumentValidation = false
+            }, cancellationToken);
+            
+            return OperationResult.Success;
         }
     }
 }

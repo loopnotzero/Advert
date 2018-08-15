@@ -7,5 +7,6 @@
         public const string ArticlesLikes = "ArticlesLikes";
         public const string ArticlesViews = "ArticlesViews";
         public const string ArticlesComments = "ArticlesComments";
+        public const string ArticleCommentsLikes = "ArticleCommentsLikes";
     }
 }
