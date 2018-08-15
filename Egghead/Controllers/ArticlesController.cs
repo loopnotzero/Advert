@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Egghead.Common;
 using Egghead.Common.Articles;
@@ -18,8 +17,9 @@ namespace Egghead.Controllers
 {
     public class ArticlesController : Controller
     {
-        private readonly ILogger _logger;
+        public const int ArticlePreviewMaxLength = 1000;
 
+        private readonly ILogger _logger;
         private readonly UserManager<MongoDbUser> _userManager;
         private readonly ArticlesManager<MongoDbArticle> _articlesManager;       
         private readonly ArticlesLikesManager<MongoDbArticleLike> _articlesLikesManager;
@@ -102,7 +102,7 @@ namespace Egghead.Controllers
                     {
                         Id = article.Id,
                         Title = article.Title,
-                        Text = article.Text.Substring(0, 1000),
+                        Text = article.Text.Length > ArticlePreviewMaxLength ? article.Text.Substring(0, 1000) : article.Text,
                         FirstName = user.FirstName,
                         LastName = user.LastName,
                         CreatedAt = article.CreatedAt,
