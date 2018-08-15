@@ -43,12 +43,31 @@ namespace Egghead.Controllers
             _articlesViewCountManager = articlesViewCountManager;
             _articleCommentsLikesManager = articleCommentsLikesManager;
         }
-       
+
         [HttpGet]
         [Authorize]
-        public IActionResult ArticleContent()
+        public async Task<IActionResult> ArticleContent(string articleId)
         {
-            return View();
+            try
+            {
+                await _articlesViewCountManager.SetArticleViewCountAsync(new MongoDbArticleViewCount
+                {                                     
+                    ByWho = HttpContext.User.Identity.Name,
+                    ByWhoNormalized = HttpContext.User.Identity.Name.ToUpper(),
+                    ArticleId = articleId,
+                    CreatedAt = DateTime.UtcNow
+                });
+
+                return View();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return Ok(new ErrorModel
+                {
+                    ErrorStatusCode = ErrorStatusCode.InternalServerError
+                });
+            }     
         }
 
         [HttpGet]

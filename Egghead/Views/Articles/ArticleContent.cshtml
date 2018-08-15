@@ -93,22 +93,6 @@
         }
     }
 
-    function setArticleViewCountAsync(articleId) {
-        $.ajax({
-            url: "/Articles/SetArticleViewCount?articleId=" + articleId,
-            type: "GET",
-            contentType: "application/json",
-            error: function(jqXhr, textStatus, errorThrown) {
-                console.log("jqXhr: " + jqXhr);
-                console.log("textStatus: " + jqXhr);
-                console.log("errorThrown: " + jqXhr);
-            },
-            success: function(response) {
-                console.log("Article view count: " + response);
-            }
-        });
-    }
-
     function createCommentReplyAsync(articleId, replyTo, comment) {
         $.ajax({
             url: `/Articles/CreateArticleComment?articleId=${articleId}`,
@@ -189,6 +173,14 @@
             }
         });
     }
+    
+    function setArticleCommentLikeAsync(articleId, commentId) {
+        
+    }
+    
+    function setArticleCommentDislikeAsync(articleId, commentId) {
+        
+    }
 
     function findArticleCommentsByArticleIdAync(articleId) {
         $.ajax({
@@ -253,7 +245,6 @@
                 });
         });
         
-        setArticleViewCountAsync(articleId);
         findArticleCommentsByArticleIdAync(articleId);
         countArticleCommentsByArticleIdAsync(articleId);      
     });
