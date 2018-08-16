@@ -1,12 +1,14 @@
 ﻿using System;
+using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
 using Egghead.Common;
+using Egghead.Common.Articles;
 using Egghead.Common.Stores;
 
 namespace Egghead.Managers
 {
-    public class ArticleCommentsLikesManager<T> : IDisposable where T : class
+    public class ArticleCommentsVotesManager<T> : IDisposable where T : class
     {
         private bool _disposed;
 
@@ -18,12 +20,12 @@ namespace Egghead.Managers
         /// <value>The persistence store the manager operates over.</value>
         protected internal IArticleCommentsVotesStore<T> Store { get; set; }
 
-        public ArticleCommentsLikesManager(IArticleCommentsVotesStore<T> store)
+        public ArticleCommentsVotesManager(IArticleCommentsVotesStore<T> store)
         {
             Store = store ?? throw new ArgumentNullException(nameof(store));
         }
-
-        public async Task<T> FindArticleCommentLikesByArticleCommentIdAsync(string articleId, String commentId)
+        
+        public async Task<long> CountArticleCommentVotesAsync(string articleId, string commentId, VoteType voteType)
         {
             ThrowIfDisposed();
 
@@ -31,11 +33,21 @@ namespace Egghead.Managers
             {
                 throw new ArgumentNullException(nameof(articleId));
             }
+            
+            if (commentId == null)
+            {
+                throw new ArgumentNullException(nameof(commentId));
+            }
+            
+            if (voteType == VoteType.None)
+            {
+                throw new ArgumentNullException(nameof(voteType));
+            }
 
-            return await Store.FindArticleCommentLikesByArticleCommentIdAsync(articleId, commentId, CancellationToken);
+            return await Store.CountArticleCommentVotesAsync(articleId, commentId, voteType, CancellationToken);
         }
 
-        public async Task<T> FindArticleCommentDislikesByArticleCommentIdAsync(string articleId, string commentId)
+        public async Task<T> FindArticleCommentVoteAsync(string articleId, string commentId, VoteType voteType, string byWhoNormalized)
         {
             ThrowIfDisposed();
 
@@ -43,35 +55,26 @@ namespace Egghead.Managers
             {
                 throw new ArgumentNullException(nameof(articleId));
             }
-
-            return await Store.FindArticleCommentDislikesByArticleCommentIdAsync(articleId, commentId, CancellationToken);
-        }
-
-        public async Task<long> CountArticleCommentLikesByArticleCommentIdAsync(string articleId, string commentId)
-        {
-            ThrowIfDisposed();
-
-            if (articleId == null)
+            
+            if (commentId == null)
             {
-                throw new ArgumentNullException(nameof(articleId));
+                throw new ArgumentNullException(nameof(commentId));
+            }
+            
+            if (voteType == VoteType.None)
+            {
+                throw new ArgumentNullException(nameof(voteType));
+            }
+            
+            if (byWhoNormalized == null)
+            {
+                throw new ArgumentNullException(nameof(byWhoNormalized));
             }
 
-            return await Store.CountArticleCommentLikesByArticleCommentIdAsync(articleId, commentId, CancellationToken);
+            return await Store.FindArticleCommentVoteAsync(articleId, commentId, voteType, byWhoNormalized, CancellationToken);
         }
-
-        public async Task<long> CountArticleCommentDislikesByArticleCommentIdAsync(string articleId, string commentId)
-        {
-            ThrowIfDisposed();
-
-            if (articleId == null)
-            {
-                throw new ArgumentNullException(nameof(articleId));
-            }
-
-            return await Store.CountArticleCommentDislikesByArticleCommentIdAsync(articleId, commentId, CancellationToken);
-        }
-
-        public async Task<OperationResult> SetArticleCommentLikeAsync(T entity)
+        
+        public async Task<OperationResult> CreateArticleCommentVoteAsync(T entity)
         {
             ThrowIfDisposed();
 
@@ -80,7 +83,7 @@ namespace Egghead.Managers
                 throw new ArgumentNullException(nameof(entity));
             }
 
-            return await Store.SetArticleCommentLikeAsync(entity, CancellationToken);
+            return await Store.CreateArticleCommentVoteAsync(entity, CancellationToken);
         }
 
         public void Dispose()
@@ -105,6 +108,6 @@ namespace Egghead.Managers
             {
                 throw new ObjectDisposedException(GetType().Name);
             }
-        }
+        }      
     }
 }

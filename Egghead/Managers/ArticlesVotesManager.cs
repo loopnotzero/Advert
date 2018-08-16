@@ -63,7 +63,7 @@ namespace Egghead.Managers
             return await Store.CountArticleVotesAsync(articleId, voteType, CancellationToken);
         }
 
-        public async Task<OperationResult> CreateArticleVote(T entity)
+        public async Task<OperationResult> CreateArticleVoteAsync(T entity)
         {
             ThrowIfDisposed();
 

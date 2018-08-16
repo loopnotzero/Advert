@@ -114,7 +114,7 @@ namespace Egghead
             });
             
 
-            services.AddScoped<ArticleCommentsLikesManager<MongoDbArticleCommentVote>, ArticleCommentsLikesManager<MongoDbArticleCommentVote>>();
+            services.AddScoped<ArticleCommentsVotesManager<MongoDbArticleCommentVote>, ArticleCommentsVotesManager<MongoDbArticleCommentVote>>();
             services.AddScoped<ArticlesCommentsManager<MongoDbArticleComment>, ArticlesCommentsManager<MongoDbArticleComment>>();
             services.AddScoped<ArticlesLikesManager<MongoDbArticleVote>, ArticlesLikesManager<MongoDbArticleVote>>();
             services.AddScoped<ArticlesManager<MongoDbArticle>, ArticlesManager<MongoDbArticle>>();

@@ -1,13 +1,16 @@
 ﻿@model Egghead.Models.Articles.ArticleModel
 
-@Html.Partial("GetArticlesPreviewNavigationPartial")
+@Html.Partial("TopNavigationPartial")
 
 <div id="article" class="container-boxed">
     <article>
         <div class="card m-b-20">
             <small class="text-muted m-l-10 m-t-10">Created by <ins>Chicu Victor</ins> today at 17:15</small>
 
-            @Html.Partial("GetArticleContentPartial")
+            <div class="card-body">
+                <h4 class="card-title">@Model.Title</h4>
+                <p class="card-text">@Html.Raw(@Model.Text)</p>
+            </div>
 
             <div style="border-bottom: 1px solid #e3e3e3; padding-left: 20px; padding-bottom: 20px">
                 <h4 id="comments-count">
@@ -24,13 +27,13 @@
             </div>
 
             <div id="article-comments" class="container-fluid">
-                @Html.Partial("GetArticleCommentsPartial")          
+                @* @Html.Partial("GetArticleCommentsPartial") *@
             </div>
         </div>
     </article>
 </div>
 
-<script>
+<script>   
     function showReplyForm(replyTo, commentId) {
         removeReplyForm("reply-form");
 
@@ -92,7 +95,24 @@
             form.remove();
         }
     }
+    
+    function onCommentVoteClick(commentId, voteType) {
+        $.urlParam = function(name, url) {
+            if (!url) {
+                url = window.location.href;
+            }
+            var results = new RegExp('[\\?&]' + name + '=([^&#]*)').exec(url);
+            if (!results) {
+                return undefined;
+            }
+            return results[1] || undefined;
+        }
+        
+        var articleId = $.urlParam('articleId');
 
+        createArticleCommentVoteAsync(articleId, commentId, voteType);
+    }
+    
     function createCommentReplyAsync(articleId, replyTo, comment) {
         $.ajax({
             url: `/Articles/CreateArticleComment?articleId=${articleId}`,
@@ -110,18 +130,18 @@
                     <img src="/images/64x64.svg" width="48" height="48" alt="">
                     <div class="media-body">
                         <div class="col-auto">
-                            <h6 class="mt-0">Victor Chicu, 1 month ago</h6>
+                            <h6 class="mt-0">${response.firstName} ${response.lastName}, ${response.createdAt}</h6>
                         </div>
                         <div class="col-auto">
                             <h6>${response.text}</h6>
                         </div>
                         <div class="col-auto">
                             <a href="#reply" onclick="showReplyForm('${replyTo}', '${response.id}')">Reply</a>
-                            <div name="btn-like" class="r-btn r-btn-light r-btn--icon">
+                            <div name="btn-like" onclick="onCommentVoteClick('${response.id}', 1)" class="r-btn r-btn-light r-btn--icon">
                                 <i class="fa fa-thumbs-o-up"></i>
                             </div>
-                            <span>0</span>
-                            <div name="btn-dislike" class="r-btn r-btn-light r-btn--icon">
+                            <span name="voting-points">${response.votingPoints}</span>
+                            <div name="btn-dislike" onclick="onCommentVoteClick('${response.id}', 1)" class="r-btn r-btn-light r-btn--icon">
                                 <i class="fa fa-thumbs-o-down"></i>
                             </div>
                         </div>
@@ -151,18 +171,18 @@
                     <img src="/images/64x64.svg" width="48" height="48">
                     <div class="media-body">
                         <div class="col-auto">
-                            <h6 class="mt-0">Victor Chicu, 1 month ago</h6>
+                            <h6 class="mt-0">${response.firstName} ${response.lastName}, ${response.createdAt}</h6>
                         </div>
                         <div class="col-auto">
                         <h6>${response.text}</h6>
                         </div>
                         <div class="col-auto">
                             <a href="#reply" onclick="showReplyForm(null, '${response.id}')">Reply</a>
-                            <div name="btn-like" class="r-btn r-btn-light r-btn--icon">
+                            <div name="btn-like" onclick="onCommentVoteClick('${response.id}', 1)" class="r-btn r-btn-light r-btn--icon">
                                 <i class="fa fa-thumbs-o-up"></i>
                             </div>
-                            <span>0</span>
-                            <div name="btn-dislike" class="r-btn r-btn-light r-btn--icon">
+                            <span name="voting-points">${response.votingPoints}</span>
+                            <div name="btn-dislike" onclick="onCommentVoteClick('${response.id}', 2)" class="r-btn r-btn-light r-btn--icon">
                                 <i class="fa fa-thumbs-o-down"></i>
                             </div>
                         </div>
@@ -174,12 +194,37 @@
         });
     }
     
-    function setArticleCommentLikeAsync(articleId, commentId) {
-        
-    }
-    
-    function setArticleCommentDislikeAsync(articleId, commentId) {
-        
+    function createArticleCommentVoteAsync(articleId, commentId, voteType) {
+        var vote = {
+            voteType: voteType,
+            commentId: commentId
+        }
+        $.ajax({
+            url: "/Articles/CreateArticleCommentVote?articleId=" + articleId,
+            type: "POST",
+            data: JSON.stringify(vote),
+            contentType: "application/json",
+            error: function(jqXhr, textStatus, errorThrown) {
+                console.log("jqXhr: " + jqXhr);
+                console.log("textStatus: " + jqXhr);
+                console.log("errorThrown: " + jqXhr);
+            },
+            success: function(response) {
+                switch (voteType) {
+                case 1:
+                    {
+                        $(`#${commentId} span[name=voting-points]:first`).text(response);
+                    }
+                    break;
+                case 2:
+                    {
+                        $(`#${commentId} span[name=voting-points]:first`).text(response);
+                    }
+                    break;
+                }
+
+            }
+        });
     }
 
     function findArticleCommentsByArticleIdAync(articleId) {
@@ -241,8 +286,8 @@
         $("#publish-comment").click(function() {
             var text = editor.options.previewRender(editor.value());
             createArticleCommentAsync(articleId, {
-                    text: text
-                });
+                text: text
+            });
         });
         
         findArticleCommentsByArticleIdAync(articleId);
