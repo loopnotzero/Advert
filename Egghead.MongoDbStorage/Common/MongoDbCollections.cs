@@ -4,9 +4,9 @@
     {
         public const string Users = "Users";     
         public const string Articles = "Articles";
-        public const string ArticlesLikes = "ArticlesLikes";
+        public const string ArticlesVotes = "ArticlesVotes";
         public const string ArticlesViews = "ArticlesViews";
         public const string ArticlesComments = "ArticlesComments";
-        public const string ArticleCommentsLikes = "ArticleCommentsLikes";
+        public const string ArticleCommentsVotes = "ArticleCommentsVotes";
     }
 }

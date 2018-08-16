@@ -17,7 +17,7 @@ namespace Egghead.MongoDbStorage.Articles
         public string ByWhoNormalized { get; set; }
         public string ArticleId { get; set; }
         public string CommentId { get; set; }
-        public LikeType LikeType { get; set; }
+        public VoteType VoteType { get; set; }
         public DateTime CreatedAt { get; set; }
     }
 }

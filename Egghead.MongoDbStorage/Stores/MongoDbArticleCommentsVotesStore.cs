@@ -11,7 +11,7 @@ using MongoDB.Driver;
 
 namespace Egghead.MongoDbStorage.Stores
 {
-    public class MongoDbArticleCommentsLikesStore<T> : IArticleCommentsLikesStore<T> where T : MongoDbArticleCommentLike
+    public class MongoDbArticleCommentsVotesStore<T> : IArticleCommentsVotesStore<T> where T : MongoDbArticleCommentLike
     {
         private readonly IMongoCollection<T> _collection;
         
@@ -20,13 +20,13 @@ namespace Egghead.MongoDbStorage.Stores
             
         }
 
-        public MongoDbArticleCommentsLikesStore(IMongoDatabase mongoDatabase) : this()
+        public MongoDbArticleCommentsVotesStore(IMongoDatabase mongoDatabase) : this()
         {
-            _collection = mongoDatabase.GetCollection<T>(MongoDbCollections.ArticlesLikes);          
+            _collection = mongoDatabase.GetCollection<T>(MongoDbCollections.ArticlesVotes);          
             //todo: Create indices
         }
 
-        private MongoDbArticleCommentsLikesStore()
+        private MongoDbArticleCommentsVotesStore()
         {
             EntityMappings.EnsureMongoDbArticleLikeConfigured();
         }
@@ -43,7 +43,7 @@ namespace Egghead.MongoDbStorage.Stores
             var filter = Builders<T>.Filter.And(
                 Builders<T>.Filter.Eq(x => x.ArticleId, articleId),
                 Builders<T>.Filter.Eq(x => x.CommentId, commentId),
-                Builders<T>.Filter.Eq(x => x.LikeType, LikeType.Like)
+                Builders<T>.Filter.Eq(x => x.VoteType, VoteType.Like)
                 );
             
             var cursor = await _collection.FindAsync(filter, cancellationToken: cancellationToken);
@@ -63,7 +63,7 @@ namespace Egghead.MongoDbStorage.Stores
             var filter = Builders<T>.Filter.And(
                 Builders<T>.Filter.Eq(x => x.ArticleId, articleId),
                 Builders<T>.Filter.Eq(x => x.CommentId, commentId),
-                Builders<T>.Filter.Eq(x => x.LikeType, LikeType.Dislike)
+                Builders<T>.Filter.Eq(x => x.VoteType, VoteType.Dislike)
             );
             
             var cursor = await _collection.FindAsync(filter, cancellationToken: cancellationToken);
@@ -83,7 +83,7 @@ namespace Egghead.MongoDbStorage.Stores
             var filter = Builders<T>.Filter.And(
                 Builders<T>.Filter.Eq(x => x.ArticleId, articleId),
                 Builders<T>.Filter.Eq(x => x.CommentId, commentId),
-                Builders<T>.Filter.Eq(x => x.LikeType, LikeType.Like)
+                Builders<T>.Filter.Eq(x => x.VoteType, VoteType.Like)
             );
             
             return await _collection.CountDocumentsAsync(filter, cancellationToken: cancellationToken);
@@ -101,7 +101,7 @@ namespace Egghead.MongoDbStorage.Stores
             var filter = Builders<T>.Filter.And(
                 Builders<T>.Filter.Eq(x => x.ArticleId, articleId),
                 Builders<T>.Filter.Eq(x => x.CommentId, commentId),
-                Builders<T>.Filter.Eq(x => x.LikeType, LikeType.Dislike)
+                Builders<T>.Filter.Eq(x => x.VoteType, VoteType.Dislike)
             );
             
             return await _collection.CountDocumentsAsync(filter, cancellationToken: cancellationToken);

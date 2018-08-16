@@ -12,7 +12,7 @@ namespace Egghead.IntegrationTests.Stores
     public class MongoDbArticlesLikesStoreTestFixture : IDisposable 
     { 
         private readonly CancellationToken _cancellationToken = CancellationToken.None; 
-        private readonly IArticlesLikesStore<MongoDbArticleLike> _articlesLikesStore; 
+        private readonly IArticlesVotesStore<MongoDbArticleVote> _articlesVotesStore; 
          
         public MongoDbArticlesLikesStoreTestFixture() 
         { 
@@ -20,7 +20,7 @@ namespace Egghead.IntegrationTests.Stores
              
             var configuration = builder.Build(); 
              
-            _articlesLikesStore = new MongoDbArticlesLikesStore<MongoDbArticleLike>(new MongoClient(configuration["ConnectionString"]).GetDatabase(configuration["DatabaseName"])); 
+            _articlesVotesStore = new MongoDbArticlesVotesStore<MongoDbArticleVote>(new MongoClient(configuration["ConnectionString"]).GetDatabase(configuration["DatabaseName"])); 
         } 
          
         public void Dispose() 
