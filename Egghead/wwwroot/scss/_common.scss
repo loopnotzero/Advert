@@ -32,6 +32,26 @@ html {
 //  background: black;
 //}
 
+.widget-user {
+  min-height: 112px;
+  img {
+    height: 72px;
+    float: left;
+  }
+
+  .wid-u-info {
+    margin-left: 90px;
+
+    p {
+      white-space: nowrap;
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+}
+
+
 h1 {
   line-height: 43px;
 }
