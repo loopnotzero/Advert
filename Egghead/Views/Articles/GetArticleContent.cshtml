@@ -1,13 +1,13 @@
 ﻿@model Egghead.Models.Articles.ArticleModel
 
-@Html.Partial("ArticlesPreviewNavigationPartial")
+@Html.Partial("GetArticlesPreviewNavigationPartial")
 
 <div id="article" class="container-boxed">
     <article>
         <div class="card m-b-20">
             <small class="text-muted m-l-10 m-t-10">Created by <ins>Chicu Victor</ins> today at 17:15</small>
 
-            @Html.Partial("ArticleContentPartial")
+            @Html.Partial("GetArticleContentPartial")
 
             <div style="border-bottom: 1px solid #e3e3e3; padding-left: 20px; padding-bottom: 20px">
                 <h4 id="comments-count">
@@ -24,7 +24,7 @@
             </div>
 
             <div id="article-comments" class="container-fluid">
-                @Html.Partial("ArticleCommentsPartial")          
+                @Html.Partial("GetArticleCommentsPartial")          
             </div>
         </div>
     </article>

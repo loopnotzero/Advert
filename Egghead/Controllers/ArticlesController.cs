@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Threading.Tasks;
 using Egghead.Common;
 using Egghead.Common.Articles;
@@ -26,14 +25,14 @@ namespace Egghead.Controllers
         private readonly ArticlesLikesManager<MongoDbArticleVote> _articlesVotesManager;
         private readonly ArticlesCommentsManager<MongoDbArticleComment> _articlesCommentsManager;
         private readonly ArticlesViewCountManager<MongoDbArticleViewCount> _articlesViewCountManager;
-        private readonly ArticleCommentsLikesManager<MongoDbArticleCommentLike> _articleCommentsLikesManager;
+        private readonly ArticleCommentsLikesManager<MongoDbArticleCommentVote> _articleCommentsLikesManager;
 
         public ArticlesController(UserManager<MongoDbUser> userManager,
             ArticlesManager<MongoDbArticle> articlesManager,
             ArticlesLikesManager<MongoDbArticleVote> articlesVotesManager,
             ArticlesCommentsManager<MongoDbArticleComment> articlesCommentsManager,
             ArticlesViewCountManager<MongoDbArticleViewCount> articlesViewCountManager,
-            ArticleCommentsLikesManager<MongoDbArticleCommentLike> articleCommentsLikesManager, ILoggerFactory loggerFactory
+            ArticleCommentsLikesManager<MongoDbArticleCommentVote> articleCommentsLikesManager, ILoggerFactory loggerFactory
         )
         {
             _logger = loggerFactory.CreateLogger<AccountController>();
@@ -47,7 +46,21 @@ namespace Egghead.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> ArticleContent(string articleId)
+        public IActionResult WriteArticle()
+        {
+            return View();
+        }
+        
+        [HttpGet]
+        [Authorize]
+        public IActionResult GetArticlesPreview()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> GetArticleContent(string articleId)
         {
             try
             {
@@ -73,23 +86,7 @@ namespace Egghead.Controllers
 
         [HttpGet]
         [Authorize]
-        public IActionResult ArticlesPreview()
-        {
-            return View();
-        }
-
-        [HttpGet]
-        [Authorize]
-        public IActionResult ArticlePublication()
-        {
-            return View();
-        }
-
-
-
-        [HttpGet]
-        [Authorize]
-        public async Task<IActionResult> ArticlesPreviewPartial()
+        public async Task<IActionResult> GetArticlesPreviewPartial()
         {
             try
             {
@@ -114,43 +111,7 @@ namespace Egghead.Controllers
                     });
                 }
 
-                return PartialView("ArticlesPreviewPartial", articlesPreview);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e.Message, e);
-                return Ok(new ErrorModel
-                {
-                    ErrorStatusCode = ErrorStatusCode.InternalServerError
-                });
-            }
-        }
-
-
-
-        [HttpPost]
-        [Authorize]
-        public async Task<IActionResult> CreateArticleVote(string articleId, [FromBody] ArticleVoteModel model)
-        {
-            try
-            {    
-                var articleVote = await _articlesVotesManager.FindArticleVoteAsync(articleId, model.VoteType, HttpContext.User.Identity.Name.ToUpper());
-
-                if (articleVote == null)
-                {
-                    await _articlesVotesManager.CreateArticleVote(new MongoDbArticleVote
-                    {
-                        ArticleId = articleId,
-                        VoteType = model.VoteType,
-                        CreatedAt = DateTime.UtcNow,
-                        ByWho = HttpContext.User.Identity.Name,
-                        ByWhoNormalized = HttpContext.User.Identity.Name.ToUpper(),
-                    });
-                }
-
-                var articleVotes = await _articlesVotesManager.CountArticleVotesAsync(articleId, model.VoteType);
-
-                return Ok(articleVotes);
+                return PartialView("GetArticlesPreviewPartial", articlesPreview);
             }
             catch (Exception e)
             {
@@ -180,19 +141,23 @@ namespace Egghead.Controllers
                 };
 
                 await _articlesManager.CreateArticleAsync(newArticle);
+                
+                //todo: Redirect to articles preview
 
-                var result = await _articlesManager.FindArticleByIdAsync(newArticle.Id);
+                return Ok();
 
-                return PartialView("ArticlesPreviewPartial", new List<ArticlePreviewModel>
-                {
-                    new ArticlePreviewModel
-                    {
-                        Id = result.Id,
-                        Title = result.Title,
-                        Text = result.Text,
-                        CreatedAt = result.CreatedAt,
-                    }
-                });
+//                var result = await _articlesManager.FindArticleByIdAsync(newArticle.Id);
+//
+//                return PartialView("GetArticlesPreviewPartial", new List<ArticlePreviewModel>
+//                {
+//                    new ArticlePreviewModel
+//                    {
+//                        Id = result.Id,
+//                        Title = result.Title,
+//                        Text = result.Text,
+//                        CreatedAt = result.CreatedAt,
+//                    }
+//                });
             }
             catch (Exception e)
             {
@@ -281,11 +246,11 @@ namespace Egghead.Controllers
 
         [HttpDelete]
         [Authorize]
-        public async Task<IActionResult> DeleteArticleById(string id)
+        public async Task<IActionResult> DeleteArticleById(string articleId)
         {
             try
             {
-                await _articlesManager.DeleteArticleByIdAsync(id);
+                await _articlesManager.DeleteArticleByIdAsync(articleId);
                 return Ok();
             }
             catch (Exception e)
@@ -307,6 +272,42 @@ namespace Egghead.Controllers
         }
 
 
+        
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> CreateArticleVote(string articleId, [FromBody] ArticleVoteModel model)
+        {
+            try
+            {    
+                var articleVote = await _articlesVotesManager.FindArticleVoteAsync(articleId, model.VoteType, HttpContext.User.Identity.Name.ToUpper());
+
+                if (articleVote == null)
+                {
+                    await _articlesVotesManager.CreateArticleVote(new MongoDbArticleVote
+                    {
+                        ArticleId = articleId,
+                        VoteType = model.VoteType,
+                        CreatedAt = DateTime.UtcNow,
+                        ByWho = HttpContext.User.Identity.Name,
+                        ByWhoNormalized = HttpContext.User.Identity.Name.ToUpper(),
+                    });
+                }
+
+                var articleVotes = await _articlesVotesManager.CountArticleVotesAsync(articleId, model.VoteType);
+
+                return Ok(articleVotes);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return Ok(new ErrorModel
+                {
+                    ErrorStatusCode = ErrorStatusCode.InternalServerError
+                });
+            }
+        }
+        
+        
         
         [HttpGet]
         [Authorize]
@@ -375,7 +376,7 @@ namespace Egghead.Controllers
                 });
             }
 
-            return PartialView("ArticleCommentsPartial", articleCommentModels);
+            return PartialView("GetArticleCommentsPartial", articleCommentModels);
         }
     }
 }

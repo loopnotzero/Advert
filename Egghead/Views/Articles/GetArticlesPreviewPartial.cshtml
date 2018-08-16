@@ -8,12 +8,12 @@
             <div class="card m-b-20">
                 <small class="text-muted m-l-10 m-t-10">Creat de <ins>@article.FirstName @article.LastName</ins>, @article.CreatedAt</small>
                 <div class="card-body">
-                    <a href="/Articles/ArticleContent?articleId=@article.Id">
+                    <a href="/Articles/GetArticleContent?articleId=@article.Id">
                         <h4 class="card-title">@article.Title</h4>
                     </a>
                     <p class="card-text">@Html.Raw(article.Text)</p>
                     <small class="text-muted m-l-10 m-t-10 float-right">
-                        <a href="/Articles/ArticleContent?articleId=@article.Id">READ MORE...</a>
+                        <a href="/Articles/GetArticleContent?articleId=@article.Id">READ MORE...</a>
                     </small>
                 </div>
                 <div class="card-footer text-muted">

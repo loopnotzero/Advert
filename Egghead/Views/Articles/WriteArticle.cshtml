@@ -1,5 +1,5 @@
 ﻿
-@Html.Partial("ArticlePublicationNavigationPartial")
+@Html.Partial("WriteArticleNavigationPartial")
 
 
 <div class="container-boxed">
@@ -44,7 +44,7 @@
                     console.log("textStatus: " + jqXhr);
                     console.log("errorThrown: " + jqXhr);
                 },
-                success: function(response) {
+                success: function() {
                     window.location.href = "/";
                 }
             });

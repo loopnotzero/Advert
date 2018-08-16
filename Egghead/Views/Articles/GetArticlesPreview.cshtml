@@ -1,4 +1,4 @@
-﻿@Html.Partial("ArticlesPreviewNavigationPartial")
+﻿@Html.Partial("GetArticlesPreviewNavigationPartial")
 
 <div class="container-boxed">
     <div class="row">
@@ -84,9 +84,9 @@
         //todo: NotImplemented
     }
 
-    function articlesPreviewPartial() {
+    function getArticlesPreviewPartial() {
         $.ajax({
-            url: "/Articles/ArticlesPreviewPartial",
+            url: "/Articles/GetArticlesPreviewPartial",
             type: "GET",
             contentType: "application/json",
             error: function(jqXhr, textStatus, errorThrown) {
@@ -103,10 +103,10 @@
     $(document).ready(function() {
         $("#publish-article").click(function(e) {
             e.preventDefault();
-            window.location.href = "/Articles/ArticlePublication";
+            window.location.href = "/Articles/WriteArticle";
             return false;
         });
 
-        articlesPreviewPartial();
+        getArticlesPreviewPartial();
     });
 </script>

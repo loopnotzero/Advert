@@ -43,7 +43,7 @@ namespace Egghead
 
             app.UseAuthentication();
 
-            app.UseMvc(routes => { routes.MapRoute("default", "{controller=Articles}/{action=ArticlesPreview}/{id?}"); });
+            app.UseMvc(routes => { routes.MapRoute("default", "{controller=Articles}/{action=GetArticlesPreview}/{id?}"); });
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -83,10 +83,10 @@ namespace Egghead
             
             
             
-            services.AddTransient<IArticleCommentsVotesStore<MongoDbArticleCommentLike>>(provider =>
+            services.AddTransient<IArticleCommentsVotesStore<MongoDbArticleCommentVote>>(provider =>
             {
                 var options = provider.GetService<IOptions<MongoDbOptions>>();
-                return new MongoDbArticleCommentsVotesStore<MongoDbArticleCommentLike>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+                return new MongoDbArticleCommentsVotesStore<MongoDbArticleCommentVote>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
             });
 
             services.AddTransient<IArticlesCommentsStore<MongoDbArticleComment>>(provider =>
@@ -114,7 +114,7 @@ namespace Egghead
             });
             
 
-            services.AddScoped<ArticleCommentsLikesManager<MongoDbArticleCommentLike>, ArticleCommentsLikesManager<MongoDbArticleCommentLike>>();
+            services.AddScoped<ArticleCommentsLikesManager<MongoDbArticleCommentVote>, ArticleCommentsLikesManager<MongoDbArticleCommentVote>>();
             services.AddScoped<ArticlesCommentsManager<MongoDbArticleComment>, ArticlesCommentsManager<MongoDbArticleComment>>();
             services.AddScoped<ArticlesLikesManager<MongoDbArticleVote>, ArticlesLikesManager<MongoDbArticleVote>>();
             services.AddScoped<ArticlesManager<MongoDbArticle>, ArticlesManager<MongoDbArticle>>();
