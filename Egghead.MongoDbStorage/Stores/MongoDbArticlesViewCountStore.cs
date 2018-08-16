@@ -1,8 +1,6 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Egghead.Common;
-using Egghead.Common.Articles;
 using Egghead.Common.Stores;
 using Egghead.MongoDbStorage.Articles;
 using Egghead.MongoDbStorage.Common;
@@ -33,48 +31,26 @@ namespace Egghead.MongoDbStorage.Stores
         
         public async Task<T> FindArticleViewCountByArticleIdAsync(string articleId, CancellationToken cancellationToken)
         {
-            if (articleId == null)
-            {
-                throw new ArgumentNullException(nameof(articleId));
-            }
-                    
             cancellationToken.ThrowIfCancellationRequested();
-
-            var filter = Builders<T>.Filter.Eq(x => x.ArticleId, articleId);
-            
+            var filter = Builders<T>.Filter.Eq(x => x.ArticleId, articleId);          
             var cursor = await _collection.FindAsync(filter, cancellationToken: cancellationToken);
-
             return await cursor.FirstOrDefaultAsync(cancellationToken);
         }
 
         public async Task<long> CountArticleViewCountByArticleIdAsync(string articleId, CancellationToken cancellationToken)
         {
-            if (articleId == null)
-            {
-                throw new ArgumentNullException(nameof(articleId));
-            }
-                    
             cancellationToken.ThrowIfCancellationRequested();
-
-            var filter = Builders<T>.Filter.Eq(x => x.ArticleId, articleId);
-            
+            var filter = Builders<T>.Filter.Eq(x => x.ArticleId, articleId);          
             return await _collection.CountDocumentsAsync(filter, cancellationToken: cancellationToken);          
         }
 
         public async Task<OperationResult> SetArticleViewCountAsync(T entity, CancellationToken cancellationToken)
         {
-            if (entity == null)
-            {
-                throw new ArgumentNullException(nameof(entity));
-            }
-           
             cancellationToken.ThrowIfCancellationRequested();
-
             await _collection.InsertOneAsync(entity, new InsertOneOptions
             {
                 BypassDocumentValidation = false
-            }, cancellationToken);
-            
+            }, cancellationToken);          
             return OperationResult.Success;
         }
     }

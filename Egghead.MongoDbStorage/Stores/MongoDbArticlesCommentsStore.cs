@@ -26,11 +26,6 @@ namespace Egghead.MongoDbStorage.Stores
 
         public bool ArticleCommentsCollectionExists(string collectionName, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(collectionName)) 
-            { 
-                throw new ArgumentNullException(nameof(collectionName)); 
-            } 
- 
             //todo: Improve filter 
             var cursor = _mongoDatabase.ListCollectionNames(new ListCollectionNamesOptions 
             { 
@@ -50,35 +45,18 @@ namespace Egghead.MongoDbStorage.Stores
 
         public OperationResult DeleteArticleCommentsCollection(string collectionName, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(collectionName)) 
-            { 
-                throw new ArgumentNullException(nameof(collectionName)); 
-            } 
- 
-            _mongoDatabase.DropCollection(collectionName, cancellationToken); 
-             
+            _mongoDatabase.DropCollection(collectionName, cancellationToken);        
             return OperationResult.Success; 
         }
 
         public IArticleCommentsCollection<T> GetArticleCommentsCollection(string collectionName, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(collectionName))
-            {
-                throw new ArgumentNullException(nameof(collectionName));
-            }
- 
             return new MongoDbArticleCommentsCollection<T>(_mongoDatabase.GetCollection<T>(collectionName));
         }
 
         public IArticleCommentsCollection<T> CreateArticleCommentsCollection(string collectionName, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(collectionName))
-            {
-                throw new ArgumentNullException(nameof(collectionName));
-            }
-            
             _mongoDatabase.CreateCollection(collectionName, new CreateCollectionOptions(), cancellationToken);
- 
             return new MongoDbArticleCommentsCollection<T>(_mongoDatabase.GetCollection<T>(collectionName));
         }
 
