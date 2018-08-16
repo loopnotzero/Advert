@@ -4,9 +4,9 @@ using MongoDB.Bson;
 
 namespace Egghead.MongoDbStorage.Articles
 {
-    public class MongoDbArticleCommentLike
+    public class MongoDbArticleCommentVote
     {
-        public MongoDbArticleCommentLike()
+        public MongoDbArticleCommentVote()
         {
             Id = ObjectId.GenerateNewId().ToString();
             //Create indeces

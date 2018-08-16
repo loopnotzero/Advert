@@ -120,11 +120,11 @@ namespace Egghead.MongoDbStorage.Mappings
 
         private static void ConfigureMongoDbArticleCommentLike()
         {
-            BsonClassMap.RegisterClassMap<MongoDbArticleCommentLike>(bsonClassMap =>
+            BsonClassMap.RegisterClassMap<MongoDbArticleCommentVote>(bsonClassMap =>
             {
                 bsonClassMap.AutoMap();
                 bsonClassMap.MapIdMember(c => c.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
-                bsonClassMap.MapCreator(user => new MongoDbArticleCommentLike());
+                bsonClassMap.MapCreator(user => new MongoDbArticleCommentVote());
             });
         }
     }

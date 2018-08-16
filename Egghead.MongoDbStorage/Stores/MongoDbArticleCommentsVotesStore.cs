@@ -11,7 +11,7 @@ using MongoDB.Driver;
 
 namespace Egghead.MongoDbStorage.Stores
 {
-    public class MongoDbArticleCommentsVotesStore<T> : IArticleCommentsVotesStore<T> where T : MongoDbArticleCommentLike
+    public class MongoDbArticleCommentsVotesStore<T> : IArticleCommentsVotesStore<T> where T : MongoDbArticleCommentVote
     {
         private readonly IMongoCollection<T> _collection;
         
