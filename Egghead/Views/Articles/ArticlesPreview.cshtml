@@ -14,17 +14,21 @@
                         <div class="wid-u-info">
                             <h5 class="mt-0 m-b-5 font-16">Chadengle</h5>
                             <p class="text-muted m-b-5 font-13">coderthemes@gmail.com</p>
-                            <small class="text-warning"><b>Admin</b></small>
+                            <small class="text-warning">
+                                <b>Admin</b>
+                            </small>
                         </div>
-                    </div>   
+                    </div>
                     <div class="row mb-5">
                         <img src="~/images/users/avatar-1.jpg" class="img-responsive rounded-circle" alt="user">
                         <div class="wid-u-info">
                             <h5 class="mt-0 m-b-5 font-16">Chadengle</h5>
                             <p class="text-muted m-b-5 font-13">coderthemes@gmail.com</p>
-                            <small class="text-warning"><b>Admin</b></small>
+                            <small class="text-warning">
+                                <b>Admin</b>
+                            </small>
                         </div>
-                    </div>  
+                    </div>
                 </div>
             </div>
             <div class="row">
@@ -44,6 +48,42 @@
 </div>
 
 <script>
+    function onVoteClick(articleId, voteType) {
+        var vote = {
+            voteType: voteType
+        }
+        $.ajax({
+            url: "/Articles/CreateArticleVote?articleId=" + articleId,
+            type: "POST",
+            data: JSON.stringify(vote),
+            contentType: "application/json",
+            error: function(jqXhr, textStatus, errorThrown) {
+                console.log("jqXhr: " + jqXhr);
+                console.log("textStatus: " + jqXhr);
+                console.log("errorThrown: " + jqXhr);
+            },
+            success: function(response) {
+                switch (voteType) {
+                case 1:
+                    {
+                        $(`#${articleId} small[name=likes]`).text(response);
+                    }
+                    break;
+                case 2:
+                    {
+                        $(`#${articleId} small[name=dislikes]`).text(response);
+                    }
+                    break;
+                }
+
+            }
+        });
+    }
+
+    function onBookmarkClick(articleId) {
+        //todo: NotImplemented
+    }
+
     function articlesPreviewPartial() {
         $.ajax({
             url: "/Articles/ArticlesPreviewPartial",

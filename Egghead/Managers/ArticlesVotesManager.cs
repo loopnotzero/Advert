@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Egghead.Common;
+using Egghead.Common.Articles;
 using Egghead.Common.Stores;
 
 namespace Egghead.Managers
@@ -16,14 +17,14 @@ namespace Egghead.Managers
         /// Gets or sets the persistence store the manager operates over.
         /// </summary>
         /// <value>The persistence store the manager operates over.</value>
-        protected internal IArticlesLikesStore<T> Store { get; set; }
+        protected internal IArticlesVotesStore<T> Store { get; set; }
 
-        public ArticlesLikesManager(IArticlesLikesStore<T> store)
+        public ArticlesLikesManager(IArticlesVotesStore<T> store)
         {
             Store = store ?? throw new ArgumentNullException(nameof(store));
         }
 
-        public async Task<T> FindArticleLikesByArticleIdAsync(string articleId)
+        public async Task<T> FindArticleVoteAsync(string articleId, VoteType voteType, string byWhoNormalized)
         {
             ThrowIfDisposed();
 
@@ -32,10 +33,20 @@ namespace Egghead.Managers
                 throw new ArgumentNullException(nameof(articleId));
             }
 
-            return await Store.FindArticleLikesByArticleIdAsync(articleId, CancellationToken);
+            if (voteType == VoteType.None)
+            {
+                throw new ArgumentNullException(nameof(voteType));
+            }
+
+            if (byWhoNormalized == null)
+            {
+                throw new ArgumentNullException(nameof(byWhoNormalized));
+            }
+
+            return await Store.FindArticleVoteAsync(articleId, voteType, byWhoNormalized, CancellationToken);
         }
 
-        public async Task<T> FindArticleDislikesByArticleIdAsync(string articleId)
+        public async Task<long> CountArticleVotesAsync(string articleId, VoteType voteType)
         {
             ThrowIfDisposed();
 
@@ -44,34 +55,15 @@ namespace Egghead.Managers
                 throw new ArgumentNullException(nameof(articleId));
             }
 
-            return await Store.FindArticleDislikesByArticleIdAsync(articleId, CancellationToken);
-        }
-
-        public async Task<long> CountArticleLikesByArticleIdAsync(string articleId)
-        {
-            ThrowIfDisposed();
-
-            if (articleId == null)
+            if (voteType == VoteType.None)
             {
-                throw new ArgumentNullException(nameof(articleId));
+                throw new ArgumentNullException(nameof(voteType));
             }
 
-            return await Store.CountArticleLikesByArticleIdAsync(articleId, CancellationToken);
+            return await Store.CountArticleVotesAsync(articleId, voteType, CancellationToken);
         }
 
-        public async Task<long> CountArticleDislikesByArticleIdAsync(string articleId)
-        {
-            ThrowIfDisposed();
-
-            if (articleId == null)
-            {
-                throw new ArgumentNullException(nameof(articleId));
-            }
-
-            return await Store.CountArticleDislikesByArticleIdAsync(articleId, CancellationToken);
-        }
-
-        public async Task<OperationResult> SetArticleLikeAsync(T entity)
+        public async Task<OperationResult> CreateArticleVote(T entity)
         {
             ThrowIfDisposed();
 
@@ -80,7 +72,7 @@ namespace Egghead.Managers
                 throw new ArgumentNullException(nameof(entity));
             }
 
-            return await Store.SetArticleLikeAsync(entity, CancellationToken);
+            return await Store.CreateArticleVoteAsync(entity, CancellationToken);
         }
 
         public void Dispose()

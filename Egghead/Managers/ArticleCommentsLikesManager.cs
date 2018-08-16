@@ -16,9 +16,9 @@ namespace Egghead.Managers
         /// Gets or sets the persistence store the manager operates over.
         /// </summary>
         /// <value>The persistence store the manager operates over.</value>
-        protected internal IArticleCommentsLikesStore<T> Store { get; set; }
+        protected internal IArticleCommentsVotesStore<T> Store { get; set; }
 
-        public ArticleCommentsLikesManager(IArticleCommentsLikesStore<T> store)
+        public ArticleCommentsLikesManager(IArticleCommentsVotesStore<T> store)
         {
             Store = store ?? throw new ArgumentNullException(nameof(store));
         }

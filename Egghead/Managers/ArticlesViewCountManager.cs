@@ -36,7 +36,7 @@ namespace Egghead.Managers
             return await Store.FindArticleViewCountByArticleIdAsync(articleId, CancellationToken);
         }
 
-        public async Task<long> CountArticleViewCountByArticleIdAsync(string articleId)
+        public async Task<long> CountArticleViewCountAsync(string articleId)
         {
             ThrowIfDisposed();
 
@@ -48,7 +48,7 @@ namespace Egghead.Managers
             return await Store.CountArticleViewCountByArticleIdAsync(articleId, CancellationToken);
         }
         
-        public async Task<OperationResult> SetArticleViewCountAsync(T entity)
+        public async Task<OperationResult> CreateArticleViewCountAsync(T entity)
         {
             ThrowIfDisposed();
 

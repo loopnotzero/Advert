@@ -43,7 +43,7 @@ namespace Egghead.Managers
             return await Store.GetArticleCommentsCollection(articleId, CancellationToken).FindArticleCommentByIdAsync(commendId, CancellationToken);
         }
         
-        public async Task<long> CountArticleCommentsByArticleId(string articleId)
+        public async Task<long> CountArticleCommentsByArticleIdAsync(string articleId)
         {
             ThrowIfDisposed();
 

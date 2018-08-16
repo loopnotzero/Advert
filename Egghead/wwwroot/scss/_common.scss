@@ -1,8 +1,8 @@
 body {
   //background: url("/images/bg-1.png");
-  background: url("/images/bg-1.jpg");
+  //background: url("/images/bg-1.jpg");
   //background: url("/images/bg-1.jpeg");
-  //background: darken($light,1%);
+  background: darken($light,1%);
   margin: 0;
   color: #4c5667;
   overflow-x: auto !important;
@@ -18,9 +18,9 @@ html {
   position: relative;
   height: 100%;
   //background: url("/images/bg-1.png");
-  background: url("/images/bg-1.jpg");
+  //background: url("/images/bg-1.jpg");
   //background: url("/images/bg-1.jpeg");
-  //background: darken($light,1%);
+  background: darken($light,1%);
 }
 
 //::-webkit-scrollbar {

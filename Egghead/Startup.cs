@@ -83,10 +83,10 @@ namespace Egghead
             
             
             
-            services.AddTransient<IArticleCommentsLikesStore<MongoDbArticleCommentLike>>(provider =>
+            services.AddTransient<IArticleCommentsVotesStore<MongoDbArticleCommentLike>>(provider =>
             {
                 var options = provider.GetService<IOptions<MongoDbOptions>>();
-                return new MongoDbArticleCommentsLikesStore<MongoDbArticleCommentLike>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+                return new MongoDbArticleCommentsVotesStore<MongoDbArticleCommentLike>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
             });
 
             services.AddTransient<IArticlesCommentsStore<MongoDbArticleComment>>(provider =>
@@ -95,10 +95,10 @@ namespace Egghead
                 return new MongoDbArticlesCommentsStore<MongoDbArticleComment>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
             });
                       
-            services.AddTransient<IArticlesLikesStore<MongoDbArticleLike>>(provider =>
+            services.AddTransient<IArticlesVotesStore<MongoDbArticleVote>>(provider =>
             {
                 var options = provider.GetService<IOptions<MongoDbOptions>>();
-                return new MongoDbArticlesLikesStore<MongoDbArticleLike>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+                return new MongoDbArticlesVotesStore<MongoDbArticleVote>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
             });
             
             services.AddTransient<IArticlesStore<MongoDbArticle>>(provider =>
@@ -116,7 +116,7 @@ namespace Egghead
 
             services.AddScoped<ArticleCommentsLikesManager<MongoDbArticleCommentLike>, ArticleCommentsLikesManager<MongoDbArticleCommentLike>>();
             services.AddScoped<ArticlesCommentsManager<MongoDbArticleComment>, ArticlesCommentsManager<MongoDbArticleComment>>();
-            services.AddScoped<ArticlesLikesManager<MongoDbArticleLike>, ArticlesLikesManager<MongoDbArticleLike>>();
+            services.AddScoped<ArticlesLikesManager<MongoDbArticleVote>, ArticlesLikesManager<MongoDbArticleVote>>();
             services.AddScoped<ArticlesManager<MongoDbArticle>, ArticlesManager<MongoDbArticle>>();
             services.AddScoped<ArticlesViewCountManager<MongoDbArticleViewCount>, ArticlesViewCountManager<MongoDbArticleViewCount>>();
 

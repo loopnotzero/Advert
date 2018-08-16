@@ -17,30 +17,32 @@
                     </small>
                 </div>
                 <div class="card-footer text-muted">
-                    <div class="card-fluid">
-                        <div class="row">
-                            <div class="col-sm-12">
-                                <div id="@article.Id" name="btn-like" class="r-btn r-btn-light r-btn--icon">
-                                    <i class="fa fa-thumbs-o-up"></i>
-                                </div>
-                                <small id="@article.Id" name="likes">@article.Likes</small>
-                                <div id="@article.Id" name="btn-dislike" class="r-btn r-btn-light r-btn--icon">
-                                    <i class="fa fa-thumbs-o-down"></i>
-                                </div>
-                                <small id="@article.Id" name="dislikes">@article.Dislikes</small>                               
-                                <div id="@article.Id" name="btn-bookmark" class="r-btn r-btn-light r-btn--icon">
-                                    <i class="fa fa-bookmark"></i>
-                                </div>
-                                <small name="bookmarks">@article.BookmarksCount</small>       
-                                <div class="r-btn r-btn-light-no-hover r-btn--icon-no-hover">
-                                    <i class="fa fa-eye"></i>
-                                </div>
-                                <small id="article-view-count" >@article.ViewCount</small>                               
-                                <div class="r-btn r-btn-light-no-hover r-btn--icon-no-hover">
-                                    <i class="fa fa-weixin"></i>
-                                </div>
-                                <small id="article-comments">@article.CommentsCount</small>                              
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div name="btn-like" onclick="onVoteClick('@article.Id', 1)" class="r-btn r-btn-light r-btn--icon">
+                                <i class="fa fa-thumbs-o-up"></i>
                             </div>
+                            <small name="likes">@article.Likes</small>
+                            
+                            <div name="btn-dislike" onclick="onVoteClick('@article.Id', 2)" class="r-btn r-btn-light r-btn--icon">
+                                <i class="fa fa-thumbs-o-down"></i>
+                            </div>
+                            <small name="dislikes">@article.Dislikes</small>   
+                            
+                            <div name="btn-bookmark" class="r-btn r-btn-light r-btn--icon">
+                                <i class="fa fa-bookmark"></i>
+                            </div>
+                            <small name="bookmarks">@article.BookmarksCount</small> 
+                            
+                            <div class="r-btn r-btn-light-no-hover r-btn--icon-no-hover">
+                                <i class="fa fa-eye"></i>
+                            </div>
+                            <small id="article-view-count" >@article.ViewCount</small>    
+                            
+                            <div class="r-btn r-btn-light-no-hover r-btn--icon-no-hover">
+                                <i class="fa fa-weixin"></i>
+                            </div>
+                            <small id="article-comments">@article.CommentsCount</small>                              
                         </div>
                     </div>
                 </div>
@@ -48,40 +50,3 @@
         </article>
     }
 }
-
-<script> 
-    $("div[name=btn-like]").click(function() {     
-        var articleId = $(this).attr("id");        
-        $.ajax({
-            url: "/Articles/SetArticleLike?articleId=" + articleId,
-            type: "GET",
-            contentType: "application/json",
-            error: function(jqXhr, textStatus, errorThrown) {
-                console.log("jqXhr: " + jqXhr);
-                console.log("textStatus: " + jqXhr);
-                console.log("errorThrown: " + jqXhr);
-            },
-            success: function(response) {
-                $("small[id=" + articleId + "][name=likes]").text(response);
-            }
-        });
-        
-    });      
-  
-    $("div[name=btn-dislike]").click(function() {
-        var articleId = $(this).attr("id");
-        $.ajax({
-            url: "/Articles/SetArticleDislike?articleId=" + articleId,
-            type: "GET",
-            contentType: "application/json",
-            error: function(jqXhr, textStatus, errorThrown) {
-                console.log("jqXhr: " + jqXhr);
-                console.log("textStatus: " + jqXhr);
-                console.log("errorThrown: " + jqXhr);
-            },
-            success: function(response) {
-                $("small[id=" + articleId + "][name=dislikes]").text(response);
-            }
-        });
-    });    
-</script>
