@@ -407,6 +407,8 @@ namespace Egghead.Controllers
         [Authorize]
         public async Task<IActionResult> FindArticleCommentsByArticleId(string articleId)
         {
+            var user = await _userManager.FindByEmailAsync(HttpContext.User.Identity.Name.ToUpper());
+
             var models = new List<ArticleCommentModel>();
 
             var articleComments = await _articlesCommentsManager.FindArticleCommentsByArticleId(articleId);
@@ -420,6 +422,8 @@ namespace Egghead.Controllers
                     Id = articleComment.Id,
                     Text = articleComment.Text,
                     ReplyTo = articleComment.ReplyTo,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
                     CreatedAt = articleComment.CreatedAt,
                     VotingPoints = likes - dislikes
                 });
