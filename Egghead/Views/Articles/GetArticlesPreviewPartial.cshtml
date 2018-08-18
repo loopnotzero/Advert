@@ -1,12 +1,13 @@
-﻿@model IEnumerable<Egghead.Models.Articles.ArticlePreviewModel>
+﻿@using Humanizer
+@model IEnumerable<Egghead.Models.Articles.ArticlePreviewModel>
 
 @if (Model.Any())
 {
     <div class="card m-b-20">
         @foreach (var article in Model)
         {
-            <article id="@article.Id">
-                <small class="text-muted m-l-10 m-t-10">Written by <ins>@article.FirstName @article.LastName</ins>, @article.CreatedAt</small>
+            <article id="@article.Id" class="article-preview">
+                <div class="text-muted p-3"><small class="font-bold">@article.FirstName @article.LastName</small> <small class="time"> @article.CreatedAt.Humanize()</small></div>             
                 <div class="card-body">
                     <a href="/Articles/GetArticleContent?articleId=@article.Id">
                         <h4 class="card-title">@article.Title</h4>
@@ -46,7 +47,7 @@
                     </div>                  
                 </div>
             </article>
-            <div style="border-bottom: 1px solid #d5d5d5; margin-bottom: 20px;"></div>
+            <div style="border-bottom: 1px solid #d5d5d5;"></div>
         }
     </div>
 }

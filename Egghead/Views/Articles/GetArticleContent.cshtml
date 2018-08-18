@@ -1,11 +1,12 @@
-﻿@model Egghead.Models.Articles.ArticleModel
+﻿@using Humanizer
+@model Egghead.Models.Articles.ArticleModel
 
-@Html.Partial("TopNavigationPartial")
+@Html.Partial("WriteArticleNavigationMenuPartial")
 
 <div id="article" class="container-boxed">
     <article>
         <div class="card m-b-20">
-            <small class="text-muted m-l-10 m-t-10">Written by <ins>@Model.FirstName @Model.LastName</ins> at @Model.CreatedAt</small>
+            <div class="text-muted p-3"><small class="font-bold">@Model.FirstName @Model.LastName</small> <small class="time"> @Model.CreatedAt.Humanize()</small></div>
 
             <div class="card-body">
                 <h4 class="card-title">@Model.Title</h4>
