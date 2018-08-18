@@ -7,7 +7,6 @@ using Egghead.Common.Stores;
 using Egghead.MongoDbStorage.Articles;
 using Egghead.MongoDbStorage.Common;
 using Egghead.MongoDbStorage.Mappings;
-using Microsoft.AspNetCore.Identity;
 using MongoDB.Driver;
 
 namespace Egghead.MongoDbStorage.Stores
@@ -45,20 +44,31 @@ namespace Egghead.MongoDbStorage.Stores
             return await cursor.FirstOrDefaultAsync(cancellationToken);
         }
 
-        public async Task<T> FindArticleByTitleAsync(string articleTitle, CancellationToken cancellationToken)
+        public async Task<T> FindArticleByTitleAsync(string title, CancellationToken cancellationToken)
         {                    
             cancellationToken.ThrowIfCancellationRequested();
-            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.NormalizedTitle, articleTitle), cancellationToken: cancellationToken);
+            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.NormalizedTitle, title), cancellationToken: cancellationToken);
             return await cursor.FirstOrDefaultAsync(cancellationToken);
         }
 
-        public async Task<List<T>> GetArticles(int articlesCount, CancellationToken cancellationToken)
+        public async Task<List<T>> FindArticlesAsync(CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var findOptions = new FindOptions<T>
+            {
+                Sort = Builders<T>.Sort.Descending(field => field.CreatedAt),                
+            };
+            var cursor = await _collection.FindAsync(Builders<T>.Filter.Empty, findOptions, cancellationToken: cancellationToken);
+            return await cursor.ToListAsync(cancellationToken);
+        }
+
+        public async Task<List<T>> FindArticlesAsync(int limit, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             var findOptions = new FindOptions<T>
             {
                 Sort = Builders<T>.Sort.Descending(field => field.CreatedAt),
-                Limit = articlesCount
+                Limit = limit
             };
             var cursor = await _collection.FindAsync(Builders<T>.Filter.Empty, findOptions, cancellationToken: cancellationToken);
             return await cursor.ToListAsync(cancellationToken);
