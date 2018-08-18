@@ -2,51 +2,51 @@
 
 @if (Model.Any())
 {
-    foreach (var article in Model)
-    {
-        <article id="@article.Id">
-            <div class="card m-b-20">
+    <div class="card m-b-20">
+        @foreach (var article in Model)
+        {
+            <article id="@article.Id">
                 <small class="text-muted m-l-10 m-t-10">Written by <ins>@article.FirstName @article.LastName</ins>, @article.CreatedAt</small>
                 <div class="card-body">
                     <a href="/Articles/GetArticleContent?articleId=@article.Id">
                         <h4 class="card-title">@article.Title</h4>
                     </a>
-                    <p class="card-text">@Html.Raw(article.Text)</p>
-                    <small class="text-muted m-l-10 m-t-10 float-right">
-                        <a href="/Articles/GetArticleContent?articleId=@article.Id">READ MORE...</a>
-                    </small>
+                    <p class="card-text">@Html.Raw(article.Text)</p>                
                 </div>
-                <div class="card-footer text-muted">
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <div name="btn-like" onclick="onVoteClick('@article.Id', 1)" class="r-btn r-btn-light r-btn--icon">
-                                <i class="fa fa-thumbs-o-up"></i>
-                            </div>
-                            <small name="likes">@article.Likes</small>
-                            
-                            <div name="btn-dislike" onclick="onVoteClick('@article.Id', 2)" class="r-btn r-btn-light r-btn--icon">
-                                <i class="fa fa-thumbs-o-down"></i>
-                            </div>
-                            <small name="dislikes">@article.Dislikes</small>   
-                            
-                            <div name="btn-bookmark" class="r-btn r-btn-light r-btn--icon">
-                                <i class="fa fa-bookmark"></i>
-                            </div>
-                            <small name="bookmarks">@article.BookmarksCount</small> 
-                            
-                            <div class="r-btn r-btn-light-no-hover r-btn--icon-no-hover">
-                                <i class="fa fa-eye"></i>
-                            </div>
-                            <small id="article-view-count" >@article.ViewCount</small>    
-                            
-                            <div class="r-btn r-btn-light-no-hover r-btn--icon-no-hover">
-                                <i class="fa fa-weixin"></i>
-                            </div>
-                            <small id="article-comments">@article.CommentsCount</small>                              
+                <div class="row">
+                    <div class="col-sm-12 ml-3 p-2">
+                        <div name="btn-like" onclick="onVoteClick('@article.Id', 1)" class="r-btn r-btn-light r-btn--icon">
+                            <i class="fa fa-thumbs-o-up"></i>
                         </div>
-                    </div>
+                        <small name="likes">@article.Likes</small>
+
+                        <div name="btn-dislike" onclick="onVoteClick('@article.Id', 2)" class="r-btn r-btn-light r-btn--icon">
+                            <i class="fa fa-thumbs-o-down"></i>
+                        </div>
+                        <small name="dislikes">@article.Dislikes</small>
+
+                        <div name="btn-bookmark" class="r-btn r-btn-light r-btn--icon">
+                            <i class="fa fa-bookmark"></i>
+                        </div>
+                        <small name="bookmarks">@article.BookmarksCount</small>
+
+                        <div class="r-btn r-btn-light-no-hover r-btn--icon-no-hover">
+                            <i class="fa fa-eye"></i>
+                        </div>
+                        <small id="article-view-count">@article.ViewCount</small>
+
+                        <div class="r-btn r-btn-light-no-hover r-btn--icon-no-hover">
+                            <i class="fa fa-weixin"></i>
+                        </div>
+                        <small id="article-comments">@article.CommentsCount</small>
+                       
+                        <small class="text-muted float-right mt-2 mr-4">
+                            <a href="/Articles/GetArticleContent?articleId=@article.Id">READ MORE...</a>
+                        </small>
+                    </div>                  
                 </div>
-            </div>
-        </article>
-    }
+            </article>
+            <div style="border-bottom: 1px solid #d5d5d5; margin-bottom: 20px;"></div>
+        }
+    </div>
 }

@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Egghead.Common;
 using Egghead.Common.Stores;
+using Egghead.MongoDbStorage.Articles;
 using MongoDB.Driver;
 
 namespace Egghead.Managers
@@ -24,17 +26,6 @@ namespace Egghead.Managers
             Store = store ?? throw new ArgumentNullException(nameof(store));
         }
         
-        public async Task<T> FindArticleViewCountByArticleIdAsync(string articleId)
-        {
-            ThrowIfDisposed();
-
-            if (articleId == null)
-            {
-                throw new ArgumentNullException(nameof(articleId));
-            }
-
-            return await Store.FindArticleViewCountByArticleIdAsync(articleId, CancellationToken);
-        }
 
         public async Task<long> CountArticleViewCountAsync(string articleId)
         {
@@ -45,7 +36,13 @@ namespace Egghead.Managers
                 throw new ArgumentNullException(nameof(articleId));
             }
 
-            return await Store.CountArticleViewCountByArticleIdAsync(articleId, CancellationToken);
+            return await Store.CountArticleViewsCountByArticleIdAsync(articleId, CancellationToken);
+        }
+        
+        public async Task<IEnumerable<string>> FindArticlesPopularOnEgghead(int limit)
+        {
+            ThrowIfDisposed();
+            return await Store.FindArticlesPopularOnEgghead(limit, CancellationToken);        
         }
         
         public async Task<OperationResult> CreateArticleViewCountAsync(T entity)
@@ -57,7 +54,7 @@ namespace Egghead.Managers
                 throw new ArgumentNullException(nameof(entity));
             }
 
-            return await Store.SetArticleViewCountAsync(entity, CancellationToken);
+            return await Store.CreateArticleViewsCountAsync(entity, CancellationToken);
         }
         
         public void Dispose()
@@ -83,5 +80,6 @@ namespace Egghead.Managers
                 throw new ObjectDisposedException(GetType().Name);
             }
         }
+      
     }
 }

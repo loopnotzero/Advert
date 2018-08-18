@@ -1,4 +1,4 @@
-﻿<header id="topnav">
+﻿<header id="topnav" style="box-shadow: 0 4px 2px -2px gray;">
     <div class="topbar-main">
         <div class="container-boxed">
             <div class="logo">
@@ -10,7 +10,7 @@
                 <div class="menu-extras topbar-custom">
                     <ul class="list-inline float-right mb-0">
                         <li class="list-inline-item">
-                            <button id="publish-article" class="btn btn-light waves-effect waves-light btn-sm">Write an article</button>
+                            <button id="write-article" class="btn btn-light waves-effect waves-light btn-sm">Write an article</button>
                         </li>
                         @Html.Partial("GetArticleProfilePartial")
                     </ul>
@@ -36,12 +36,6 @@
                 window.location.href = response.redirectUrl;
             }
         });
-        return false;
-    });
-
-    $("#publish-article").click(function(e) {
-        e.preventDefault();
-        window.location.href = "/Articles/WriteArticle";
         return false;
     });
 </script>

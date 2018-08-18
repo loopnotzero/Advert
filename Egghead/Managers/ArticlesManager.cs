@@ -48,24 +48,30 @@ namespace Egghead.Managers
             return await Store.FindArticleByIdAsync(articleId, CancellationToken);
         }
 
-        public async Task<T> FindArticleByTitleAsync(string articleTitle)
+        public async Task<T> FindArticleByTitleAsync(string title)
         {
             ThrowIfDisposed();
 
-            if (articleTitle == null)
+            if (title == null)
             {
-                throw new ArgumentNullException(nameof(articleTitle));
+                throw new ArgumentNullException(nameof(title));
             }
 
-            var article = await Store.FindArticleByTitleAsync(articleTitle.ToUpper(), CancellationToken);
+            var article = await Store.FindArticleByTitleAsync(title.ToUpper(), CancellationToken);
 
             return article;
         }
         
-        public async Task<List<T>> GetArticlesAsync(int articlesCount)
+        public async Task<List<T>> FindArticlesAsync()
         {
             ThrowIfDisposed();          
-            return await Store.GetArticles(articlesCount, CancellationToken);
+            return await Store.FindArticlesAsync(CancellationToken);
+        }
+        
+        public async Task<List<T>> FindArticlesAsync(int limit)
+        {
+            ThrowIfDisposed();          
+            return await Store.FindArticlesAsync(limit, CancellationToken);
         }
 
         public async Task<OperationResult> CreateArticleAsync(T entity)
@@ -79,7 +85,7 @@ namespace Egghead.Managers
 
             return await Store.CreateArticleAsync(entity, CancellationToken);
         }
-
+       
         public async Task<OperationResult> UpdateArticleByIdAsync(string articleId, T entity)
         {
             ThrowIfDisposed();
@@ -150,6 +156,6 @@ namespace Egghead.Managers
             {
                 throw new ObjectDisposedException(GetType().Name);
             }
-        }     
+        }
     }
 }

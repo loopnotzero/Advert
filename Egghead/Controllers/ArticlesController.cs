@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Egghead.Common;
 using Egghead.Common.Articles;
@@ -53,9 +54,26 @@ namespace Egghead.Controllers
 
         [HttpGet]
         [Authorize]
-        public IActionResult GetArticlesPreview()
+        public async Task<IActionResult> GetArticlesPreview()
         {
-            return View();
+            var articles = new List<MongoDbArticle>();
+
+            foreach (var articleId in await _articlesViewCountManager.FindArticlesPopularOnEgghead(5))
+            {
+                articles.Add(await _articlesManager.FindArticleByIdAsync(articleId));
+            }
+            
+            _logger.LogDebug("FindArticlesWithLargestViewsCount(5)");
+
+            return View(articles.Select(x => new ArticleModel
+            {
+                Id = x.Id,
+                Title = x.Title,
+                Text = x.Text,
+                FirstName = "",
+                LastName = "",
+                CreatedAt = x.CreatedAt
+            }));
         }
 
         [HttpGet]
@@ -106,7 +124,7 @@ namespace Egghead.Controllers
             {
                 var user = await _userManager.FindByEmailAsync(HttpContext.User.Identity.Name);
                 var models = new List<ArticlePreviewModel>();
-                var articles = await _articlesManager.GetArticlesAsync(20);
+                var articles = await _articlesManager.FindArticlesAsync(20);
 
                 foreach (var article in articles)
                 {
