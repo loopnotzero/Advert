@@ -10,12 +10,13 @@ namespace Egghead.Common.Stores
     {              
         Task SetNormalizedTitleAsync(T entity, string normalizedTitle, CancellationToken cancellationToken);
         Task<T> FindArticleByIdAsync(string articleId, CancellationToken cancellationToken);
-        Task<T> FindArticleByTitleAsync(string articleTitle, CancellationToken cancellationToken);
-        Task<List<T>> GetArticles(int articlesCount, CancellationToken cancellationToken);
+        Task<T> FindArticleByTitleAsync(string title, CancellationToken cancellationToken);
+        Task<List<T>> FindArticlesAsync(CancellationToken cancellationToken);
+        Task<List<T>> FindArticlesAsync(int limit, CancellationToken cancellationToken);
         Task<OperationResult> CreateArticleAsync(T entity, CancellationToken cancellationToken);
         Task<OperationResult> UpdateArticleByIdAsync(string articleId, T entity, CancellationToken cancellationToken);
         Task<OperationResult> UpdateArticleByTitleAsync(string articleTitle, T entity, CancellationToken cancellationToken);
         Task<OperationResult> DeleteArticleByIdAsync(string articleId, CancellationToken cancellationToken);      
-        Task<OperationResult> DeleteArticleByTitleAsync(string articleTitle, CancellationToken cancellationToken);       
+        Task<OperationResult> DeleteArticleByTitleAsync(string articleTitle, CancellationToken cancellationToken);
     }
 }
