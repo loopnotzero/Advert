@@ -15,8 +15,8 @@
                     @Html.Raw(article.Text)
                 </div>
                 <div class="row">
-                    <div class="col-sm-12 ml-3 p-2">
-                        <div name="btn-like" onclick="onVoteClick('@article.Id', 1)" class="r-btn r-btn-light r-btn--icon">
+                    <div class="col-md-12 p-2">
+                        <div name="btn-like" onclick="onVoteClick('@article.Id', 1)" class="r-btn r-btn-light r-btn--icon ml-4">
                             <i class="fa fa-thumbs-o-up"></i>
                         </div>
                         <small name="likes">@article.Likes</small>
@@ -39,12 +39,12 @@
                         <div class="r-btn r-btn-light-no-hover r-btn--icon-no-hover">
                             <i class="fa fa-weixin"></i>
                         </div>
-                        <small id="article-comments">@article.CommentsCount</small>
-                       
+                        <small id="article-comments">@article.CommentsCount</small>    
+                        
                         <small class="text-muted float-right mt-2 mr-4">
                             <a href="/Articles/GetArticleContent?articleId=@article.Id">READ MORE...</a>
                         </small>
-                    </div>                  
+                    </div>
                 </div>
             </article>
             <div style="border-bottom: 1px solid #d5d5d5;"></div>
