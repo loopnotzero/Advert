@@ -56,24 +56,35 @@ namespace Egghead.Controllers
         [Authorize]
         public async Task<IActionResult> GetArticlesPreview()
         {
-            var articles = new List<MongoDbArticle>();
-
-            foreach (var articleId in await _articlesViewCountManager.FindArticlesPopularOnEgghead(5))
+            try          
             {
-                articles.Add(await _articlesManager.FindArticleByIdAsync(articleId));
-            }
+                var user = await _userManager.FindByEmailAsync(HttpContext.User.Identity.Name);
+
+                var articles = new List<MongoDbArticle>();
+
+                foreach (var articleId in await _articlesViewCountManager.FindArticlesPopularOnEgghead(5))
+                {
+                    articles.Add(await _articlesManager.FindArticleByIdAsync(articleId));
+                }
             
-            _logger.LogDebug("FindArticlesWithLargestViewsCount(5)");
-
-            return View(articles.Select(x => new ArticleModel
+                return View(articles.Select(x => new ArticleModel
+                {
+                    Id = x.Id,
+                    Title = x.Title,
+                    Text = x.Text,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    CreatedAt = x.CreatedAt
+                }));
+            }
+            catch (Exception e)
             {
-                Id = x.Id,
-                Title = x.Title,
-                Text = x.Text,
-                FirstName = "",
-                LastName = "",
-                CreatedAt = x.CreatedAt
-            }));
+                _logger.LogError(e.Message, e);
+                return Ok(new ErrorModel
+                {
+                    ErrorStatusCode = ErrorStatusCode.InternalServerError
+                });              
+            }         
         }
 
         [HttpGet]

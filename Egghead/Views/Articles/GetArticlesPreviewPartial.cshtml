@@ -6,7 +6,7 @@
     <div class="card m-b-20">
         @foreach (var article in Model)
         {
-            <article id="@article.Id" class="article-preview">
+            <article id="@article.Id" class="card-hover">
                 <div class="text-muted p-3"><small class="font-bold">@article.FirstName @article.LastName</small> <small class="time"> @article.CreatedAt.Humanize()</small></div>             
                 <div class="card-body">
                     <a href="/Articles/GetArticleContent?articleId=@article.Id">

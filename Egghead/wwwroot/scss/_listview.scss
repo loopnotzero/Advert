@@ -1,0 +1,124 @@
+.listview__header {
+  color: #333;
+  text-transform: uppercase;
+  padding: 1.2rem 1rem 1rem;
+  border-bottom: 1px solid #f6f6f6;
+  text-align: center;
+}
+
+.listview__header .actions {
+  position: absolute;
+  top: 0.8rem;
+  right: 1rem;
+}
+
+.listview__scroll {
+  overflow-y: auto;
+}
+
+.listview__item {
+  padding: 0.50rem 0.2rem;
+  //transition: background-color 100ms;
+}
+
+.listview__item > .avatar-char {
+  margin-right: 1.2rem;
+}
+
+.listview:not(.listview--block) .listview__item {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.listview__img {
+  height: 3rem;
+  border-radius: 50%;
+  vertical-align: top;
+  margin: 0 1.2rem 0 0;
+}
+
+.listview__content {
+  -webkit-box-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+  min-width: 0;
+}
+
+.listview__content > p {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #8e9499;
+  margin-bottom: 0;
+}
+
+.listview__heading {
+  font-size: 1rem;
+  color: #333;
+  position: relative;
+}
+
+.listview__heading > small {
+  float: right;
+  color: #9c9c9c;
+  font-weight: 500;
+  font-size: 0.85rem;
+  margin-top: 0.1rem;
+}
+
+.listview__heading + p {
+  margin: 0.2rem 0 0;
+  font-size: 0.95rem;
+}
+
+.listview__attrs {
+  -webkit-box-flex: 1;
+  -ms-flex: 1 100%;
+  flex: 1 100%;
+  margin-top: 0.5rem;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.listview__attrs > span {
+  padding: 0.55rem 0.7rem;
+  border: 1px solid #e9ecef;
+  display: inline-block;
+  line-height: 100%;
+  font-size: 0.9rem;
+  margin: 0.2rem 0.25rem 0.055rem 0;
+  background-color: #FFFFFF;
+}
+
+.listview__checkbox {
+  margin-right: 0.5rem;
+}
+
+.listview:not(.listview--inverse).listview--hover .listview__item:hover {
+  background-color: #f8fafd;
+}
+
+.listview:not(.listview--inverse).listview--striped .listview__item:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.listview:not(.listview--inverse) .listview__item--active {
+  background-color: #f9f9f9;
+}
+
+.listview:not(.listview--inverse).listview--bordered .listview__item + .listview__item {
+  border-top: 1px solid #f6f6f6;
+}
+
+.listview--inverse.listview--striped .listview__item:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.listview__actions {
+  margin-left: auto;
+  -ms-flex-item-align: start;
+  align-self: flex-start;
+  margin-right: -1rem;
+}
