@@ -1,17 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Egghead.Common;
 using Egghead.Common.Articles;
+using Egghead.Exceptions;
 using Egghead.Managers;
 using Egghead.Models.Articles;
 using Egghead.Models.Errors;
 using Egghead.MongoDbStorage.Articles;
 using Egghead.MongoDbStorage.Users;
+using Humanizer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.KeyVault.Models;
 using Microsoft.Extensions.Logging;
 
 namespace Egghead.Controllers
@@ -62,7 +66,7 @@ namespace Egghead.Controllers
 
                 var articles = new List<MongoDbArticle>();
 
-                foreach (var articleId in await _articlesViewCountManager.FindArticlesPopularOnEgghead(5))
+                foreach (var articleId in await _articlesViewCountManager.AggregateArticlesWithLargestViewsCount(5))
                 {
                     articles.Add(await _articlesManager.FindArticleByIdAsync(articleId));
                 }
@@ -333,7 +337,7 @@ namespace Egghead.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> CreateArticleCommentVote(string articleId, [FromBody] ArticleCommentVoteModel model)
+        public async Task<IActionResult> UpsertArticleCommentVote(string articleId, [FromBody] ArticleCommentVoteModel model)
         {
             try
             {
@@ -341,17 +345,14 @@ namespace Egghead.Controllers
                 {
                     case VoteType.None:
                         {
-                            var logString = $"Couldn't create comment vote for article id: {articleId} comment id: {model.CommentId}";
-                            _logger.LogError(logString);
-                            throw new Exception(logString);
+                            var user = await _userManager.FindByEmailAsync(HttpContext.User.Identity.Name);
+                            var logString = $"Upsert vote type is not valid. Article id: {articleId} By Who: {user.Email}";
+                            throw new ArticleCommentVoteException(logString);
                         }
-                        break;
                     default:
                         {
-                            var user = await _userManager.FindByEmailAsync(HttpContext.User.Identity.Name.ToUpper());
+                            var articleCommentVote = await _articleCommentsVotesManager.FindArticleCommentVoteAsync(articleId, model.CommentId);
                             
-                            var articleCommentVote = await _articleCommentsVotesManager.FindArticleCommentVoteAsync(articleId, model.CommentId, model.VoteType, HttpContext.User.Identity.Name.ToUpper());
-
                             if (articleCommentVote == null)
                             {
                                 await _articleCommentsVotesManager.CreateArticleCommentVoteAsync(new MongoDbArticleCommentVote
@@ -360,26 +361,58 @@ namespace Egghead.Controllers
                                     ByWhoNormalized = HttpContext.User.Identity.Name.ToUpper(),
                                     ArticleId = articleId,
                                     CommentId = model.CommentId,
-                                    FirstName = user.FirstName,
-                                    LastName = user.LastName,
                                     VoteType = model.VoteType,
                                     CreatedAt = DateTime.UtcNow
                                 });
                             }
+                            else
+                            {
+                                if (model.VoteType == articleCommentVote.VoteType)
+                                {
+                                    await _articleCommentsVotesManager.DeleteArticleCommentVoteAsync(articleCommentVote.Id);     
+                                }
+                                else
+                                {
+                                    switch (articleCommentVote.VoteType)
+                                    {
+                                        case VoteType.None:
+                                            {
+                                                var logString = $"Upsert vote type is not valid. Vote id: {articleCommentVote.Id} By Who: {articleCommentVote.ByWho}";
+                                                throw new ArticleCommentVoteException(logString);
+                                            }
+                                        case VoteType.Like:
+                                            {
+                                                await _articleCommentsVotesManager.UpdateArticleCommentVoteAsync(articleCommentVote.Id, VoteType.Dislike);
+                                            }
+                                            break;
+                                        case VoteType.Dislike:
+                                            {
+                                                await _articleCommentsVotesManager.UpdateArticleCommentVoteAsync(articleCommentVote.Id, VoteType.Like);
+                                            }
+                                            break;
+                                        default:
+                                            {
+                                                var logString = $"Upsert vote type is not implemented. Vote id: {articleCommentVote.Id} By Who: {articleCommentVote.ByWho}";
+                                                throw new ArgumentOutOfRangeException(logString);
+                                            }
+                                    }
+                                }
+                            }
 
                             var votingPoints = await _articleCommentsVotesManager.CountArticleCommentVotesAsync(articleId, model.CommentId, VoteType.Like) - await _articleCommentsVotesManager.CountArticleCommentVotesAsync(articleId, model.CommentId, VoteType.Dislike);
-                            
                             return Ok(votingPoints);
                         }
                 }
             }
-            catch (Exception e)
+            catch (ArticleCommentVoteException e)
             {
                 _logger.LogError(e.Message, e);
-                return Ok(new ErrorModel
-                {
-                    ErrorStatusCode = ErrorStatusCode.InternalServerError
-                });
+                return BadRequest(e);
+            }
+            catch (Exception e)
+            {
+                _logger.LogCritical(e.Message, e);
+                return new StatusCodeResult((int)HttpStatusCode.InternalServerError);
             }
         }
 
@@ -418,7 +451,7 @@ namespace Egghead.Controllers
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     VotingPoints = 0,
-                    CreatedAt = articleComment.CreatedAt
+                    CreatedAt = articleComment.CreatedAt.Humanize()
                 });
             }
             catch (Exception e)
@@ -453,7 +486,7 @@ namespace Egghead.Controllers
                     ReplyTo = articleComment.ReplyTo,
                     FirstName = user.FirstName,
                     LastName = user.LastName,
-                    CreatedAt = articleComment.CreatedAt,
+                    CreatedAt = articleComment.CreatedAt.Humanize(),
                     VotingPoints = likes - dislikes
                 });
             }

@@ -12,12 +12,12 @@
         <div class="col-md-3 p-1">
             <div class="card p-4">
                 <div style="border-bottom: 1px solid #d5d5d5; margin-bottom: 20px;">
-                    <h5 class="text-muted font-bold">Popular on Egghead</h5>
+                    <h4 class="text-muted font-bold">Popular on Egghead</h4>
                 </div>
 
                 @if (Model != null)
                 {
-                    <div class="listview listview--hover">
+                    <div class="listview">
                         @foreach (var article in Model)
                         {
                             <div class="listview__item">

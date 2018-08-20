@@ -42,35 +42,6 @@ html {
   }
 }
 
-
-h1 {
-  line-height: 43px;
-}
-
-h2 {
-  line-height: 35px;
-}
-
-h3 {
-  line-height: 30px;
-  small {
-    color: $lightdark4;
-  }
-}
-
-h4 {
-  line-height: 22px;
-  small {
-    color: $lightdark4;
-  }
-}
-
-h5 {
-  small {
-    color: $lightdark4;
-  }
-}
-
 * {
   outline: none !important;
 }
@@ -122,45 +93,6 @@ a {
   left: 0;
   right: 0;
   top: 0;
-}
-
-
-
-.publish-article-card-box {
-  padding: 40px;
-  box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.14);
-  -webkit-border-radius: 3px;
-  border-radius: 3px;
-  -moz-border-radius: 3px;
-  background-clip: padding-box;
-  margin-bottom: 20px;
-  background-color: $white;
-  z-index: 10;
-}
-
-.header-title {
-  text-transform: uppercase;
-  font-size: 15px;
-  font-weight: 700;
-  line-height: 16px;
-  margin-bottom: 8px;
-  margin-top: 0;
-}
-
-.social-links {
-  li {
-    a {
-      -webkit-border-radius: 50%;
-      background: #EFF0F4;
-      border-radius: 50%;
-      color: #7A7676;
-      display: inline-block;
-      height: 30px;
-      line-height: 30px;
-      text-align: center;
-      width: 30px;
-    }
-  }
 }
 
 .r-btn {
@@ -222,42 +154,8 @@ a {
   vertical-align: middle
 }
 
-#scroll-up {
-  display: none; /* Hidden by default */
-  position: fixed; /* Fixed/sticky position */
-  bottom: 20px; /* Place the button at the bottom of the page */
-  right: 30px; /* Place the button 30px from the right */
-  z-index: 99; /* Make sure it does not overlap */
-  border: none; /* Remove borders */
-  outline: none; /* Remove outline */
-  background-color: #e5e9ee; /* Set a background color */
-  color: $primary; /* Text color */
-  cursor: pointer; /* Add a mouse pointer on hover */
-  font-size: 18px; /* Increase font size */
-}
-
-#scroll-down {
-  display: none; /* Hidden by default */
-  position: fixed; /* Fixed/sticky position */
-  bottom: 20px; /* Place the button at the bottom of the page */
-  right: 30px; /* Place the button 30px from the right */
-  z-index: 99; /* Make sure it does not overlap */
-  border: none; /* Remove borders */
-  outline: none; /* Remove outline */
-  background-color: #e5e9ee; /* Set a background color */
-  color: $primary; /* Text color */
-  cursor: pointer; /* Add a mouse pointer on hover */
-  font-size: 18px; /* Increase font size */
-}
-
 .reply-footer {
 
-}
-
-.text-dashed {
-  cursor: pointer;
-  border-bottom: 1px dashed;
-  color: $primary;
 }
 
 time {
@@ -266,4 +164,11 @@ time {
 
 .time:before {
   content: "\00b7"
+}
+
+.clipped-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-bottom: 0;
 }

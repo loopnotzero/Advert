@@ -1,4 +1,5 @@
-﻿@model IEnumerable<Egghead.Models.Articles.ArticleCommentModel>
+﻿@using Humanizer
+@model IEnumerable<Egghead.Models.Articles.ArticleCommentModel>
 
 @if (Model != null && Model.Any())
 {
@@ -10,7 +11,7 @@
                 <img src="/images/64x64.svg" width="48" height="48">
                 <div class="media-body">
                     <div class="col-auto">
-                        <h6 class="mt-0">@articleComment.FirstName @articleComment.LastName, @articleComment.CreatedAt</h6>
+                        @articleComment.FirstName @articleComment.LastName <small class="time">@articleComment.CreatedAt.Humanize()</small>
                     </div>
                     <div class="col-auto">
                         <h6>@Html.Raw(articleComment.Text)</h6>
@@ -32,13 +33,12 @@
         else
         { 
              <script>
-//                console.log(`Reply To: @articleComment.ReplyTo`);
                 $("#@articleComment.ReplyTo .media-body:first").append(`
                     <div id='@articleComment.Id' class='media p-3'>
                         <img src="/images/64x64.svg" width="48" height="48">
                         <div class="media-body">
                             <div class="col-auto">
-                                <h6 class="mt-0">@articleComment.FirstName @articleComment.LastName, @articleComment.CreatedAt</h6>
+                                @articleComment.FirstName @articleComment.LastName <small class="time">@articleComment.CreatedAt.Humanize()</small>
                             </div>
                             <div class="col-auto">
                                 <h6>@Html.Raw(articleComment.Text)</h6>

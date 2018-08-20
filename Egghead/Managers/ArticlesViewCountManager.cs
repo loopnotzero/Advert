@@ -38,13 +38,7 @@ namespace Egghead.Managers
 
             return await Store.CountArticleViewsCountByArticleIdAsync(articleId, CancellationToken);
         }
-        
-        public async Task<IEnumerable<string>> FindArticlesPopularOnEgghead(int limit)
-        {
-            ThrowIfDisposed();
-            return await Store.FindArticlesPopularOnEgghead(limit, CancellationToken);        
-        }
-        
+                
         public async Task<OperationResult> CreateArticleViewCountAsync(T entity)
         {
             ThrowIfDisposed();
@@ -57,6 +51,12 @@ namespace Egghead.Managers
             return await Store.CreateArticleViewsCountAsync(entity, CancellationToken);
         }
         
+        public async Task<IEnumerable<string>> AggregateArticlesWithLargestViewsCount(int limit)
+        {
+            ThrowIfDisposed();
+            return await Store.AggregateArticlesWithLargestViewsCount(limit, CancellationToken);        
+        }
+     
         public void Dispose()
         {
             Dispose(true);

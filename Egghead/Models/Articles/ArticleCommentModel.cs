@@ -10,6 +10,6 @@ namespace Egghead.Models.Articles
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public long VotingPoints { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public string CreatedAt { get; set; }
     }
 }
