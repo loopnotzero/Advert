@@ -20,16 +20,20 @@
                     <div class="listview listview--hover">
                         @foreach (var article in Model)
                         {
-                            <a class="listview__item">
+                            <div class="listview__item">
                                 <img src="/images/users/avatar-1.jpg" class="listview__img" alt="">
 
                                 <div class="listview__content">
                                     <div class="listview__heading">
-                                        @article.FirstName @article.LastName
+                                        <p>
+                                            <a href="/Articles/GetArticleContent?articleId=@article.Id">@article.Title</a>
+                                        </p>
                                     </div>
-                                    <p>@article.Title</p>
+                                    <p>
+                                        @article.FirstName @article.LastName <small class="time"> @article.CreatedAt.Humanize()</small>
+                                    </p>
                                 </div>
-                            </a>
+                            </div>
                         }
                     </div>
                 }
