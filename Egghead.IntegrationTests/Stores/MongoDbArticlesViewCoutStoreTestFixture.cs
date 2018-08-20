@@ -49,7 +49,7 @@ namespace Egghead.IntegrationTests.Stores
                 Assert.Equal(OperationResult.Success, operationResult);
             }
                       
-            var articlesWithLargestViewsCount = await _articlesViewCount.FindArticlesPopularOnEgghead(5, _cancellationToken);
+            var articlesWithLargestViewsCount = await _articlesViewCount.AggregateArticlesWithLargestViewsCount(5, _cancellationToken);
 
 //            Assert.Equal(articlesWithLargestViewsCount.Count, 5);
         }
