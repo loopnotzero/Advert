@@ -97,6 +97,7 @@
 }
 
 .listview:not(.listview--inverse).listview--hover .listview__item:hover {
+  cursor: pointer;
   background-color: #f8fafd;
 }
 
@@ -121,4 +122,10 @@
   -ms-flex-item-align: start;
   align-self: flex-start;
   margin-right: -1rem;
+}
+
+.listview__dropdown__divider {
+  padding-top: 1px;
+  margin: 5px 1px 6px;
+  border-bottom: 1px solid #e6ecf0;
 }

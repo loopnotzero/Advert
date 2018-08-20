@@ -21,7 +21,7 @@
 </header>
 
 <script>
-    $("#sign-out").click(function(e) {
+    $("#log-out").click(function(e) {
         e.preventDefault();
         $.ajax({
             url: "/Account/SignOut?returnUrl=" + window.location.pathname + window.location.search,
