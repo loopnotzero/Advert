@@ -10,6 +10,6 @@ namespace Egghead.Common.Stores
     {
         Task<long> CountArticleViewsCountByArticleIdAsync(string articleId, CancellationToken cancellationToken);
         Task<OperationResult> CreateArticleViewsCountAsync(T entity , CancellationToken cancellationToken);
-        Task<IEnumerable<string>> FindArticlesPopularOnEgghead(int limit, CancellationToken cancellationToken);
+        Task<IEnumerable<string>> AggregateArticlesWithLargestViewsCount(int limit, CancellationToken cancellationToken);
     }
 }
