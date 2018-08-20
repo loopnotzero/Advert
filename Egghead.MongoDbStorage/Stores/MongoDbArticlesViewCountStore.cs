@@ -48,7 +48,7 @@ namespace Egghead.MongoDbStorage.Stores
             return OperationResult.Success;
         }
         
-        public async Task<IEnumerable<string>> FindArticlesPopularOnEgghead(int limit, CancellationToken cancellationToken)
+        public async Task<IEnumerable<string>> AggregateArticlesWithLargestViewsCount(int limit, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
