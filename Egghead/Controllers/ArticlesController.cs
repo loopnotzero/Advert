@@ -452,7 +452,7 @@ namespace Egghead.Controllers
                 {
                     Id = comment.Id.ToString(),
                     Text = comment.Text,
-                    ReplyTo = comment.ReplyTo == null ? null : comment.ReplyTo.ToString(),
+                    ReplyTo = comment.ReplyTo == ObjectId.Empty ? null : comment.ReplyTo.ToString(),
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     CreatedAt = comment.CreatedAt.Humanize()
@@ -489,7 +489,7 @@ namespace Egghead.Controllers
                 {
                     Id = articleComment.Id.ToString(),
                     Text = articleComment.Text,
-                    ReplyTo = articleComment.ReplyTo == null ? null : articleComment.ReplyTo.ToString(),
+                    ReplyTo = articleComment.ReplyTo == ObjectId.Empty ? null : articleComment.ReplyTo.ToString(),
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     CreatedAt = articleComment.CreatedAt.Humanize(),
