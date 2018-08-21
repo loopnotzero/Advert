@@ -58,59 +58,24 @@ namespace Egghead.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> GetArticlesPreview()
-        {
-            try          
-            {
-                var user = await _userManager.FindByEmailAsync(HttpContext.User.Identity.Name);
-
-                var articles = new List<MongoDbArticle>();
-
-                foreach (var articleId in await _articlesViewCountManager.AggregateArticlesWithLargestViewsCount(5))
-                {
-                    articles.Add(await _articlesManager.FindArticleByIdAsync(articleId));
-                }
-            
-                return View(articles.Select(x => new ArticleModel
-                {
-                    Id = x.Id.ToString(),
-                    Title = x.Title,
-                    Text = x.Text,
-                    FirstName = user.FirstName,
-                    LastName = user.LastName,
-                    CreatedAt = x.CreatedAt
-                }));
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e.Message, e);
-                return Ok(new ErrorModel
-                {
-                    ErrorStatusCode = ErrorStatusCode.InternalServerError
-                });              
-            }         
-        }
-
-        [HttpGet]
-        [Authorize]
         public async Task<IActionResult> GetArticleContent(string articleId)
         {
             try
-            {              
+            {
                 var user = await _userManager.FindByEmailAsync(HttpContext.User.Identity.Name);
 
-                var aId = ObjectId.Parse(articleId);
-                
+                var objectId = ObjectId.Parse(articleId);
+
                 await _articlesViewCountManager.CreateArticleViewCountAsync(new MongoDbArticleViewCount
                 {
                     ByWho = HttpContext.User.Identity.Name,
                     ByWhoNormalized = HttpContext.User.Identity.Name.ToUpper(),
-                    ArticleId = aId,
+                    ArticleId = objectId,
                     CreatedAt = DateTime.UtcNow
                 });
 
-                var article = await _articlesManager.FindArticleByIdAsync(aId);
-                
+                var article = await _articlesManager.FindArticleByIdAsync(objectId);
+
                 var model = new ArticleModel
                 {
                     Id = article.Id.ToString(),
@@ -122,6 +87,41 @@ namespace Egghead.Controllers
                 };
 
                 return View(model);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return Ok(new ErrorModel
+                {
+                    ErrorStatusCode = ErrorStatusCode.InternalServerError
+                });
+            }
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> GetArticlesPreview()
+        {
+            try
+            {
+                var user = await _userManager.FindByEmailAsync(HttpContext.User.Identity.Name);
+
+                var articles = new List<MongoDbArticle>();
+
+                foreach (var articleId in await _articlesViewCountManager.AggregateArticlesWithLargestViewsCount(5))
+                {
+                    articles.Add(await _articlesManager.FindArticleByIdAsync(articleId));
+                }
+
+                return View(articles.Select(x => new ArticleModel
+                {
+                    Id = x.Id.ToString(),
+                    Title = x.Title,
+                    Text = x.Text,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    CreatedAt = x.CreatedAt
+                }));
             }
             catch (Exception e)
             {
@@ -172,10 +172,9 @@ namespace Egghead.Controllers
             }
         }
 
-
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> CreateArticle([FromBody] ArticlePreviewModel model)
+        public async Task<IActionResult> CreateArticleAsync([FromBody] ArticlePreviewModel model)
         {
             try
             {
@@ -206,7 +205,7 @@ namespace Egghead.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> GetArticleById(string articleId)
+        public async Task<IActionResult> GetArticleByIdAsync(string articleId)
         {
             try
             {
@@ -225,7 +224,7 @@ namespace Egghead.Controllers
 
         [HttpPut]
         [Authorize]
-        public async Task<IActionResult> UdpateArticleById(string articleId, [FromBody] ArticlePreviewModel model)
+        public async Task<IActionResult> UdpateArticleByIdAsync(string articleId, [FromBody] ArticlePreviewModel model)
         {
             try
             {
@@ -251,7 +250,7 @@ namespace Egghead.Controllers
 
         [HttpPut]
         [Authorize]
-        public async Task<IActionResult> UdpateArticleByTitle(string articleTitle, [FromBody] ArticlePreviewModel model)
+        public async Task<IActionResult> UdpateArticleByTitleAsync(string articleTitle, [FromBody] ArticlePreviewModel model)
         {
             try
             {
@@ -277,7 +276,7 @@ namespace Egghead.Controllers
 
         [HttpDelete]
         [Authorize]
-        public async Task<IActionResult> DeleteArticleById(string articleId)
+        public async Task<IActionResult> DeleteArticleByIdAsync(string articleId)
         {
             try
             {
@@ -296,21 +295,26 @@ namespace Egghead.Controllers
 
         [HttpDelete]
         [Authorize]
-        public async Task<IActionResult> DeleteArticleByTitle(string title)
+        public async Task<IActionResult> DeleteArticleByTitleAsync(string title)
         {
             await _articlesManager.DeleteArticleByTitleAsync(title);
             return Ok();
         }
 
+        [HttpGet]
+        public async Task<IActionResult> CountArticlesWrittenByYouAsync()
+        {
+            throw new NotImplementedException();
+        }
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> CreateArticleVote(string articleId, [FromBody] ArticleVoteModel model)
+        public async Task<IActionResult> CreateArticleVoteAsync(string articleId, [FromBody] ArticleVoteModel model)
         {
             try
             {
                 var objectId = ObjectId.Parse(articleId);
-                
+
                 var articleVote = await _articlesVotesManager.FindArticleVoteAsync(objectId, model.VoteType, HttpContext.User.Identity.Name.ToUpper());
 
                 if (articleVote == null)
@@ -339,9 +343,8 @@ namespace Egghead.Controllers
             }
         }
 
-
         [HttpPost]
-        public async Task<IActionResult> UpsertArticleCommentVote(string articleId, [FromBody] ArticleCommentVoteModel model)
+        public async Task<IActionResult> UpsertArticleCommentVoteAsync(string articleId, [FromBody] ArticleCommentVoteModel model)
         {
             try
             {
@@ -419,17 +422,16 @@ namespace Egghead.Controllers
             }
         }
 
-
         [HttpGet]
         [Authorize]
-        public async Task<long> CountArticleCommentsByArticleId(string articleId)
+        public async Task<long> CountArticleCommentsByArticleIdAsync(string articleId)
         {
             return await _articlesCommentsManager.CountArticleCommentsByArticleIdAsync(articleId);
         }
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> CreateArticleComment(string articleId, [FromBody] ArticleCommentModel model)
+        public async Task<IActionResult> CreateArticleCommentAsync(string articleId, [FromBody] ArticleCommentModel model)
         {
             try
             {
@@ -447,7 +449,7 @@ namespace Egghead.Controllers
                 await _articlesCommentsManager.CreateArticleComment(articleId, articleComment);
 
                 var comment = await _articlesCommentsManager.FindArticleCommentById(articleId, articleComment.Id);
-       
+
                 return Ok(new ArticleCommentModel
                 {
                     Id = comment.Id.ToString(),
@@ -471,7 +473,7 @@ namespace Egghead.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> FindArticleCommentsByArticleId(string articleId)
+        public async Task<IActionResult> FindArticleCommentsByArticleIdAsync(string articleId)
         {
             var user = await _userManager.FindByEmailAsync(HttpContext.User.Identity.Name.ToUpper());
 

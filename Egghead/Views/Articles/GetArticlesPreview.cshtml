@@ -96,7 +96,7 @@
             voteType: voteType
         }
         $.ajax({
-            url: "/Articles/CreateArticleVote?articleId=" + articleId,
+            url: "/Articles/CreateArticleVoteAsync?articleId=" + articleId,
             type: "POST",
             data: JSON.stringify(vote),
             contentType: "application/json",

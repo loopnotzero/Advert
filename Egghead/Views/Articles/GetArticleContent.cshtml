@@ -116,7 +116,7 @@
     
     function createCommentReplyAsync(articleId, replyTo, comment) {
         $.ajax({
-            url: `/Articles/CreateArticleComment?articleId=${articleId}`,
+            url: `/Articles/CreateArticleCommentAsync?articleId=${articleId}`,
             type: "POST",
             data: JSON.stringify(comment),
             contentType: "application/json",
@@ -157,7 +157,7 @@
 
     function createArticleCommentAsync(articleId, comment) {
         $.ajax({
-            url: `/Articles/CreateArticleComment?articleId=${articleId}`,
+            url: `/Articles/CreateArticleCommentAsync?articleId=${articleId}`,
             type: "POST",
             data: JSON.stringify(comment),
             contentType: "application/json",
@@ -201,7 +201,7 @@
             commentId: commentId
         }
         $.ajax({
-            url: "/Articles/UpsertArticleCommentVote?articleId=" + articleId,
+            url: "/Articles/UpsertArticleCommentVoteAsync?articleId=" + articleId,
             type: "POST",
             data: JSON.stringify(vote),
             contentType: "application/json",
@@ -230,7 +230,7 @@
 
     function findArticleCommentsByArticleIdAync(articleId) {
         $.ajax({
-            url: `/Articles/FindArticleCommentsByArticleId?articleId=${articleId}`,
+            url: `/Articles/FindArticleCommentsByArticleIdAsync?articleId=${articleId}`,
             type: "GET",
             contentType: "application/json",
             error: function(jqXhr, textStatus, errorThrown) {
@@ -246,7 +246,7 @@
 
     function countArticleCommentsByArticleIdAsync(articleId) {
         $.ajax({
-            url: `/Articles/CountArticleCommentsByArticleId?articleId=${articleId}`,
+            url: `/Articles/CountArticleCommentsByArticleIdAsync?articleId=${articleId}`,
             type: "GET",
             contentType: "application/json",
             error: function(jqXhr, textStatus, errorThrown) {
