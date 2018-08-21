@@ -15,8 +15,8 @@ using Humanizer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.KeyVault.Models;
 using Microsoft.Extensions.Logging;
+using MongoDB.Bson;
 
 namespace Egghead.Controllers
 {
@@ -73,7 +73,7 @@ namespace Egghead.Controllers
             
                 return View(articles.Select(x => new ArticleModel
                 {
-                    Id = x.Id,
+                    Id = x.Id.ToString(),
                     Title = x.Title,
                     Text = x.Text,
                     FirstName = user.FirstName,
@@ -96,22 +96,24 @@ namespace Egghead.Controllers
         public async Task<IActionResult> GetArticleContent(string articleId)
         {
             try
-            {
+            {              
                 var user = await _userManager.FindByEmailAsync(HttpContext.User.Identity.Name);
+
+                var aId = ObjectId.Parse(articleId);
                 
                 await _articlesViewCountManager.CreateArticleViewCountAsync(new MongoDbArticleViewCount
                 {
                     ByWho = HttpContext.User.Identity.Name,
                     ByWhoNormalized = HttpContext.User.Identity.Name.ToUpper(),
-                    ArticleId = articleId,
+                    ArticleId = aId,
                     CreatedAt = DateTime.UtcNow
                 });
 
-                var article = await _articlesManager.FindArticleByIdAsync(articleId);
+                var article = await _articlesManager.FindArticleByIdAsync(aId);
                 
                 var model = new ArticleModel
                 {
-                    Id = article.Id,
+                    Id = article.Id.ToString(),
                     Title = article.Title,
                     Text = article.Text,
                     FirstName = user.FirstName,
@@ -145,7 +147,7 @@ namespace Egghead.Controllers
                 {
                     models.Add(new ArticlePreviewModel
                     {
-                        Id = article.Id,
+                        Id = article.Id.ToString(),
                         Title = article.Title,
                         Text = article.Text.Length > ArticlePreviewMaxLength ? article.Text.Substring(0, 1000) : article.Text,
                         FirstName = user.FirstName,
@@ -208,7 +210,7 @@ namespace Egghead.Controllers
         {
             try
             {
-                var article = await _articlesManager.FindArticleByIdAsync(articleId);
+                var article = await _articlesManager.FindArticleByIdAsync(ObjectId.Parse(articleId));
                 return Ok(article);
             }
             catch (Exception e)
@@ -227,7 +229,7 @@ namespace Egghead.Controllers
         {
             try
             {
-                await _articlesManager.UpdateArticleByIdAsync(articleId, new MongoDbArticle
+                await _articlesManager.UpdateArticleByIdAsync(ObjectId.Parse(articleId), new MongoDbArticle
                 {
                     Title = model.Title,
                     NormalizedTitle = model.Title.ToUpper(),
@@ -279,7 +281,7 @@ namespace Egghead.Controllers
         {
             try
             {
-                await _articlesManager.DeleteArticleByIdAsync(articleId);
+                await _articlesManager.DeleteArticleByIdAsync(ObjectId.Parse(articleId));
                 return Ok();
             }
             catch (Exception e)
@@ -307,7 +309,9 @@ namespace Egghead.Controllers
         {
             try
             {
-                var articleVote = await _articlesVotesManager.FindArticleVoteAsync(articleId, model.VoteType, HttpContext.User.Identity.Name.ToUpper());
+                var objectId = ObjectId.Parse(articleId);
+                
+                var articleVote = await _articlesVotesManager.FindArticleVoteAsync(objectId, model.VoteType, HttpContext.User.Identity.Name.ToUpper());
 
                 if (articleVote == null)
                 {
@@ -315,13 +319,13 @@ namespace Egghead.Controllers
                     {
                         ByWho = HttpContext.User.Identity.Name,
                         ByWhoNormalized = HttpContext.User.Identity.Name.ToUpper(),
-                        ArticleId = articleId,
+                        ArticleId = objectId,
                         VoteType = model.VoteType,
                         CreatedAt = DateTime.UtcNow
                     });
                 }
 
-                var articleVotes = await _articlesVotesManager.CountArticleVotesAsync(articleId, model.VoteType);
+                var articleVotes = await _articlesVotesManager.CountArticleVotesAsync(objectId, model.VoteType);
 
                 return Ok(articleVotes);
             }
@@ -341,68 +345,67 @@ namespace Egghead.Controllers
         {
             try
             {
-                switch (model.VoteType)
-                {
-                    case VoteType.None:
-                        {
-                            var user = await _userManager.FindByEmailAsync(HttpContext.User.Identity.Name);
-                            var logString = $"Upsert vote type is not valid. Article id: {articleId} By Who: {user.Email}";
-                            throw new ArticleCommentVoteException(logString);
-                        }
-                    default:
-                        {
-                            var articleCommentVote = await _articleCommentsVotesManager.FindArticleCommentVoteAsync(articleId, model.CommentId);
-                            
-                            if (articleCommentVote == null)
-                            {
-                                await _articleCommentsVotesManager.CreateArticleCommentVoteAsync(new MongoDbArticleCommentVote
-                                {
-                                    ByWho = HttpContext.User.Identity.Name,
-                                    ByWhoNormalized = HttpContext.User.Identity.Name.ToUpper(),
-                                    ArticleId = articleId,
-                                    CommentId = model.CommentId,
-                                    VoteType = model.VoteType,
-                                    CreatedAt = DateTime.UtcNow
-                                });
-                            }
-                            else
-                            {
-                                if (model.VoteType == articleCommentVote.VoteType)
-                                {
-                                    await _articleCommentsVotesManager.DeleteArticleCommentVoteAsync(articleCommentVote.Id);     
-                                }
-                                else
-                                {
-                                    switch (articleCommentVote.VoteType)
-                                    {
-                                        case VoteType.None:
-                                            {
-                                                var logString = $"Upsert vote type is not valid. Vote id: {articleCommentVote.Id} By Who: {articleCommentVote.ByWho}";
-                                                throw new ArticleCommentVoteException(logString);
-                                            }
-                                        case VoteType.Like:
-                                            {
-                                                await _articleCommentsVotesManager.UpdateArticleCommentVoteAsync(articleCommentVote.Id, VoteType.Dislike);
-                                            }
-                                            break;
-                                        case VoteType.Dislike:
-                                            {
-                                                await _articleCommentsVotesManager.UpdateArticleCommentVoteAsync(articleCommentVote.Id, VoteType.Like);
-                                            }
-                                            break;
-                                        default:
-                                            {
-                                                var logString = $"Upsert vote type is not implemented. Vote id: {articleCommentVote.Id} By Who: {articleCommentVote.ByWho}";
-                                                throw new ArgumentOutOfRangeException(logString);
-                                            }
-                                    }
-                                }
-                            }
+                var articleIdObj = ObjectId.Parse(articleId);
+                var commentIdObj = ObjectId.Parse(model.CommentId);
 
-                            var votingPoints = await _articleCommentsVotesManager.CountArticleCommentVotesAsync(articleId, model.CommentId, VoteType.Like) - await _articleCommentsVotesManager.CountArticleCommentVotesAsync(articleId, model.CommentId, VoteType.Dislike);
-                            return Ok(votingPoints);
-                        }
+                if (model.VoteType == VoteType.None)
+                {
+                    var user = await _userManager.FindByEmailAsync(HttpContext.User.Identity.Name);
+                    var logString = $"Upsert vote type is not valid. Article id: {articleId} By Who: {user.Email}";
+                    throw new ArticleCommentVoteException(logString);
                 }
+
+                var articleCommentVote = await _articleCommentsVotesManager.FindArticleCommentVoteAsync(articleIdObj, commentIdObj);
+
+                if (articleCommentVote == null)
+                {
+                    await _articleCommentsVotesManager.CreateArticleCommentVoteAsync(new MongoDbArticleCommentVote
+                    {
+                        ByWho = HttpContext.User.Identity.Name,
+                        ByWhoNormalized = HttpContext.User.Identity.Name.ToUpper(),
+                        ArticleId = articleIdObj,
+                        CommentId = commentIdObj,
+                        VoteType = model.VoteType,
+                        CreatedAt = DateTime.UtcNow
+                    });
+                }
+                else
+                {
+                    if (model.VoteType == articleCommentVote.VoteType)
+                    {
+                        await _articleCommentsVotesManager.DeleteArticleCommentVoteAsync(articleCommentVote.Id);
+                    }
+                    else
+                    {
+                        switch (articleCommentVote.VoteType)
+                        {
+                            case VoteType.None:
+                                {
+                                    var logString = $"Upsert vote type is not valid. Vote id: {articleCommentVote.Id} By Who: {articleCommentVote.ByWho}";
+                                    throw new ArticleCommentVoteException(logString);
+                                }
+                            case VoteType.Like:
+                                {
+                                    await _articleCommentsVotesManager.UpdateArticleCommentVoteAsync(articleCommentVote.Id, VoteType.Dislike);
+                                }
+                                break;
+                            case VoteType.Dislike:
+                                {
+                                    await _articleCommentsVotesManager.UpdateArticleCommentVoteAsync(articleCommentVote.Id, VoteType.Like);
+                                }
+                                break;
+                            default:
+                                {
+                                    var logString = $"Upsert vote type is not implemented. Vote id: {articleCommentVote.Id} By Who: {articleCommentVote.ByWho}";
+                                    throw new ArgumentOutOfRangeException(logString);
+                                }
+                        }
+                    }
+                }
+
+                //todo: Count Article Comment Votes Difference by aggregation
+                var votingPoints = await _articleCommentsVotesManager.CountArticleCommentVotesAsync(articleIdObj, commentIdObj, VoteType.Like) - await _articleCommentsVotesManager.CountArticleCommentVotesAsync(articleIdObj, commentIdObj, VoteType.Dislike);
+                return Ok(votingPoints);
             }
             catch (ArticleCommentVoteException e)
             {
@@ -412,7 +415,7 @@ namespace Egghead.Controllers
             catch (Exception e)
             {
                 _logger.LogCritical(e.Message, e);
-                return new StatusCodeResult((int)HttpStatusCode.InternalServerError);
+                return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
             }
         }
 
@@ -421,7 +424,7 @@ namespace Egghead.Controllers
         [Authorize]
         public async Task<long> CountArticleCommentsByArticleId(string articleId)
         {
-            return await _articlesCommentsManager.CountArticleCommentsByArticleIdAsync(articleId);
+            return await _articlesCommentsManager.CountArticleCommentsByArticleIdAsync(ObjectId.Parse(articleId));
         }
 
         [HttpPost]
@@ -437,17 +440,17 @@ namespace Egghead.Controllers
                     Text = model.Text,
                     ByWho = HttpContext.User.Identity.Name,
                     ByWhoNormalized = HttpContext.User.Identity.Name.ToUpper(),
-                    ReplyTo = model.ReplyTo,
+                    ReplyTo = ObjectId.Parse(model.ReplyTo),
                     CreatedAt = DateTime.UtcNow
                 };
 
-                await _articlesCommentsManager.CreateArticleComment(articleId, articleComment);
+                await _articlesCommentsManager.CreateArticleComment(ObjectId.Parse(articleId), articleComment);
        
                 return Ok(new ArticleCommentModel
                 {
-                    Id = articleComment.Id,
+                    Id = articleComment.Id.ToString(),
                     Text = articleComment.Text,
-                    ReplyTo = articleComment.ReplyTo,
+                    ReplyTo = articleComment.ReplyTo.ToString(),
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     VotingPoints = 0,
@@ -473,17 +476,19 @@ namespace Egghead.Controllers
 
             var models = new List<ArticleCommentModel>();
 
-            var articleComments = await _articlesCommentsManager.FindArticleCommentsByArticleId(articleId);
+            var objectId = ObjectId.Parse(articleId);
+
+            var articleComments = await _articlesCommentsManager.FindArticleCommentsByArticleId(objectId);
 
             foreach (var articleComment in articleComments)
             {
-                var likes = await _articleCommentsVotesManager.CountArticleCommentVotesAsync(articleId, articleComment.Id, VoteType.Like);
-                var dislikes = await _articleCommentsVotesManager.CountArticleCommentVotesAsync(articleId, articleComment.Id, VoteType.Dislike);
+                var likes = await _articleCommentsVotesManager.CountArticleCommentVotesAsync(objectId, articleComment.Id, VoteType.Like);
+                var dislikes = await _articleCommentsVotesManager.CountArticleCommentVotesAsync(objectId, articleComment.Id, VoteType.Dislike);
                 models.Add(new ArticleCommentModel
                 {
-                    Id = articleComment.Id,
+                    Id = articleComment.Id.ToString(),
                     Text = articleComment.Text,
-                    ReplyTo = articleComment.ReplyTo,
+                    ReplyTo = articleComment.ReplyTo.ToString(),
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     CreatedAt = articleComment.CreatedAt.Humanize(),

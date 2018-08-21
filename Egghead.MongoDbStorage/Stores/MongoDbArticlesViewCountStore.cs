@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,6 +8,7 @@ using Egghead.Common.Stores;
 using Egghead.MongoDbStorage.Articles;
 using Egghead.MongoDbStorage.Common;
 using Egghead.MongoDbStorage.Mappings;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace Egghead.MongoDbStorage.Stores
@@ -31,11 +33,11 @@ namespace Egghead.MongoDbStorage.Stores
             EntityMappings.EnsureMongoDbArticleViewsConfigured();
         }
 
-        public async Task<long> CountArticleViewsCountByArticleIdAsync(string articleId, CancellationToken cancellationToken)
+        public async Task<long> CountArticleViewsCountByArticleIdAsync(ObjectId articleId, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             var filter = Builders<T>.Filter.Eq(x => x.ArticleId, articleId);
-            return await _collection.CountDocumentsAsync(filter, cancellationToken: cancellationToken);
+            return await _collection.CountDocumentsAsync(filter, new CountOptions(), cancellationToken);
         }
 
         public async Task<OperationResult> CreateArticleViewsCountAsync(T entity, CancellationToken cancellationToken)
@@ -48,7 +50,7 @@ namespace Egghead.MongoDbStorage.Stores
             return OperationResult.Success;
         }
         
-        public async Task<IEnumerable<string>> AggregateArticlesWithLargestViewsCount(int limit, CancellationToken cancellationToken)
+        public async Task<IEnumerable<ObjectId>> AggregateArticlesWithLargestViewsCount(int limit, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 

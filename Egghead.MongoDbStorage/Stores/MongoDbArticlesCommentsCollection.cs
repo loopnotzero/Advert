@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Egghead.Common;
 using Egghead.Common.Stores;
 using Egghead.MongoDbStorage.Articles;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace Egghead.MongoDbStorage.Stores
@@ -18,7 +19,7 @@ namespace Egghead.MongoDbStorage.Stores
             _collection = collection;
         }
         
-        public async Task<T> FindArticleCommentByIdAsync(string commentId, CancellationToken cancellationToken)
+        public async Task<T> FindArticleCommentByIdAsync(ObjectId commentId, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.Id, commentId), cancellationToken: cancellationToken);
@@ -49,7 +50,7 @@ namespace Egghead.MongoDbStorage.Stores
             return OperationResult.Success;
         }
 
-        public async Task<OperationResult> UpdateArticleCommentByIdAsync(string commentId, T entity, CancellationToken cancellationToken)
+        public async Task<OperationResult> UpdateArticleCommentByIdAsync(ObjectId commentId, T entity, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             await _collection.ReplaceOneAsync(Builders<T>.Filter.Eq(x => x.Id, commentId), entity, new UpdateOptions
@@ -59,7 +60,7 @@ namespace Egghead.MongoDbStorage.Stores
             return OperationResult.Success;
         }
 
-        public async Task<OperationResult> DeleteArticleCommentByIdAsync(string commentId, CancellationToken cancellationToken)
+        public async Task<OperationResult> DeleteArticleCommentByIdAsync(ObjectId commentId, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             await _collection.DeleteOneAsync(Builders<T>.Filter.Eq(x => x.Id, commentId), cancellationToken);

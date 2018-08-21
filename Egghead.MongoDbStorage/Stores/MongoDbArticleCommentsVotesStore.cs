@@ -7,6 +7,7 @@ using Egghead.Common.Stores;
 using Egghead.MongoDbStorage.Articles;
 using Egghead.MongoDbStorage.Common;
 using Egghead.MongoDbStorage.Mappings;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace Egghead.MongoDbStorage.Stores
@@ -31,7 +32,7 @@ namespace Egghead.MongoDbStorage.Stores
             EntityMappings.EnsureMongoDbArticleLikeConfigured();
         }
 
-        public async Task<T> FindArticleCommentVoteAsync(string articleId, string commentId, CancellationToken cancellationToken)
+        public async Task<T> FindArticleCommentVoteAsync(ObjectId articleId, ObjectId commentId, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             var filter = Builders<T>.Filter.And(
@@ -42,7 +43,7 @@ namespace Egghead.MongoDbStorage.Stores
             return await cursor.FirstOrDefaultAsync(cancellationToken);
         }
 
-        public async Task<long> CountArticleCommentVotesAsync(string articleId, string commentId, VoteType voteType, CancellationToken cancellationToken)
+        public async Task<long> CountArticleCommentVotesAsync(ObjectId articleId, ObjectId commentId, VoteType voteType, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             var filter = Builders<T>.Filter.And(
@@ -63,7 +64,7 @@ namespace Egghead.MongoDbStorage.Stores
             return OperationResult.Success;
         }
 
-        public async Task<OperationResult> UpdateArticleCommentVoteAsync(string voteId, VoteType voteType, CancellationToken cancellationToken)
+        public async Task<OperationResult> UpdateArticleCommentVoteAsync(ObjectId voteId, VoteType voteType, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -78,7 +79,7 @@ namespace Egghead.MongoDbStorage.Stores
             return OperationResult.Success;
         }
 
-        public async Task<OperationResult> DeleteArticleCommentVoteAsync(string voteId, CancellationToken cancellationToken)
+        public async Task<OperationResult> DeleteArticleCommentVoteAsync(ObjectId voteId, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             var filter = Builders<T>.Filter.Eq(x => x.Id, voteId);

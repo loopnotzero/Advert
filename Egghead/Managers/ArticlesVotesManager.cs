@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Egghead.Common;
 using Egghead.Common.Articles;
 using Egghead.Common.Stores;
+using MongoDB.Bson;
 
 namespace Egghead.Managers
 {
@@ -24,7 +25,7 @@ namespace Egghead.Managers
             Store = store ?? throw new ArgumentNullException(nameof(store));
         }
 
-        public async Task<T> FindArticleVoteAsync(string articleId, VoteType voteType, string byWhoNormalized)
+        public async Task<T> FindArticleVoteAsync(ObjectId articleId, VoteType voteType, string byWhoNormalized)
         {
             ThrowIfDisposed();
 
@@ -46,7 +47,7 @@ namespace Egghead.Managers
             return await Store.FindArticleVoteAsync(articleId, voteType, byWhoNormalized, CancellationToken);
         }
 
-        public async Task<long> CountArticleVotesAsync(string articleId, VoteType voteType)
+        public async Task<long> CountArticleVotesAsync(ObjectId articleId, VoteType voteType)
         {
             ThrowIfDisposed();
 

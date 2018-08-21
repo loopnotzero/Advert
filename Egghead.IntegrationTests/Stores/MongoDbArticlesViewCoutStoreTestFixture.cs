@@ -35,7 +35,7 @@ namespace Egghead.IntegrationTests.Stores
         [Fact]
         public async Task AggregateArticlesWithLargestViewsCount()
         {
-            var articleId = ObjectId.GenerateNewId().ToString();
+            var articleId = ObjectId.GenerateNewId();
 
             for (var n = 0; n < 10; n++)
             {

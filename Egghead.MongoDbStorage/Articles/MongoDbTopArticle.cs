@@ -1,8 +1,10 @@
-﻿namespace Egghead.MongoDbStorage.Articles
+﻿using MongoDB.Bson;
+
+namespace Egghead.MongoDbStorage.Articles
 {
     public class MongoDbTopArticle
     {
-        public string ArticleId { get; set; }
+        public ObjectId ArticleId { get; set; }
         public int ViewsCount { get; set; }
     }
 }

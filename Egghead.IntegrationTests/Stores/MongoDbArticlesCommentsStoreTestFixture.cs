@@ -34,7 +34,7 @@ namespace Egghead.IntegrationTests.Stores
 
             var article = new MongoDbArticle();
 
-            _articleCommentsCollectionName = article.Id;
+            _articleCommentsCollectionName = article.Id.ToString();
 
             articlesStore.CreateArticleAsync(article, _cancellationToken).GetAwaiter().GetResult();
 
@@ -97,7 +97,7 @@ namespace Egghead.IntegrationTests.Stores
                 Text = "New comment",
                 ByWho = "fake@email.com",
                 ByWhoNormalized = "fake@email.com".ToUpper(),
-                ReplyTo = ObjectId.Empty.ToString(),
+                ReplyTo = ObjectId.Empty,
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -116,7 +116,7 @@ namespace Egghead.IntegrationTests.Stores
                 Text = "New comment",
                 ByWho = "fake@email.com",
                 ByWhoNormalized = "fake@email.com".ToUpper(),
-                ReplyTo = ObjectId.Empty.ToString(),
+                ReplyTo = ObjectId.Empty,
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -142,7 +142,7 @@ namespace Egghead.IntegrationTests.Stores
                 Text = "New comment",
                 ByWho = "fake@email.com",
                 ByWhoNormalized = "fake@email.com".ToUpper(),
-                ReplyTo = ObjectId.Empty.ToString(),
+                ReplyTo = ObjectId.Empty,
                 CreatedAt = DateTime.UtcNow
             };
 

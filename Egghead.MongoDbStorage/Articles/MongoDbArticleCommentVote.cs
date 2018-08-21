@@ -8,15 +8,15 @@ namespace Egghead.MongoDbStorage.Articles
     {
         public MongoDbArticleCommentVote()
         {
-            Id = ObjectId.GenerateNewId().ToString();
+            Id = ObjectId.GenerateNewId();
             //Create indeces
         }
 
-        public string Id { get; set; }
+        public ObjectId Id { get; set; }
         public string ByWho { get; set; }
         public string ByWhoNormalized { get; set; }
-        public string ArticleId { get; set; }
-        public string CommentId { get; set; }
+        public ObjectId ArticleId { get; set; }
+        public ObjectId CommentId { get; set; }
         public VoteType VoteType { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }

@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Egghead.Common;
 using Egghead.Common.Stores;
+using MongoDB.Bson;
 
 namespace Egghead.Managers
 {
@@ -36,7 +37,7 @@ namespace Egghead.Managers
             await Store.SetNormalizedTitleAsync(entity, normalizedTitle, CancellationToken);
         }
 
-        public async Task<T> FindArticleByIdAsync(string articleId)
+        public async Task<T> FindArticleByIdAsync(ObjectId articleId)
         {
             ThrowIfDisposed();
 
@@ -86,7 +87,7 @@ namespace Egghead.Managers
             return await Store.CreateArticleAsync(entity, CancellationToken);
         }
        
-        public async Task<OperationResult> UpdateArticleByIdAsync(string articleId, T entity)
+        public async Task<OperationResult> UpdateArticleByIdAsync(ObjectId articleId, T entity)
         {
             ThrowIfDisposed();
 
@@ -110,11 +111,11 @@ namespace Egghead.Managers
             return await Store.UpdateArticleByTitleAsync(articleTitle.ToUpper(), entity, CancellationToken);
         }
 
-        public async Task<OperationResult> DeleteArticleByIdAsync(string articleId)
+        public async Task<OperationResult> DeleteArticleByIdAsync(ObjectId articleId)
         {
             ThrowIfDisposed();
 
-            if (string.IsNullOrEmpty(articleId))
+            if (articleId == null)
             {
                 throw new ArgumentNullException(nameof(articleId));
             }

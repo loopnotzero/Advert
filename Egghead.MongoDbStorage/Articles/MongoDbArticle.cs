@@ -8,11 +8,11 @@ namespace Egghead.MongoDbStorage.Articles
     {
         public MongoDbArticle()
         {
-            Id = ObjectId.GenerateNewId().ToString();
+            Id = ObjectId.GenerateNewId();
             //Create indeces
         }
 
-        public string Id { get; set; }
+        public ObjectId Id { get; set; }
         public string Title { get; set; }
         public string NormalizedTitle { get; set; }
         public string Text { get; set; }

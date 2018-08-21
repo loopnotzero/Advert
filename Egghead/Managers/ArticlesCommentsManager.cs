@@ -6,6 +6,7 @@ using Egghead.Common;
 using Egghead.Common.Stores;
 using Egghead.Models.Articles;
 using Egghead.MongoDbStorage.Articles;
+using MongoDB.Bson;
 
 namespace Egghead.Managers
 {
@@ -26,7 +27,7 @@ namespace Egghead.Managers
             Store = store ?? throw new ArgumentNullException(nameof(store));
         }
             
-        public async Task<T> FindArticleCommentById(string articleId, string commendId)
+        public async Task<T> FindArticleCommentById(ObjectId articleId, ObjectId commendId)
         {
             ThrowIfDisposed();
 
@@ -40,10 +41,10 @@ namespace Egghead.Managers
                 throw new ArgumentNullException(nameof(commendId));
             }
 
-            return await Store.GetArticleCommentsCollection(articleId, CancellationToken).FindArticleCommentByIdAsync(commendId, CancellationToken);
+            return await Store.GetArticleCommentsCollection(articleId.ToString(), CancellationToken).FindArticleCommentByIdAsync(commendId, CancellationToken);
         }
         
-        public async Task<long> CountArticleCommentsByArticleIdAsync(string articleId)
+        public async Task<long> CountArticleCommentsByArticleIdAsync(ObjectId articleId)
         {
             ThrowIfDisposed();
 
@@ -52,10 +53,10 @@ namespace Egghead.Managers
                 throw new ArgumentNullException(nameof(articleId));
             }
 
-            return await Store.GetArticleCommentsCollection(articleId, CancellationToken).EstimatedArticleCommentsCountAsync(CancellationToken);
+            return await Store.GetArticleCommentsCollection(articleId.ToString(), CancellationToken).EstimatedArticleCommentsCountAsync(CancellationToken);
         }
         
-        public async Task<List<T>> FindArticleCommentsByArticleId(string articleId)
+        public async Task<List<T>> FindArticleCommentsByArticleId(ObjectId articleId)
         {
             ThrowIfDisposed();
 
@@ -64,10 +65,10 @@ namespace Egghead.Managers
                 throw new ArgumentNullException(nameof(articleId));
             }
 
-            return await Store.GetArticleCommentsCollection(articleId, CancellationToken).FindArticleCommentsAsync(CancellationToken);
+            return await Store.GetArticleCommentsCollection(articleId.ToString(), CancellationToken).FindArticleCommentsAsync(CancellationToken);
         }
 
-        public async Task<OperationResult> CreateArticleComment(string articleId, T entity)
+        public async Task<OperationResult> CreateArticleComment(ObjectId articleId, T entity)
         {
             ThrowIfDisposed();
 
@@ -81,7 +82,7 @@ namespace Egghead.Managers
                 throw new ArgumentNullException(nameof(entity));
             }
 
-            var articleComments = Store.GetArticleCommentsCollection(articleId, CancellationToken);
+            var articleComments = Store.GetArticleCommentsCollection(articleId.ToString(), CancellationToken);
 
             return await articleComments.CreateArticleCommentAsync(entity, CancellationToken);
         }

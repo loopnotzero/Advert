@@ -7,6 +7,7 @@ using Egghead.Common.Stores;
 using Egghead.MongoDbStorage.Articles;
 using Egghead.MongoDbStorage.Common;
 using Egghead.MongoDbStorage.Mappings;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace Egghead.MongoDbStorage.Stores
@@ -37,7 +38,7 @@ namespace Egghead.MongoDbStorage.Stores
             return Task.FromResult<object>(null);
         }
 
-        public async Task<T> FindArticleByIdAsync(string articleId, CancellationToken cancellationToken)
+        public async Task<T> FindArticleByIdAsync(ObjectId articleId, CancellationToken cancellationToken)
         {    
             cancellationToken.ThrowIfCancellationRequested();
             var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.Id, articleId), cancellationToken: cancellationToken);
@@ -84,7 +85,7 @@ namespace Egghead.MongoDbStorage.Stores
             return OperationResult.Success;
         }
 
-        public async Task<OperationResult> UpdateArticleByIdAsync(string articleId, T entity, CancellationToken cancellationToken)
+        public async Task<OperationResult> UpdateArticleByIdAsync(ObjectId articleId, T entity, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             await _collection.ReplaceOneAsync(Builders<T>.Filter.Eq(x => x.Id, articleId), entity, new UpdateOptions
@@ -94,27 +95,27 @@ namespace Egghead.MongoDbStorage.Stores
             return OperationResult.Success;
         }
 
-        public async Task<OperationResult> UpdateArticleByTitleAsync(string articleTitle, T entity, CancellationToken cancellationToken)
+        public async Task<OperationResult> UpdateArticleByTitleAsync(string title, T entity, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            await _collection.ReplaceOneAsync(Builders<T>.Filter.Eq(x => x.NormalizedTitle, articleTitle), entity, new UpdateOptions
+            await _collection.ReplaceOneAsync(Builders<T>.Filter.Eq(x => x.NormalizedTitle, title), entity, new UpdateOptions
             {
                 BypassDocumentValidation = false
             }, cancellationToken);
             return OperationResult.Success;
         }
 
-        public async Task<OperationResult> DeleteArticleByIdAsync(string articleId, CancellationToken cancellationToken)
+        public async Task<OperationResult> DeleteArticleByIdAsync(ObjectId articleId, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             await _collection.DeleteOneAsync(Builders<T>.Filter.Eq(x => x.Id, articleId), cancellationToken);        
             return OperationResult.Success;
         }
 
-        public async Task<OperationResult> DeleteArticleByTitleAsync(string articleTitle, CancellationToken cancellationToken)
+        public async Task<OperationResult> DeleteArticleByTitleAsync(string title, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            await _collection.DeleteOneAsync(Builders<T>.Filter.Eq(x => x.NormalizedTitle, articleTitle), cancellationToken);          
+            await _collection.DeleteOneAsync(Builders<T>.Filter.Eq(x => x.NormalizedTitle, title), cancellationToken);          
             return OperationResult.Success;
         }
     }

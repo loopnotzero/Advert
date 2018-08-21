@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Egghead.Common;
 using Egghead.Common.Articles;
 using Egghead.Common.Stores;
+using MongoDB.Bson;
 
 namespace Egghead.Managers
 {
@@ -25,7 +26,7 @@ namespace Egghead.Managers
             Store = store ?? throw new ArgumentNullException(nameof(store));
         }
         
-        public async Task<long> CountArticleCommentVotesAsync(string articleId, string commentId, VoteType voteType)
+        public async Task<long> CountArticleCommentVotesAsync(ObjectId articleId, ObjectId commentId, VoteType voteType)
         {
             ThrowIfDisposed();
 
@@ -47,7 +48,7 @@ namespace Egghead.Managers
             return await Store.CountArticleCommentVotesAsync(articleId, commentId, voteType, CancellationToken);
         }
 
-        public async Task<T> FindArticleCommentVoteAsync(string articleId, string commentId)
+        public async Task<T> FindArticleCommentVoteAsync(ObjectId articleId, ObjectId commentId)
         {
             ThrowIfDisposed();
 
@@ -76,7 +77,7 @@ namespace Egghead.Managers
             return await Store.CreateArticleCommentVoteAsync(entity, CancellationToken);
         }
         
-        public async Task<OperationResult> UpdateArticleCommentVoteAsync(string voteId, VoteType voteType)
+        public async Task<OperationResult> UpdateArticleCommentVoteAsync(ObjectId voteId, VoteType voteType)
         {
             ThrowIfDisposed();
             
@@ -88,7 +89,7 @@ namespace Egghead.Managers
             return await Store.UpdateArticleCommentVoteAsync(voteId, voteType, CancellationToken);
         }
         
-        public async Task<OperationResult> DeleteArticleCommentVoteAsync(string voteId)
+        public async Task<OperationResult> DeleteArticleCommentVoteAsync(ObjectId voteId)
         {
             ThrowIfDisposed();
 
