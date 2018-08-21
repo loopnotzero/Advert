@@ -156,7 +156,7 @@ namespace Egghead.Controllers
                         Likes = await _articlesVotesManager.CountArticleVotesAsync(article.Id, VoteType.Like),
                         Dislikes = await _articlesVotesManager.CountArticleVotesAsync(article.Id, VoteType.Dislike),
                         ViewCount = await _articlesViewCountManager.CountArticleViewCountAsync(article.Id),
-                        CommentsCount = await _articlesCommentsManager.CountArticleCommentsByArticleIdAsync(article.Id),
+                        CommentsCount = await _articlesCommentsManager.CountArticleCommentsByArticleIdAsync(article.Id.ToString()),
                     });
                 }
 
@@ -424,7 +424,7 @@ namespace Egghead.Controllers
         [Authorize]
         public async Task<long> CountArticleCommentsByArticleId(string articleId)
         {
-            return await _articlesCommentsManager.CountArticleCommentsByArticleIdAsync(ObjectId.Parse(articleId));
+            return await _articlesCommentsManager.CountArticleCommentsByArticleIdAsync(articleId);
         }
 
         [HttpPost]
@@ -440,21 +440,22 @@ namespace Egghead.Controllers
                     Text = model.Text,
                     ByWho = HttpContext.User.Identity.Name,
                     ByWhoNormalized = HttpContext.User.Identity.Name.ToUpper(),
-                    ReplyTo = ObjectId.Parse(model.ReplyTo),
+                    ReplyTo = model.ReplyTo == null ? ObjectId.Empty : ObjectId.Parse(model.ReplyTo),
                     CreatedAt = DateTime.UtcNow
                 };
 
-                await _articlesCommentsManager.CreateArticleComment(ObjectId.Parse(articleId), articleComment);
+                await _articlesCommentsManager.CreateArticleComment(articleId, articleComment);
+
+                var comment = await _articlesCommentsManager.FindArticleCommentById(articleId, articleComment.Id);
        
                 return Ok(new ArticleCommentModel
                 {
-                    Id = articleComment.Id.ToString(),
-                    Text = articleComment.Text,
-                    ReplyTo = articleComment.ReplyTo.ToString(),
+                    Id = comment.Id.ToString(),
+                    Text = comment.Text,
+                    ReplyTo = comment.ReplyTo == null ? null : comment.ReplyTo.ToString(),
                     FirstName = user.FirstName,
                     LastName = user.LastName,
-                    VotingPoints = 0,
-                    CreatedAt = articleComment.CreatedAt.Humanize()
+                    CreatedAt = comment.CreatedAt.Humanize()
                 });
             }
             catch (Exception e)
@@ -478,7 +479,7 @@ namespace Egghead.Controllers
 
             var objectId = ObjectId.Parse(articleId);
 
-            var articleComments = await _articlesCommentsManager.FindArticleCommentsByArticleId(objectId);
+            var articleComments = await _articlesCommentsManager.FindArticleCommentsByArticleId(articleId);
 
             foreach (var articleComment in articleComments)
             {
@@ -488,7 +489,7 @@ namespace Egghead.Controllers
                 {
                     Id = articleComment.Id.ToString(),
                     Text = articleComment.Text,
-                    ReplyTo = articleComment.ReplyTo.ToString(),
+                    ReplyTo = articleComment.ReplyTo == null ? null : articleComment.ReplyTo.ToString(),
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     CreatedAt = articleComment.CreatedAt.Humanize(),
