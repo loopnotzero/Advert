@@ -41,3 +41,5 @@ Egghead\.IntegrationTests/bin/Debug/netcoreapp2\.1/
 Egghead\.IntegrationTests/obj/Debug/netcoreapp2\.1/
 
 Egghead\.IntegrationTests/obj/
+
+Egghead/appsettings\.json
