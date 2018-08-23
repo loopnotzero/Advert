@@ -9,6 +9,7 @@ using Egghead.Exceptions;
 using Egghead.Managers;
 using Egghead.Models.Articles;
 using Egghead.Models.Errors;
+using Egghead.Models.Profile;
 using Egghead.MongoDbStorage.Articles;
 using Egghead.MongoDbStorage.Users;
 using Humanizer;
@@ -302,6 +303,7 @@ namespace Egghead.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> CountArticlesWrittenByYouAsync()
         {
             throw new NotImplementedException();
@@ -344,6 +346,7 @@ namespace Egghead.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> UpsertArticleCommentVoteAsync(string articleId, [FromBody] ArticleCommentVoteModel model)
         {
             try
@@ -500,6 +503,35 @@ namespace Egghead.Controllers
             }
 
             return PartialView("GetArticleCommentsPartial", models);
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> GetProfileInformationAsync()
+        {
+            try
+            {
+                var user = await _userManager.FindByEmailAsync(HttpContext.User.Identity.Name.ToUpper());
+
+                var artcilesCount = await _articlesManager.CountArticlesByWhoNormalizedAsync(user.NormalizedEmail);
+                
+                return Ok(new ProfileInformation
+                {
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    ArticlesCount = artcilesCount,
+                });
+            }
+            catch (ProfileInformationException e)
+            {
+                _logger.LogError(e.Message, e);
+                return BadRequest(e);
+            }
+            catch (Exception e)
+            {
+                _logger.LogCritical(e.Message, e);
+                return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
+            }
         }
     }
 }

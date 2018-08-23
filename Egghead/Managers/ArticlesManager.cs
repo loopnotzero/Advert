@@ -37,6 +37,18 @@ namespace Egghead.Managers
             await Store.SetNormalizedTitleAsync(entity, normalizedTitle, CancellationToken);
         }
 
+        public async Task<long> CountArticlesByWhoNormalizedAsync(string email)
+        {
+            ThrowIfDisposed();
+            
+            if (email == null)
+            {
+                throw new ArgumentNullException(nameof(email));
+            }
+
+            return await Store.CountArticlesByWhoNormalizedAsync(email, CancellationToken);
+        }
+        
         public async Task<T> FindArticleByIdAsync(ObjectId articleId)
         {
             ThrowIfDisposed();
@@ -61,7 +73,7 @@ namespace Egghead.Managers
             var article = await Store.FindArticleByTitleAsync(title.ToUpper(), CancellationToken);
 
             return article;
-        }
+        }     
         
         public async Task<List<T>> FindArticlesAsync()
         {

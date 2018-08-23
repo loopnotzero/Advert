@@ -127,6 +127,10 @@
         //todo: NotImplemented
     }
 
+    function getProfileInformationAsync() {
+        
+    }
+
     function getArticlesPreviewPartial() {
         $.ajax({
             url: "/Articles/GetArticlesPreviewPartial",
@@ -142,7 +146,7 @@
             }
         });
     }
-
+   
     $(document).ready(function() {
         $("#write-article").click(function(e) {
             e.preventDefault();
