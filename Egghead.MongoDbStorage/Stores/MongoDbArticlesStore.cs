@@ -52,6 +52,14 @@ namespace Egghead.MongoDbStorage.Stores
             return await cursor.FirstOrDefaultAsync(cancellationToken);
         }
 
+        public async Task<long> CountArticlesByWhoNormalizedAsync(string byWhoNormalized, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var filter = Builders<T>.Filter.Eq(x => x.byWhoNormalized, byWhoNormalized);
+            var articlesCount = await _collection.CountDocumentsAsync(filter, new CountOptions(), cancellationToken);
+            return articlesCount;
+        }
+
         public async Task<List<T>> FindArticlesAsync(CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
