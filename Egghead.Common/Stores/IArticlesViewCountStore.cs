@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Egghead.Common.Articles;
 using MongoDB.Bson;
 
 namespace Egghead.Common.Stores
@@ -11,6 +12,6 @@ namespace Egghead.Common.Stores
     {
         Task<long> CountArticleViewsCountByArticleIdAsync(ObjectId articleId, CancellationToken cancellationToken);
         Task<OperationResult> CreateArticleViewsCountAsync(T entity , CancellationToken cancellationToken);
-        Task<IEnumerable<ObjectId>> AggregateArticlesWithLargestViewsCount(int limit, CancellationToken cancellationToken);
+        Task<IEnumerable<ObjectId>> GetArticlesIdByViewsCount(int limit, CancellationToken cancellationToken);
     }
 }
