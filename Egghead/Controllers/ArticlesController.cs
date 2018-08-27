@@ -73,7 +73,7 @@ namespace Egghead.Controllers
                 await _articlesViewCountManager.CreateArticleViewCountAsync(new MongoDbArticleViewCount
                 {
                     ByWho = HttpContext.User.Identity.Name,
-                    ByWhoNormalized = HttpContext.User.Identity.Name.ToUpper(),
+                    ByWhoNormalized = _keyNormalizer.Normalize(HttpContext.User.Identity.Name),
                     ArticleId = objectId,
                     CreatedAt = DateTime.UtcNow
                 });
@@ -161,6 +161,8 @@ namespace Egghead.Controllers
             }
         }
 
+        
+        
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> CreateArticleAsync([FromBody] ArticleModel model)
@@ -170,7 +172,7 @@ namespace Egghead.Controllers
                 await _articlesManager.CreateArticleAsync(new MongoDbArticle
                 {
                     Title = model.Title,
-                    NormalizedTitle = model.Title.ToUpper(),
+                    NormalizedTitle = _keyNormalizer.Normalize(model.Title),
                     Text = model.Text,
                     ByWho = HttpContext.User.Identity.Name,
                     ByWhoNormalized = _keyNormalizer.Normalize(HttpContext.User.Identity.Name),
@@ -222,7 +224,7 @@ namespace Egghead.Controllers
                 await _articlesManager.UpdateArticleByIdAsync(ObjectId.Parse(articleId), new MongoDbArticle
                 {
                     Title = model.Title,
-                    NormalizedTitle = model.Title.ToUpper(),
+                    NormalizedTitle = _keyNormalizer.Normalize(model.Title),
                     Text = model.Text,
                     ChangedAt = DateTime.UtcNow
                 });
@@ -241,14 +243,14 @@ namespace Egghead.Controllers
 
         [HttpPut]
         [Authorize]
-        public async Task<IActionResult> UdpateArticleByTitleAsync(string articleTitle, [FromBody] ArticleModel model)
+        public async Task<IActionResult> UdpateArticleByTitleAsync(string title, [FromBody] ArticleModel model)
         {
             try
             {
-                await _articlesManager.UpdateArticleByTitleAsync(articleTitle, new MongoDbArticle
+                await _articlesManager.UpdateArticleByTitleAsync(title, new MongoDbArticle
                 {
                     Title = model.Title,
-                    NormalizedTitle = model.Title.ToUpper(),
+                    NormalizedTitle = _keyNormalizer.Normalize(model.Title),
                     Text = model.Text,
                     ChangedAt = DateTime.UtcNow,
                 });
@@ -292,13 +294,8 @@ namespace Egghead.Controllers
             return Ok();
         }
 
-        [HttpGet]
-        [Authorize]
-        public async Task<IActionResult> CountArticlesWrittenByYouAsync()
-        {
-            throw new NotImplementedException();
-        }
-
+        
+        
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> CreateArticleVoteAsync(string articleId, [FromBody] ArticleVoteModel model)
@@ -307,14 +304,14 @@ namespace Egghead.Controllers
             {
                 var objectId = ObjectId.Parse(articleId);
 
-                var articleVote = await _articlesVotesManager.FindArticleVoteAsync(objectId, model.VoteType, HttpContext.User.Identity.Name.ToUpper());
+                var articleVote = await _articlesVotesManager.FindArticleVoteAsync(objectId, model.VoteType, HttpContext.User.Identity.Name);
 
                 if (articleVote == null)
                 {
                     await _articlesVotesManager.CreateArticleVoteAsync(new MongoDbArticleVote
                     {
                         ByWho = HttpContext.User.Identity.Name,
-                        ByWhoNormalized = HttpContext.User.Identity.Name.ToUpper(),
+                        ByWhoNormalized = _keyNormalizer.Normalize(HttpContext.User.Identity.Name),
                         ArticleId = objectId,
                         VoteType = model.VoteType,
                         CreatedAt = DateTime.UtcNow
@@ -358,7 +355,7 @@ namespace Egghead.Controllers
                     await _articleCommentsVotesManager.CreateArticleCommentVoteAsync(new MongoDbArticleCommentVote
                     {
                         ByWho = HttpContext.User.Identity.Name,
-                        ByWhoNormalized = HttpContext.User.Identity.Name.ToUpper(),
+                        ByWhoNormalized = _keyNormalizer.Normalize(HttpContext.User.Identity.Name),
                         ArticleId = articleIdObj,
                         CommentId = commentIdObj,
                         VoteType = model.VoteType,
@@ -415,6 +412,8 @@ namespace Egghead.Controllers
             }
         }
 
+        
+        
         [HttpGet]
         [Authorize]
         public async Task<long> CountArticleCommentsByArticleIdAsync(string articleId)
@@ -434,7 +433,7 @@ namespace Egghead.Controllers
                 {
                     Text = model.Text,
                     ByWho = HttpContext.User.Identity.Name,
-                    ByWhoNormalized = HttpContext.User.Identity.Name.ToUpper(),
+                    ByWhoNormalized = _keyNormalizer.Normalize(HttpContext.User.Identity.Name),
                     ReplyTo = model.ReplyTo == null ? ObjectId.Empty : ObjectId.Parse(model.ReplyTo),
                     CreatedAt = DateTime.UtcNow
                 };
@@ -468,7 +467,7 @@ namespace Egghead.Controllers
         [Authorize]
         public async Task<IActionResult> FindArticleCommentsByArticleIdAsync(string articleId)
         {
-            var user = await _userManager.FindByEmailAsync(HttpContext.User.Identity.Name.ToUpper());
+            var user = await _userManager.FindByEmailAsync(HttpContext.User.Identity.Name);
 
             var models = new List<ArticleCommentModel>();
 
@@ -494,6 +493,8 @@ namespace Egghead.Controllers
 
             return PartialView("GetArticleCommentsPartial", models);
         }
+        
+        
 
         [HttpGet]
         [Authorize]
@@ -503,7 +504,7 @@ namespace Egghead.Controllers
             {
                 var user = await _userManager.FindByEmailAsync(HttpContext.User.Identity.Name);
 
-                var artcilesCount = await _articlesManager.CountArticlesByWhoNormalizedAsync(HttpContext.User.Identity.Name.ToUpper());
+                var artcilesCount = await _articlesManager.CountArticlesByWhoNormalizedAsync(HttpContext.User.Identity.Name);
 
                 return Ok(new ProfileDescription
                 {

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Egghead.Common;
 using Egghead.Common.Articles;
 using Egghead.Common.Stores;
+using Microsoft.AspNetCore.Identity;
 using MongoDB.Bson;
 
 namespace Egghead.Managers
@@ -12,6 +13,11 @@ namespace Egghead.Managers
     {
         private bool _disposed;
 
+        /// <summary>
+        /// The <see cref="T:Microsoft.AspNetCore.Identity.ILookupNormalizer" /> used to normalize things like user and role names.
+        /// </summary>
+        private ILookupNormalizer KeyNormalizer { get; set; }
+        
         protected virtual CancellationToken CancellationToken => CancellationToken.None;
 
         /// <summary>
@@ -20,9 +26,10 @@ namespace Egghead.Managers
         /// <value>The persistence store the manager operates over.</value>
         protected internal IArticlesVotesStore<T> Store { get; set; }
 
-        public ArticlesLikesManager(IArticlesVotesStore<T> store)
+        public ArticlesLikesManager(IArticlesVotesStore<T> store, ILookupNormalizer keyNormalizer)
         {
             Store = store ?? throw new ArgumentNullException(nameof(store));
+            KeyNormalizer = keyNormalizer;
         }
 
         public async Task<T> FindArticleVoteAsync(ObjectId articleId, VoteType voteType, string byWhoNormalized)
@@ -43,6 +50,8 @@ namespace Egghead.Managers
             {
                 throw new ArgumentNullException(nameof(byWhoNormalized));
             }
+
+            byWhoNormalized = NormalizeKey(byWhoNormalized);
 
             return await Store.FindArticleVoteAsync(articleId, voteType, byWhoNormalized, CancellationToken);
         }
@@ -90,6 +99,11 @@ namespace Egghead.Managers
             Store.Dispose();
 
             _disposed = true;
+        }
+        
+        private string NormalizeKey(string key)
+        {
+            return KeyNormalizer != null ? KeyNormalizer.Normalize(key) : key;
         }
 
         protected void ThrowIfDisposed()
