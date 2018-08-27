@@ -1,6 +1,6 @@
 ﻿namespace Egghead.Common.Profile
 {
-    public enum ContactType
+    public enum SocialLink
     {
         None,
         Viber,
