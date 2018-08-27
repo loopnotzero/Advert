@@ -50,7 +50,7 @@ namespace Egghead.MongoDbStorage.Stores
             return OperationResult.Success;
         }
         
-        public async Task<IEnumerable<ObjectId>> AggregateArticlesWithLargestViewsCount(int limit, CancellationToken cancellationToken)
+        public async Task<IEnumerable<ObjectId>> GetArticlesIdByViewsCount(int limit, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
