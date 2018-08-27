@@ -55,7 +55,7 @@ namespace Egghead.MongoDbStorage.Stores
         public async Task<long> CountArticlesByWhoNormalizedAsync(string byWhoNormalized, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var filter = Builders<T>.Filter.Eq(x => x.byWhoNormalized, byWhoNormalized);
+            var filter = Builders<T>.Filter.Eq(x => x.ByWhoNormalized, byWhoNormalized);
             var articlesCount = await _collection.CountDocumentsAsync(filter, new CountOptions(), cancellationToken);
             return articlesCount;
         }
