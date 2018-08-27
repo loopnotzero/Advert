@@ -1,16 +1,10 @@
 ﻿@using Humanizer
 @model IEnumerable<Egghead.Models.Articles.ArticleModel>
 
-@Html.Partial("GetArticlesPreviewNavigationMenuPartial")
-
 <div class="container-boxed">
     <div class="row">
-        <div class="col-md-9 p-1">
-            <div id="articles-preview" class="container-fluid">
-            </div>
-        </div>
         <div class="col-md-3 p-1">
-            <div class="card p-2 mb-3">
+            <div class="card p-2">
                 <div style="border-bottom: 1px solid #d5d5d5; margin-bottom: 20px;">
                     <h4 class="text-muted font-bold">Profile</h4>
                 </div>
@@ -20,24 +14,24 @@
                     </div>
 
                     <div class="mb-3">
-                        <h5 class="m-b-5">Mark McKnight</h5>
-                        <p class="text-muted">Programmer</p>
+                        <h5 id="profile-fullname"></h5>
+                        <p id="profile-headline" class="text-muted"></p>
                     </div>
 
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <span class="text-justify">Your articles</span> 
-                            <h5 class="text-center">5</h5> 
+                            <h5 id="profile-articles-count" class="text-center"></h5> 
                         </div>
                         <div class="col-md-6">
                             <span class="text-justify">Following</span>
-                            <h5 class="text-center">10</h5> 
+                            <h5 id="profile-following-count" class="text-center"></h5> 
                         </div>
                     </div>
                     
                     <div class="row">
                         <div class="col-md-12">
-                            <ul class="social-links list-inline">
+                            <ul class="list-inline">
                                 <li class="list-inline-item">
                                     <a title="" data-placement="top" data-toggle="tooltip" class="tooltips" href="" data-original-title="Facebook">
                                         <i class="fa fa-facebook"></i>
@@ -58,6 +52,12 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="col-md-6 p-1">
+            <div id="articles-preview" class="container-fluid mb-3">
+            </div>
+        </div>
+        <div class="col-md-3 p-1">
             <div class="card p-4">
                 <div style="border-bottom: 1px solid #d5d5d5; margin-bottom: 20px;">
                     <h4 class="text-muted font-bold">Popular on Egghead</h4>
@@ -124,11 +124,19 @@
     }
 
     function onBookmarkClick(articleId) {
-        //todo: NotImplemented
-    }
-
-    function getProfileInformationAsync() {
-        
+        $.ajax({
+            url: "/Articles/GetProfileDescriptionAsync",
+            type: "GET",
+            contentType: "application/json",
+            error: function(jqXhr, textStatus, errorThrown) {
+                console.log("jqXhr: " + jqXhr);
+                console.log("textStatus: " + jqXhr);
+                console.log("errorThrown: " + jqXhr);
+            },
+            success: function(response) {
+                $("#articles-preview").html(response);
+            }
+        });
     }
 
     function getArticlesPreviewPartial() {
@@ -147,6 +155,25 @@
         });
     }
    
+    function getProfileDescriptionAsync() {
+        $.ajax({
+            url: "/Articles/GetProfileDescriptionAsync",
+            type: "GET",
+            contentType: "application/json",
+            error: function(jqXhr, textStatus, errorThrown) {
+                console.log("jqXhr: " + jqXhr);
+                console.log("textStatus: " + jqXhr);
+                console.log("errorThrown: " + jqXhr);
+            },
+            success: function(response) {
+                $("#profile-fullname").html(`${response.firstName} ${response.lastName}`);
+                $("#profile-headline").html(`${response.headline}`);
+                $("#profile-articles-count").html(`${response.articlesCount}`);
+                $("#profile-following-count").html(`${response.followingCount}`);
+            }
+        });
+    }
+
     $(document).ready(function() {
         $("#write-article").click(function(e) {
             e.preventDefault();
@@ -155,5 +182,6 @@
         });
 
         getArticlesPreviewPartial();
+        getProfileDescriptionAsync();
     });
 </script>

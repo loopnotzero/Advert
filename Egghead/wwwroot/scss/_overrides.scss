@@ -173,3 +173,9 @@ blockquote {
   color: #819198;
   border-left: 0.3rem solid #dce6f0;
 }
+
+.img-thumbnail:hover {
+  cursor: pointer;
+  border-radius: 0.25rem;
+  background-color: #f8fafd;
+}

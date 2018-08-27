@@ -23,6 +23,62 @@
 <script src="~/js/waves.js"></script>
 <script src="~/js/simplemde.js"></script>
 
+<header id="topnav" style="box-shadow: 0 3px 2px -2px gray;"style="box-shadow: 0 4px 2px -2px gray;">
+    <div class="topbar-main">
+        <div class="container-boxed">
+            <div class="logo">
+                <a href="/" class="logo">
+                    <span class="logo-large"><i class="mdi mdi-android-head"></i> EGGHEAD</span>
+                </a>
+            </div>
+            <div id="profile">
+                <div class="topbar-custom">
+                    <ul class="list-inline float-right mb-0">
+                        <li class="list-inline-item">
+                            <button id="write-article" class="btn btn-light waves-effect waves-light btn-sm">Write an article</button>
+                        </li>
+                        <li class="list-inline-item dropdown notification-list">
+                            <a class="nav-link dropdown-toggle waves-effect" data-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
+                                <img src="~/images/users/avatar-1.jpg" style="width: 40px; height: 40px; border: 2px solid #ddd; border-radius: 4px;" alt="user" class="rounded-circle">
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right dropdown-menu-lg" aria-labelledby="Preview" x-placement="bottom-end" style="position: absolute; transform: translate3d(46px, 59px, 0px); top: 0px; left: 0px; will-change: transform;">
+                                <div class="listview listview--hover">
+                                    <div class="listview__item dropdown-item notify-item">
+                                        <div class="notify-icon bg-primary">
+                                            <i class="mdi mdi-face-profile"></i>
+                                        </div>
+                                        <div class="listview__content">
+                                            <div class="listview__heading">
+                                                <p class="mt-1">
+                                                    Profile
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="listview__dropdown__divider"></div>
+                                    <div id="log-out" class="listview__item dropdown-item notify-item">
+                                        <div class="notify-icon bg-primary">
+                                            <i class="mdi mdi-face-profile"></i>
+                                        </div>
+                                        <div class="listview__content">
+                                            <div class="listview__heading">
+                                                <p class="mt-1">
+                                                    Log out
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
 <div class="wrapper" style="display: none">
     @RenderBody()
 </div>

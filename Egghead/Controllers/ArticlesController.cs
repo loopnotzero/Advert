@@ -5,6 +5,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Egghead.Common;
 using Egghead.Common.Articles;
+using Egghead.Common.Profile;
 using Egghead.Exceptions;
 using Egghead.Managers;
 using Egghead.Models.Articles;
@@ -26,22 +27,26 @@ namespace Egghead.Controllers
         public const int ArticlePreviewMaxLength = 1000;
 
         private readonly ILogger _logger;
+        private readonly ILookupNormalizer _keyNormalizer;
         private readonly UserManager<MongoDbUser> _userManager;
         private readonly ArticlesManager<MongoDbArticle> _articlesManager;
         private readonly ArticlesLikesManager<MongoDbArticleVote> _articlesVotesManager;
         private readonly ArticlesCommentsManager<MongoDbArticleComment> _articlesCommentsManager;
         private readonly ArticlesViewCountManager<MongoDbArticleViewCount> _articlesViewCountManager;
         private readonly ArticleCommentsVotesManager<MongoDbArticleCommentVote> _articleCommentsVotesManager;
-
+           
         public ArticlesController(UserManager<MongoDbUser> userManager,
             ArticlesManager<MongoDbArticle> articlesManager,
             ArticlesLikesManager<MongoDbArticleVote> articlesVotesManager,
             ArticlesCommentsManager<MongoDbArticleComment> articlesCommentsManager,
             ArticlesViewCountManager<MongoDbArticleViewCount> articlesViewCountManager,
-            ArticleCommentsVotesManager<MongoDbArticleCommentVote> articleCommentsVotesManager, ILoggerFactory loggerFactory
+            ArticleCommentsVotesManager<MongoDbArticleCommentVote> articleCommentsVotesManager, 
+            ILoggerFactory loggerFactory,
+            ILookupNormalizer keyNormalizer
         )
         {
             _logger = loggerFactory.CreateLogger<AccountController>();
+            _keyNormalizer = keyNormalizer;
             _userManager = userManager;
             _articlesManager = articlesManager;
             _articlesVotesManager = articlesVotesManager;
@@ -184,6 +189,8 @@ namespace Egghead.Controllers
                     Title = model.Title,
                     NormalizedTitle = model.Title.ToUpper(),
                     Text = model.Text,
+                    ByWho = HttpContext.User.Identity.Name,
+                    ByWhoNormalized = _keyNormalizer.Normalize(HttpContext.User.Identity.Name),
                     CreatedAt = DateTime.UtcNow,
                     ReleaseType = ReleaseType.PreModeration,
                 });
@@ -507,22 +514,25 @@ namespace Egghead.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> GetProfileInformationAsync()
+        public async Task<IActionResult> GetProfileDescriptionAsync()
         {
             try
             {
-                var user = await _userManager.FindByEmailAsync(HttpContext.User.Identity.Name.ToUpper());
+                var user = await _userManager.FindByEmailAsync(HttpContext.User.Identity.Name);
 
-                var artcilesCount = await _articlesManager.CountArticlesByWhoNormalizedAsync(user.NormalizedEmail);
-                
-                return Ok(new ProfileInformation
+                var artcilesCount = await _articlesManager.CountArticlesByWhoNormalizedAsync(HttpContext.User.Identity.Name.ToUpper());
+
+                return Ok(new ProfileDescription
                 {
                     FirstName = user.FirstName,
                     LastName = user.LastName,
+                    Headline = "",
                     ArticlesCount = artcilesCount,
+                    FollowingCount = 0,
+                    SocialLinks = new List<SocialLink>()
                 });
             }
-            catch (ProfileInformationException e)
+            catch (ProfileDescriptionException e)
             {
                 _logger.LogError(e.Message, e);
                 return BadRequest(e);
