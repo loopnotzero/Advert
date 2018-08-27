@@ -10,5 +10,10 @@ namespace Egghead.Models.Articles
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public DateTime CreatedAt { get; set; }
+        public long Likes { get; set; }
+        public long Dislikes { get; set; }
+        public long ViewCount { get; set; }
+        public long CommentsCount { get; set; }
+        public long BookmarksCount { get; set; }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Egghead.Common;
+using Egghead.Common.Articles;
 using Egghead.Common.Stores;
 using Egghead.MongoDbStorage.Articles;
 using MongoDB.Bson;
@@ -52,10 +53,10 @@ namespace Egghead.Managers
             return await Store.CreateArticleViewsCountAsync(entity, CancellationToken);
         }
         
-        public async Task<IEnumerable<ObjectId>> AggregateArticlesWithLargestViewsCount(int limit)
+        public async Task<IEnumerable<ObjectId>> GetArticlesIdByViewsCount(int limit)
         {
             ThrowIfDisposed();
-            return await Store.AggregateArticlesWithLargestViewsCount(limit, CancellationToken);        
+            return await Store.GetArticlesIdByViewsCount(limit, CancellationToken);        
         }
      
         public void Dispose()

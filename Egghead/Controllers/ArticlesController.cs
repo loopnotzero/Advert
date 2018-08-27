@@ -24,8 +24,6 @@ namespace Egghead.Controllers
 {
     public class ArticlesController : Controller
     {
-        public const int ArticlePreviewMaxLength = 1000;
-
         private readonly ILogger _logger;
         private readonly ILookupNormalizer _keyNormalizer;
         private readonly UserManager<MongoDbUser> _userManager;
@@ -112,50 +110,15 @@ namespace Egghead.Controllers
             {
                 var user = await _userManager.FindByEmailAsync(HttpContext.User.Identity.Name);
 
-                var articles = new List<MongoDbArticle>();
-
-                foreach (var articleId in await _articlesViewCountManager.AggregateArticlesWithLargestViewsCount(5))
+                var articlesPreview = new List<ArticleModel>();
+                
+                foreach (var article in await _articlesManager.FindArticlesAsync(50))
                 {
-                    articles.Add(await _articlesManager.FindArticleByIdAsync(articleId));
-                }
-
-                return View(articles.Select(x => new ArticleModel
-                {
-                    Id = x.Id.ToString(),
-                    Title = x.Title,
-                    Text = x.Text,
-                    FirstName = user.FirstName,
-                    LastName = user.LastName,
-                    CreatedAt = x.CreatedAt
-                }));
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e.Message, e);
-                return Ok(new ErrorModel
-                {
-                    ErrorStatusCode = ErrorStatusCode.InternalServerError
-                });
-            }
-        }
-
-        [HttpGet]
-        [Authorize]
-        public async Task<IActionResult> GetArticlesPreviewPartial()
-        {
-            try
-            {
-                var user = await _userManager.FindByEmailAsync(HttpContext.User.Identity.Name);
-                var models = new List<ArticlePreviewModel>();
-                var articles = await _articlesManager.FindArticlesAsync(20);
-
-                foreach (var article in articles)
-                {
-                    models.Add(new ArticlePreviewModel
+                    articlesPreview.Add(new ArticleModel
                     {
                         Id = article.Id.ToString(),
                         Title = article.Title,
-                        Text = article.Text.Length > ArticlePreviewMaxLength ? article.Text.Substring(0, 1000) : article.Text,
+                        Text = article.Text,
                         FirstName = user.FirstName,
                         LastName = user.LastName,
                         CreatedAt = article.CreatedAt,
@@ -166,7 +129,27 @@ namespace Egghead.Controllers
                     });
                 }
 
-                return PartialView("GetArticlesPreviewPartial", models);
+                var articlesId = await _articlesViewCountManager.GetArticlesIdByViewsCount(5);
+                     
+                var topRatedArticlesModel = new List<TopRatedArticleModel>();
+                
+                foreach (var articleId in articlesId)
+                {
+                    var article = await _articlesManager.FindArticleByIdAsync(articleId);
+                    topRatedArticlesModel.Add(new TopRatedArticleModel
+                    {
+                        Id = article.Id.ToString(),
+                        FirstName = user.FirstName,
+                        LastName = user.LastName,
+                        Title = article.Title
+                    });
+                }
+                
+                return View(new AggregationModel
+                {
+                    ArticlesPreview = articlesPreview,
+                    TopRatedArticles = topRatedArticlesModel,
+                });
             }
             catch (Exception e)
             {
@@ -180,7 +163,7 @@ namespace Egghead.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> CreateArticleAsync([FromBody] ArticlePreviewModel model)
+        public async Task<IActionResult> CreateArticleAsync([FromBody] ArticleModel model)
         {
             try
             {
@@ -232,7 +215,7 @@ namespace Egghead.Controllers
 
         [HttpPut]
         [Authorize]
-        public async Task<IActionResult> UdpateArticleByIdAsync(string articleId, [FromBody] ArticlePreviewModel model)
+        public async Task<IActionResult> UdpateArticleByIdAsync(string articleId, [FromBody] ArticleModel model)
         {
             try
             {
@@ -258,7 +241,7 @@ namespace Egghead.Controllers
 
         [HttpPut]
         [Authorize]
-        public async Task<IActionResult> UdpateArticleByTitleAsync(string articleTitle, [FromBody] ArticlePreviewModel model)
+        public async Task<IActionResult> UdpateArticleByTitleAsync(string articleTitle, [FromBody] ArticleModel model)
         {
             try
             {

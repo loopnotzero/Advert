@@ -1,5 +1,5 @@
 ﻿@using Humanizer
-@model IEnumerable<Egghead.Models.Articles.ArticleModel>
+@model Egghead.Models.Articles.AggregationModel
 
 <div class="container-boxed">
     <div class="row">
@@ -20,15 +20,15 @@
 
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <span class="text-justify">Your articles</span> 
-                            <h5 id="profile-articles-count" class="text-center"></h5> 
+                            <span class="text-justify">Your articles</span>
+                            <h5 id="profile-articles-count" class="text-center"></h5>
                         </div>
                         <div class="col-md-6">
                             <span class="text-justify">Following</span>
-                            <h5 id="profile-following-count" class="text-center"></h5> 
+                            <h5 id="profile-following-count" class="text-center"></h5>
                         </div>
                     </div>
-                    
+
                     <div class="row">
                         <div class="col-md-12">
                             <ul class="list-inline">
@@ -48,13 +48,65 @@
                                     </a>
                                 </li>
                             </ul>
-                        </div>                    
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
         <div class="col-md-6 p-1">
             <div id="articles-preview" class="container-fluid mb-3">
+                @if (Model.ArticlesPreview.Any())
+                {
+                    <div class="card">
+                        @foreach (var article in Model.ArticlesPreview)
+                        {
+                            <article id="@article.Id" class="card-hover">
+                                <div class="text-muted p-3">
+                                    <small class="font-bold">@article.FirstName @article.LastName</small> <small class="time"> @article.CreatedAt.Humanize()</small>
+                                </div>
+                                <div class="card-body">
+                                    <a href="/Articles/GetArticleContent?articleId=@article.Id">
+                                        <h4 class="card-title clipped-text mb-3">@article.Title</h4>
+                                    </a>
+                                    @Html.Raw(article.Text)
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 p-2">
+                                        <div name="btn-like" onclick="onVoteClick('@article.Id', 1)" class="r-btn r-btn-light r-btn--icon ml-4">
+                                            <i class="fa fa-thumbs-o-up"></i>
+                                        </div>
+                                        <small name="likes">@article.Likes</small>
+
+                                        <div name="btn-dislike" onclick="onVoteClick('@article.Id', 2)" class="r-btn r-btn-light r-btn--icon">
+                                            <i class="fa fa-thumbs-o-down"></i>
+                                        </div>
+                                        <small name="dislikes">@article.Dislikes</small>
+
+                                        <div name="btn-bookmark" class="r-btn r-btn-light r-btn--icon">
+                                            <i class="fa fa-bookmark"></i>
+                                        </div>
+                                        <small name="bookmarks">@article.BookmarksCount</small>
+
+                                        <div class="r-btn r-btn-light-no-hover r-btn--icon-no-hover">
+                                            <i class="fa fa-eye"></i>
+                                        </div>
+                                        <small id="article-view-count">@article.ViewCount</small>
+
+                                        <div class="r-btn r-btn-light-no-hover r-btn--icon-no-hover">
+                                            <i class="fa fa-weixin"></i>
+                                        </div>
+                                        <small id="article-comments">@article.CommentsCount</small>
+
+                                        <small class="text-muted float-right mt-2 mr-4">
+                                            <a href="/Articles/GetArticleContent?articleId=@article.Id">READ MORE...</a>
+                                        </small>
+                                    </div>
+                                </div>
+                            </article>
+                            <div style="border-bottom: 1px solid #d5d5d5;"></div>
+                        }
+                    </div>
+                }
             </div>
         </div>
         <div class="col-md-3 p-1">
@@ -66,7 +118,7 @@
                 @if (Model != null)
                 {
                     <div class="listview">
-                        @foreach (var article in Model)
+                        @foreach (var article in Model.TopRatedArticles)
                         {
                             <div class="listview__item">
                                 <img src="/images/users/avatar-1.jpg" class="listview__img" alt="">
@@ -139,22 +191,6 @@
         });
     }
 
-    function getArticlesPreviewPartial() {
-        $.ajax({
-            url: "/Articles/GetArticlesPreviewPartial",
-            type: "GET",
-            contentType: "application/json",
-            error: function(jqXhr, textStatus, errorThrown) {
-                console.log("jqXhr: " + jqXhr);
-                console.log("textStatus: " + jqXhr);
-                console.log("errorThrown: " + jqXhr);
-            },
-            success: function(response) {
-                $("#articles-preview").html(response);
-            }
-        });
-    }
-   
     function getProfileDescriptionAsync() {
         $.ajax({
             url: "/Articles/GetProfileDescriptionAsync",
@@ -175,7 +211,6 @@
     }
 
     $(document).ready(function() {
-        getArticlesPreviewPartial();
         getProfileDescriptionAsync();
     });
 </script>
