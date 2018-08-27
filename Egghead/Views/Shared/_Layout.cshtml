@@ -88,5 +88,11 @@
 <script>
     $(document).ready(function() {
         $(".wrapper").fadeIn(200);
+        
+        $("#write-article").click(function(e) {
+            e.preventDefault();
+            window.location.href = "/Articles/WriteArticle";
+            return false;
+        });
     });
 </script>

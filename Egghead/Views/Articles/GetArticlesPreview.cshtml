@@ -175,12 +175,6 @@
     }
 
     $(document).ready(function() {
-        $("#write-article").click(function(e) {
-            e.preventDefault();
-            window.location.href = "/Articles/WriteArticle";
-            return false;
-        });
-
         getArticlesPreviewPartial();
         getProfileDescriptionAsync();
     });
