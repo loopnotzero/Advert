@@ -1,6 +1,6 @@
 
 .wrapper {
-  padding-top: 75px;
+  padding-top: 10%;
 }
 
 .page-title-box {
@@ -276,19 +276,6 @@
   .navigation-menu > li > a:hover, .navigation-menu > li > a:focus {
     background-color: transparent;
   }
-}
-
-#topnav-bg {
-  position: fixed;
-  right: 0;
-  left: 0;
-  top: 0;
-  z-index: 1;
-  height: 226px;
-  background-color: $primary;
-  border: 0;
-  -webkit-transition: all .3s ease;
-  transition: all .3s ease;
 }
 
 @media (min-width: 992px) {
@@ -761,6 +748,19 @@
   text-transform: uppercase;
   letter-spacing: 0.02em;
   font-size: 14px;
+}
+
+.topnav {
+  position: fixed;
+  right: 0;
+  left: 0;
+  top: 0;
+  z-index: 1;
+  height: 226px;
+  background-color: $primary;
+  border: 0;
+  -webkit-transition: all .3s ease;
+  transition: all .3s ease;
 }
 
 

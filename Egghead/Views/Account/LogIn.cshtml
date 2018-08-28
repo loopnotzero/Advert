@@ -1,13 +1,13 @@
 ﻿@using Egghead.Models.Identity
 @model LoginModel
 
-@* @{ ViewData["Title"] = "Login on Egghead"; } *@
+<header class="topnav" style="box-shadow: 0 3px 2px -2px gray;"style="box-shadow: 0 4px 2px -2px gray;">
+    
+</header>
 
-<header id="topnav-bg"></header>
-
-<div class="container-oblate h-100">
+<div class="container-boxed">
     <div class="row h-100 justify-content-center align-items-center">
-        <div class="card-box">
+        <div class="card-box container-boxed">
             <div class="row">
                 <div class="col-md-12 font-bold text-left m-b-30" style="color: #222">
                     <h6>
@@ -24,7 +24,6 @@
                 </div>
                 <div class="form-group form-mbt-3 row">
                     <div class="col-md-12">
-                        @* todo: Add eye open/closed *@
                         <label class="floating-label label-required">Password</label>
                         <input name="password" type="password"/>
                     </div>
@@ -46,7 +45,7 @@
                 </div>
             </form>
         </div>
-    </div>
+    </div>    
 </div>
 
 <script>
@@ -58,7 +57,7 @@
         var labelTransform = "label-transform";
         var labelErrorTransform = "label-error-transform";
         var requestVerificationToken = $("input[name=__RequestVerificationToken]");
-            
+
         function handleFocusFor(element) {
             element.focusin(function() {
                 var self = $(this);
@@ -122,7 +121,7 @@
             }
         }
 
-        $("#next").click(function(e) { 
+        $("#next").click(function(e) {
             e.preventDefault();
             var url = $("#form").attr("action");
             console.log("Request url: " + url);
