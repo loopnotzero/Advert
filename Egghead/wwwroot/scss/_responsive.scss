@@ -149,8 +149,6 @@ File: Responsive
   }
 }
 
-
-/* Container-alt */
 @media (min-width: 768px) {
   .container-alt {
     width: 750px;
@@ -168,6 +166,7 @@ File: Responsive
     width: 1170px;
   }
 }
+
 @media (max-width: 419px) {
   .hidden-xxs {
     display: none;

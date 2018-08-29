@@ -1,7 +1,4 @@
 body {
-  //background: url("/images/bg-1.png");
-  //background: url("/images/bg-1.jpg");
-  //background: url("/images/bg-1.jpeg");
   background: darken($light,1%);
   margin: 0;
   color: #4c5667;
@@ -13,33 +10,9 @@ body {
 }
 
 html {
-  //overflow: scroll;
-  //overflow-x: auto;
   position: relative;
   height: 100%;
-  //background: url("/images/bg-1.png");
-  //background: url("/images/bg-1.jpg");
-  //background: url("/images/bg-1.jpeg");
   background: darken($light,1%);
-}
-
-.widget-user {
-  min-height: 112px;
-  img {
-    height: 72px;
-    float: left;
-  }
-
-  .wid-u-info {
-    margin-left: 90px;
-
-    p {
-      white-space: nowrap;
-      display: block;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-  }
 }
 
 * {
@@ -61,38 +34,10 @@ a {
   }
 }
 
-.container {
-  width: auto;
-}
-
-.container-alt {
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 15px;
-  padding-right: 15px;
-}
-
-.footer {
-  background-color: #f9f9f9;
-  bottom: 0;
-  color: #58666e;
-  padding: 20px 30px;
-  position: absolute;
-  right: 0;
-  left: 0;
-}
-
 #wrapper {
   height: $height;
   overflow: hidden;
   width: $width;
-}
-
-.page {
-  bottom: 0;
-  left: 0;
-  right: 0;
-  top: 0;
 }
 
 .r-btn {

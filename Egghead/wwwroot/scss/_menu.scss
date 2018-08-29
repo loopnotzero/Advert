@@ -1,16 +1,6 @@
 
 .wrapper {
-  padding-top: 10%;
-}
-
-.page-title-box {
-  padding: 22px 0;
-
-  .page-title {
-    font-size: 20px;
-    margin-bottom: 0;
-    margin-top: 0;
-  }
+  padding-top: 75px;
 }
 
 #topnav {
@@ -279,7 +269,6 @@
 }
 
 @media (min-width: 992px) {
-
   #topnav .navigation-menu > li > a {
     padding-top: 20px;
     padding-bottom: 20px;
@@ -399,12 +388,13 @@
   #topnav #navigation {
     display: block !important;
   }
-
 }
+
 @media (max-width: 991px) {
   .wrapper {
     //padding-top: 50px;
   }
+  
   .container {
     width: auto !important;
   }
@@ -513,6 +503,7 @@
   }
 
 }
+
 @media (min-width: 768px) {
   #topnav .navigation-menu > li.has-submenu:hover > .submenu {
     visibility: visible;
@@ -549,94 +540,6 @@
 
   .menu-left {
     overflow: hidden;
-  }
-}
-
-.footer {
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
-  bottom: 0;
-  text-align:left !important;
-  padding: 20px 0;
-  position: absolute;
-  right: 0;
-  background-color: $white;
-  left: 0;
-
-  ul {
-    li {
-      padding-left: 10px;
-      padding-right: 10px;
-
-      a{
-        color: $muted;
-
-        &:hover {
-          color: $primary;
-        }
-      }
-    }
-  }
-}
-
-.user-list {
-  .user-list-item {
-    padding: 10px 12px !important;
-    border-bottom: 1px solid #EEEEEE !important;
-
-    .avatar {
-      float: left;
-      margin-right: 5px;
-      width: 30px;
-      height: 30px;
-
-      img {
-        border-radius: 50%;
-        width: $width;
-      }
-    }
-
-    .icon {
-      float: left;
-      margin-right: 5px;
-      height: 30px;
-      width: 30px;
-      border-radius: 50%;
-      text-align: center;
-
-      i {
-        color: $white;
-        line-height: 30px;
-        font-size: 16px;
-      }
-    }
-
-    .user-desc {
-      margin-left: 40px;
-
-      span.name {
-        color: $dark;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        display: block;
-        width: 100%;
-        overflow: hidden;
-        font-size: 13px;
-      }
-
-
-      span.desc {
-        color: $muted;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        display: block;
-        width: 100%;
-        overflow: hidden;
-        font-size: 12px;
-      }
-      span.time {
-        font-size: 11px;
-      }
-    }
   }
 }
 
@@ -721,48 +624,6 @@
     }
   }
 }
-
-.profile-dropdown {
-  width: 170px;
-  i {
-    font-size: 17px;
-    vertical-align: middle;
-    margin-right: 5px;
-  }
-  span {
-    vertical-align: middle;
-  }
-}
-
-.nav-user {
-  padding: 0 12px !important;
-
-  img {
-    height:36px;
-    width: 36px;
-  }
-}
-
-.header-title {
-  margin-bottom: 8px;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-  font-size: 14px;
-}
-
-.topnav {
-  position: fixed;
-  right: 0;
-  left: 0;
-  top: 0;
-  z-index: 1;
-  height: 226px;
-  background-color: $primary;
-  border: 0;
-  -webkit-transition: all .3s ease;
-  transition: all .3s ease;
-}
-
 
 
 

@@ -1,135 +1,61 @@
 ﻿@using Egghead.Models.Identity
 @model LoginModel
 
-<header class="topnav" style="box-shadow: 0 3px 2px -2px gray;"style="box-shadow: 0 4px 2px -2px gray;">
-    
-</header>
+<div data-ma-theme="primary" class="login">
+    <div class="login__block active" id="l-login">
+        <div class="login__block__header">
+            <i class="mdi mdi-account-circle"></i>
+            Hi there! Please Sign in
 
-<div class="container-boxed">
-    <div class="row h-100 justify-content-center align-items-center">
-        <div class="card-box container-boxed">
-            <div class="row">
-                <div class="col-md-12 font-bold text-left m-b-30" style="color: #222">
-                    <h6>
-                        Sign in with your Egghead account
-                    </h6>
+            <div class="actions actions--inverse login__block__actions">
+                <div class="dropdown">
+                    <i data-toggle="dropdown" class="mdi mdi-more-vert actions__item"></i>
+
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <a class="dropdown-item" data-ma-action="login-switch" data-ma-target="#l-register" href="">Create an account</a>
+                        <a class="dropdown-item" data-ma-action="login-switch" data-ma-target="#l-forget-password" href="">Forgot password?</a>
+                    </div>
                 </div>
             </div>
-            <form id="form" asp-controller="Account" asp-action="LogIn" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" novalidate="">
-                <div class="form-group form-mbt-2 row">
-                    <div class="col-md-12">
-                        <label class="floating-label label-required">Email</label>
-                        <input name="email" type="email"/>
-                    </div>
-                </div>
-                <div class="form-group form-mbt-3 row">
-                    <div class="col-md-12">
-                        <label class="floating-label label-required">Password</label>
-                        <input name="password" type="password"/>
-                    </div>
-                </div>
-                <div class="form-group form-mbt-2 row">
-                    <div class="input-group">
-                        <span class="p-t-7">
-                            <a href="/Account/ForgotPassword?returnUrl=@ViewData["ReturnUrl"]">Forgot your password?</a>
-                        </span>
-                        <span class="ml-auto">
-                            <button id="next" class="btn btn-danger w-xs waves-effect waves-light">Next</button>
-                        </span>
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <div class="container">
-                        Don't have an account? <a href="/Account/SignUp?returnUrl=@ViewData["ReturnUrl"]">Sign Up</a>
-                    </div>
-                </div>
-            </form>
         </div>
-    </div>    
+        
+        <form id="form" asp-controller="Account" asp-action="LogIn" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" novalidate="">
+            <div class="login__block__body">
+                <div class="form-group form-group--float form-group--centered">
+                    <input id="email" type="email" class="form-control">
+                    <label>Email Address</label>
+                    <i class="form-group__bar"></i>
+                </div>
+
+                <div class="form-group form-group--float form-group--centered">
+                    <input id="password" type="password" class="form-control">
+                    <label>Password</label>
+                    <i class="form-group__bar"></i>
+                </div>
+
+                <button id="log-in" href="index.html" class="btn btn--icon login__block__btn">
+                    <i class="mdi mdi-arrow-right"></i>
+                </button>
+            </div>  
+        </form>      
+    </div>
 </div>
 
 <script>
     $(document).ready(function() {
-        var emailInput = $("input[type='email']");
-        var passwordInput = $("input[type='password']");
-        var floatingLabel = "floating-lable";
-        var floatingLabelError = "floating-label-error";
-        var labelTransform = "label-transform";
-        var labelErrorTransform = "label-error-transform";
-        var requestVerificationToken = $("input[name=__RequestVerificationToken]");
-
-        function handleFocusFor(element) {
-            element.focusin(function() {
-                var self = $(this);
-                var prev = self.prev();
-                prev.addClass(!prev.hasClass(floatingLabelError) ? labelTransform : labelErrorTransform);
-            }).focusout(function() {
-                var self = $(this);
-                var prev = self.prev();
-                if (!prev.hasClass(floatingLabelError)) {
-                    prev.toggleClass(labelTransform, !((self[0].value === "") && prev.hasClass(labelTransform)));
-                } else {
-                    prev.toggleClass(labelErrorTransform,
-                        !((self[0].value === "") && prev.hasClass(labelErrorTransform)));
-                    if (!(self[0].value === "")) {
-                        prev.removeClass(floatingLabelError + " " + labelErrorTransform)
-                            .addClass(floatingLabel + " " + labelTransform);
-                        self.css("background", "linear-gradient(to bottom, rgba(255, 255, 255, 0) 96%, #5682a3 96%)");
-                    }
-                }
-            });
-        }
-
-        function onRequestError(jqXhr, textStatus, errorThrown) {
-            console.log("jqXhr: " + JSON.stringify(jqXhr));
-            console.log("Text status: " + JSON.stringify(textStatus));
-            console.log("Error thrown: " + JSON.stringify(errorThrown));
-            //todo: Add form for reporting bug
-        }
-
-        function onRequestSuccess(response) {
-            console.log("Response: " + response);
-            console.log("Error message: " + response.errorMessage);
-            console.log("Error status code: " + response.errorStatusCode);
-
-            switch (response.errorStatusCode) {
-            case 307:
-                {
-                    console.log("Redirect url: " + response.redirectUrl);
-                    window.location.href = response.redirectUrl;
-                }
-                break;
-            case 401:
-            case 409:
-            case 422:
-            case 500:
-                {
-                    //todo: Add css style to float label style
-                    if (emailInput.attr("name") === response.tagName) {
-                        emailInput
-                            .css("background",
-                                "linear-gradient(to bottom, rgba(255, 255, 255, 0) 96%, #ee6e73 96%)").prev()
-                            .addClass(floatingLabelError + " " + labelErrorTransform).text(response.errorMessage);
-                    } else if (passwordInput.attr("name") === response.tagName) {
-                        passwordInput
-                            .css("background",
-                                "linear-gradient(to bottom, rgba(255, 255, 255, 0) 96%, #ee6e73 96%)").prev()
-                            .addClass(floatingLabelError + " " + labelErrorTransform).text(response.errorMessage);
-                    }
-                }
-                break;
-            }
-        }
-
-        $("#next").click(function(e) {
+        $("#log-in").click(function(e) {
             e.preventDefault();
+            
             var url = $("#form").attr("action");
             console.log("Request url: " + url);
-            var token = requestVerificationToken.val();
+            
+            var token = $("input[name=__RequestVerificationToken]").val();
             console.log("Request verification token: " + token);
-            var email = emailInput.val();
+            
+            var email = $("#email").val();
             console.log("Email: " + email);
-            var password = passwordInput.val();
+            
+            var password = $("#password").val();
             console.log("Password: " + password);
 
             var additionalHeaders = {};
@@ -145,17 +71,28 @@
                 headers: additionalHeaders,
                 contentType: "application/json",
                 error: function(jqXhr, textStatus, errorThrown) {
-                    onRequestError(jqXhr, textStatus, errorThrown);
+                    console.log("jqXhr: " + JSON.stringify(jqXhr));
+                    console.log("Text status: " + JSON.stringify(textStatus));
+                    console.log("Error thrown: " + JSON.stringify(errorThrown));
+                    //todo: Add form for reporting bug
                 },
                 success: function(response) {
-                    onRequestSuccess(response);
+                    console.log("Response: " + response);
+                    console.log("Error message: " + response.errorMessage);
+                    console.log("Error status code: " + response.errorStatusCode);
+
+                    switch (response.errorStatusCode) {
+                    case 307:
+                        {
+                            console.log("Redirect url: " + response.redirectUrl);
+                            window.location.href = response.redirectUrl;
+                        }
+                        break;
+                    }
                 }
             });
 
             return false;
         });
-
-        handleFocusFor(emailInput);
-        handleFocusFor(passwordInput);
     });
 </script>

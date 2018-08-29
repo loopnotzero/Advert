@@ -13,6 +13,8 @@
     <link href="~/css/style.css" rel="stylesheet" type="text/css"/>
     <link href="~/css/icons.css" rel="stylesheet" type="text/css"/>
     <link href="~/css/simplemde.css" rel="stylesheet" type="text/css">
+    @* <link href="~/css/app.css" rel="stylesheet" type="text/css"> *@
+    @* <link href="~/css/animate.css" rel="stylesheet" type="text/css"> *@
 </head>
 
 <body>
@@ -22,8 +24,9 @@
 <script src="~/js/bootstrap.js"></script>
 <script src="~/js/waves.js"></script>
 <script src="~/js/simplemde.js"></script>
+@* <script src="~/js/app.js"></script> *@
 
-<div class="wrapper" style="display: none">
+<div id="body" class="wrapper" style="display: none">
     @RenderBody()
 </div>
 </body>
@@ -31,7 +34,7 @@
 
 <script>
     $(document).ready(function() {
-        $(".wrapper").fadeIn(200);
+        $("#body").fadeIn(200);
 
         $("#log-out").click(function(e) {
             e.preventDefault();
