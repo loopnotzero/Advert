@@ -5,7 +5,7 @@
 
 <div id="article" class="container-boxed">
     <article>
-        <div class="card m-b-20">
+        <div class="card">
             <div class="text-muted p-3"><small class="font-bold">@Model.FirstName @Model.LastName</small> <small class="time"> @Model.CreatedAt.Humanize()</small></div>
 
             <div class="card-body">
@@ -40,7 +40,7 @@
 
         console.log(`Reply To: ${replyTo} Comment ID: ${commentId}`);
 
-        $(`#${commentId} .reply-footer:first`).append(
+        $(`#${commentId} #reply-placeholder:first`).append(
             `<div id="reply-form">   
                 <textarea id="reply-editor" style="display: none"></textarea>    
                 <div class="row mt-3">
@@ -131,7 +131,7 @@
                     <img src="/images/64x64.svg" width="48" height="48" alt="">
                     <div class="media-body">
                         <div class="col-auto">
-                            <h6 class="mt-0">${response.firstName} ${response.lastName}, ${response.createdAt}</h6>
+                            ${response.firstName} ${response.lastName} <small class="time"> ${response.createdAt}</small>
                         </div>
                         <div class="col-auto">
                             <h6>${response.text}</h6>
@@ -146,7 +146,7 @@
                                 <i class="fa fa-thumbs-o-down"></i>
                             </div>
                         </div>
-                        <div class="reply-footer"></div>
+                        <div id="reply-placeholder"></div>
                     </div>
                 </div>
                 `);
@@ -172,10 +172,10 @@
                     <img src="/images/64x64.svg" width="48" height="48">
                     <div class="media-body">
                         <div class="col-auto">
-                            <h6 class="mt-0">${response.firstName} ${response.lastName}, ${response.createdAt}</h6>
+                            ${response.firstName} ${response.lastName} <small class="time"> ${response.createdAt}</small>
                         </div>
                         <div class="col-auto">
-                        <h6>${response.text}</h6>
+                            <h6>${response.text}</h6>
                         </div>
                         <div class="col-auto">
                             <a href="#reply" onclick="showReplyForm(null, '${response.id}')">Reply</a>
@@ -187,7 +187,7 @@
                                 <i class="fa fa-thumbs-o-down"></i>
                             </div>
                         </div>
-                        <div class="reply-footer"></div>
+                        <div id="reply-placeholder"></div>
                     </div>
                 </div>`);
                 countArticleCommentsByArticleIdAsync(articleId);

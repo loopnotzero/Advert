@@ -8,10 +8,10 @@
         if (comment.ReplyTo == null)
         {
             <div id="@comment.Id" class="media p-3">
-                <img src="/images/64x64.svg" width="48" height="48">
+                <img src="/images/64x64.svg" width="48" height="48" alt="">
                 <div class="media-body">
                     <div class="col-auto">
-                        @comment.FirstName @comment.LastName <small class="time">@comment.CreatedAt.Humanize()</small>
+                        @comment.FirstName @comment.LastName <small class="time"> @comment.CreatedAt.Humanize()</small>
                     </div>
                     <div class="col-auto">
                         <h6>@Html.Raw(comment.Text)</h6>
@@ -26,7 +26,7 @@
                             <i class="fa fa-thumbs-o-down"></i>
                         </div>
                     </div>
-                    <div class="reply-footer"></div>
+                    <div id="reply-placeholder"></div>
                 </div>
             </div>
         }
@@ -38,7 +38,7 @@
                         <img src="/images/64x64.svg" width="48" height="48">
                         <div class="media-body">
                             <div class="col-auto">
-                                @comment.FirstName @comment.LastName <small class="time">@comment.CreatedAt</small>
+                                @comment.FirstName @comment.LastName <small class="time"> @comment.CreatedAt</small>
                             </div>
                             <div class="col-auto">
                                 <h6>@Html.Raw(@comment.Text)</h6>
@@ -53,7 +53,7 @@
                                     <i class="fa fa-thumbs-o-down"></i>
                                 </div>
                             </div>
-                            <div class="reply-footer"></div>
+                            <div id="reply-placeholder"></div>
                         </div>
                     </div>`
                 );
