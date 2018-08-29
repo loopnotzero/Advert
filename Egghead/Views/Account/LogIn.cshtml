@@ -1,22 +1,11 @@
 ﻿@using Egghead.Models.Identity
 @model LoginModel
 
-<div data-ma-theme="primary" class="login">
+<div class="login">
     <div class="login__block active" id="l-login">
         <div class="login__block__header">
-            <i class="mdi mdi-account-circle"></i>
-            Hi there! Please Sign in
-
-            <div class="actions actions--inverse login__block__actions">
-                <div class="dropdown">
-                    <i data-toggle="dropdown" class="mdi mdi-more-vert actions__item"></i>
-
-                    <div class="dropdown-menu dropdown-menu-right">
-                        <a class="dropdown-item" data-ma-action="login-switch" data-ma-target="#l-register" href="">Create an account</a>
-                        <a class="dropdown-item" data-ma-action="login-switch" data-ma-target="#l-forget-password" href="">Forgot password?</a>
-                    </div>
-                </div>
-            </div>
+            <i class="fa fa-user-circle-o"></i>
+            Sign in with your Egghead account
         </div>
         
         <form id="form" asp-controller="Account" asp-action="LogIn" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" novalidate="">
@@ -25,6 +14,9 @@
                     <input id="email" type="email" class="form-control">
                     <label>Email Address</label>
                     <i class="form-group__bar"></i>
+                    <div class="valid-tooltip">
+                        Looks good with icon!
+                    </div>
                 </div>
 
                 <div class="form-group form-group--float form-group--centered">
@@ -34,65 +26,9 @@
                 </div>
 
                 <button id="log-in" href="index.html" class="btn btn--icon login__block__btn">
-                    <i class="mdi mdi-arrow-right"></i>
+                    <i class="fa fa-long-arrow-right"></i>
                 </button>
             </div>  
         </form>      
     </div>
 </div>
-
-<script>
-    $(document).ready(function() {
-        $("#log-in").click(function(e) {
-            e.preventDefault();
-            
-            var url = $("#form").attr("action");
-            console.log("Request url: " + url);
-            
-            var token = $("input[name=__RequestVerificationToken]").val();
-            console.log("Request verification token: " + token);
-            
-            var email = $("#email").val();
-            console.log("Email: " + email);
-            
-            var password = $("#password").val();
-            console.log("Password: " + password);
-
-            var additionalHeaders = {};
-
-            if (token) {
-                additionalHeaders["RequestVerificationToken"] = token;
-            }
-
-            $.ajax({
-                url: url,
-                type: "POST",
-                data: JSON.stringify({ email: email, password: password }),
-                headers: additionalHeaders,
-                contentType: "application/json",
-                error: function(jqXhr, textStatus, errorThrown) {
-                    console.log("jqXhr: " + JSON.stringify(jqXhr));
-                    console.log("Text status: " + JSON.stringify(textStatus));
-                    console.log("Error thrown: " + JSON.stringify(errorThrown));
-                    //todo: Add form for reporting bug
-                },
-                success: function(response) {
-                    console.log("Response: " + response);
-                    console.log("Error message: " + response.errorMessage);
-                    console.log("Error status code: " + response.errorStatusCode);
-
-                    switch (response.errorStatusCode) {
-                    case 307:
-                        {
-                            console.log("Redirect url: " + response.redirectUrl);
-                            window.location.href = response.redirectUrl;
-                        }
-                        break;
-                    }
-                }
-            });
-
-            return false;
-        });
-    });
-</script>

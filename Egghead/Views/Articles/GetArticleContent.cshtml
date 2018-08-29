@@ -1,9 +1,25 @@
 ﻿@using Humanizer
 @model Egghead.Models.Articles.ArticleModel
 
-@Html.Partial("TopNavigation")
+<header class="header">
+    <div class="header__logo">
+        <h1><a href="/"><i class="fa fa-reddit-alien"></i> EGGHEAD</a></h1>
+    </div>
+    <ul class="top-nav">
+        <li class="dropdown">
+            <a href="" data-toggle="dropdown" aria-expanded="false">
+                <i class="fa fa-lg fa-ellipsis-v"></i>
+            </a>
 
-<div id="article" class="container-boxed">
+            <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-end" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(-171px, 36px, 0px);">
+                <a href="" class="dropdown-item">Profile</a>
+                <a id="log-out" href="#" class="dropdown-item">Log out</a>
+            </div>
+        </li>
+    </ul>
+</header>
+
+<section id="article" class="content" style="display: none">
     <article>
         <div class="card">
             <div class="text-muted p-3"><small class="font-bold">@Model.FirstName @Model.LastName</small> <small class="time"> @Model.CreatedAt.Humanize()</small></div>
@@ -31,8 +47,8 @@
                 @* @Html.Partial("GetArticleCommentsPartial") *@
             </div>
         </div>
-    </article>
-</div>
+    </article> 
+</section>
 
 <script>   
     function showReplyForm(replyTo, commentId) {
