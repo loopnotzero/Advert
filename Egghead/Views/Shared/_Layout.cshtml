@@ -16,21 +16,25 @@
     <link href="~/css/animate.css" rel="stylesheet" type="text/css">
 </head>
 
-<body data-ma-theme="egghead">
+<body id="body" data-ma-theme="egghead" style="display: none">
+
 <script src="~/js/jquery.min.js"></script>
 <script src="~/js/popper.js"></script>
 <script src="~/js/bootstrap.min.js"></script>
 <script src="~/js/waves.js"></script>
 <script src="~/js/simplemde.js"></script>
 <script src="~/js/egghead.js"></script>
+
 @RenderBody()
 </body>
 </html>
 
 <script>
+    $(window).on('load', function () {
+        $('#body').fadeIn(200);
+    });
+    
     $(document).ready(function() {
-        $(".content").fadeIn(200);
-        
         $("#log-in").click(function(e) {
             e.preventDefault();
             
