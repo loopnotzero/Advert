@@ -82,15 +82,13 @@ a {
 
 .r-btn-light:hover {
   color: $primary;
-  background-color: #dddcdc;
-  border-color: #dddcdc;
+  background-color: #F3F5F8;
+  border-color: #F3F5F8;
   cursor: pointer;
 }
 
 .r-btn-light-no-hover {
   color: $primary;
-  //background-color: $white;
-  //border-color: $white;
 }
 
 .r-btn--icon-text > .zmdi {

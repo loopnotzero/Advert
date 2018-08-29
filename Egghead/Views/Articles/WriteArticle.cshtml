@@ -1,6 +1,8 @@
 ﻿<header class="header">
     <div class="header__logo">
-        <h1><a href="/"><i class="fa fa-ravelry"></i> EGGHEAD</a></h1>
+        <h1>
+            <a href="/"><i class="fa fa-ravelry"></i>GGHEAD</a>
+        </h1>
     </div>
     <ul class="top-nav">
         <li class="dropdown">
@@ -14,7 +16,7 @@
             </a>
 
             <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-end" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(-171px, 36px, 0px);">
-                <a href="" class="dropdown-item">Profile</a>
+                <a id="profile" href="#" class="dropdown-item">Profile</a>
                 <a id="log-out" href="#" class="dropdown-item">Log out</a>
             </div>
         </li>
@@ -61,7 +63,7 @@
             });
         }
 
-        $("#write-article").html("Submit your article").click(function(e) {
+        $("#publish-article").click(function(e) {
             e.preventDefault();
             var article = JSON.stringify({
                 title: $("#title").val(),

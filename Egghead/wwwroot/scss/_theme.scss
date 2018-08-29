@@ -6,7 +6,6 @@
   .top-menu {
     background-color: $color;
   }
-
   .navigation__sub--active > a,
   .navigation__active > a,
   .navigation__active:before {
@@ -15,16 +14,17 @@
 }
 
 $themes: (
-  red: $red,
-  purple: $purple,
-  indigo: $indigo,
-  blue: $blue,
-  cyan: $cyan,
-  teal: $teal,
-  green: $green,
-  brown: $brown,
-  orange: $orange,
-  blue-grey: $blue-grey
+        red: $red,
+        purple: $purple,
+        indigo: $indigo,
+        blue: $blue,
+        cyan: $cyan,
+        teal: $teal,
+        green: $green,
+        brown: $brown,
+        orange: $orange,
+        blue-grey: $blue-grey,
+        egghead: $egghead
 );
 
 @each $theme, $value in $themes {
