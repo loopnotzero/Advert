@@ -34,8 +34,10 @@
                     <h4 class="text-muted font-bold">Profile</h4>
                 </div>
                 <div class="text-center">
-                    <div class="mb-3">
-                        <img src="/images/users/avatar-1.jpg" class="rounded-circle img-thumbnail" alt="profile-image">
+                    <div class="profile__thumbnail">
+                        <a href="/GetProfile" class="profile__img">
+                            <img src="/images/users/avatar-1.jpg" class=" rounded-circle img-thumbnail" alt="profile-image">
+                        </a>
                     </div>
 
                     <div class="mb-3">
@@ -143,7 +145,7 @@
                 @if (Model != null)
                 {
                     <div class="listview">
-                        @foreach (var article in Model.TopRatedArticles)
+                        @foreach (var article in Model.PopularArticles)
                         {
                             <div class="listview__item">
                                 <img src="/images/users/avatar-1.jpg" class="listview__img" alt="">
@@ -155,7 +157,7 @@
                                         </p>
                                     </div>
                                     <p>
-                                        @article.FirstName @article.LastName <small class="time"> @article.CreatedAt.Humanize()</small>
+                                        @article.FirstName @article.LastName <small class="time"> @article.CreatedAt.Humanize(true)</small>
                                     </p>
                                 </div>
                             </div>

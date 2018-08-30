@@ -1443,4 +1443,7 @@
     <_ContentIncludedByDefault Remove="wwwroot\scss\icons\css\themify-icons.css" />
     <_ContentIncludedByDefault Remove="wwwroot\scss\icons\css\themify-icons.css.map" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Views\Profile" />
+  </ItemGroup>
 </Project>

@@ -14,7 +14,6 @@
             <a href="" data-toggle="dropdown" aria-expanded="false">
                 <i class="fa fa-lg fa-ellipsis-v"></i>
             </a>
-
             <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-end" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(-171px, 36px, 0px);">
                 <a id="profile" href="#" class="dropdown-item">Profile</a>
                 <a id="log-out" href="#" class="dropdown-item">Log out</a>
@@ -24,14 +23,17 @@
 </header>
 
 <section class="content">
-    <div class="card">
+    <div class="card">      
         <div class="card-body">
-            <div class="form-group form-group--float">
-                <input id="title" type="text" class="form-control">
-                <label>Title</label>
-                <i class="form-group__bar"></i>                   
+            <div class="form-group">
+                <input id="title" type="text" class="form-control" placeholder="Title">
+                <i class="form-group__bar"></i>
             </div>
-            <textarea id="article-editor" style="display: none;"></textarea>           
+            <div class="actions">
+                <a id="save-article" href="#" class="actions__item fa fa-save"></a>
+                <a id="upload-image" href="#" class="actions__item fa fa-cloud-upload"></a>
+            </div>
+            <textarea id="article-editor" style="display: none;"></textarea>
         </div>
     </div>
 </section>

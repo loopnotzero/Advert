@@ -1,5 +1,4 @@
-﻿@using Humanizer
-@model IEnumerable<Egghead.Models.Articles.ArticleCommentModel>
+﻿@model IEnumerable<Egghead.Models.Articles.ArticleCommentModel>
 
 @if (Model != null && Model.Any())
 {
@@ -8,10 +7,10 @@
         if (comment.ReplyTo == null)
         {
             <div id="@comment.Id" class="media p-3">
-                <img src="/images/64x64.svg" width="48" height="48" alt="">
+                <img src="/images/64x64.svg" width="48" height="48">
                 <div class="media-body">
                     <div class="col-auto">
-                        @comment.FirstName @comment.LastName <small class="time"> @comment.CreatedAt.Humanize()</small>
+                        @comment.FirstName @comment.LastName <small class="time"> @comment.CreatedAt</small>
                     </div>
                     <div class="col-auto">
                         <h6>@Html.Raw(comment.Text)</h6>
@@ -41,7 +40,7 @@
                                 @comment.FirstName @comment.LastName <small class="time"> @comment.CreatedAt</small>
                             </div>
                             <div class="col-auto">
-                                <h6>@Html.Raw(@comment.Text)</h6>
+                                <h6>@Html.Raw(comment.Text)</h6>
                             </div>
                             <div class="col-auto">
                                 <a href="#reply" onclick="showReplyForm('@comment.ReplyTo', '@comment.Id')">Reply</a>

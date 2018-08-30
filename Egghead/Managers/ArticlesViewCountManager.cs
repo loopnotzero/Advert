@@ -53,10 +53,10 @@ namespace Egghead.Managers
             return await Store.CreateArticleViewsCountAsync(entity, CancellationToken);
         }
         
-        public async Task<IEnumerable<ObjectId>> GetArticlesIdByViewsCount(int limit)
+        public async Task<IEnumerable<ObjectId>> GetPopularArticlesByViewsCount(int limit)
         {
             ThrowIfDisposed();
-            return await Store.GetArticlesIdByViewsCount(limit, CancellationToken);        
+            return await Store.GetPopularArticlesByViewsCount(limit, CancellationToken);        
         }
      
         public void Dispose()

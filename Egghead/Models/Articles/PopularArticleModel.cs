@@ -2,7 +2,7 @@
 
 namespace Egghead.Models.Articles
 {
-    public class TopRatedArticleModel
+    public class PopularArticleModel
     {
         public string Id { get; set; }
         public string Title { get; set; }

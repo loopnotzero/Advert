@@ -80,7 +80,7 @@ namespace Egghead.Controllers
 
                 var article = await _articlesManager.FindArticleByIdAsync(objectId);
 
-                var model = new ArticleModel
+                var model = new ArticlePreviewModel
                 {
                     Id = article.Id.ToString(),
                     Title = article.Title,
@@ -110,11 +110,11 @@ namespace Egghead.Controllers
             {
                 var user = await _userManager.FindByEmailAsync(HttpContext.User.Identity.Name);
 
-                var articlesPreview = new List<ArticleModel>();
+                var articlesPreview = new List<ArticlePreviewModel>();
                 
                 foreach (var article in await _articlesManager.FindArticlesAsync(50))
                 {
-                    articlesPreview.Add(new ArticleModel
+                    articlesPreview.Add(new ArticlePreviewModel
                     {
                         Id = article.Id.ToString(),
                         Title = article.Title,
@@ -129,26 +129,27 @@ namespace Egghead.Controllers
                     });
                 }
 
-                var articlesId = await _articlesViewCountManager.GetArticlesIdByViewsCount(5);
+                var articlesId = await _articlesViewCountManager.GetPopularArticlesByViewsCount(5);
                      
-                var topRatedArticlesModel = new List<TopRatedArticleModel>();
+                var popularArticles = new List<PopularArticleModel>();
                 
                 foreach (var articleId in articlesId)
                 {
                     var article = await _articlesManager.FindArticleByIdAsync(articleId);
-                    topRatedArticlesModel.Add(new TopRatedArticleModel
+                    popularArticles.Add(new PopularArticleModel
                     {
                         Id = article.Id.ToString(),
                         FirstName = user.FirstName,
                         LastName = user.LastName,
-                        Title = article.Title
+                        Title = article.Title,
+                        CreatedAt = article.CreatedAt
                     });
                 }
                 
                 return View(new AggregationModel
                 {
                     ArticlesPreview = articlesPreview,
-                    TopRatedArticles = topRatedArticlesModel,
+                    PopularArticles = popularArticles,
                 });
             }
             catch (Exception e)
@@ -165,15 +166,15 @@ namespace Egghead.Controllers
         
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> CreateArticleAsync([FromBody] ArticleModel model)
+        public async Task<IActionResult> CreateArticleAsync([FromBody] ArticlePreviewModel previewModel)
         {
             try
             {
                 await _articlesManager.CreateArticleAsync(new MongoDbArticle
                 {
-                    Title = model.Title,
-                    NormalizedTitle = _keyNormalizer.Normalize(model.Title),
-                    Text = model.Text,
+                    Title = previewModel.Title,
+                    NormalizedTitle = _keyNormalizer.Normalize(previewModel.Title),
+                    Text = previewModel.Text,
                     ByWho = HttpContext.User.Identity.Name,
                     ByWhoNormalized = _keyNormalizer.Normalize(HttpContext.User.Identity.Name),
                     CreatedAt = DateTime.UtcNow,
@@ -217,15 +218,15 @@ namespace Egghead.Controllers
 
         [HttpPut]
         [Authorize]
-        public async Task<IActionResult> UdpateArticleByIdAsync(string articleId, [FromBody] ArticleModel model)
+        public async Task<IActionResult> UdpateArticleByIdAsync(string articleId, [FromBody] ArticlePreviewModel previewModel)
         {
             try
             {
                 await _articlesManager.UpdateArticleByIdAsync(ObjectId.Parse(articleId), new MongoDbArticle
                 {
-                    Title = model.Title,
-                    NormalizedTitle = _keyNormalizer.Normalize(model.Title),
-                    Text = model.Text,
+                    Title = previewModel.Title,
+                    NormalizedTitle = _keyNormalizer.Normalize(previewModel.Title),
+                    Text = previewModel.Text,
                     ChangedAt = DateTime.UtcNow
                 });
 
@@ -243,15 +244,15 @@ namespace Egghead.Controllers
 
         [HttpPut]
         [Authorize]
-        public async Task<IActionResult> UdpateArticleByTitleAsync(string title, [FromBody] ArticleModel model)
+        public async Task<IActionResult> UdpateArticleByTitleAsync(string title, [FromBody] ArticlePreviewModel previewModel)
         {
             try
             {
                 await _articlesManager.UpdateArticleByTitleAsync(title, new MongoDbArticle
                 {
-                    Title = model.Title,
-                    NormalizedTitle = _keyNormalizer.Normalize(model.Title),
-                    Text = model.Text,
+                    Title = previewModel.Title,
+                    NormalizedTitle = _keyNormalizer.Normalize(previewModel.Title),
+                    Text = previewModel.Text,
                     ChangedAt = DateTime.UtcNow,
                 });
 

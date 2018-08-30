@@ -4,7 +4,7 @@ namespace Egghead.Models.Articles
 {
     public class AggregationModel
     {
-        public List<ArticleModel> ArticlesPreview { get; set; }
-        public List<TopRatedArticleModel> TopRatedArticles { get; set; }
+        public List<ArticlePreviewModel> ArticlesPreview { get; set; }
+        public List<PopularArticleModel> PopularArticles { get; set; }
     }
 }
