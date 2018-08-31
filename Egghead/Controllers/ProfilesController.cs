@@ -1,14 +1,13 @@
-﻿using System;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 namespace Egghead.Controllers
 {
-    public class ProfileController : Controller
+    public class ProfilesController : Controller
     {
         private readonly ILogger _logger;
 
-        public ProfileController(ILoggerFactory loggerFactory)
+        public ProfilesController(ILoggerFactory loggerFactory)
         {
             _logger = loggerFactory.CreateLogger<AccountController>();
         }
@@ -16,7 +15,7 @@ namespace Egghead.Controllers
         [HttpGet]
         public IActionResult GetProfile()
         {
-            throw new NotImplementedException();
+            return View();
         }
     }
 }

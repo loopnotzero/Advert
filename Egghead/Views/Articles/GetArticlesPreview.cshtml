@@ -19,7 +19,7 @@
             </a>
 
             <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-end" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(-171px, 36px, 0px);">
-                <a id="profile" href="#" class="dropdown-item">Profile</a>
+                <a id="profile" href="/Profiles/GetProfile" class="dropdown-item">Profile</a>
                 <a id="log-out" href="#" class="dropdown-item">Log out</a>
             </div>
         </li>
@@ -33,18 +33,18 @@
                 <div style="border-bottom: 1px solid #d5d5d5; margin-bottom: 20px;">
                     <h4 class="text-muted font-bold">Profile</h4>
                 </div>
-                <div class="text-center">
+                <div>
                     <div class="profile__thumbnail">
-                        <a href="/GetProfile" class="profile__img">
+                        <a href="/Profiles/GetProfile" class="thumbnail__hover">
                             <img src="/images/users/avatar-1.jpg" class=" rounded-circle img-thumbnail" alt="profile-image">
                         </a>
-                    </div>
-
+                    </div> 
+                </div>
+                <div class="text-center">        
                     <div class="mb-3">
                         <h5 id="profile-fullname"></h5>
                         <p id="profile-headline" class="text-muted"></p>
                     </div>
-
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <span class="text-justify">Your articles</span>
@@ -98,7 +98,7 @@
                                     @Html.Raw(article.Text)
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-12 p-2">
+                                    <div class="col-md-12 p-1">
                                         <div name="btn-like" onclick="onVoteClick('@article.Id', 1)" class="r-btn r-btn-light r-btn--icon ml-4">
                                             <i class="fa fa-thumbs-o-up"></i>
                                         </div>
