@@ -9,6 +9,7 @@ body {
   height: 100%;
 }
 
+
 html {
   position: relative;
   height: 100%;
@@ -32,6 +33,11 @@ a {
     outline: 0;
     text-decoration: none;
   }
+}
+
+img {
+  width: 100%;
+  height: 100%;
 }
 
 #wrapper {

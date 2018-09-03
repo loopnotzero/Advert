@@ -118,7 +118,7 @@ namespace Egghead.Controllers
                     {
                         Id = article.Id.ToString(),
                         Title = article.Title,
-                        Text = article.Text,
+                        Text = article.Text.Length > 1000 ? article.Text.Substring(0, 1000) : article.Text,
                         FirstName = user.FirstName,
                         LastName = user.LastName,
                         CreatedAt = article.CreatedAt,
