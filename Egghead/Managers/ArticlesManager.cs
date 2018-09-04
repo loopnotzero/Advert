@@ -96,6 +96,12 @@ namespace Egghead.Managers
             return await Store.FindArticlesAsync(limit, CancellationToken);
         }
 
+        public async Task<List<T>> FindRecentArticlesByWhoNormalizedAsync(string byWhoNormalized, int limit)
+        {
+            ThrowIfDisposed();          
+            return await Store.FindRecentArticlesByWhoNormalizedAsync(byWhoNormalized, limit, CancellationToken);
+        }
+
         public async Task<OperationResult> CreateArticleAsync(T entity)
         {
             ThrowIfDisposed();

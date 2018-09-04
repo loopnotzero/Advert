@@ -1,30 +1,7 @@
-﻿@using Humanizer
-@model Egghead.Models.Articles.AggregationModel
+﻿@using Egghead.Models.Articles
+@using Humanizer
 
-<header class="header">
-    <div class="header__logo">
-        <h1>
-            <a href="/"><i class="fa fa-ravelry"></i>GGHEAD</a>
-        </h1>
-    </div>
-    <ul class="top-nav">
-        <li class="dropdown">
-            <a id="write-article" href="#" data-toggle="dropdown" aria-expanded="false">
-                <i class="fa fa-lg fa-pencil"></i>
-            </a>
-        </li>
-        <li class="dropdown">
-            <a href="" data-toggle="dropdown" aria-expanded="false">
-                <i class="fa fa-lg fa-ellipsis-v"></i>
-            </a>
-
-            <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-end" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(-171px, 36px, 0px);">
-                <a id="profile" href="/Profiles/GetProfile" class="dropdown-item">Profile</a>
-                <a id="log-out" href="#" class="dropdown-item">Log out</a>
-            </div>
-        </li>
-    </ul>
-</header>
+@Html.Partial("Header")
 
 <section class="content">
     <div class="row">
@@ -73,50 +50,51 @@
         </div>
         <div class="col-md-6 p-1">
             <div class="container-fluid mb-3">
-                @if (Model.ArticlesPreview.Any())
-                {
+                @{
+                    var articlesPreview = (List<ArticlePreviewModel>)ViewBag.ArticlesPreview;
+                    
                     <div class="card">
-                        @foreach (var article in Model.ArticlesPreview)
+                        @foreach (var articlePreview in articlesPreview)
                         {
-                            <article id="@article.Id" class="card-hover">
+                            <article id="@articlePreview.Id" class="card-hover">
                                 <div class="text-muted p-3">
-                                    <small class="font-bold">@article.FirstName @article.LastName</small> <small class="time"> @article.CreatedAt.Humanize()</small>
+                                    <small class="font-bold">@articlePreview.FirstName @articlePreview.LastName</small> <small class="time"> @articlePreview.CreatedAt.Humanize()</small>
                                 </div>
-                                <div class="card-body">
-                                    <a href="/Articles/GetArticleContent?articleId=@article.Id">
-                                        <h4 class="card-title clipped-text mb-3">@article.Title</h4>
+                                <div class="card-body card-body__img">
+                                    <a href="/Articles/GetArticleContent?articleId=@articlePreview.Id">
+                                        <h4 class="card-title clipped-text mb-3">@articlePreview.Title</h4>
                                     </a>
-                                    @Html.Raw(article.Text)
+                                    @Html.Raw(articlePreview.Text)
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12 p-1">
-                                        <div name="btn-like" onclick="onVoteClick('@article.Id', 1)" class="r-btn r-btn-light r-btn--icon ml-4">
+                                        <div name="btn-like" onclick="onVoteClick('@articlePreview.Id', 1)" class="r-btn r-btn-light r-btn--icon ml-4">
                                             <i class="fa fa-thumbs-o-up"></i>
                                         </div>
-                                        <small name="likes">@article.Likes</small>
+                                        <small name="likes">@articlePreview.Likes</small>
 
-                                        <div name="btn-dislike" onclick="onVoteClick('@article.Id', 2)" class="r-btn r-btn-light r-btn--icon">
+                                        <div name="btn-dislike" onclick="onVoteClick('@articlePreview.Id', 2)" class="r-btn r-btn-light r-btn--icon">
                                             <i class="fa fa-thumbs-o-down"></i>
                                         </div>
-                                        <small name="dislikes">@article.Dislikes</small>
+                                        <small name="dislikes">@articlePreview.Dislikes</small>
 
                                         <div name="btn-bookmark" class="r-btn r-btn-light r-btn--icon">
                                             <i class="fa fa-bookmark"></i>
                                         </div>
-                                        <small name="bookmarks">@article.BookmarksCount</small>
+                                        <small name="bookmarks">@articlePreview.BookmarksCount</small>
 
                                         <div class="r-btn r-btn-light-no-hover r-btn--icon-no-hover">
                                             <i class="fa fa-eye"></i>
                                         </div>
-                                        <small id="article-view-count">@article.ViewCount</small>
+                                        <small id="article-view-count">@articlePreview.ViewCount</small>
 
                                         <div class="r-btn r-btn-light-no-hover r-btn--icon-no-hover">
                                             <i class="fa fa-weixin"></i>
                                         </div>
-                                        <small id="article-comments">@article.CommentsCount</small>
+                                        <small id="article-comments">@articlePreview.CommentsCount</small>
 
                                         <small class="text-muted float-right mt-2 mr-4">
-                                            <a href="/Articles/GetArticleContent?articleId=@article.Id">READ MORE...</a>
+                                            <a href="/Articles/GetArticleContent?articleId=@articlePreview.Id">READ MORE...</a>
                                         </small>
                                     </div>
                                 </div>
@@ -132,31 +110,35 @@
                 <div style="border-bottom: 1px solid #d5d5d5; margin-bottom: 20px;">
                     <h4 class="text-muted font-bold">Popular on Egghead</h4>
                 </div>
+                @{
+                    var popularArticles = (List<PopularArticleModel>)ViewBag.PopularArticles;
+                    
+                    if (popularArticles != null)
+                    {
+                        <div class="listview">
+                            @foreach (var popularArticle in popularArticles)
+                            {
+                                <div class="listview__item">
+                                    <div class="mr-2" style="width: 50px; height: 50px">
+                                        <img src="/images/users/avatar-1.jpg" class="listview__img" alt=""> 
+                                    </div>
 
-                @if (Model != null)
-                {
-                    <div class="listview">
-                        @foreach (var article in Model.PopularArticles)
-                        {
-                            <div class="listview__item">
-                                <div class="mr-2" style="width: 50px; height: 50px">
-                                    <img src="/images/users/avatar-1.jpg" class="listview__img" alt=""> 
-                                </div>
-
-                                <div class="listview__content">
-                                    <div class="listview__heading">
+                                    <div class="listview__content">
+                                        <div class="listview__heading">
+                                            <p>
+                                                <a href="/Articles/GetArticleContent?articleId=@popularArticle.Id">@popularArticle.Title</a>
+                                            </p>
+                                        </div>
                                         <p>
-                                            <a href="/Articles/GetArticleContent?articleId=@article.Id">@article.Title</a>
+                                            @popularArticle.FirstName @popularArticle.LastName <small class="time"> @popularArticle.CreatedAt.Humanize()</small>
                                         </p>
                                     </div>
-                                    <p>
-                                        @article.FirstName @article.LastName <small class="time"> @article.CreatedAt.Humanize(true)</small>
-                                    </p>
                                 </div>
-                            </div>
-                        }
-                    </div>
+                            }
+                        </div>
+                    }
                 }
+
             </div>
         </div>
     </div>

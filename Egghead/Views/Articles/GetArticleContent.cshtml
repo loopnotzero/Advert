@@ -1,60 +1,65 @@
-﻿@using Humanizer
-@model Egghead.Models.Articles.ArticlePreviewModel
+﻿@using Egghead.Models.Articles
+@using Humanizer
+@model ArticlePreviewModel
 
-<header class="header">
-    <div class="header__logo">
-        <h1>
-            <a href="/"><i class="fa fa-ravelry"></i>GGHEAD</a>
-        </h1>
-    </div>
-    <ul class="top-nav">
-        <li class="dropdown">
-            <a id="write-article" href="#" data-toggle="dropdown" aria-expanded="false">
-                <i class="fa fa-lg fa-pencil"></i>
-            </a>
-        </li>
-        <li class="dropdown">
-            <a href="" data-toggle="dropdown" aria-expanded="false">
-                <i class="fa fa-lg fa-ellipsis-v"></i>
-            </a>
-
-            <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-end" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(-171px, 36px, 0px);">
-                <a id="profile" href="/Profiles/GetProfile" class="dropdown-item">Profile</a>
-                <a id="log-out" href="#" class="dropdown-item">Log out</a>
-            </div>
-        </li>
-    </ul>
-</header>
+@Html.Partial("Header")
 
 <section id="article" class="content">
-    <article>
-        <div class="card">
-            <div class="text-muted p-3"><small class="font-bold">@Model.FirstName @Model.LastName</small> <small class="time"> @Model.CreatedAt.Humanize()</small></div>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="text-muted p-3"><small class="font-bold">@Model.FirstName @Model.LastName</small> <small class="time"> @Model.CreatedAt.Humanize()</small></div>
 
-            <div class="card-body">
-                <h4 class="card-title">@Model.Title</h4>
-                <p class="card-text">@Html.Raw(@Model.Text)</p>
-            </div>
+                <div class="card-body card-body__img">
+                    <h4 class="card-title">@Model.Title</h4>
+                    <p class="card-text">@Html.Raw(Model.Text)</p>
+                </div>
 
-            <div style="border-bottom: 1px solid #e3e3e3; padding-left: 20px; padding-bottom: 20px">
-                <h4 id="comments-count">
-                </h4>
-            </div>
+                <div style="border-bottom: 1px solid #e3e3e3; padding-left: 20px; padding-bottom: 20px">
+                    <h4 id="comments-count">
+                    </h4>
+                </div>
 
-            <div id="comment-form" class="p-4">   
-                <textarea id="comment-editor" style="display: none"></textarea>    
-                <div class="row mt-3">
-                    <div class="col-12">    
-                        <button id="publish-comment" class="btn btn-light waves-effect waves-light btn-sm">Publish a comment</button>
-                    </div>    
+                <div id="comment-form" class="p-4">
+                    <textarea id="comment-editor" style="display: none"></textarea>
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <button id="publish-comment" class="btn btn-light waves-effect waves-light btn-sm">Publish a comment</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="article-comments" class="container-fluid">
+                    @* @Html.Partial("GetArticleCommentsPartial") *@
                 </div>
             </div>
-
-            <div id="article-comments" class="container-fluid">
-                @* @Html.Partial("GetArticleCommentsPartial") *@
-            </div>
         </div>
-    </article> 
+        <div class="col-md-4">
+            <div class="card p-4">
+                <div style="border-bottom: 1px solid #d5d5d5; margin-bottom: 20px;">
+                    <h4 class="text-muted">Recent articles</h4>
+                </div>
+                @{
+                    var recentArticles = (IEnumerable<RecentArticleModel>) ViewBag.RecentArticles;
+                    <div class="listview">   
+                        @foreach (var recentArticle in recentArticles)
+                        {
+                            <div class="listview__item">
+                                <div class="listview__content">
+                                    <div class="listview__heading font-weight-bold">
+                                        @recentArticle.CreatedAt.ToOrdinalWords()                                
+                                    </div>
+                                    <p>
+                                        <a href="/Articles/GetArticleContent?articleId=@recentArticle.Id">@recentArticle.Title</a>
+                                    </p>
+                                </div>
+                            </div>
+                        }         
+                    </div>
+                }
+            </div>  
+        </div>
+    </div>    
 </section>
 
 <script>   

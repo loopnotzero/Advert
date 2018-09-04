@@ -77,10 +77,20 @@ namespace Egghead.Controllers
                     ArticleId = objectId,
                     CreatedAt = DateTime.UtcNow
                 });
+         
 
+                var recentArticles = await _articlesManager.FindRecentArticlesByWhoNormalizedAsync(user.NormalizedEmail, 10);
+
+                ViewBag.RecentArticles = recentArticles.Select(x => new RecentArticleModel
+                {
+                    Id = x.Id.ToString(),
+                    Title = x.Title,
+                    CreatedAt = x.CreatedAt
+                });
+                
                 var article = await _articlesManager.FindArticleByIdAsync(objectId);
-
-                var model = new ArticlePreviewModel
+               
+                return View(new ArticlePreviewModel
                 {
                     Id = article.Id.ToString(),
                     Title = article.Title,
@@ -88,9 +98,7 @@ namespace Egghead.Controllers
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     CreatedAt = article.CreatedAt
-                };
-
-                return View(model);
+                });
             }
             catch (Exception e)
             {
@@ -145,12 +153,11 @@ namespace Egghead.Controllers
                         CreatedAt = article.CreatedAt
                     });
                 }
+
+                ViewBag.ArticlesPreview = articlesPreview;
+                ViewBag.PopularArticles = popularArticles;
                 
-                return View(new AggregationModel
-                {
-                    ArticlesPreview = articlesPreview,
-                    PopularArticles = popularArticles,
-                });
+                return View();
             }
             catch (Exception e)
             {
