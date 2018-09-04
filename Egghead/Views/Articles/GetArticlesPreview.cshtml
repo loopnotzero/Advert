@@ -9,7 +9,7 @@
             <div class="card">
                 <div class="card-body text-center">
                     <a href="/Profiles/GetProfile">
-                        <img src="/images/users/avatar-1.jpg" class="widget-profile__img widget-profile__img__hover" alt="profile-image">
+                        <img src="/images/users/user_empty.png" class="widget-profile__img widget-profile__img__hover" alt="profile-image">
                     </a>
                     <a href="/Profiles/GetProfile">
                         <h4 id="profile-fullname" class="card-title mb-3"></h4>
@@ -58,7 +58,7 @@
                         {
                             <article id="@articlePreview.Id" class="card-hover">
                                 <div class="text-muted p-3">
-                                    <small class="font-bold">@articlePreview.FirstName @articlePreview.LastName</small> <small class="time"> @articlePreview.CreatedAt.Humanize()</small>
+                                    <a href="/Profiles/GetProfile"><small class="font-weight-bold">@articlePreview.FirstName @articlePreview.LastName</small></a> <small class="time"> @articlePreview.CreatedAt.Humanize()</small>             
                                 </div>
                                 <div class="card-body card-body__img">
                                     <a href="/Articles/GetArticleContent?articleId=@articlePreview.Id">
@@ -108,7 +108,7 @@
         <div class="col-md-3 p-1">
             <div class="card p-4">
                 <div style="border-bottom: 1px solid #d5d5d5; margin-bottom: 20px;">
-                    <h4 class="text-muted font-bold">Popular on Egghead</h4>
+                    <h4 class="text-muted font-weight-bold">Popular on Egghead</h4>
                 </div>
                 @{
                     var popularArticles = (List<PopularArticleModel>)ViewBag.PopularArticles;
@@ -120,7 +120,7 @@
                             {
                                 <div class="listview__item">
                                     <div class="mr-2" style="width: 50px; height: 50px">
-                                        <img src="/images/users/avatar-1.jpg" class="listview__img" alt=""> 
+                                        <img src="/images/users/user_empty.png" class="listview__img" alt=""> 
                                     </div>
 
                                     <div class="listview__content">
