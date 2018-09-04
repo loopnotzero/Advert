@@ -6,10 +6,21 @@
   .top-menu {
     background-color: $color;
   }
+  
+  a,
   .navigation__sub--active > a,
   .navigation__active > a,
-  .navigation__active:before {
+  .navigation__active:before,
+  .fa-thumbs-o-up, 
+  .fa-thumbs-o-down, 
+  .fa-bookmark, 
+  .fa-eye, 
+  .fa-weixin {
     color: $color;
+  }
+
+  .widget-profile__img__hover:hover {
+    box-shadow: 0 0 0 .15rem $color;
   }
 }
 

@@ -67,6 +67,10 @@
   margin-top: 0.1rem;
 }
 
+.listview__heading:hover {
+  text-decoration: underline;
+}
+
 .listview__heading + p {
   margin: 0.2rem 0 0;
   font-size: 0.95rem;

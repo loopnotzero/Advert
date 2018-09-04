@@ -1,7 +1,3 @@
-.card-hover {
-
-}
-
 .card-hover:hover {
   //cursor: pointer;
   background-color: #f8fafd;
@@ -16,6 +12,10 @@
   top: 18px;
 }
 
+.card-title:hover {
+  text-decoration: underline;
+}
+  
 .actions {
   &:not(.actions--inverse) {
     .actions__item {
