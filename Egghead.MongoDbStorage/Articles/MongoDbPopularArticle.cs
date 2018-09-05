@@ -2,7 +2,7 @@
 
 namespace Egghead.MongoDbStorage.Articles
 {
-    public class MongoDbTopArticle
+    public class MongoDbPopularArticle
     {
         public ObjectId ArticleId { get; set; }
         public int ViewsCount { get; set; }

@@ -10,6 +10,7 @@ using Egghead.MongoDbStorage.Common;
 using Egghead.MongoDbStorage.Mappings;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 
 namespace Egghead.MongoDbStorage.Stores
 {
@@ -39,6 +40,12 @@ namespace Egghead.MongoDbStorage.Stores
             var filter = Builders<T>.Filter.Eq(x => x.ArticleId, articleId);
             return await _collection.CountDocumentsAsync(filter, new CountOptions(), cancellationToken);
         }
+        
+        public async Task<IQueryable<T>> AsQueryable(CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            return _collection.AsQueryable();
+        }
 
         public async Task<OperationResult> CreateArticleViewsCountAsync(T entity, CancellationToken cancellationToken)
         {
@@ -48,22 +55,6 @@ namespace Egghead.MongoDbStorage.Stores
                 BypassDocumentValidation = false
             }, cancellationToken);
             return OperationResult.Success;
-        }
-        
-        public async Task<IEnumerable<ObjectId>> GetPopularArticlesByViewsCount(int limit, CancellationToken cancellationToken)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var aggregation = _collection.AsQueryable().GroupBy(x => x.ArticleId)
-                .Select(x => new MongoDbTopArticle
-                {
-                    ArticleId = x.Key,
-                    ViewsCount = x.Count()
-                })
-                .OrderByDescending(x => x.ViewsCount)
-                .Take(limit);
-
-            return aggregation.Select(x => x.ArticleId);
         }
     }
 }
