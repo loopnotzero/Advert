@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Egghead.Common;
@@ -53,10 +54,10 @@ namespace Egghead.Managers
             return await Store.CreateArticleViewsCountAsync(entity, CancellationToken);
         }
         
-        public async Task<IEnumerable<ObjectId>> GetPopularArticlesByViewsCount(int limit)
+        public async Task<IQueryable<T>> AsQueryable()
         {
-            ThrowIfDisposed();
-            return await Store.GetPopularArticlesByViewsCount(limit, CancellationToken);        
+            ThrowIfDisposed();            
+            return await Store.AsQueryable(CancellationToken);
         }
      
         public void Dispose()

@@ -8,7 +8,7 @@
     <div class="row">
         <div class="col-md-8">
             <div class="card">
-                <div class="text-muted p-3"><small class="font-weight-bold">@Model.FirstName @Model.LastName</small> <small class="time"> @Model.CreatedAt.Humanize()</small></div>
+                <div class="text-muted p-3"><a href="/Profiles/GetProfile"><small class="font-weight-bold">@Model.FirstName @Model.LastName</small></a> <small class="time"> @Model.CreatedAt.Humanize()</small></div>
 
                 <div class="card-body card-body__img">
                     <h4 class="card-title">@Model.Title</h4>
@@ -37,27 +37,37 @@
         <div class="col-md-4">
             <div class="card p-4">
                 <div style="border-bottom: 1px solid #d5d5d5; margin-bottom: 20px;">
-                    <h4 class="text-muted">Recent articles</h4>
+                    <h4 class="text-muted font-weight-bold">Popular on Egghead</h4>
                 </div>
                 @{
-                    var recentArticles = (IEnumerable<RecentArticleModel>) ViewBag.RecentArticles;
-                    <div class="listview">   
-                        @foreach (var recentArticle in recentArticles)
-                        {
-                            <div class="listview__item">
-                                <div class="listview__content">
-                                    <div class="listview__heading font-weight-bold">
-                                        @recentArticle.CreatedAt.ToOrdinalWords()                                
+                    var popularArticles = (List<PopularArticleModel>)ViewBag.PopularArticles;
+                    
+                    if (popularArticles != null)
+                    {
+                        <div class="listview">
+                            @foreach (var popularArticle in popularArticles)
+                            {
+                                <div class="listview__item">
+                                    <div class="mr-2" style="width: 50px; height: 50px">
+                                        <img src="/images/users/user_empty.png" class="listview__img" alt=""> 
                                     </div>
-                                    <p>
-                                        <a href="/Articles/GetArticleContent?articleId=@recentArticle.Id">@recentArticle.Title</a>
-                                    </p>
+
+                                    <div class="listview__content">
+                                        <div class="listview__heading">
+                                            <p>
+                                                <a href="/Articles/GetArticleContent?articleId=@popularArticle.Id">@popularArticle.Title</a>
+                                            </p>
+                                        </div>
+                                        <p>
+                                            @popularArticle.FirstName @popularArticle.LastName <small class="time"> @popularArticle.CreatedAt.Humanize()</small>
+                                        </p>
+                                    </div>
                                 </div>
-                            </div>
-                        }         
-                    </div>
+                            }
+                        </div>
+                    }
                 }
-            </div>  
+            </div>
         </div>
     </div>    
 </section>

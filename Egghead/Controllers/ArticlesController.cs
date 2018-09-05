@@ -66,21 +66,36 @@ namespace Egghead.Controllers
         {
             try
             {
-                var user = await _userManager.FindByEmailAsync(HttpContext.User.Identity.Name);
-
-                var objectId = ObjectId.Parse(articleId);
-
-                await _articlesViewCountManager.CreateArticleViewCountAsync(new MongoDbArticleViewCount
+                var articleViewCountEntity = new MongoDbArticleViewCount
                 {
                     ByWho = HttpContext.User.Identity.Name,
                     ByWhoNormalized = _keyNormalizer.Normalize(HttpContext.User.Identity.Name),
-                    ArticleId = objectId,
+                    ArticleId = ObjectId.Parse(articleId),
                     CreatedAt = DateTime.UtcNow
-                });
-         
-
+                };
+                await _articlesViewCountManager.CreateArticleViewCountAsync(articleViewCountEntity);
+                
+                var user = await _userManager.FindByEmailAsync(HttpContext.User.Identity.Name);
+                var queryable = await _articlesViewCountManager.AsQueryable();
+                var popularArticles = new List<PopularArticleModel>();
+             
+                foreach (var popularArticleEntity in queryable.GroupBy(x => x.ArticleId).Select(x => new MongoDbPopularArticle {ArticleId = x.Key, ViewsCount = x.Count()}).OrderByDescending(x => x.ViewsCount).Take(10))
+                {
+                    var articleEntity = await _articlesManager.FindArticleByIdAsync(popularArticleEntity.ArticleId);            
+                    popularArticles.Add(new PopularArticleModel
+                    {
+                        Id = articleEntity.Id.ToString(),
+                        FirstName = user.FirstName,
+                        LastName = user.LastName,
+                        Title = articleEntity.Title,
+                        CreatedAt = articleEntity.CreatedAt
+                    });
+                }
+                
+                ViewBag.PopularArticles = popularArticles;
+   
                 var recentArticles = await _articlesManager.FindRecentArticlesByWhoNormalizedAsync(user.NormalizedEmail, 10);
-
+                
                 ViewBag.RecentArticles = recentArticles.Select(x => new RecentArticleModel
                 {
                     Id = x.Id.ToString(),
@@ -88,8 +103,8 @@ namespace Egghead.Controllers
                     CreatedAt = x.CreatedAt
                 });
                 
-                var article = await _articlesManager.FindArticleByIdAsync(objectId);
-               
+                var article = await _articlesManager.FindArticleByIdAsync(articleViewCountEntity.ArticleId);              
+                
                 return View(new ArticlePreviewModel
                 {
                     Id = article.Id.ToString(),
@@ -137,20 +152,20 @@ namespace Egghead.Controllers
                     });
                 }
 
-                var articlesId = await _articlesViewCountManager.GetPopularArticlesByViewsCount(5);
-                     
+                var queryable = await _articlesViewCountManager.AsQueryable();
+
                 var popularArticles = new List<PopularArticleModel>();
-                
-                foreach (var articleId in articlesId)
+
+                foreach (var popularArticleEntity in queryable.GroupBy(x => x.ArticleId).Select(x => new MongoDbPopularArticle {ArticleId = x.Key, ViewsCount = x.Count()}).OrderByDescending(x => x.ViewsCount).Take(10))
                 {
-                    var article = await _articlesManager.FindArticleByIdAsync(articleId);
+                    var articleEntity = await _articlesManager.FindArticleByIdAsync(popularArticleEntity.ArticleId);       
                     popularArticles.Add(new PopularArticleModel
                     {
-                        Id = article.Id.ToString(),
+                        Id = articleEntity.Id.ToString(),
                         FirstName = user.FirstName,
                         LastName = user.LastName,
-                        Title = article.Title,
-                        CreatedAt = article.CreatedAt
+                        Title = articleEntity.Title,
+                        CreatedAt = articleEntity.CreatedAt
                     });
                 }
 
@@ -173,15 +188,15 @@ namespace Egghead.Controllers
         
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> CreateArticleAsync([FromBody] ArticlePreviewModel previewModel)
+        public async Task<IActionResult> CreateArticleAsync([FromBody] ArticlePreviewModel model)
         {
             try
             {
                 await _articlesManager.CreateArticleAsync(new MongoDbArticle
                 {
-                    Title = previewModel.Title,
-                    NormalizedTitle = _keyNormalizer.Normalize(previewModel.Title),
-                    Text = previewModel.Text,
+                    Title = model.Title,
+                    NormalizedTitle = _keyNormalizer.Normalize(model.Title),
+                    Text = model.Text,
                     ByWho = HttpContext.User.Identity.Name,
                     ByWhoNormalized = _keyNormalizer.Normalize(HttpContext.User.Identity.Name),
                     CreatedAt = DateTime.UtcNow,
@@ -225,15 +240,15 @@ namespace Egghead.Controllers
 
         [HttpPut]
         [Authorize]
-        public async Task<IActionResult> UdpateArticleByIdAsync(string articleId, [FromBody] ArticlePreviewModel previewModel)
+        public async Task<IActionResult> UdpateArticleByIdAsync(string articleId, [FromBody] ArticlePreviewModel model)
         {
             try
             {
                 await _articlesManager.UpdateArticleByIdAsync(ObjectId.Parse(articleId), new MongoDbArticle
                 {
-                    Title = previewModel.Title,
-                    NormalizedTitle = _keyNormalizer.Normalize(previewModel.Title),
-                    Text = previewModel.Text,
+                    Title = model.Title,
+                    NormalizedTitle = _keyNormalizer.Normalize(model.Title),
+                    Text = model.Text,
                     ChangedAt = DateTime.UtcNow
                 });
 
@@ -251,15 +266,15 @@ namespace Egghead.Controllers
 
         [HttpPut]
         [Authorize]
-        public async Task<IActionResult> UdpateArticleByTitleAsync(string title, [FromBody] ArticlePreviewModel previewModel)
+        public async Task<IActionResult> UdpateArticleByTitleAsync(string title, [FromBody] ArticlePreviewModel model)
         {
             try
             {
                 await _articlesManager.UpdateArticleByTitleAsync(title, new MongoDbArticle
                 {
-                    Title = previewModel.Title,
-                    NormalizedTitle = _keyNormalizer.Normalize(previewModel.Title),
-                    Text = previewModel.Text,
+                    Title = model.Title,
+                    NormalizedTitle = _keyNormalizer.Normalize(model.Title),
+                    Text = model.Text,
                     ChangedAt = DateTime.UtcNow,
                 });
 
@@ -346,9 +361,6 @@ namespace Egghead.Controllers
         {
             try
             {
-                var articleIdObj = ObjectId.Parse(articleId);
-                var commentIdObj = ObjectId.Parse(model.CommentId);
-
                 if (model.VoteType == VoteType.None)
                 {
                     var user = await _userManager.FindByEmailAsync(HttpContext.User.Identity.Name);
@@ -356,19 +368,25 @@ namespace Egghead.Controllers
                     throw new ArticleCommentVoteException(logString);
                 }
 
-                var articleCommentVote = await _articleCommentsVotesManager.FindArticleCommentVoteAsync(articleIdObj, commentIdObj);
+                var articleCommentVote = await _articleCommentsVotesManager.FindArticleCommentVoteAsync(ObjectId.Parse(articleId), ObjectId.Parse(model.CommentId));
 
                 if (articleCommentVote == null)
                 {
-                    await _articleCommentsVotesManager.CreateArticleCommentVoteAsync(new MongoDbArticleCommentVote
+                    articleCommentVote = new MongoDbArticleCommentVote
                     {
                         ByWho = HttpContext.User.Identity.Name,
                         ByWhoNormalized = _keyNormalizer.Normalize(HttpContext.User.Identity.Name),
-                        ArticleId = articleIdObj,
-                        CommentId = commentIdObj,
+                        ArticleId = ObjectId.Parse(articleId),
+                        CommentId = ObjectId.Parse(model.CommentId),
                         VoteType = model.VoteType,
                         CreatedAt = DateTime.UtcNow
-                    });
+                    };
+                    
+                    await _articleCommentsVotesManager.CreateArticleCommentVoteAsync(articleCommentVote);   
+                    
+                    var votingPoints = await _articleCommentsVotesManager.CountArticleCommentVotesAsync(articleCommentVote.ArticleId, articleCommentVote.CommentId, VoteType.Like) - await _articleCommentsVotesManager.CountArticleCommentVotesAsync(articleCommentVote.ArticleId, articleCommentVote.CommentId, VoteType.Dislike);
+
+                    return Ok(votingPoints);
                 }
                 else
                 {
@@ -402,11 +420,11 @@ namespace Egghead.Controllers
                                 }
                         }
                     }
-                }
 
-                //todo: Count Article Comment Votes Difference by aggregation
-                var votingPoints = await _articleCommentsVotesManager.CountArticleCommentVotesAsync(articleIdObj, commentIdObj, VoteType.Like) - await _articleCommentsVotesManager.CountArticleCommentVotesAsync(articleIdObj, commentIdObj, VoteType.Dislike);
-                return Ok(votingPoints);
+                    var votingPoints = await _articleCommentsVotesManager.CountArticleCommentVotesAsync(articleCommentVote.ArticleId, articleCommentVote.CommentId, VoteType.Like) - await _articleCommentsVotesManager.CountArticleCommentVotesAsync(articleCommentVote.ArticleId, articleCommentVote.CommentId, VoteType.Dislike);
+
+                    return Ok(votingPoints);  
+                }     
             }
             catch (ArticleCommentVoteException e)
             {
@@ -476,11 +494,8 @@ namespace Egghead.Controllers
         public async Task<IActionResult> FindArticleCommentsByArticleIdAsync(string articleId)
         {
             var user = await _userManager.FindByEmailAsync(HttpContext.User.Identity.Name);
-
             var models = new List<ArticleCommentModel>();
-
             var objectId = ObjectId.Parse(articleId);
-
             var articleComments = await _articlesCommentsManager.FindArticleCommentsByArticleId(articleId);
 
             foreach (var articleComment in articleComments)
