@@ -55,7 +55,7 @@
                                     <div class="listview__content">
                                         <div class="listview__heading">
                                             <p>
-                                                <a href="/Articles/GetArticleContent?articleId=@popularArticle.Id">@popularArticle.Title</a>
+                                                <a class="font-weight-bold" href="/Articles/GetArticleContent?articleId=@popularArticle.Id">@popularArticle.Title</a>
                                             </p>
                                         </div>
                                         <p>
@@ -167,7 +167,7 @@
                 $(`#${replyTo} .media-body:first`).append(`
                 <div id="${response.id}" class="media p-3">
                     <img src="/images/64x64.svg" width="48" height="48" alt="">
-                    <div class="media-body">
+                    <div class="media-body media__img">
                         <div class="col-auto">
                             ${response.firstName} ${response.lastName} <small class="time"> ${response.createdAt}</small>
                         </div>
@@ -208,7 +208,7 @@
                 $("#article-comments").append(`
                 <div id="${response.id}" class="media p-3">
                     <img src="/images/64x64.svg" width="48" height="48">
-                    <div class="media-body">
+                    <div class="media-body media__img">
                         <div class="col-auto">
                             ${response.firstName} ${response.lastName} <small class="time"> ${response.createdAt}</small>
                         </div>

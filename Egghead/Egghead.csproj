@@ -1442,5 +1442,11 @@
     <_ContentIncludedByDefault Remove="wwwroot\scss\icons\themify-icons\themify-icons.scss" />
     <_ContentIncludedByDefault Remove="wwwroot\scss\icons\css\themify-icons.css" />
     <_ContentIncludedByDefault Remove="wwwroot\scss\icons\css\themify-icons.css.map" />
+    <_ContentIncludedByDefault Remove="wwwroot\style.scss\icons.css" />
+    <_ContentIncludedByDefault Remove="wwwroot\style.scss\icons.css.map" />
+    <_ContentIncludedByDefault Remove="wwwroot\style.scss\icons\font-awesome\scss\font-awesome.css" />
+    <_ContentIncludedByDefault Remove="wwwroot\style.scss\icons\font-awesome\scss\font-awesome.css.map" />
+    <_ContentIncludedByDefault Remove="wwwroot\style.scss\style.css" />
+    <_ContentIncludedByDefault Remove="wwwroot\style.scss\style.css.map" />
   </ItemGroup>
 </Project>

@@ -8,7 +8,7 @@
         {
             <div id="@comment.Id" class="media p-3">
                 <img src="/images/64x64.svg" width="48" height="48">
-                <div class="media-body">
+                <div class="media-body media__img">
                     <div class="col-auto">
                         @comment.FirstName @comment.LastName <small class="time"> @comment.CreatedAt</small>
                     </div>
@@ -35,7 +35,7 @@
                 $(`#@comment.ReplyTo .media-body:first`).append(`
                     <div id='@comment.Id' class='media p-3'>
                         <img src="/images/64x64.svg" width="48" height="48">
-                        <div class="media-body">
+                        <div class="media-body media__img">
                             <div class="col-auto">
                                 @comment.FirstName @comment.LastName <small class="time"> @comment.CreatedAt</small>
                             </div>
