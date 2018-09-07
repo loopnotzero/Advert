@@ -11,7 +11,7 @@
                 <div class="text-muted p-3"><a href="/Profiles/GetProfile"><small class="font-weight-bold">@Model.FirstName @Model.LastName</small></a> <small class="time"> @Model.CreatedAt.Humanize()</small></div>
 
                 <div class="card-body card-body__img">
-                    <h4 class="card-title">@Model.Title</h4>
+                    <h4>@Model.Title</h4>
                     <p class="card-text">@Html.Raw(Model.Text)</p>
                 </div>
 
