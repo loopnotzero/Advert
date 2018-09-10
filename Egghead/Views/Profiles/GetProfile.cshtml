@@ -1,18 +1,19 @@
 ﻿@Html.Partial("Header")
 
 <section class="content">
-    <div class="card profile">
-        <div class="profile__img">
-            <a href="#" class="fa fa-lh fa-camera profile__img__upload" style="color: white; line-height: 30px"></a> 
-            <img src="~/images/users/user_empty.png" alt="">
-        </div>
-
-        <div class="profile__info">         
-            <ul class="icon-list">
-                <li><i class="fa fa-phone"></i> 308-360-8938</li>
-                <li><i class="fa fa-file-text"></i> malinda@inbound.plus</li>
-                <li><i class="fa fa-twitter"></i>mallinda-hollaway</li>
-            </ul>
-        </div>
+    <div class="card">
+        <form method="post" enctype="multipart/form-data" asp-controller="Profiles" asp-action="Post">
+            <div class="form-group">
+                <div class="col-md-10">
+                    <p>Upload one or more files using this form:</p>
+                    <input type="file" name="files" multiple />
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-10">
+                    <input type="submit" value="Upload" />
+                </div>
+            </div>
+        </form>
     </div>
 </section>
