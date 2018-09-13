@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Egghead.Common;
@@ -52,10 +51,10 @@ namespace Egghead.MongoDbStorage.Stores
             return await cursor.FirstOrDefaultAsync(cancellationToken);
         }
 
-        public async Task<long> CountArticlesByWhoNormalizedAsync(string byWhoNormalized, CancellationToken cancellationToken)
+        public async Task<long> CountArticlesByNormalizedEmailAsync(string email, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var filter = Builders<T>.Filter.Eq(x => x.ByWhoNormalized, byWhoNormalized);
+            var filter = Builders<T>.Filter.Eq(x => x.EmailNormalized, email);
             var articlesCount = await _collection.CountDocumentsAsync(filter, new CountOptions(), cancellationToken);
             return articlesCount;
         }
@@ -83,7 +82,7 @@ namespace Egghead.MongoDbStorage.Stores
             return await cursor.ToListAsync(cancellationToken);
         }
 
-        public async Task<List<T>> FindRecentArticlesByWhoNormalizedAsync(string byWhoNormalized, int limit, CancellationToken cancellationToken)
+        public async Task<List<T>> FindRecentArticlesByNormalizedEmailAsync(string email, int limit, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             var findOptions = new FindOptions<T>
@@ -91,7 +90,7 @@ namespace Egghead.MongoDbStorage.Stores
                 Sort = Builders<T>.Sort.Descending(field => field.CreatedAt),
                 Limit = limit
             };
-            var filter = Builders<T>.Filter.Eq(x => x.ByWhoNormalized, byWhoNormalized);
+            var filter = Builders<T>.Filter.Eq(x => x.EmailNormalized, email);
             var cursor = await _collection.FindAsync(filter, findOptions, cancellationToken: cancellationToken);
             return await cursor.ToListAsync(cancellationToken);
         }

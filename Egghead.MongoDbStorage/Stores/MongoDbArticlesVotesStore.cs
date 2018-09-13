@@ -31,13 +31,13 @@ namespace Egghead.MongoDbStorage.Stores
             EntityMappings.EnsureMongoDbArticleLikeConfigured();
         }
 
-        public async Task<T> FindArticleVoteAsync(ObjectId articleId, VoteType voteType, string byWhoNormalized, CancellationToken cancellationToken)
+        public async Task<T> FindArticleVoteVotedByAsync(ObjectId articleId, VoteType voteType, string email, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             var filter = Builders<T>.Filter.And(
                 Builders<T>.Filter.Eq(x => x.ArticleId, articleId),
                 Builders<T>.Filter.Eq(x => x.VoteType, voteType),
-                Builders<T>.Filter.Eq(x => x.ByWhoNormalized, byWhoNormalized));
+                Builders<T>.Filter.Eq(x => x.EmailNormalized, email));
             var cursor = await _collection.FindAsync(filter, cancellationToken: cancellationToken);
             return await cursor.FirstOrDefaultAsync(cancellationToken);
         }

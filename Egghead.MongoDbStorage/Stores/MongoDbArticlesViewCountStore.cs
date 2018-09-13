@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Egghead.Common;
@@ -10,7 +8,6 @@ using Egghead.MongoDbStorage.Common;
 using Egghead.MongoDbStorage.Mappings;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using MongoDB.Driver.Linq;
 
 namespace Egghead.MongoDbStorage.Stores
 {
