@@ -9,7 +9,7 @@ namespace Egghead.Common.Stores
     //todo: Move this interface to Common
     public interface IArticlesVotesStore<T> : IDisposable where T : class
     {        
-        Task<T> FindArticleVoteAsync(ObjectId articleId, VoteType voteType, string byWhoNormalized, CancellationToken cancellationToken);
+        Task<T> FindArticleVoteVotedByAsync(ObjectId articleId, VoteType voteType, string email, CancellationToken cancellationToken);
         Task<long> CountArticleVotesAsync(ObjectId articleId, VoteType voteType, CancellationToken cancellationToken);
         Task<OperationResult> CreateArticleVoteAsync(T entity , CancellationToken cancellationToken);
     }

@@ -1,4 +1,4 @@
-﻿namespace Egghead.Common.Profile
+﻿namespace Egghead.Common.Profiles
 {
     public enum SocialLink
     {
