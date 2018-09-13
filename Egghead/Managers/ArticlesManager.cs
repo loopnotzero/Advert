@@ -44,7 +44,7 @@ namespace Egghead.Managers
             await Store.SetNormalizedTitleAsync(entity, normalizedTitle, CancellationToken);
         }
 
-        public async Task<long> CountArticlesByWhoNormalizedAsync(string email)
+        public async Task<long> CountArticlesByNormalizedEmailAsync(string email)
         {
             ThrowIfDisposed();
             
@@ -55,7 +55,7 @@ namespace Egghead.Managers
 
             email = NormalizeKey(email);
                             
-            return await Store.CountArticlesByWhoNormalizedAsync(email, CancellationToken);
+            return await Store.CountArticlesByNormalizedEmailAsync(email, CancellationToken);
         }
         
         public async Task<T> FindArticleByIdAsync(ObjectId articleId)
@@ -96,10 +96,10 @@ namespace Egghead.Managers
             return await Store.FindArticlesAsync(limit, CancellationToken);
         }
 
-        public async Task<List<T>> FindRecentArticlesByWhoNormalizedAsync(string byWhoNormalized, int limit)
+        public async Task<List<T>> FindRecentArticlesByNormalizedEmailAsync(string email, int limit)
         {
             ThrowIfDisposed();          
-            return await Store.FindRecentArticlesByWhoNormalizedAsync(byWhoNormalized, limit, CancellationToken);
+            return await Store.FindRecentArticlesByNormalizedEmailAsync(email, limit, CancellationToken);
         }
 
         public async Task<OperationResult> CreateArticleAsync(T entity)

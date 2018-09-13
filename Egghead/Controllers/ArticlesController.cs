@@ -5,7 +5,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Egghead.Common;
 using Egghead.Common.Articles;
-using Egghead.Common.Profile;
+using Egghead.Common.Profiles;
 using Egghead.Exceptions;
 using Egghead.Managers;
 using Egghead.Models.Articles;
@@ -68,8 +68,8 @@ namespace Egghead.Controllers
             {
                 var articleViewCountEntity = new MongoDbArticleViewCount
                 {
-                    ByWho = HttpContext.User.Identity.Name,
-                    ByWhoNormalized = _keyNormalizer.Normalize(HttpContext.User.Identity.Name),
+                    Email = HttpContext.User.Identity.Name,
+                    EmailNormalized = _keyNormalizer.Normalize(HttpContext.User.Identity.Name),
                     ArticleId = ObjectId.Parse(articleId),
                     CreatedAt = DateTime.UtcNow
                 };
@@ -94,7 +94,7 @@ namespace Egghead.Controllers
                 
                 ViewBag.PopularArticles = popularArticles;
    
-                var recentArticles = await _articlesManager.FindRecentArticlesByWhoNormalizedAsync(user.NormalizedEmail, 10);
+                var recentArticles = await _articlesManager.FindRecentArticlesByNormalizedEmailAsync(user.NormalizedEmail, 10);
                 
                 ViewBag.RecentArticles = recentArticles.Select(x => new RecentArticleModel
                 {
@@ -197,8 +197,8 @@ namespace Egghead.Controllers
                     Title = model.Title,
                     NormalizedTitle = _keyNormalizer.Normalize(model.Title),
                     Text = model.Text,
-                    ByWho = HttpContext.User.Identity.Name,
-                    ByWhoNormalized = _keyNormalizer.Normalize(HttpContext.User.Identity.Name),
+                    Email = HttpContext.User.Identity.Name,
+                    EmailNormalized = _keyNormalizer.Normalize(HttpContext.User.Identity.Name),
                     CreatedAt = DateTime.UtcNow,
                     ReleaseType = ReleaseType.PreModeration,
                 });
@@ -327,14 +327,14 @@ namespace Egghead.Controllers
             {
                 var objectId = ObjectId.Parse(articleId);
 
-                var articleVote = await _articlesVotesManager.FindArticleVoteAsync(objectId, model.VoteType, HttpContext.User.Identity.Name);
+                var articleVote = await _articlesVotesManager.FindArticleVoteVotedByAsync(objectId, model.VoteType, HttpContext.User.Identity.Name);
 
                 if (articleVote == null)
                 {
                     await _articlesVotesManager.CreateArticleVoteAsync(new MongoDbArticleVote
                     {
-                        ByWho = HttpContext.User.Identity.Name,
-                        ByWhoNormalized = _keyNormalizer.Normalize(HttpContext.User.Identity.Name),
+                        Email = HttpContext.User.Identity.Name,
+                        EmailNormalized = _keyNormalizer.Normalize(HttpContext.User.Identity.Name),
                         ArticleId = objectId,
                         VoteType = model.VoteType,
                         CreatedAt = DateTime.UtcNow
@@ -374,8 +374,8 @@ namespace Egghead.Controllers
                 {
                     articleCommentVote = new MongoDbArticleCommentVote
                     {
-                        ByWho = HttpContext.User.Identity.Name,
-                        ByWhoNormalized = _keyNormalizer.Normalize(HttpContext.User.Identity.Name),
+                        Email = HttpContext.User.Identity.Name,
+                        EmailNormalized = _keyNormalizer.Normalize(HttpContext.User.Identity.Name),
                         ArticleId = ObjectId.Parse(articleId),
                         CommentId = ObjectId.Parse(model.CommentId),
                         VoteType = model.VoteType,
@@ -400,7 +400,7 @@ namespace Egghead.Controllers
                         {
                             case VoteType.None:
                                 {
-                                    var logString = $"Upsert vote type is not valid. Vote id: {articleCommentVote.Id} By Who: {articleCommentVote.ByWho}";
+                                    var logString = $"Upsert vote type is not valid. Vote id: {articleCommentVote.Id} By Who: {articleCommentVote.Email}";
                                     throw new ArticleCommentVoteException(logString);
                                 }
                             case VoteType.Like:
@@ -415,7 +415,7 @@ namespace Egghead.Controllers
                                 break;
                             default:
                                 {
-                                    var logString = $"Upsert vote type is not implemented. Vote id: {articleCommentVote.Id} By Who: {articleCommentVote.ByWho}";
+                                    var logString = $"Upsert vote type is not implemented. Vote id: {articleCommentVote.Id} By Who: {articleCommentVote.Email}";
                                     throw new ArgumentOutOfRangeException(logString);
                                 }
                         }
@@ -458,8 +458,8 @@ namespace Egghead.Controllers
                 var articleComment = new MongoDbArticleComment
                 {
                     Text = model.Text,
-                    ByWho = HttpContext.User.Identity.Name,
-                    ByWhoNormalized = _keyNormalizer.Normalize(HttpContext.User.Identity.Name),
+                    Email = HttpContext.User.Identity.Name,
+                    EmailNormalized = _keyNormalizer.Normalize(HttpContext.User.Identity.Name),
                     ReplyTo = model.ReplyTo == null ? ObjectId.Empty : ObjectId.Parse(model.ReplyTo),
                     CreatedAt = DateTime.UtcNow
                 };
@@ -527,7 +527,7 @@ namespace Egghead.Controllers
             {
                 var user = await _userManager.FindByEmailAsync(HttpContext.User.Identity.Name);
 
-                var artcilesCount = await _articlesManager.CountArticlesByWhoNormalizedAsync(HttpContext.User.Identity.Name);
+                var artcilesCount = await _articlesManager.CountArticlesByNormalizedEmailAsync(HttpContext.User.Identity.Name);
 
                 return Ok(new ProfileDescription
                 {

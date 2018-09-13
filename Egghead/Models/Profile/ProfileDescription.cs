@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Egghead.Common.Profile;
+using Egghead.Common.Profiles;
 
 namespace Egghead.Models.Profile
 {
