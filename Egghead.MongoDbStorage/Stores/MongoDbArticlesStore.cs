@@ -44,7 +44,7 @@ namespace Egghead.MongoDbStorage.Stores
             return await cursor.FirstOrDefaultAsync(cancellationToken);
         }
 
-        public async Task<T> FindArticleByTitleAsync(string title, CancellationToken cancellationToken)
+        public async Task<T> FindArticleByNormalizedTitleAsync(string title, CancellationToken cancellationToken)
         {                    
             cancellationToken.ThrowIfCancellationRequested();
             var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.NormalizedTitle, title), cancellationToken: cancellationToken);

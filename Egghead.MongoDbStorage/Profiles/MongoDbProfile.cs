@@ -15,15 +15,9 @@ namespace Egghead.MongoDbStorage.Profiles
 
         public ObjectId Id { get; }
               
-        public string FirstName { get; set; }
-        public string NormalizedFirstName { get; set; }       
-        
-        public string LastName { get; set; }
-        public string NormalizedLastName { get; set; }     
-        
-        public string Headline { get; set; }
-        public string HeadlineNormalized { get; set; }        
-        
+        public string Name { get; set; }    
+        public string NormalizedName { get; set; }
+                
         public string Location { get; set; }
         public string LocationNormalized { get; set; }        
         

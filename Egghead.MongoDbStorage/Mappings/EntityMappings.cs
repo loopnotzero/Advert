@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using Egghead.MongoDbStorage.Articles;
+using Egghead.MongoDbStorage.Profiles;
 using Egghead.MongoDbStorage.Users;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
@@ -22,7 +23,7 @@ namespace Egghead.MongoDbStorage.Mappings
                 return null;
             });
         }
-
+        
         public static void EnsureMongoDbArticleConfigured()
         {
             LazyInitializer.EnsureInitialized(ref _initializationTarget, ref _initialized, ref _initializationLock, () =>
@@ -67,6 +68,24 @@ namespace Egghead.MongoDbStorage.Mappings
                 return null;
             });
         }
+      
+        public static void EnsureMongoDbProfileConfigured()
+        {
+            LazyInitializer.EnsureInitialized(ref _initializationTarget, ref _initialized, ref _initializationLock, () =>
+            {
+                ConfigureMongoDbProfile();
+                return null;
+            });
+        }
+        
+        public static void EnsureMongoDbProfileImageConfigured()
+        {
+            LazyInitializer.EnsureInitialized(ref _initializationTarget, ref _initialized, ref _initializationLock, () =>
+            {
+                ConfigureMongoDbProfileImage();
+                return null;
+            });
+        }
 
         private static void ConfigureMongoDbUser()
         {
@@ -77,14 +96,14 @@ namespace Egghead.MongoDbStorage.Mappings
                 bsonClassMap.MapCreator(user => new MongoDbUser());
             });
         }
-
+       
         private static void ConfigureMongoDbArticle()
         {
             BsonClassMap.RegisterClassMap<MongoDbArticle>(bsonClassMap =>
             {
                 bsonClassMap.AutoMap();
-                bsonClassMap.MapIdMember(c => c.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
-                bsonClassMap.MapCreator(user => new MongoDbArticle());
+                bsonClassMap.MapIdMember(article => article.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
+                bsonClassMap.MapCreator(article => new MongoDbArticle());
             });
         }
 
@@ -93,8 +112,8 @@ namespace Egghead.MongoDbStorage.Mappings
             BsonClassMap.RegisterClassMap<MongoDbArticleVote>(bsonClassMap =>
             {
                 bsonClassMap.AutoMap();
-                bsonClassMap.MapIdMember(c => c.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
-                bsonClassMap.MapCreator(user => new MongoDbArticleVote());
+                bsonClassMap.MapIdMember(articleVote => articleVote.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
+                bsonClassMap.MapCreator(articleVote => new MongoDbArticleVote());
             });
         }
 
@@ -103,8 +122,8 @@ namespace Egghead.MongoDbStorage.Mappings
             BsonClassMap.RegisterClassMap<MongoDbArticleViewCount>(bsonClassMap =>
             {
                 bsonClassMap.AutoMap();
-                bsonClassMap.MapIdMember(c => c.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
-                bsonClassMap.MapCreator(user => new MongoDbArticleViewCount());
+                bsonClassMap.MapIdMember(articleViewCount => articleViewCount.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
+                bsonClassMap.MapCreator(articleViewCount => new MongoDbArticleViewCount());
             });
         }
 
@@ -113,8 +132,8 @@ namespace Egghead.MongoDbStorage.Mappings
             BsonClassMap.RegisterClassMap<MongoDbArticleComment>(bsonClassMap =>
             {
                 bsonClassMap.AutoMap();
-                bsonClassMap.MapIdMember(c => c.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
-                bsonClassMap.MapCreator(user => new MongoDbArticleComment());
+                bsonClassMap.MapIdMember(articleComment => articleComment.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
+                bsonClassMap.MapCreator(articleComment => new MongoDbArticleComment());
             });
         }
 
@@ -123,8 +142,28 @@ namespace Egghead.MongoDbStorage.Mappings
             BsonClassMap.RegisterClassMap<MongoDbArticleCommentVote>(bsonClassMap =>
             {
                 bsonClassMap.AutoMap();
-                bsonClassMap.MapIdMember(c => c.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
-                bsonClassMap.MapCreator(user => new MongoDbArticleCommentVote());
+                bsonClassMap.MapIdMember(articleCommentVote => articleCommentVote.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
+                bsonClassMap.MapCreator(articleCommentVote => new MongoDbArticleCommentVote());
+            });
+        }
+
+        private static void ConfigureMongoDbProfile()
+        {
+            BsonClassMap.RegisterClassMap<MongoDbProfile>(bsonClassMap =>
+            {
+                bsonClassMap.AutoMap();
+                bsonClassMap.MapIdMember(profile => profile.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
+                bsonClassMap.MapCreator(profile => new MongoDbProfile());
+            });
+        }
+        
+        private static void ConfigureMongoDbProfileImage()
+        {
+            BsonClassMap.RegisterClassMap<MongoDbProfileImage>(bsonClassMap =>
+            {
+                bsonClassMap.AutoMap();
+                bsonClassMap.MapIdMember(profileImage => profileImage.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
+                bsonClassMap.MapCreator(profileImage => new MongoDbProfileImage());
             });
         }
     }
