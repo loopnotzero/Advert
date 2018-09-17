@@ -11,7 +11,7 @@ namespace Egghead.Common.Stores
     {              
         Task SetNormalizedTitleAsync(T entity, string normalizedTitle, CancellationToken cancellationToken);
         Task<T> FindArticleByIdAsync(ObjectId articleId, CancellationToken cancellationToken);
-        Task<T> FindArticleByTitleAsync(string title, CancellationToken cancellationToken);
+        Task<T> FindArticleByNormalizedTitleAsync(string title, CancellationToken cancellationToken);
         Task<long> CountArticlesByNormalizedEmailAsync(string email, CancellationToken cancellationToken);
         Task<List<T>> FindArticlesAsync(CancellationToken cancellationToken);
         Task<List<T>> FindArticlesAsync(int limit, CancellationToken cancellationToken);
