@@ -37,21 +37,43 @@
     });
     
     $(document).ready(function() {
+        $("#next").click(function(e) {
+            e.preventDefault();
+            
+            var url = $("#form").attr("action");
+            var token = $("input[name=__RequestVerificationToken]").val();
+            var email = $("#email").val();
+            var password = $("#password").val();
+            var additionalHeaders = {};
+
+            if (token) {
+                additionalHeaders["RequestVerificationToken"] = token;
+            }
+
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: JSON.stringify({ email: email, password: password }),
+                headers: additionalHeaders,
+                contentType: "application/json",
+                error: function(jqXhr, textStatus, errorThrown) {
+                    
+                },
+                success: function(response) {
+                    window.location.href = response.redirectUrl;
+                }
+            });
+
+            return false;
+        });
+        
         $("#log-in").click(function(e) {
             e.preventDefault();
             
             var url = $("#form").attr("action");
-            console.log("Request url: " + url);
-            
             var token = $("input[name=__RequestVerificationToken]").val();
-            console.log("Request verification token: " + token);
-            
             var email = $("#email").val();
-            console.log("Email: " + email);
-            
             var password = $("#password").val();
-            console.log("Password: " + password);
-
             var additionalHeaders = {};
 
             if (token) {

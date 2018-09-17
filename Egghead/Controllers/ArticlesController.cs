@@ -10,7 +10,7 @@ using Egghead.Exceptions;
 using Egghead.Managers;
 using Egghead.Models.Articles;
 using Egghead.Models.Errors;
-using Egghead.Models.Profile;
+using Egghead.Models.Profiles;
 using Egghead.MongoDbStorage.Articles;
 using Egghead.MongoDbStorage.Users;
 using Humanizer;
@@ -85,8 +85,6 @@ namespace Egghead.Controllers
                     popularArticles.Add(new PopularArticleModel
                     {
                         Id = articleEntity.Id.ToString(),
-                        FirstName = user.FirstName,
-                        LastName = user.LastName,
                         Title = articleEntity.Title,
                         CreatedAt = articleEntity.CreatedAt
                     });
@@ -110,8 +108,6 @@ namespace Egghead.Controllers
                     Id = article.Id.ToString(),
                     Title = article.Title,
                     Text = article.Text,
-                    FirstName = user.FirstName,
-                    LastName = user.LastName,
                     CreatedAt = article.CreatedAt
                 });
             }
@@ -142,8 +138,6 @@ namespace Egghead.Controllers
                         Id = article.Id.ToString(),
                         Title = article.Title,
                         Text = article.Text.Length > 1000 ? article.Text.Substring(0, 1000) : article.Text,
-                        FirstName = user.FirstName,
-                        LastName = user.LastName,
                         CreatedAt = article.CreatedAt,
                         Likes = await _articlesVotesManager.CountArticleVotesAsync(article.Id, VoteType.Like),
                         Dislikes = await _articlesVotesManager.CountArticleVotesAsync(article.Id, VoteType.Dislike),
@@ -162,8 +156,6 @@ namespace Egghead.Controllers
                     popularArticles.Add(new PopularArticleModel
                     {
                         Id = articleEntity.Id.ToString(),
-                        FirstName = user.FirstName,
-                        LastName = user.LastName,
                         Title = articleEntity.Title,
                         CreatedAt = articleEntity.CreatedAt
                     });
@@ -473,8 +465,6 @@ namespace Egghead.Controllers
                     Id = comment.Id.ToString(),
                     Text = comment.Text,
                     ReplyTo = comment.ReplyTo == ObjectId.Empty ? null : comment.ReplyTo.ToString(),
-                    FirstName = user.FirstName,
-                    LastName = user.LastName,
                     CreatedAt = comment.CreatedAt.Humanize()
                 });
             }
@@ -507,8 +497,6 @@ namespace Egghead.Controllers
                     Id = articleComment.Id.ToString(),
                     Text = articleComment.Text,
                     ReplyTo = articleComment.ReplyTo == ObjectId.Empty ? null : articleComment.ReplyTo.ToString(),
-                    FirstName = user.FirstName,
-                    LastName = user.LastName,
                     CreatedAt = articleComment.CreatedAt.Humanize(),
                     VotingPoints = likes - dislikes
                 });
@@ -531,8 +519,6 @@ namespace Egghead.Controllers
 
                 return Ok(new ProfileDescription
                 {
-                    FirstName = user.FirstName,
-                    LastName = user.LastName,
                     Headline = "",
                     ArticlesCount = artcilesCount,
                     FollowingCount = 0,
