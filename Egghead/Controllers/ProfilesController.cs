@@ -1,7 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Egghead.Managers;
+using Egghead.MongoDbStorage.Profiles;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -11,10 +15,14 @@ namespace Egghead.Controllers
     public class ProfilesController : Controller
     {
         private readonly ILogger _logger;
+        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly ProfileImageManager<MongoDbProfileImage> _profileImageManager;
 
-        public ProfilesController(ILoggerFactory loggerFactory)
+        public ProfilesController(IHostingEnvironment hostingEnvironment, ProfileImageManager<MongoDbProfileImage> profileImageManager, ILoggerFactory loggerFactory)
         {
-            _logger = loggerFactory.CreateLogger<AccountController>();
+            _logger = loggerFactory.CreateLogger<ProfilesController>();
+            _hostingEnvironment = hostingEnvironment;
+            _profileImageManager = profileImageManager;
         }
 
         [HttpGet]
@@ -23,29 +31,27 @@ namespace Egghead.Controllers
             return View();
         }
         
-        [HttpPost("UploadFiles")]
-        public async Task<IActionResult> Post(List<IFormFile> files)
+        [HttpPost("UploadImage")]
+        public async Task<IActionResult> UploadImage(List<IFormFile> files)
         {
-            long size = files.Sum(f => f.Length);
-
-            // full path to file in temp location
-            var filePath = Path.GetTempFileName();
-
-            foreach (var formFile in files)
-            {
-                if (formFile.Length > 0)
-                {
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await formFile.CopyToAsync(stream);
-                    }
-                }
-            }
+            _logger.LogInformation($"Web root path: {_hostingEnvironment.WebRootPath}");
+            _logger.LogInformation($"Content root path: {_hostingEnvironment.ContentRootPath}");
+            
+//            var filePath = "/egghead/profiles/images/";
+//
+//            var file = files.First();
+//
+//            if (file.Length <= 0) return Ok();
+//            
+//            using (var stream = new FileStream(filePath, FileMode.Create))
+//            {
+//                await file.CopyToAsync(stream);
+//            }
 
             // process uploaded files
             // Don't rely on or trust the FileName property without validation.
 
-            return Ok(new { count = files.Count, size, filePath});
+            return Ok();
         }
     }
 }

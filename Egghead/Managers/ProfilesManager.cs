@@ -1,5 +1,6 @@
 ﻿using System;
-using Egghead.MongoDbStorage.Profiles;
+using System.Threading.Tasks;
+using MongoDB.Bson;
 
 namespace Egghead.Managers
 {
@@ -9,9 +10,9 @@ namespace Egghead.Managers
         {
         }
 
-        public void CreateProfile(MongoDbProfile profile)
+        public Task<T> GetProfileByIdAsync(ObjectId userProfileId)
         {
-            
+            throw new NotImplementedException();
         }
     }
 }
