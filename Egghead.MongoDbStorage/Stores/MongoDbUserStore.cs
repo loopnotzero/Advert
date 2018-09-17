@@ -5,6 +5,7 @@ using Egghead.MongoDbStorage.Common;
 using Egghead.MongoDbStorage.Mappings;
 using Egghead.MongoDbStorage.Users;
 using Microsoft.AspNetCore.Identity;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace Egghead.MongoDbStorage.Stores
@@ -33,8 +34,8 @@ namespace Egghead.MongoDbStorage.Stores
         {
             cancellationToken.ThrowIfCancellationRequested();
             var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.Id, user.Id), cancellationToken: cancellationToken);
-            var entity = await cursor.FirstOrDefaultAsync(cancellationToken);
-            return entity?.Id;
+            var entity = await cursor.FirstAsync(cancellationToken);
+            return entity.Id;
         }
 
         public async Task<string> GetUserNameAsync(T user, CancellationToken cancellationToken)
