@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Egghead.Common;
 using Egghead.Managers;
-using Egghead.Models.Errors;
 using Egghead.Models.Users;
 using Egghead.MongoDbStorage.Profiles;
 using Egghead.MongoDbStorage.Users;
-using Egghead.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -39,16 +35,32 @@ namespace Egghead.Controllers
         [AllowAnonymous]
         public IActionResult LogIn(string returnUrl = null)
         {
-            ViewData["returnUrl"] = returnUrl;
-            return View();
+            try
+            {
+                ViewData["returnUrl"] = returnUrl;
+                return View();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
+            }
         }
 
         [HttpGet]
         [AllowAnonymous]
         public IActionResult Register(string returnUrl = null)
         {
-            ViewData["returnUrl"] = returnUrl;
-            return View();
+            try
+            {
+                ViewData["returnUrl"] = returnUrl;
+                return View();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
+            }
         }
 
         [HttpGet]
@@ -57,13 +69,9 @@ namespace Egghead.Controllers
         {
             try
             {
+                ViewData["returnUrl"] = returnUrl;
                 await _signInManager.SignOutAsync();
-
-                return Ok(new ErrorModel
-                {
-                    RedirectUrl = returnUrl,
-                    ErrorStatusCode = ErrorStatusCode.TemporaryRedirect,
-                });
+                return Ok();
             }
             catch (Exception e)
             {
@@ -79,20 +87,9 @@ namespace Egghead.Controllers
         {
             try
             {
-                ViewData["returnUrl"] = returnUrl;
-                
-                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, false, false);
-
-                if (!result.Succeeded)
-                {
-                    throw new Exception("Invalid email or password");
-                }
-                
-                return Ok(new ErrorModel
-                {
-                    RedirectUrl = returnUrl,
-                    ErrorStatusCode = ErrorStatusCode.TemporaryRedirect
-                });                
+                ViewData["returnUrl"] = returnUrl;                
+                await _signInManager.PasswordSignInAsync(model.Email, model.Password, false, false);
+                return Ok();
             }
             catch (Exception e)
             {
@@ -109,39 +106,28 @@ namespace Egghead.Controllers
             try
             {
                 ViewData["returnUrl"] = returnUrl;
-
+                
                 var user = new MongoDbUser
                 {
                     Email = model.Email,
                     NormalizedEmail = model.Email,
                     UserName = model.Email,
-                    NormalizedUserName = model.Email,                 
+                    NormalizedUserName = model.Email,
                 };
 
-                var result = await _userManager.CreateAsync(user, model.Password);
+                await _userManager.CreateAsync(user, model.Password);
 
-                if (!result.Succeeded)
+                var profile = new MongoDbProfile
                 {
-                    throw new Exception("Couldn't create user: Description");         
-                }
-
-                _profilesManager.CreateProfile(new MongoDbProfile
-                {
-                    FirstName = "",
-                    LastName = "",
-                    Headline = "",
-                    Location = "",
-                    PhoneNumber = "",                    
+                    Name = model.Name,
                     CreatedAt = DateTime.UtcNow
-                });
-                
-                await _signInManager.SignInAsync(user, false);
+                };
 
-                return Ok(new ErrorModel
-                {
-                    RedirectUrl = returnUrl,
-                    ErrorStatusCode = ErrorStatusCode.TemporaryRedirect
-                });      
+                await _profilesManager.CreateAsync(profile);
+                
+                await _signInManager.SignInAsync(user, true);
+
+                return Ok();
             }
             catch (Exception e)
             {

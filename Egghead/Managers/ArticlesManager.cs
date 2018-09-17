@@ -70,7 +70,7 @@ namespace Egghead.Managers
             return await Store.FindArticleByIdAsync(articleId, CancellationToken);
         }
 
-        public async Task<T> FindArticleByTitleAsync(string title)
+        public async Task<T> FindArticleByNormalizedTitleAsync(string title)
         {
             ThrowIfDisposed();
 
@@ -79,7 +79,9 @@ namespace Egghead.Managers
                 throw new ArgumentNullException(nameof(title));
             }
 
-            var article = await Store.FindArticleByTitleAsync(title.ToUpper(), CancellationToken);
+            title = NormalizeKey(title);
+
+            var article = await Store.FindArticleByNormalizedTitleAsync(title.ToUpper(), CancellationToken);
 
             return article;
         }     
@@ -159,7 +161,9 @@ namespace Egghead.Managers
                 throw new ArgumentNullException(nameof(title));
             }
 
-            return await Store.DeleteArticleByTitleAsync(title.ToUpper(), CancellationToken);
+            title = NormalizeKey(title);
+
+            return await Store.DeleteArticleByTitleAsync(title, CancellationToken);
         }
     
         public void Dispose()

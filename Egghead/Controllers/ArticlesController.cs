@@ -9,7 +9,6 @@ using Egghead.Common.Profiles;
 using Egghead.Exceptions;
 using Egghead.Managers;
 using Egghead.Models.Articles;
-using Egghead.Models.Errors;
 using Egghead.Models.Profiles;
 using Egghead.MongoDbStorage.Articles;
 using Egghead.MongoDbStorage.Users;
@@ -114,10 +113,7 @@ namespace Egghead.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e.Message, e);
-                return Ok(new ErrorModel
-                {
-                    ErrorStatusCode = ErrorStatusCode.InternalServerError
-                });
+                return Ok();
             }
         }
 
@@ -169,10 +165,7 @@ namespace Egghead.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e.Message, e);
-                return Ok(new ErrorModel
-                {
-                    ErrorStatusCode = ErrorStatusCode.InternalServerError
-                });
+                return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
             }
         }
 
@@ -200,14 +193,7 @@ namespace Egghead.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e.Message, e);
-
-                return Ok(new ErrorModel
-                {
-                    TagName = "",
-                    RedirectUrl = "/Redirect_To_Error_Page",
-                    ErrorMessage = e.Message,
-                    ErrorStatusCode = ErrorStatusCode.InternalServerError,
-                });
+                return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
             }
         }
 
@@ -223,10 +209,7 @@ namespace Egghead.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e.Message, e);
-                return Ok(new ErrorModel
-                {
-                    ErrorStatusCode = ErrorStatusCode.InternalServerError
-                });
+                return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
             }
         }
 
@@ -249,10 +232,7 @@ namespace Egghead.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e.Message, e);
-                return Ok(new ErrorModel
-                {
-                    ErrorStatusCode = ErrorStatusCode.InternalServerError
-                });
+                return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
             }
         }
 
@@ -275,10 +255,7 @@ namespace Egghead.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e.Message, e);
-                return Ok(new ErrorModel
-                {
-                    ErrorStatusCode = ErrorStatusCode.InternalServerError
-                });
+                return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
             }
         }
 
@@ -294,10 +271,7 @@ namespace Egghead.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e.Message, e);
-                return Ok(new ErrorModel
-                {
-                    ErrorStatusCode = ErrorStatusCode.InternalServerError
-                });
+                return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
             }
         }
 
@@ -340,10 +314,7 @@ namespace Egghead.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e.Message, e);
-                return Ok(new ErrorModel
-                {
-                    ErrorStatusCode = ErrorStatusCode.InternalServerError
-                });
+                return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
             }
         }
 
@@ -471,11 +442,7 @@ namespace Egghead.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e.Message, e);
-                return Ok(new ErrorModel
-                {
-                    ErrorMessage = e.Message,
-                    ErrorStatusCode = ErrorStatusCode.InternalServerError
-                });
+                return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
             }
         }
 

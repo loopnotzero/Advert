@@ -16,13 +16,13 @@ namespace Egghead.Controllers
     {
         private readonly ILogger _logger;
         private readonly IHostingEnvironment _hostingEnvironment;
-        private readonly ProfileImageManager<MongoDbProfileImage> _profileImageManager;
+        private readonly ProfilesImagesManager<MongoDbProfileImage> _profilesImagesManager;
 
-        public ProfilesController(IHostingEnvironment hostingEnvironment, ProfileImageManager<MongoDbProfileImage> profileImageManager, ILoggerFactory loggerFactory)
+        public ProfilesController(IHostingEnvironment hostingEnvironment, ProfilesImagesManager<MongoDbProfileImage> profilesImagesManager, ILoggerFactory loggerFactory)
         {
             _logger = loggerFactory.CreateLogger<ProfilesController>();
             _hostingEnvironment = hostingEnvironment;
-            _profileImageManager = profileImageManager;
+            _profilesImagesManager = profilesImagesManager;
         }
 
         [HttpGet]

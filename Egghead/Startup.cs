@@ -2,6 +2,7 @@
 using Egghead.Managers;
 using Egghead.MongoDbStorage.Articles;
 using Egghead.MongoDbStorage.Common;
+using Egghead.MongoDbStorage.Profiles;
 using Egghead.MongoDbStorage.Roles;
 using Egghead.MongoDbStorage.Stores;
 using Egghead.MongoDbStorage.Users;
@@ -51,8 +52,6 @@ namespace Egghead
         {
             services.Configure<MongoDbOptions>(Configuration.GetSection("MongoDbOptions"));
             
-            
-
             services.AddTransient<IUserStore<MongoDbUser>>(provider =>
             {
                 var options = provider.GetService<IOptions<MongoDbOptions>>();
@@ -67,8 +66,6 @@ namespace Egghead
             
             services.AddTransient<IUserValidator<MongoDbUser>, CustomUserValidator<MongoDbUser>>();
             
-            
-            
             services.AddIdentity<MongoDbUser, MongoDbRole>(options =>
             {
                 options.User.RequireUniqueEmail = true;
@@ -80,9 +77,7 @@ namespace Egghead
                 options.Password.RequiredUniqueChars = 1;
                 options.Password.RequireNonAlphanumeric = false;
             }).AddDefaultTokenProviders().AddUserValidator<CustomUserValidator<MongoDbUser>>();
-            
-            
-            
+                                 
             services.AddTransient<IArticleCommentsVotesStore<MongoDbArticleCommentVote>>(provider =>
             {
                 var options = provider.GetService<IOptions<MongoDbOptions>>();
@@ -113,12 +108,25 @@ namespace Egghead
                 return new MongoDbArticlesViewCountStore<MongoDbArticleViewCount>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
             });
             
+            services.AddTransient<IProfilesStore<MongoDbProfile>>(provider =>
+            {
+                var options = provider.GetService<IOptions<MongoDbOptions>>();
+                return new MongoDbProfilesStore<MongoDbProfile>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+            });
+            
+            services.AddTransient<IProfilesImagesStore<MongoDbProfileImage>>(provider =>
+            {
+                var options = provider.GetService<IOptions<MongoDbOptions>>();
+                return new MongoDbProfilesImagesStore<MongoDbProfileImage>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+            });
 
             services.AddScoped<ArticleCommentsVotesManager<MongoDbArticleCommentVote>, ArticleCommentsVotesManager<MongoDbArticleCommentVote>>();
             services.AddScoped<ArticlesCommentsManager<MongoDbArticleComment>, ArticlesCommentsManager<MongoDbArticleComment>>();
             services.AddScoped<ArticlesLikesManager<MongoDbArticleVote>, ArticlesLikesManager<MongoDbArticleVote>>();
             services.AddScoped<ArticlesManager<MongoDbArticle>, ArticlesManager<MongoDbArticle>>();
             services.AddScoped<ArticlesViewCountManager<MongoDbArticleViewCount>, ArticlesViewCountManager<MongoDbArticleViewCount>>();
+            services.AddScoped<ProfilesManager<MongoDbProfile>, ProfilesManager<MongoDbProfile>>();
+            services.AddScoped<ProfilesImagesManager<MongoDbProfileImage>, ProfilesImagesManager<MongoDbProfileImage>>();
 
             services.AddMvc();
         }

@@ -1,20 +1,9 @@
-﻿@using Egghead.Models.Errors
-
-@model ErrorModel
-
-@{
+﻿@{
     ViewData["Title"] = "Error";
 }
 
 <h1 class="text-danger">Error.</h1>
 <h2 class="text-danger">An error occurred while processing your request.</h2>
-
-<p>
-    <code>Tag name: @Model.TagName</code>
-    <code>Redirect url: @Model.RedirectUrl</code>
-    <code>Error message: @Model.ErrorMessage</code>
-    <code>Error status code: @Model.ErrorStatusCode</code>
-</p>
 
 <h3>Development Mode</h3>
 <p>
