@@ -12,25 +12,14 @@ namespace Egghead.MongoDbStorage.Users
             Id = ObjectId.GenerateNewId().ToString();
         }
 
-        public MongoDbUser(string userName, string normalizedUserName) : this()
-        {
-            UserName = userName;
-            NormalizedUserName = normalizedUserName;
-        }
-
-        public string Id { get; set; }
+        public string Id { get; }
         
         public string UserName { get; set; }
-        
-        //todo: Remove profile information: FirstName, LastName
         public string NormalizedUserName { get; set; }
-        public string FirstName { get; set; }
-        public string NormalizedFirstName { get; set; }
-        public string LastName { get; set; }
-        public string NormalizedLastName { get; set; }
-        
+      
         public string Email { get; set; }
         public string NormalizedEmail { get; set; }        
+        
         public bool EmailConfirmed { get; set; }
         
         public string PasswordHash { get; set; }
@@ -43,7 +32,9 @@ namespace Egghead.MongoDbStorage.Users
         public bool TwoFactorEnabled { get; set; }
         
         public DateTimeOffset? LockoutEnd { get; set; }
+        
         public bool LockoutEnabled { get; set; }
+        
         public int AccessFailedCount { get; set; }
         
         public bool Equals(MongoDbUser other)
@@ -67,11 +58,7 @@ namespace Egghead.MongoDbStorage.Users
             {
                 var hashCode = (Id != null ? Id.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (UserName != null ? UserName.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (NormalizedUserName != null ? NormalizedUserName.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (FirstName != null ? FirstName.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (NormalizedFirstName != null ? NormalizedFirstName.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (LastName != null ? LastName.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (NormalizedLastName != null ? NormalizedLastName.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (NormalizedUserName != null ? NormalizedUserName.GetHashCode() : 0);              
                 hashCode = (hashCode * 397) ^ (Email != null ? Email.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (NormalizedEmail != null ? NormalizedEmail.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ EmailConfirmed.GetHashCode();

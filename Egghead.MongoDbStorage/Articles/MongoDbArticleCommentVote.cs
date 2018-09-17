@@ -13,12 +13,18 @@ namespace Egghead.MongoDbStorage.Articles
         }
 
         public ObjectId Id { get; set; }
+        
         public string Email { get; set; }
         public string EmailNormalized { get; set; }
+        
         public ObjectId ArticleId { get; set; }
+        
         public ObjectId CommentId { get; set; }
+        
         public VoteType VoteType { get; set; }
+        
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public DateTime DeletedAt { get; set; }
     }
 }
