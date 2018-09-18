@@ -47,32 +47,30 @@
             fullScreen: false,
             withPreview: false
         });
-
-        function createArticle(article) {
-            $.ajax({
-                url: "/Articles/CreateArticleAsync",
-                type: "POST",
-                data: article,
-                contentType: "application/json",
-                error: function(jqXhr, textStatus, errorThrown) {
-                    console.log("jqXhr: " + jqXhr);
-                    console.log("textStatus: " + jqXhr);
-                    console.log("errorThrown: " + jqXhr);
-                },
-                success: function() {
-                    window.location.href = "/";
-                }
-            });
-        }
-
+        
         $("#publish-article").click(function(e) {
             e.preventDefault();
             var article = JSON.stringify({
                 title: $("#title").val(),
                 text: simplemde.options.previewRender(simplemde.value())
             });
-            createArticle(article);
+            publishArticle(article);
             return false;
         });
-    });    
+
+        function publishArticle(article) {
+            $.ajax({
+                url: "/Articles/PublishArticleAsync",
+                type: "POST",
+                data: article,
+                contentType: "application/json",
+                error: function() {
+                    console.log("Publish article error");
+                },
+                success: function(response) {
+                    window.location.href = response.returnUrl;
+                }
+            });
+        }
+    });
 </script>

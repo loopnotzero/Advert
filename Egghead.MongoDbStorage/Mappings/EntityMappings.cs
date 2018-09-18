@@ -93,7 +93,7 @@ namespace Egghead.MongoDbStorage.Mappings
             {
                 bsonClassMap.AutoMap();
                 bsonClassMap.MapIdMember(c => c.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
-                bsonClassMap.MapCreator(user => new MongoDbUser());
+                bsonClassMap.MapCreator(user => new MongoDbUser(user.UserName, user.Email));
             });
         }
        

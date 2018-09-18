@@ -13,11 +13,14 @@ namespace Egghead.MongoDbStorage.Articles
         }
 
         public ObjectId Id { get; set; }    
-        public ObjectId ProfileId { get; set; }        
         public string Title { get; set; }
         public string NormalizedTitle { get; set; }       
         public string Text { get; set; }      
         public ReleaseType ReleaseType { get; set; }
+        public long LikesCount { get; set; }
+        public long DislikesCount { get; set; }
+        public long ViewsCount { get; set; }
+        public long CommentsCount { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime ChangedAt { get; set; }
         public DateTime DeletedAt { get; set; }       

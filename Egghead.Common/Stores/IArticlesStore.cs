@@ -13,10 +13,8 @@ namespace Egghead.Common.Stores
         Task<T> FindArticleByIdAsync(ObjectId articleId, CancellationToken cancellationToken);
         Task<T> FindArticleByNormalizedTitleAsync(string title, CancellationToken cancellationToken);
         Task<long> CountArticlesByProfileIdAsync(ObjectId profileId, CancellationToken cancellationToken);
-        Task<List<T>> FindArticlesAsync(CancellationToken cancellationToken);
-        Task<List<T>> FindArticlesAsync(int limit, CancellationToken cancellationToken);
-        Task<List<T>> FindRecentArticlesByProfileIdAsync(ObjectId profileId, int limit,
-            CancellationToken cancellationToken);
+        Task<List<T>> FindArticlesAsync(int howManyElements, CancellationToken cancellationToken);
+        Task<List<T>> FindArticlesByProfileIdAsync(ObjectId profileId, int qty, CancellationToken cancellationToken);
         Task<OperationResult> CreateArticleAsync(T entity, CancellationToken cancellationToken);
         Task<OperationResult> UpdateArticleByIdAsync(ObjectId articleId, T entity, CancellationToken cancellationToken);
         Task<OperationResult> UpdateArticleByTitleAsync(string title, T entity, CancellationToken cancellationToken);

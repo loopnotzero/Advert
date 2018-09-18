@@ -37,7 +37,53 @@
     });
     
     $(document).ready(function() {
-        $("#next").click(function(e) {
+        $("#log-in").click(function(e) {
+            e.preventDefault();
+            
+            var url = $("#form").attr("action");
+            var token = $("input[name=__RequestVerificationToken]").val();
+            var email = $("#email").val();
+            var password = $("#password").val();
+            var additionalHeaders = {};
+
+            if (token) {
+                additionalHeaders["RequestVerificationToken"] = token;
+            }
+
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: JSON.stringify({ email: email, password: password }),
+                headers: additionalHeaders,
+                contentType: "application/json",
+                error: function() {
+                    console.log("Log in error");
+                },
+                success: function(response) {
+                    window.location.href = response.returnUrl;
+                }
+            });
+
+            return false;
+        });
+        
+        $("#log-out").click(function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: "/Account/SignOut?returnUrl=" + window.location.pathname + window.location.search,
+                type: "GET",
+                contentType: "application/json",
+                error: function(jqXhr, textStatus, errorThrown) {
+                    console.log("Sign out error");
+                },
+                success: function(response) {
+                    window.location.href = response.returnUrl;
+                }
+            });
+            return false;
+        });
+        
+        $("#sign-up").click(function(e) {
             e.preventDefault();
             
             var url = $("#form").attr("action");
@@ -58,64 +104,58 @@
                 headers: additionalHeaders,
                 contentType: "application/json",
                 error: function() {
-                    
+                    console.log("Sign up error");
                 },
                 success: function(response) {
-                    window.location.href = "/";
+                    console.log(response);
+                    window.location.href = response.returnUrl;
                 }
             });
 
             return false;
         });
-        
-        $("#log-in").click(function(e) {
+      
+        $("#compose-article").click(function(e) {
             e.preventDefault();
-            
-            var url = $("#form").attr("action");
-            var token = $("input[name=__RequestVerificationToken]").val();
-            var email = $("#email").val();
-            var password = $("#password").val();
-            var additionalHeaders = {};
-
-            if (token) {
-                additionalHeaders["RequestVerificationToken"] = token;
+            window.location.href = "/Articles/ComposeArticle";
+            return false;
+        });
+             
+        function onVoteClick(articleId, voteType) {
+            var vote = {
+                voteType: voteType
             }
-
             $.ajax({
-                url: url,
+                url: "/Articles/CreateArticleVoteAsync?articleId=" + articleId,
                 type: "POST",
-                data: JSON.stringify({ email: email, password: password }),
-                headers: additionalHeaders,
+                data: JSON.stringify(vote),
                 contentType: "application/json",
                 error: function(jqXhr, textStatus, errorThrown) {
-                    console.log("jqXhr: " + JSON.stringify(jqXhr));
-                    console.log("Text status: " + JSON.stringify(textStatus));
-                    console.log("Error thrown: " + JSON.stringify(errorThrown));
-                    //todo: Add form for reporting bug
+                    console.log("jqXhr: " + jqXhr);
+                    console.log("textStatus: " + jqXhr);
+                    console.log("errorThrown: " + jqXhr);
                 },
                 success: function(response) {
-                    console.log("Response: " + response);
-                    console.log("Error message: " + response.errorMessage);
-                    console.log("Error status code: " + response.errorStatusCode);
-
-                    switch (response.errorStatusCode) {
-                    case 307:
+                    switch (voteType) {
+                    case 1:
                         {
-                            console.log("Redirect url: " + response.redirectUrl);
-                            window.location.href = response.redirectUrl;
+                            $(`#${articleId} small[name=likes]`).text(response);
+                        }
+                        break;
+                    case 2:
+                        {
+                            $(`#${articleId} small[name=dislikes]`).text(response);
                         }
                         break;
                     }
+
                 }
             });
+        }
 
-            return false;
-        });
-        
-        $("#log-out").click(function(e) {
-            e.preventDefault();
+        function onBookmarkClick(articleId) {
             $.ajax({
-                url: "/Account/SignOut?returnUrl=" + window.location.pathname + window.location.search,
+                url: "/Articles/GetProfileDescriptionAsync",
                 type: "GET",
                 contentType: "application/json",
                 error: function(jqXhr, textStatus, errorThrown) {
@@ -124,16 +164,9 @@
                     console.log("errorThrown: " + jqXhr);
                 },
                 success: function(response) {
-                    window.location.href = response.redirectUrl;
+                    $("#articles-preview").html(response);
                 }
             });
-            return false;
-        });
-        
-        $("#write-article").click(function(e) {
-            e.preventDefault();
-            window.location.href = "/Articles/WriteArticle";
-            return false;
-        });
+        }
     });
 </script>

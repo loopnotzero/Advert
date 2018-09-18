@@ -21,12 +21,7 @@ namespace Egghead.Controllers
         private readonly SignInManager<MongoDbUser> _signInManager;
         private readonly ProfilesManager<MongoDbProfile> _profilesManager;
         
-        public AccountController(            
-            ILoggerFactory loggerFactory,
-            ILookupNormalizer keyNormalizer,
-            UserManager<MongoDbUser> userManager,
-            SignInManager<MongoDbUser> signInManager,
-            ProfilesManager<MongoDbProfile> profilesManager)
+        public AccountController(ILoggerFactory loggerFactory, ILookupNormalizer keyNormalizer, UserManager<MongoDbUser> userManager, SignInManager<MongoDbUser> signInManager, ProfilesManager<MongoDbProfile> profilesManager)
         {
             _logger = loggerFactory.CreateLogger<AccountController>();
             _keyNormalizer = keyNormalizer;
@@ -39,32 +34,16 @@ namespace Egghead.Controllers
         [AllowAnonymous]
         public IActionResult LogIn(string returnUrl = null)
         {
-            try
-            {
-                ViewData["returnUrl"] = returnUrl;
-                return View();
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e.Message, e);
-                return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
-            }
+            ViewData["returnUrl"] = returnUrl;
+            return View();
         }
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Register(string returnUrl = null)
+        public IActionResult SignUp(string returnUrl = null)
         {
-            try
-            {
-                ViewData["returnUrl"] = returnUrl;
-                return View();
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e.Message, e);
-                return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
-            }
+            ViewData["returnUrl"] = returnUrl;
+            return View();
         }
 
         [HttpGet]
@@ -75,7 +54,10 @@ namespace Egghead.Controllers
             {
                 ViewData["returnUrl"] = returnUrl;
                 await _signInManager.SignOutAsync();
-                return Ok();
+                return Ok(new
+                {
+                    returnUrl
+                });
             }
             catch (Exception e)
             {
@@ -89,76 +71,52 @@ namespace Egghead.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> LogIn([FromBody] LogInModel model, string returnUrl = null)
         {
-            try
+            ViewData["returnUrl"] = returnUrl; 
+            
+            _logger.LogInformation($"Email: {model.Email}");
+            _logger.LogInformation($"Password: {model.Password}");
+
+            var signInResult = await _signInManager.PasswordSignInAsync(model.Email, model.Password, false, false);
+
+            if (!signInResult.Succeeded)
             {
-                ViewData["returnUrl"] = returnUrl;                
-                await _signInManager.PasswordSignInAsync(model.Email, model.Password, false, false);
-                return Ok();
+                //todo: Handle error
             }
-            catch (Exception e)
+                
+            return Ok(new
             {
-                _logger.LogError(e.Message, e);
-                return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
-            }
+                returnUrl
+            });
         }
 
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register([FromBody] RegisterModel model, string returnUrl = null)
+        public async Task<IActionResult> SignUp([FromBody] RegisterModel model, string returnUrl = null)
         {
-            try
+            ViewData["returnUrl"] = returnUrl;
+
+            var user = new MongoDbUser
             {
-                ViewData["returnUrl"] = returnUrl;
-        
-                var user = new MongoDbUser
-                {
-                    Email = model.Email,
-                    NormalizedEmail = model.Email,
-                    UserName = model.Email,
-                    NormalizedUserName = model.Email,
-                };
+                Email = model.Email,
+                NormalizedEmail = model.Email,
+                UserName = model.Email,
+                NormalizedUserName = model.Email,
+            };
 
-                var identityResult = await _userManager.CreateAsync(user, model.Password);
+            var result = await _userManager.CreateAsync(user, model.Password);
 
-                if (!identityResult.Succeeded)
-                {
-                    //todo: Handle error
-                }
-                
-                await _signInManager.SignInAsync(user, true);
-
-                //todo: Move profile creation to edit profile
-                
-                var profile = new MongoDbProfile
-                {
-                    Name = model.Name,
-                    NormalizedName = NormalizeKey(model.Name),
-                    Email = model.Email,
-                    NormalizedEmail = NormalizeKey(model.Email),
-                    CreatedAt = DateTime.UtcNow
-                };
-
-                var operationResult = await _profilesManager.CreateProfileAsync(profile);
-
-                if (!operationResult.Succeeded)
-                {
-                    //todo: Handle error
-                }
-            
-                return Ok();
-            }
-            catch (Exception e)
+            if (!result.Succeeded)
             {
-                _logger.LogError(e.Message, e);
-                return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
+                //todo: Handle error            
             }
-        }
 
-        
-        private string NormalizeKey(string key)
-        {
-            return _keyNormalizer != null ? _keyNormalizer.Normalize(key) : key;
+            await _signInManager.SignInAsync(user, true);
+                              
+            return Ok(new
+            {
+                returnUrl
+            });
         }
     }
 }

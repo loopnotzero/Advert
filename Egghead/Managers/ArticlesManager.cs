@@ -82,24 +82,18 @@ namespace Egghead.Managers
             var article = await Store.FindArticleByNormalizedTitleAsync(title.ToUpper(), CancellationToken);
 
             return article;
-        }     
-        
-        public async Task<List<T>> FindArticlesAsync()
-        {
-            ThrowIfDisposed();          
-            return await Store.FindArticlesAsync(CancellationToken);
         }
-        
-        public async Task<List<T>> FindArticlesAsync(int limit)
+
+        public async Task<List<T>> FindArticlesAsync(int howManyElements)
         {
             ThrowIfDisposed();          
-            return await Store.FindArticlesAsync(limit, CancellationToken);
+            return await Store.FindArticlesAsync(howManyElements, CancellationToken);
         }
 
         public async Task<List<T>> FindRecentArticlesByProfileIdAsync(ObjectId profileId, int limit)
         {
             ThrowIfDisposed();          
-            return await Store.FindRecentArticlesByProfileIdAsync(profileId, limit, CancellationToken);
+            return await Store.FindArticlesByProfileIdAsync(profileId, limit, CancellationToken);
         }
 
         public async Task<OperationResult> CreateArticleAsync(T entity)

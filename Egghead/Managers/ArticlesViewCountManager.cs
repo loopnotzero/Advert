@@ -30,7 +30,7 @@ namespace Egghead.Managers
         }
         
 
-        public async Task<long> CountArticleViewCountAsync(ObjectId articleId)
+        public async Task<long> CountArticleViewsCountAsync(ObjectId articleId)
         {
             ThrowIfDisposed();
 

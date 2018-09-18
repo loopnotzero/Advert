@@ -1,6 +1,8 @@
 ﻿@using Egghead.Models.Articles
 @using Humanizer
 
+@model IEnumerable<ArticleModel>
+
 @Html.Partial("Header")
 
 <section class="content">
@@ -20,7 +22,7 @@
                             <h5 id="profile-articles-count" class="text-center"></h5>
                         </div>
                         <div class="col-md-6">
-                            <span class="text-justify">Following</span>
+                            <span class="text-justify">You following</span>
                             <h5 id="profile-following-count" class="text-center"></h5>
                         </div>
                     </div>
@@ -57,50 +59,48 @@
         <div class="col-md-6 p-1">
             <div class="container-fluid mb-3">
                 @{
-                    var articlesPreview = (List<ArticlePreviewModel>)ViewBag.ArticlesPreview;
-                    
                     <div class="card">
-                        @foreach (var articlePreview in articlesPreview)
+                        @foreach (var article in Model)
                         {
-                            <article id="@articlePreview.Id" class="card-hover">
+                            <article id="@article.Id" class="card-hover">
                                 <div class="text-muted p-3">
-                                    <a href="/Profiles/GetProfile"><small class="font-weight-bold">@articlePreview.Name</small></a> <small class="time"> @articlePreview.CreatedAt.Humanize()</small>             
+                                    <a href="/Profiles/GetProfile"><small class="font-weight-bold">@article.Name</small></a> <small class="time"> @article.CreatedAt</small>             
                                 </div>
                                 <div class="card-body card-body__img">
-                                    <a href="/Articles/GetArticleContent?articleId=@articlePreview.Id">
-                                        <h4 class="card-title cut-long-text mb-2">@articlePreview.Title</h4>
+                                    <a href="/Articles/GetArticleContent?articleId=@article.Id">
+                                        <h4 class="card-title cut-long-text mb-2">@article.Title</h4>
                                     </a>
-                                    @Html.Raw(articlePreview.Text)
+                                    @Html.Raw(article.Text)
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12 p-1">
-                                        <div name="btn-like" onclick="onVoteClick('@articlePreview.Id', 1)" class="r-btn r-btn-light r-btn--icon ml-4">
+                                        <div name="btn-like" onclick="onVoteClick('@article.Id', 1)" class="r-btn r-btn-light r-btn--icon ml-4">
                                             <i class="fa fa-thumbs-o-up"></i>
                                         </div>
-                                        <small name="likes">@articlePreview.Likes</small>
+                                        <small name="likes">@article.Likes</small>
 
-                                        <div name="btn-dislike" onclick="onVoteClick('@articlePreview.Id', 2)" class="r-btn r-btn-light r-btn--icon">
+                                        <div name="btn-dislike" onclick="onVoteClick('@article.Id', 2)" class="r-btn r-btn-light r-btn--icon">
                                             <i class="fa fa-thumbs-o-down"></i>
                                         </div>
-                                        <small name="dislikes">@articlePreview.Dislikes</small>
+                                        <small name="dislikes">@article.Dislikes</small>
 
                                         <div name="btn-bookmark" class="r-btn r-btn-light r-btn--icon">
                                             <i class="fa fa-bookmark"></i>
                                         </div>
-                                        <small name="bookmarks">@articlePreview.BookmarksCount</small>
+                                        <small name="bookmarks">@article.BookmarksCount</small>
 
                                         <div class="r-btn r-btn-light-no-hover r-btn--icon-no-hover">
                                             <i class="fa fa-eye"></i>
                                         </div>
-                                        <small id="article-view-count">@articlePreview.ViewCount</small>
+                                        <small id="article-view-count">@article.ViewsCount</small>
 
                                         <div class="r-btn r-btn-light-no-hover r-btn--icon-no-hover">
                                             <i class="fa fa-weixin"></i>
                                         </div>
-                                        <small id="article-comments">@articlePreview.CommentsCount</small>
+                                        <small id="article-comments">@article.CommentsCount</small>
 
                                         <small class="text-muted float-right mt-2 mr-4">
-                                            <a href="/Articles/GetArticleContent?articleId=@articlePreview.Id">READ MORE...</a>
+                                            <a href="/Articles/GetArticleContent?articleId=@article.Id">READ MORE...</a>
                                         </small>
                                     </div>
                                 </div>
@@ -117,107 +117,34 @@
                     <h4 class="text-muted font-weight-bold">Popular on Egghead</h4>
                 </div>
                 @{
-                    var popularArticles = (List<PopularArticleModel>)ViewBag.PopularArticles;
-                    
-                    if (popularArticles != null)
-                    {
-                        <div class="listview">
-                            @foreach (var popularArticle in popularArticles)
-                            {
-                                <div class="listview__item">
-                                    <div class="mr-2" style="width: 50px; height: 50px">
-                                        <img src="/images/users/user_empty.png" class="listview__img" alt=""> 
-                                    </div>
-
-                                    <div class="listview__content">
-                                        <div class="listview__heading">
-                                            <p>
-                                                <a class="font-weight-bold" href="/Articles/GetArticleContent?articleId=@popularArticle.Id">@popularArticle.Title</a>
-                                            </p>
-                                        </div>
-                                        <p>
-                                            <a href="/Profiles/GetProfile">@popularArticle.Name</a> <small class="time"> @popularArticle.CreatedAt.Humanize()</small>
-                                        </p>
-                                    </div>
-                                </div>
-                            }
-                        </div>
-                    }
+@*                     var popularArticles = (List<PopularArticleModel>)ViewBag.PopularArticles; *@
+@*                      *@
+@*                     if (popularArticles != null) *@
+@*                     { *@
+@*                         <div class="listview"> *@
+@*                             @foreach (var popularArticle in popularArticles) *@
+@*                             { *@
+@*                                 <div class="listview__item"> *@
+@*                                     <div class="mr-2" style="width: 50px; height: 50px"> *@
+@*                                         <img src="/images/users/user_empty.png" class="listview__img" alt="">  *@
+@*                                     </div> *@
+@* *@
+@*                                     <div class="listview__content"> *@
+@*                                         <div class="listview__heading"> *@
+@*                                             <p> *@
+@*                                                 <a class="font-weight-bold" href="/Articles/GetArticleContent?articleId=@popularArticle.Id">@popularArticle.Title</a> *@
+@*                                             </p> *@
+@*                                         </div> *@
+@*                                         <p> *@
+@*                                             <a href="/Profiles/GetProfile">@popularArticle.Name</a> <small class="time"> @popularArticle.CreatedAt.Humanize()</small> *@
+@*                                         </p> *@
+@*                                     </div> *@
+@*                                 </div> *@
+@*                             } *@
+@*                         </div> *@
+@*                     } *@
                 }
             </div>
         </div>
     </div>
 </section>
-
-<script>
-    function onVoteClick(articleId, voteType) {
-        var vote = {
-            voteType: voteType
-        }
-        $.ajax({
-            url: "/Articles/CreateArticleVoteAsync?articleId=" + articleId,
-            type: "POST",
-            data: JSON.stringify(vote),
-            contentType: "application/json",
-            error: function(jqXhr, textStatus, errorThrown) {
-                console.log("jqXhr: " + jqXhr);
-                console.log("textStatus: " + jqXhr);
-                console.log("errorThrown: " + jqXhr);
-            },
-            success: function(response) {
-                switch (voteType) {
-                case 1:
-                    {
-                        $(`#${articleId} small[name=likes]`).text(response);
-                    }
-                    break;
-                case 2:
-                    {
-                        $(`#${articleId} small[name=dislikes]`).text(response);
-                    }
-                    break;
-                }
-
-            }
-        });
-    }
-
-    function onBookmarkClick(articleId) {
-        $.ajax({
-            url: "/Articles/GetProfileDescriptionAsync",
-            type: "GET",
-            contentType: "application/json",
-            error: function(jqXhr, textStatus, errorThrown) {
-                console.log("jqXhr: " + jqXhr);
-                console.log("textStatus: " + jqXhr);
-                console.log("errorThrown: " + jqXhr);
-            },
-            success: function(response) {
-                $("#articles-preview").html(response);
-            }
-        });
-    }
-
-    function getProfileDescriptionAsync() {
-        $.ajax({
-            url: "/Articles/GetProfileDescriptionAsync",
-            type: "GET",
-            contentType: "application/json",
-            error: function(jqXhr, textStatus, errorThrown) {
-                console.log("jqXhr: " + jqXhr);
-                console.log("textStatus: " + jqXhr);
-                console.log("errorThrown: " + jqXhr);
-            },
-            success: function(response) {
-                $("#profile-fullname").html(`${response.firstName} ${response.lastName}`);
-                $("#profile-headline").html(`${response.headline}`);
-                $("#profile-articles-count").html(`${response.articlesCount}`);
-                $("#profile-following-count").html(`${response.followingCount}`);
-            }
-        });
-    }
-
-    $(document).ready(function() {
-        getProfileDescriptionAsync();
-    });
-</script>

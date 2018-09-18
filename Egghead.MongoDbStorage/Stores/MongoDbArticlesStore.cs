@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Egghead.Common;
@@ -53,13 +54,14 @@ namespace Egghead.MongoDbStorage.Stores
 
         public async Task<long> CountArticlesByProfileIdAsync(ObjectId profileId, CancellationToken cancellationToken)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            var filter = Builders<T>.Filter.Eq(x => x.ProfileId, profileId);
-            var articlesCount = await _collection.CountDocumentsAsync(filter, new CountOptions(), cancellationToken);
-            return articlesCount;
+//            cancellationToken.ThrowIfCancellationRequested();
+//            var filter = Builders<T>.Filter.Eq(x => x.ProfileId, profileId);
+//            var articlesCount = await _collection.CountDocumentsAsync(filter, new CountOptions(), cancellationToken);
+//            return articlesCount;
+            throw new NotImplementedException();
         }
 
-        public async Task<List<T>> FindArticlesAsync(CancellationToken cancellationToken)
+        public async Task<List<T>> FindLatestArticlesAsync(CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             var findOptions = new FindOptions<T>
@@ -70,30 +72,30 @@ namespace Egghead.MongoDbStorage.Stores
             return await cursor.ToListAsync(cancellationToken);
         }
 
-        public async Task<List<T>> FindArticlesAsync(int limit, CancellationToken cancellationToken)
+        public async Task<List<T>> FindArticlesAsync(int howManyElements, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             var findOptions = new FindOptions<T>
             {
                 Sort = Builders<T>.Sort.Descending(field => field.CreatedAt),
-                Limit = limit
+                Limit = howManyElements
             };
             var cursor = await _collection.FindAsync(Builders<T>.Filter.Empty, findOptions, cancellationToken: cancellationToken);
             return await cursor.ToListAsync(cancellationToken);
         }
 
-        public async Task<List<T>> FindRecentArticlesByProfileIdAsync(ObjectId profileId, int limit,
-            CancellationToken cancellationToken)
+        public async Task<List<T>> FindArticlesByProfileIdAsync(ObjectId profileId, int qty, CancellationToken cancellationToken)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            var findOptions = new FindOptions<T>
-            {
-                Sort = Builders<T>.Sort.Descending(field => field.CreatedAt),
-                Limit = limit
-            };
-            var filter = Builders<T>.Filter.Eq(x => x.ProfileId, profileId);
-            var cursor = await _collection.FindAsync(filter, findOptions, cancellationToken: cancellationToken);
-            return await cursor.ToListAsync(cancellationToken);
+//            cancellationToken.ThrowIfCancellationRequested();
+//            var findOptions = new FindOptions<T>
+//            {
+//                Sort = Builders<T>.Sort.Descending(field => field.CreatedAt),
+//                Limit = qty
+//            };
+//            var filter = Builders<T>.Filter.Eq(x => x.ProfileId, profileId);
+//            var cursor = await _collection.FindAsync(filter, findOptions, cancellationToken: cancellationToken);
+//            return await cursor.ToListAsync(cancellationToken);
+            throw new NotImplementedException();
         }
 
         public async Task<OperationResult> CreateArticleAsync(T entity, CancellationToken cancellationToken)

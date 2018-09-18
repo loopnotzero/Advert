@@ -68,26 +68,28 @@ namespace Egghead.Managers
             return await Store.FindProfileByIdAsync(id, CancellationToken);
         }
         
-        public async Task<T> FindProfileByNormalizedEmailAsync(string email)
-        {
-            ThrowIfDisposed();
-
-            if (string.IsNullOrEmpty(email))
-            {
-                throw new ArgumentNullException(nameof(email)); 
-            }
-
-            email = NormalizeKey(email);
-            
-            return await Store.FindProfileByNormalizedEmailAsync(email, CancellationToken);
-        }
+//        public async Task<T> FindProfileByNormalizedEmailAsync(string email)
+//        {
+//            ThrowIfDisposed();
+//
+//            if (string.IsNullOrEmpty(email))
+//            {
+//                throw new ArgumentNullException(nameof(email)); 
+//            }
+//
+//            email = NormalizeKey(email);
+//            
+//            return await Store.FindProfileByNormalizedEmailAsync(email, CancellationToken);
+//        }
         
         public async Task<OperationResult> CreateProfileAsync(T entity)
         {
             ThrowIfDisposed();
 
             if (entity == null)
+            {
                 throw new ArgumentNullException(nameof(entity));
+            }
 
             return await Store.CreateProfileAsync(entity, CancellationToken);
         }
