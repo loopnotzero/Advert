@@ -51,10 +51,10 @@ namespace Egghead.MongoDbStorage.Stores
             return await cursor.FirstOrDefaultAsync(cancellationToken);
         }
 
-        public async Task<long> CountArticlesByNormalizedEmailAsync(string email, CancellationToken cancellationToken)
+        public async Task<long> CountArticlesByProfileIdAsync(ObjectId profileId, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var filter = Builders<T>.Filter.Eq(x => x.EmailNormalized, email);
+            var filter = Builders<T>.Filter.Eq(x => x.ProfileId, profileId);
             var articlesCount = await _collection.CountDocumentsAsync(filter, new CountOptions(), cancellationToken);
             return articlesCount;
         }
@@ -82,7 +82,8 @@ namespace Egghead.MongoDbStorage.Stores
             return await cursor.ToListAsync(cancellationToken);
         }
 
-        public async Task<List<T>> FindRecentArticlesByNormalizedEmailAsync(string email, int limit, CancellationToken cancellationToken)
+        public async Task<List<T>> FindRecentArticlesByProfileIdAsync(ObjectId profileId, int limit,
+            CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             var findOptions = new FindOptions<T>
@@ -90,7 +91,7 @@ namespace Egghead.MongoDbStorage.Stores
                 Sort = Builders<T>.Sort.Descending(field => field.CreatedAt),
                 Limit = limit
             };
-            var filter = Builders<T>.Filter.Eq(x => x.EmailNormalized, email);
+            var filter = Builders<T>.Filter.Eq(x => x.ProfileId, profileId);
             var cursor = await _collection.FindAsync(filter, findOptions, cancellationToken: cancellationToken);
             return await cursor.ToListAsync(cancellationToken);
         }
