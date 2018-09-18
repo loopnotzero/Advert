@@ -30,14 +30,21 @@ namespace Egghead.MongoDbStorage.Stores
             
         }
 
-        public Task<T> GetProfileByIdAsync(ObjectId profileId, CancellationToken cancellationToken)
+        public async Task<T> FindProfileByIdAsync(ObjectId id, CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            cancellationToken.ThrowIfCancellationRequested();
+            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.Id, id), cancellationToken: cancellationToken);
+            return await cursor.FirstOrDefaultAsync(cancellationToken);
         }
 
-        public Task<OperationResult> CreateProfileAsync(T entity, CancellationToken cancellationToken)
+        public async Task<OperationResult> CreateProfileAsync(T entity, CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            cancellationToken.ThrowIfCancellationRequested();
+            await _collection.InsertOneAsync(entity, new InsertOneOptions
+            {
+                BypassDocumentValidation = false
+            }, cancellationToken);
+            return OperationResult.Success;
         }
     }
 }
