@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Egghead.Common;
 using Egghead.Common.Articles;
 using Egghead.Common.Profiles;
 using Egghead.Exceptions;
@@ -11,6 +10,7 @@ using Egghead.Managers;
 using Egghead.Models.Articles;
 using Egghead.Models.Profiles;
 using Egghead.MongoDbStorage.Articles;
+using Egghead.MongoDbStorage.Profiles;
 using Egghead.MongoDbStorage.Users;
 using Humanizer;
 using Microsoft.AspNetCore.Authorization;
@@ -26,13 +26,16 @@ namespace Egghead.Controllers
         private readonly ILogger _logger;
         private readonly ILookupNormalizer _keyNormalizer;
         private readonly UserManager<MongoDbUser> _userManager;
+        private readonly ProfilesManager<MongoDbProfile> _profilesManager;
         private readonly ArticlesManager<MongoDbArticle> _articlesManager;
         private readonly ArticlesLikesManager<MongoDbArticleVote> _articlesVotesManager;
         private readonly ArticlesCommentsManager<MongoDbArticleComment> _articlesCommentsManager;
         private readonly ArticlesViewCountManager<MongoDbArticleViewCount> _articlesViewCountManager;
         private readonly ArticleCommentsVotesManager<MongoDbArticleCommentVote> _articleCommentsVotesManager;
            
-        public ArticlesController(UserManager<MongoDbUser> userManager,
+        public ArticlesController(
+            UserManager<MongoDbUser> userManager,
+            ProfilesManager<MongoDbProfile> profilesManager,
             ArticlesManager<MongoDbArticle> articlesManager,
             ArticlesLikesManager<MongoDbArticleVote> articlesVotesManager,
             ArticlesCommentsManager<MongoDbArticleComment> articlesCommentsManager,
@@ -45,6 +48,7 @@ namespace Egghead.Controllers
             _logger = loggerFactory.CreateLogger<AccountController>();
             _keyNormalizer = keyNormalizer;
             _userManager = userManager;
+            _profilesManager = profilesManager;
             _articlesManager = articlesManager;
             _articlesVotesManager = articlesVotesManager;
             _articlesCommentsManager = articlesCommentsManager;
@@ -65,15 +69,16 @@ namespace Egghead.Controllers
         {
             try
             {
-                var articleViewCountEntity = new MongoDbArticleViewCount
+                var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
+
+                var articleViewCount = new MongoDbArticleViewCount
                 {
-                    Email = HttpContext.User.Identity.Name,
-                    EmailNormalized = _keyNormalizer.Normalize(HttpContext.User.Identity.Name),
                     ArticleId = ObjectId.Parse(articleId),
+                    ProfileId = profile.Id,
                     CreatedAt = DateTime.UtcNow
                 };
                 
-                await _articlesViewCountManager.CreateArticleViewCountAsync(articleViewCountEntity);
+                await _articlesViewCountManager.CreateArticleViewCountAsync(articleViewCount);
                 
                 var user = await _userManager.FindByEmailAsync(HttpContext.User.Identity.Name);
                 var queryable = await _articlesViewCountManager.AsQueryable();
@@ -92,7 +97,7 @@ namespace Egghead.Controllers
                 
                 ViewBag.PopularArticles = popularArticles;
    
-                var recentArticles = await _articlesManager.FindRecentArticlesByNormalizedEmailAsync(user.NormalizedEmail, 10);
+                var recentArticles = await _articlesManager.FindRecentArticlesByProfileIdAsync(profile.Id, 10);
                 
                 ViewBag.RecentArticles = recentArticles.Select(x => new RecentArticleModel
                 {
@@ -101,7 +106,7 @@ namespace Egghead.Controllers
                     CreatedAt = x.CreatedAt
                 });
                 
-                var article = await _articlesManager.FindArticleByIdAsync(articleViewCountEntity.ArticleId);              
+                var article = await _articlesManager.FindArticleByIdAsync(articleViewCount.ArticleId);              
                 
                 return View(new ArticlePreviewModel
                 {
@@ -176,13 +181,14 @@ namespace Egghead.Controllers
         {
             try
             {
+                var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
+
                 await _articlesManager.CreateArticleAsync(new MongoDbArticle
-                {
+                {                   
+                    ProfileId = profile.Id,
                     Title = model.Title,
                     NormalizedTitle = _keyNormalizer.Normalize(model.Title),
-                    Text = model.Text,
-                    Email = HttpContext.User.Identity.Name,
-                    EmailNormalized = _keyNormalizer.Normalize(HttpContext.User.Identity.Name),
+                    Text = model.Text,                
                     CreatedAt = DateTime.UtcNow,
                     ReleaseType = ReleaseType.PreModeration,
                 });
@@ -288,23 +294,24 @@ namespace Egghead.Controllers
         {
             try
             {
-                var objectId = ObjectId.Parse(articleId);
+                var articleObjectId = ObjectId.Parse(articleId);
 
-                var articleVote = await _articlesVotesManager.FindArticleVoteVotedByAsync(objectId, model.VoteType, HttpContext.User.Identity.Name);
+                var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
+
+                var articleVote = await _articlesVotesManager.FindArticleVoteByProfileIdAsync(articleObjectId, model.VoteType, profile.Id);
 
                 if (articleVote == null)
                 {
                     await _articlesVotesManager.CreateArticleVoteAsync(new MongoDbArticleVote
-                    {
-                        Email = HttpContext.User.Identity.Name,
-                        EmailNormalized = _keyNormalizer.Normalize(HttpContext.User.Identity.Name),
-                        ArticleId = objectId,
+                    {            
+                        ArticleId = articleObjectId,
+                        ProfileId = profile.Id,
                         VoteType = model.VoteType,
                         CreatedAt = DateTime.UtcNow
                     });
                 }
 
-                var articleVotes = await _articlesVotesManager.CountArticleVotesAsync(objectId, model.VoteType);
+                var articleVotes = await _articlesVotesManager.CountArticleVotesAsync(articleObjectId, model.VoteType);
 
                 return Ok(articleVotes);
             }
@@ -324,7 +331,7 @@ namespace Egghead.Controllers
                 if (model.VoteType == VoteType.None)
                 {
                     var user = await _userManager.FindByEmailAsync(HttpContext.User.Identity.Name);
-                    var logString = $"Upsert vote type is not valid. Article id: {articleId} By Who: {user.Email}";
+                    var logString = $"Upsert vote type is not valid. Article id: {articleId} By Who: {HttpContext.User.Identity.Name}";
                     throw new ArticleCommentVoteException(logString);
                 }
 
@@ -332,12 +339,13 @@ namespace Egghead.Controllers
 
                 if (articleCommentVote == null)
                 {
+                    var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
+
                     articleCommentVote = new MongoDbArticleCommentVote
-                    {
-                        Email = HttpContext.User.Identity.Name,
-                        EmailNormalized = _keyNormalizer.Normalize(HttpContext.User.Identity.Name),
+                    {                  
                         ArticleId = ObjectId.Parse(articleId),
                         CommentId = ObjectId.Parse(model.CommentId),
+                        ProfileId = profile.Id,
                         VoteType = model.VoteType,
                         CreatedAt = DateTime.UtcNow
                     };
@@ -360,7 +368,7 @@ namespace Egghead.Controllers
                         {
                             case VoteType.None:
                                 {
-                                    var logString = $"Upsert vote type is not valid. Vote id: {articleCommentVote.Id} By Who: {articleCommentVote.Email}";
+                                    var logString = $"Upsert vote type is not valid. Vote id: {articleCommentVote.Id} By Who: {articleCommentVote.ProfileId}";
                                     throw new ArticleCommentVoteException(logString);
                                 }
                             case VoteType.Like:
@@ -375,7 +383,7 @@ namespace Egghead.Controllers
                                 break;
                             default:
                                 {
-                                    var logString = $"Upsert vote type is not implemented. Vote id: {articleCommentVote.Id} By Who: {articleCommentVote.Email}";
+                                    var logString = $"Upsert vote type is not implemented. Vote id: {articleCommentVote.Id} By Who: {HttpContext.User.Identity.Name}";
                                     throw new ArgumentOutOfRangeException(logString);
                                 }
                         }
@@ -412,13 +420,14 @@ namespace Egghead.Controllers
             try
             {
                 var user = await _userManager.FindByEmailAsync(HttpContext.User.Identity.Name);
-
+                
+                var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
+     
                 var articleComment = new MongoDbArticleComment
                 {
-                    Text = model.Text,
-                    Email = HttpContext.User.Identity.Name,
-                    EmailNormalized = _keyNormalizer.Normalize(HttpContext.User.Identity.Name),
+                    Text = model.Text,         
                     ReplyTo = model.ReplyTo == null ? ObjectId.Empty : ObjectId.Parse(model.ReplyTo),
+                    ProfileId = profile.Id,
                     CreatedAt = DateTime.UtcNow
                 };
 
@@ -475,7 +484,9 @@ namespace Egghead.Controllers
             {
                 var user = await _userManager.FindByEmailAsync(HttpContext.User.Identity.Name);
 
-                var artcilesCount = await _articlesManager.CountArticlesByNormalizedEmailAsync(HttpContext.User.Identity.Name);
+                var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
+
+                var artcilesCount = await _articlesManager.CountArticlesByProfileIdAsync(profile.Id);
 
                 return Ok(new ProfileDescription
                 {

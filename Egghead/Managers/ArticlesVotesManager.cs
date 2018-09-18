@@ -32,7 +32,7 @@ namespace Egghead.Managers
             KeyNormalizer = keyNormalizer;
         }
 
-        public async Task<T> FindArticleVoteVotedByAsync(ObjectId articleId, VoteType voteType, string email)
+        public async Task<T> FindArticleVoteByProfileIdAsync(ObjectId articleId, VoteType voteType, ObjectId profileId)
         {
             ThrowIfDisposed();
 
@@ -46,14 +46,12 @@ namespace Egghead.Managers
                 throw new ArgumentNullException(nameof(voteType));
             }
 
-            if (email == null)
+            if (profileId == null)
             {
-                throw new ArgumentNullException(nameof(email));
+                throw new ArgumentNullException(nameof(profileId));
             }
-
-            email = NormalizeKey(email);
-
-            return await Store.FindArticleVoteVotedByAsync(articleId, voteType, email, CancellationToken);
+            
+            return await Store.FindArticleVoteByProfileIdAsync(articleId, voteType, profileId, CancellationToken);
         }
 
         public async Task<long> CountArticleVotesAsync(ObjectId articleId, VoteType voteType)

@@ -11,6 +11,7 @@ namespace Egghead.Managers
     public class ProfilesImagesManager<T> : IDisposable where T : class
     {
         private bool _disposed;
+        
         /// <summary>
         /// The <see cref="T:Microsoft.AspNetCore.Identity.ILookupNormalizer" /> used to normalize things like user and role names.
         /// </summary>

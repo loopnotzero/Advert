@@ -64,7 +64,7 @@
                         {
                             <article id="@articlePreview.Id" class="card-hover">
                                 <div class="text-muted p-3">
-                                    <a href="/Profiles/GetProfile"><small class="font-weight-bold">@articlePreview.FirstName @articlePreview.LastName</small></a> <small class="time"> @articlePreview.CreatedAt.Humanize()</small>             
+                                    <a href="/Profiles/GetProfile"><small class="font-weight-bold">@articlePreview.Name</small></a> <small class="time"> @articlePreview.CreatedAt.Humanize()</small>             
                                 </div>
                                 <div class="card-body card-body__img">
                                     <a href="/Articles/GetArticleContent?articleId=@articlePreview.Id">
@@ -136,7 +136,7 @@
                                             </p>
                                         </div>
                                         <p>
-                                            <a href="/Profiles/GetProfile">@popularArticle.FirstName @popularArticle.LastName</a> <small class="time"> @popularArticle.CreatedAt.Humanize()</small>
+                                            <a href="/Profiles/GetProfile">@popularArticle.Name</a> <small class="time"> @popularArticle.CreatedAt.Humanize()</small>
                                         </p>
                                     </div>
                                 </div>

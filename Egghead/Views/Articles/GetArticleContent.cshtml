@@ -8,7 +8,7 @@
     <div class="row">
         <div class="col-md-8">
             <div class="card">
-                <div class="text-muted p-3"><a href="/Profiles/GetProfile"><small class="font-weight-bold">@Model.FirstName @Model.LastName</small></a> <small class="time"> @Model.CreatedAt.Humanize()</small></div>
+                <div class="text-muted p-3"><a href="/Profiles/GetProfile"><small class="font-weight-bold">@Model.Name</small></a> <small class="time"> @Model.CreatedAt.Humanize()</small></div>
 
                 <div class="card-body card-body__img">
                     <h4>@Model.Title</h4>
@@ -59,7 +59,7 @@
                                             </p>
                                         </div>
                                         <p>
-                                            <a href="/Profiles/GetProfile">@popularArticle.FirstName @popularArticle.LastName</a> <small class="time"> @popularArticle.CreatedAt.Humanize()</small>
+                                            <a href="/Profiles/GetProfile">@popularArticle.Name</a> <small class="time"> @popularArticle.CreatedAt.Humanize()</small>
                                         </p>
                                     </div>
                                 </div>

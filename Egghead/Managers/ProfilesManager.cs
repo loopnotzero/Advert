@@ -12,6 +12,11 @@ namespace Egghead.Managers
     public class ProfilesManager<T> : IDisposable where T : class
     {
         private bool _disposed;
+
+        /// <summary>
+        /// The <see cref="T:Microsoft.AspNetCore.Identity.ILookupNormalizer" /> used to normalize things like user and role names.
+        /// </summary>
+        private readonly ILookupNormalizer _keyNormalizer;
       
         /// <summary>
         /// Gets or sets the persistence store the manager operates over.
@@ -24,6 +29,7 @@ namespace Egghead.Managers
         public ProfilesManager(IProfilesStore<T> store, ILookupNormalizer keyNormalizer)
         {
             Store = store ?? throw new ArgumentNullException(nameof(store));
+            _keyNormalizer = keyNormalizer;
         }
 
         public void Dispose()
@@ -58,9 +64,24 @@ namespace Egghead.Managers
             {
                 throw new ArgumentNullException(nameof(id)); 
             }
+            
             return await Store.FindProfileByIdAsync(id, CancellationToken);
         }
+        
+        public async Task<T> FindProfileByNormalizedEmailAsync(string email)
+        {
+            ThrowIfDisposed();
 
+            if (string.IsNullOrEmpty(email))
+            {
+                throw new ArgumentNullException(nameof(email)); 
+            }
+
+            email = NormalizeKey(email);
+            
+            return await Store.FindProfileByNormalizedEmailAsync(email, CancellationToken);
+        }
+        
         public async Task<OperationResult> CreateProfileAsync(T entity)
         {
             ThrowIfDisposed();
@@ -69,6 +90,11 @@ namespace Egghead.Managers
                 throw new ArgumentNullException(nameof(entity));
 
             return await Store.CreateProfileAsync(entity, CancellationToken);
+        }
+    
+        private string NormalizeKey(string key)
+        {
+            return _keyNormalizer != null ? _keyNormalizer.Normalize(key) : key;
         }
     }
 }

@@ -128,10 +128,14 @@ namespace Egghead.Controllers
                 
                 await _signInManager.SignInAsync(user, true);
 
+                //todo: Move profile creation to edit profile
+                
                 var profile = new MongoDbProfile
                 {
                     Name = model.Name,
                     NormalizedName = NormalizeKey(model.Name),
+                    Email = model.Email,
+                    NormalizedEmail = NormalizeKey(model.Email),
                     CreatedAt = DateTime.UtcNow
                 };
 
