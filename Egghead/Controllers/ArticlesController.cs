@@ -72,6 +72,7 @@ namespace Egghead.Controllers
                     ArticleId = ObjectId.Parse(articleId),
                     CreatedAt = DateTime.UtcNow
                 };
+                
                 await _articlesViewCountManager.CreateArticleViewCountAsync(articleViewCountEntity);
                 
                 var user = await _userManager.FindByEmailAsync(HttpContext.User.Identity.Name);
@@ -168,9 +169,7 @@ namespace Egghead.Controllers
                 return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
             }
         }
-
-        
-        
+  
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> CreateArticleAsync([FromBody] ArticlePreviewModel model)
@@ -283,8 +282,6 @@ namespace Egghead.Controllers
             return Ok();
         }
 
-        
-        
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> CreateArticleVoteAsync(string articleId, [FromBody] ArticleVoteModel model)
@@ -400,9 +397,7 @@ namespace Egghead.Controllers
                 return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
             }
         }
-
-        
-        
+          
         [HttpGet]
         [Authorize]
         public async Task<long> CountArticleCommentsByArticleIdAsync(string articleId)
@@ -471,9 +466,7 @@ namespace Egghead.Controllers
 
             return PartialView("GetArticleCommentsPartial", models);
         }
-        
-        
-
+              
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> GetProfileDescriptionAsync()

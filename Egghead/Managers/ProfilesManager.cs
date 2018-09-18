@@ -12,11 +12,7 @@ namespace Egghead.Managers
     public class ProfilesManager<T> : IDisposable where T : class
     {
         private bool _disposed;
-        /// <summary>
-        /// The <see cref="T:Microsoft.AspNetCore.Identity.ILookupNormalizer" /> used to normalize things like user and role names.
-        /// </summary>
-        private ILookupNormalizer KeyNormalizer { get; set; }
-
+      
         /// <summary>
         /// Gets or sets the persistence store the manager operates over.
         /// </summary>
@@ -28,7 +24,6 @@ namespace Egghead.Managers
         public ProfilesManager(IProfilesStore<T> store, ILookupNormalizer keyNormalizer)
         {
             Store = store ?? throw new ArgumentNullException(nameof(store));
-            KeyNormalizer = keyNormalizer;
         }
 
         public void Dispose()
@@ -46,11 +41,6 @@ namespace Egghead.Managers
 
             _disposed = true;
         }
-        
-        private string NormalizeKey(string key)
-        {
-            return KeyNormalizer != null ? KeyNormalizer.Normalize(key) : key;
-        }
 
         protected void ThrowIfDisposed()
         {
@@ -60,16 +50,25 @@ namespace Egghead.Managers
             }
         }
 
-        public async Task<T> GetByIdAsync(ObjectId profileId)
-        {
-            ThrowIfDisposed();          
-            return await Store.GetProfileByIdAsync(profileId, CancellationToken);
-        }
-
-        public async Task<OperationResult> CreateAsync(T entity)
+        public async Task<T> FindProfileByIdAsync(ObjectId id)
         {
             ThrowIfDisposed();
+
+            if (id == null || id.Equals(ObjectId.Empty))
+            {
+                throw new ArgumentNullException(nameof(id)); 
+            }
+            return await Store.FindProfileByIdAsync(id, CancellationToken);
+        }
+
+        public async Task<OperationResult> CreateProfileAsync(T entity)
+        {
+            ThrowIfDisposed();
+
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
             return await Store.CreateProfileAsync(entity, CancellationToken);
-        }      
+        }
     }
 }

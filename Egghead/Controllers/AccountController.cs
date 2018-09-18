@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
+using Egghead.Common;
 using Egghead.Managers;
 using Egghead.Models.Users;
 using Egghead.MongoDbStorage.Profiles;
@@ -15,21 +16,24 @@ namespace Egghead.Controllers
     public class AccountController : Controller
     {
         private readonly ILogger _logger;
+        private readonly ILookupNormalizer _keyNormalizer;
         private readonly UserManager<MongoDbUser> _userManager;
         private readonly SignInManager<MongoDbUser> _signInManager;
         private readonly ProfilesManager<MongoDbProfile> _profilesManager;
         
-        public AccountController(
+        public AccountController(            
+            ILoggerFactory loggerFactory,
+            ILookupNormalizer keyNormalizer,
             UserManager<MongoDbUser> userManager,
             SignInManager<MongoDbUser> signInManager,
-            ProfilesManager<MongoDbProfile> profilesManager,
-            ILoggerFactory loggerFactory)
+            ProfilesManager<MongoDbProfile> profilesManager)
         {
             _logger = loggerFactory.CreateLogger<AccountController>();
+            _keyNormalizer = keyNormalizer;
             _userManager = userManager;
             _signInManager = signInManager;
             _profilesManager = profilesManager;
-        }       
+        }      
 
         [HttpGet]
         [AllowAnonymous]
@@ -106,7 +110,7 @@ namespace Egghead.Controllers
             try
             {
                 ViewData["returnUrl"] = returnUrl;
-                
+        
                 var user = new MongoDbUser
                 {
                     Email = model.Email,
@@ -115,18 +119,29 @@ namespace Egghead.Controllers
                     NormalizedUserName = model.Email,
                 };
 
-                await _userManager.CreateAsync(user, model.Password);
+                var identityResult = await _userManager.CreateAsync(user, model.Password);
+
+                if (!identityResult.Succeeded)
+                {
+                    //todo: Handle error
+                }
+                
+                await _signInManager.SignInAsync(user, true);
 
                 var profile = new MongoDbProfile
                 {
                     Name = model.Name,
+                    NormalizedName = NormalizeKey(model.Name),
                     CreatedAt = DateTime.UtcNow
                 };
 
-                await _profilesManager.CreateAsync(profile);
-                
-                await _signInManager.SignInAsync(user, true);
+                var operationResult = await _profilesManager.CreateProfileAsync(profile);
 
+                if (!operationResult.Succeeded)
+                {
+                    //todo: Handle error
+                }
+            
                 return Ok();
             }
             catch (Exception e)
@@ -134,6 +149,12 @@ namespace Egghead.Controllers
                 _logger.LogError(e.Message, e);
                 return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
             }
+        }
+
+        
+        private string NormalizeKey(string key)
+        {
+            return _keyNormalizer != null ? _keyNormalizer.Normalize(key) : key;
         }
     }
 }
