@@ -131,7 +131,7 @@ namespace Egghead.Controllers
                         Likes = article.LikesCount,
                         Dislikes = article.DislikesCount,
                         ViewsCount = article.ViewsCount,
-                        CommentsCount = article.ViewsCount,
+                        CommentsCount = article.CommentsCount,
                         CreatedAt = article.CreatedAt.Humanize(),
                     });
                 }
@@ -151,7 +151,7 @@ namespace Egghead.Controllers
         {
             try
             {
-                await _articlesManager.CreateArticleAsync(new MongoDbArticle
+                var operationResult = await _articlesManager.CreateArticleAsync(new MongoDbArticle
                 {                   
                     Title = model.Title,
                     NormalizedTitle = NormalizeKey(model.Title),
@@ -159,6 +159,11 @@ namespace Egghead.Controllers
                     CreatedAt = DateTime.UtcNow,
                     ReleaseType = ReleaseType.PreModeration,
                 });
+
+                if (!operationResult.Succeeded)
+                {
+                    //todo: Handle error
+                }
 
                 return Ok(new
                 {
