@@ -12,14 +12,16 @@ namespace Egghead.MongoDbStorage.Users
             Id = ObjectId.GenerateNewId().ToString();
         }
         
-        public MongoDbUser(string userName, string normalizedUserName) : this()
+        public MongoDbUser(string email, string normalizedEmail, string userName, string normalizedUserName) : this()
         {
+            Email = email;
+            NormalizedEmail = normalizedEmail;
             UserName = userName;
             NormalizedUserName = normalizedUserName;
         }
 
 
-        public string Id { get; }       
+        public string Id { get; set; }       
         public string UserName { get; set; }
         public string NormalizedUserName { get; set; }     
         public string Email { get; set; }
