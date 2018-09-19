@@ -77,7 +77,7 @@ namespace Egghead
                 options.Password.RequiredUniqueChars = 1;
                 options.Password.RequireNonAlphanumeric = false;
             }).AddDefaultTokenProviders().AddUserValidator<CustomUserValidator<MongoDbUser>>();
-                                 
+                 
             services.AddTransient<IArticleCommentsVotesStore<MongoDbArticleCommentVote>>(provider =>
             {
                 var options = provider.GetService<IOptions<MongoDbOptions>>();

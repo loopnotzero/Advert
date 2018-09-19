@@ -73,9 +73,6 @@ namespace Egghead.Controllers
         {
             ViewData["returnUrl"] = returnUrl; 
             
-            _logger.LogInformation($"Email: {model.Email}");
-            _logger.LogInformation($"Password: {model.Password}");
-
             var signInResult = await _signInManager.PasswordSignInAsync(model.Email, model.Password, false, false);
 
             if (!signInResult.Succeeded)
@@ -111,7 +108,7 @@ namespace Egghead.Controllers
                 //todo: Handle error            
             }
 
-            await _signInManager.SignInAsync(user, true);
+            await _signInManager.SignInAsync(user, false);
                               
             return Ok(new
             {
