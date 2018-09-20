@@ -9,9 +9,11 @@ namespace Egghead.Common.Stores
     //todo: Move this interface to Common
     public interface IArticlesStore<T> : IDisposable where T : class
     {              
-        Task SetNormalizedTitleAsync(T entity, string normalizedTitle, CancellationToken cancellationToken);
+        Task SetNormalizedTitleAsync(T entity, string normalizedTitle, CancellationToken cancellationToken);      
         Task<T> FindArticleByIdAsync(ObjectId articleId, CancellationToken cancellationToken);
+        Task<T> FindArticleByIdOrDefaultAsync(ObjectId articleId, T defaultValue, CancellationToken cancellationToken);    
         Task<T> FindArticleByNormalizedTitleAsync(string title, CancellationToken cancellationToken);
+        Task<T> FindArticleByNormalizedTitleOrDefaultAsync(string title, T defaultValue, CancellationToken cancellationToken);
         Task<long> CountArticlesByProfileIdAsync(ObjectId profileId, CancellationToken cancellationToken);
         Task<List<T>> FindArticlesAsync(int howManyElements, CancellationToken cancellationToken);
         Task<List<T>> FindArticlesByProfileIdAsync(ObjectId profileId, int qty, CancellationToken cancellationToken);
