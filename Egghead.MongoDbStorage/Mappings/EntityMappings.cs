@@ -119,11 +119,11 @@ namespace Egghead.MongoDbStorage.Mappings
 
         private static void ConfigureMongoDbArticleViews()
         {
-            BsonClassMap.RegisterClassMap<MongoDbArticleViewCount>(bsonClassMap =>
+            BsonClassMap.RegisterClassMap<MongoDbArticleViewsCount>(bsonClassMap =>
             {
                 bsonClassMap.AutoMap();
                 bsonClassMap.MapIdMember(articleViewCount => articleViewCount.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
-                bsonClassMap.MapCreator(articleViewCount => new MongoDbArticleViewCount());
+                bsonClassMap.MapCreator(articleViewCount => new MongoDbArticleViewsCount());
             });
         }
 

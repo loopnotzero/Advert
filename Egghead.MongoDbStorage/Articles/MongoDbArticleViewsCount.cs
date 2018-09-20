@@ -3,9 +3,9 @@ using MongoDB.Bson;
 
 namespace Egghead.MongoDbStorage.Articles
 {
-    public class MongoDbArticleViewCount
+    public class MongoDbArticleViewsCount
     {
-        public MongoDbArticleViewCount()
+        public MongoDbArticleViewsCount()
         {
             Id = ObjectId.GenerateNewId();
             //Create indeces
@@ -13,7 +13,6 @@ namespace Egghead.MongoDbStorage.Articles
 
         public ObjectId Id { get; set; }
         public ObjectId ArticleId { get; set; }  
-        public ObjectId ProfileId { get; set; }
         public DateTime CreatedAt { get; set; }      
         public DateTime UdpatedAt { get; set; }
         public DateTime DeletedAt { get; set; }
