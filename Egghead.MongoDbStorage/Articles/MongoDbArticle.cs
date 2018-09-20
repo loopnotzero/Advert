@@ -17,10 +17,10 @@ namespace Egghead.MongoDbStorage.Articles
         public string NormalizedTitle { get; set; }       
         public string Text { get; set; }      
         public ReleaseType ReleaseType { get; set; }
-        public long LikesCount { get; set; }
-        public long DislikesCount { get; set; }
-        public long ViewsCount { get; set; }
-        public long CommentsCount { get; set; }
+        public double LikesCount { get; set; }
+        public double DislikesCount { get; set; }
+        public double ViewsCount { get; set; }
+        public double CommentsCount { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime ChangedAt { get; set; }
         public DateTime DeletedAt { get; set; }       
