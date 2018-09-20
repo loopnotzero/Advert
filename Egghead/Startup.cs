@@ -1,4 +1,5 @@
-﻿using Egghead.Common.Stores;
+﻿using System;
+using Egghead.Common.Stores;
 using Egghead.Managers;
 using Egghead.MongoDbStorage.Articles;
 using Egghead.MongoDbStorage.Common;

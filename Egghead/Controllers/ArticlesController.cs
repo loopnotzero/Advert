@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Egghead.Common.Articles;
@@ -77,10 +76,10 @@ namespace Egghead.Controllers
                     Id = article.Id.ToString(),
                     Title = article.Title,
                     Text = article.Text,
-                    LikesCount = article.LikesCount,
-                    DislikesCount = article.DislikesCount,
-                    ViewsCount = article.ViewsCount,
-                    CommentsCount = article.CommentsCount,
+                    LikesCount = article.LikesCount.ToMetric(),
+                    DislikesCount = article.DislikesCount.ToMetric(),
+                    ViewsCount = article.ViewsCount.ToMetric(),
+                    CommentsCount = article.CommentsCount.ToMetric(),
                     CreatedAt = article.CreatedAt.Humanize()
                 });
             }
@@ -105,11 +104,11 @@ namespace Egghead.Controllers
                     {
                         Id = article.Id.ToString(),
                         Title = article.Title,
-                        Text = (article.Text.Length > 1000 ? article.Text.Substring(0, 1000) : article.Text) + "...",
-                        LikesCount = article.LikesCount,
-                        DislikesCount = article.DislikesCount,
-                        ViewsCount = article.ViewsCount,
-                        CommentsCount = article.CommentsCount,
+                        Text = article.Text.Length > 1000 ? article.Text.Substring(0, 1000) + "..." : article.Text,
+                        LikesCount = article.LikesCount.ToMetric(),
+                        DislikesCount = article.DislikesCount.ToMetric(),
+                        ViewsCount = article.ViewsCount.ToMetric(),
+                        CommentsCount = article.CommentsCount.ToMetric(),
                         CreatedAt = article.CreatedAt.Humanize(),
                     });
                 }
@@ -372,15 +371,10 @@ namespace Egghead.Controllers
         {
             try
             {
-                var user = await _userManager.FindByEmailAsync(HttpContext.User.Identity.Name);
-                
-//                var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
-     
                 var articleComment = new MongoDbArticleComment
                 {
                     Text = model.Text,         
                     ReplyTo = model.ReplyTo == null ? ObjectId.Empty : ObjectId.Parse(model.ReplyTo),
-                    ProfileId = ObjectId.Empty,
                     CreatedAt = DateTime.UtcNow
                 };
 
@@ -414,15 +408,12 @@ namespace Egghead.Controllers
 
             foreach (var articleComment in articleComments)
             {
-                var likes = await _articleCommentsVotesManager.CountArticleCommentVotesAsync(objectId, articleComment.Id, VoteType.Like);
-                var dislikes = await _articleCommentsVotesManager.CountArticleCommentVotesAsync(objectId, articleComment.Id, VoteType.Dislike);
                 models.Add(new ArticleCommentModel
                 {
                     Id = articleComment.Id.ToString(),
                     Text = articleComment.Text,
                     ReplyTo = articleComment.ReplyTo == ObjectId.Empty ? null : articleComment.ReplyTo.ToString(),
                     CreatedAt = articleComment.CreatedAt.Humanize(),
-                    VotingPoints = likes - dislikes
                 });
             }
 

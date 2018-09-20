@@ -8,7 +8,7 @@
     <div class="row">
         <div class="col-md-8">
             <div class="card">
-                <div class="text-muted p-3"><a href="/Profiles/GetProfile"><small class="font-weight-bold">@Model.Name</small></a> <small class="time"> @Model.CreatedAt.Humanize()</small></div>
+                <div class="text-muted p-3"><a href="/Profiles/GetProfile"><small class="font-weight-bold">Victor Chicu</small></a> <small class="time"> @Model.CreatedAt.Humanize()</small></div>
 
                 <div class="card-body card-body__img">
                     <h4>@Model.Title</h4>
@@ -17,6 +17,7 @@
 
                 <div style="border-bottom: 1px solid #e3e3e3; padding-left: 20px; padding-bottom: 20px">
                     <h4 id="comments-count">
+                        @Model.CommentsCount Comments
                     </h4>
                 </div>
 
@@ -24,7 +25,7 @@
                     <textarea id="comment-editor" style="display: none"></textarea>
                     <div class="row mt-3">
                         <div class="col-12">
-                            <button id="publish-comment" class="btn btn-light waves-effect waves-light btn-sm">Publish a comment</button>
+                            <button id="publish-comment" class="btn btn-light waves-effect waves-light btn-sm">Add a public comment...</button>
                         </div>
                     </div>
                 </div>
@@ -282,22 +283,6 @@
         });
     }
 
-    function countArticleCommentsByArticleIdAsync(articleId) {
-        $.ajax({
-            url: `/Articles/CountArticleCommentsByArticleIdAsync?articleId=${articleId}`,
-            type: "GET",
-            contentType: "application/json",
-            error: function(jqXhr, textStatus, errorThrown) {
-                console.log("jqXhr: " + jqXhr);
-                console.log("textStatus: " + jqXhr);
-                console.log("errorThrown: " + jqXhr);
-            },
-            success: function(response) {
-                $("#comments-count").html(`Comments (${response})`);
-            }
-        });
-    }
-
     $(document).ready(function() {
         $.urlParam = function(name, url) {
             if (!url) {
@@ -330,6 +315,5 @@
         });
         
         findArticleCommentsByArticleIdAync(articleId);
-        countArticleCommentsByArticleIdAsync(articleId);      
     });
 </script>
