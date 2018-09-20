@@ -14,13 +14,12 @@ namespace Egghead.Common.Stores
         Task<T> FindArticleByIdOrDefaultAsync(ObjectId articleId, T defaultValue, CancellationToken cancellationToken);    
         Task<T> FindArticleByNormalizedTitleAsync(string title, CancellationToken cancellationToken);
         Task<T> FindArticleByNormalizedTitleOrDefaultAsync(string title, T defaultValue, CancellationToken cancellationToken);
-        Task<long> CountArticlesByProfileIdAsync(ObjectId profileId, CancellationToken cancellationToken);
         Task<List<T>> FindArticlesAsync(int howManyElements, CancellationToken cancellationToken);
-        Task<List<T>> FindArticlesByProfileIdAsync(ObjectId profileId, int qty, CancellationToken cancellationToken);
         Task<OperationResult> CreateArticleAsync(T entity, CancellationToken cancellationToken);
         Task<OperationResult> UpdateArticleByIdAsync(ObjectId articleId, T entity, CancellationToken cancellationToken);
-        Task<OperationResult> UpdateArticleByTitleAsync(string title, T entity, CancellationToken cancellationToken);
+        Task<OperationResult> UpdateArticleViewsCountById(ObjectId articleId, double viewsCount, CancellationToken cancellationToken);
+        Task<OperationResult> UpdateArticleByNormalizedTitleAsync(string title, T entity, CancellationToken cancellationToken);
         Task<OperationResult> DeleteArticleByIdAsync(ObjectId articleId, CancellationToken cancellationToken);      
-        Task<OperationResult> DeleteArticleByTitleAsync(string title, CancellationToken cancellationToken);
+        Task<OperationResult> DeleteArticleByNormalizedTitleAsync(string title, CancellationToken cancellationToken);
     }
 }
