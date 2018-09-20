@@ -30,10 +30,10 @@ namespace Egghead.Controllers
         private readonly ArticlesManager<MongoDbArticle> _articlesManager;
         private readonly ArticlesLikesManager<MongoDbArticleVote> _articlesVotesManager;
         private readonly ArticlesCommentsManager<MongoDbArticleComment> _articlesCommentsManager;
-        private readonly ArticlesViewCountManager<MongoDbArticleViewCount> _articlesViewCountManager;
+        private readonly ArticlesViewCountManager<MongoDbArticleViewsCount> _articlesViewCountManager;
         private readonly ArticleCommentsVotesManager<MongoDbArticleCommentVote> _articleCommentsVotesManager;
            
-        public ArticlesController(UserManager<MongoDbUser> userManager, ProfilesManager<MongoDbProfile> profilesManager, ArticlesManager<MongoDbArticle> articlesManager, ArticlesLikesManager<MongoDbArticleVote> articlesVotesManager, ArticlesCommentsManager<MongoDbArticleComment> articlesCommentsManager, ArticlesViewCountManager<MongoDbArticleViewCount> articlesViewCountManager, ArticleCommentsVotesManager<MongoDbArticleCommentVote> articleCommentsVotesManager, ILoggerFactory loggerFactory, ILookupNormalizer keyNormalizer)
+        public ArticlesController(UserManager<MongoDbUser> userManager, ProfilesManager<MongoDbProfile> profilesManager, ArticlesManager<MongoDbArticle> articlesManager, ArticlesLikesManager<MongoDbArticleVote> articlesVotesManager, ArticlesCommentsManager<MongoDbArticleComment> articlesCommentsManager, ArticlesViewCountManager<MongoDbArticleViewsCount> articlesViewCountManager, ArticleCommentsVotesManager<MongoDbArticleCommentVote> articleCommentsVotesManager, ILoggerFactory loggerFactory, ILookupNormalizer keyNormalizer)
         {
             _logger = loggerFactory.CreateLogger<AccountController>();
             _keyNormalizer = keyNormalizer;
@@ -59,50 +59,28 @@ namespace Egghead.Controllers
         {
             try
             {
-//                var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
-
-                var articleViewCount = new MongoDbArticleViewCount
+                var opertaionResult = await _articlesViewCountManager.CreateArticleViewCountAsync(new MongoDbArticleViewsCount
                 {
                     ArticleId = ObjectId.Parse(articleId),
-                    ProfileId = ObjectId.Empty,
                     CreatedAt = DateTime.UtcNow
-                };
-                
-                await _articlesViewCountManager.CreateArticleViewCountAsync(articleViewCount);
-                
-                var user = await _userManager.FindByEmailAsync(HttpContext.User.Identity.Name);
-                var queryable = await _articlesViewCountManager.AsQueryable();
-                var popularArticles = new List<PopularArticleModel>();
-             
-                foreach (var popularArticleEntity in queryable.GroupBy(x => x.ArticleId).Select(x => new MongoDbPopularArticle {ArticleId = x.Key, ViewsCount = x.Count()}).OrderByDescending(x => x.ViewsCount).Take(10))
-                {
-                    var articleEntity = await _articlesManager.FindArticleByIdAsync(popularArticleEntity.ArticleId);            
-                    popularArticles.Add(new PopularArticleModel
-                    {
-                        Id = articleEntity.Id.ToString(),
-                        Title = articleEntity.Title,
-                        CreatedAt = articleEntity.CreatedAt
-                    });
-                }
-                
-                ViewBag.PopularArticles = popularArticles;
-   
-                var recentArticles = await _articlesManager.FindRecentArticlesByProfileIdAsync(ObjectId.Empty, 10);
-                
-                ViewBag.RecentArticles = recentArticles.Select(x => new RecentArticleModel
-                {
-                    Id = x.Id.ToString(),
-                    Title = x.Title,
-                    CreatedAt = x.CreatedAt
                 });
-                
-                var article = await _articlesManager.FindArticleByIdAsync(articleViewCount.ArticleId);              
-                
+
+                if (!opertaionResult.Succeeded)
+                {
+                    //todo: Handle error
+                }
+                 
+                var article = await _articlesManager.FindArticleByIdAsync(ObjectId.Parse(articleId));
+
                 return View(new ArticleModel
                 {
                     Id = article.Id.ToString(),
                     Title = article.Title,
                     Text = article.Text,
+                    LikesCount = article.LikesCount,
+                    DislikesCount = article.DislikesCount,
+                    ViewsCount = article.ViewsCount,
+                    CommentsCount = article.CommentsCount,
                     CreatedAt = article.CreatedAt.Humanize()
                 });
             }
@@ -128,8 +106,8 @@ namespace Egghead.Controllers
                         Id = article.Id.ToString(),
                         Title = article.Title,
                         Text = (article.Text.Length > 1000 ? article.Text.Substring(0, 1000) : article.Text) + "...",
-                        Likes = article.LikesCount,
-                        Dislikes = article.DislikesCount,
+                        LikesCount = article.LikesCount,
+                        DislikesCount = article.DislikesCount,
                         ViewsCount = article.ViewsCount,
                         CommentsCount = article.CommentsCount,
                         CreatedAt = article.CreatedAt.Humanize(),

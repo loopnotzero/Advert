@@ -45,12 +45,6 @@ namespace Egghead.Managers
         public async Task<OperationResult> CreateArticleViewCountAsync(T entity)
         {
             ThrowIfDisposed();
-
-            if (entity == null)
-            {
-                throw new ArgumentNullException(nameof(entity));
-            }
-
             return await Store.CreateArticleViewsCountAsync(entity, CancellationToken);
         }
         

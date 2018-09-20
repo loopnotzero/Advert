@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Egghead.Models.Articles
+﻿namespace Egghead.Models.Articles
 {
     public class ArticleModel
     {
@@ -8,8 +6,8 @@ namespace Egghead.Models.Articles
         public string Name { get; set; }
         public string Title { get; set; }
         public string Text { get; set; }
-        public long Likes { get; set; }
-        public long Dislikes { get; set; }
+        public long LikesCount { get; set; }
+        public long DislikesCount { get; set; }
         public long ViewsCount { get; set; }
         public long CommentsCount { get; set; }
         public long BookmarksCount { get; set; }

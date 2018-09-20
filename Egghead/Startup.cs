@@ -58,7 +58,7 @@ namespace Egghead
             services.AddScoped<ArticlesCommentsManager<MongoDbArticleComment>, ArticlesCommentsManager<MongoDbArticleComment>>();
             services.AddScoped<ArticlesLikesManager<MongoDbArticleVote>, ArticlesLikesManager<MongoDbArticleVote>>();
             services.AddScoped<ArticlesManager<MongoDbArticle>, ArticlesManager<MongoDbArticle>>();
-            services.AddScoped<ArticlesViewCountManager<MongoDbArticleViewCount>, ArticlesViewCountManager<MongoDbArticleViewCount>>();
+            services.AddScoped<ArticlesViewCountManager<MongoDbArticleViewsCount>, ArticlesViewCountManager<MongoDbArticleViewsCount>>();
             services.AddScoped<ProfilesManager<MongoDbProfile>, ProfilesManager<MongoDbProfile>>();
             services.AddScoped<ProfilesImagesManager<MongoDbProfileImage>, ProfilesImagesManager<MongoDbProfileImage>>();
             
@@ -84,10 +84,10 @@ namespace Egghead
                 return new MongoDbArticlesStore<MongoDbArticle>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
             });
              
-            services.AddTransient<IArticlesViewCountStore<MongoDbArticleViewCount>>(provider =>
+            services.AddTransient<IArticlesViewCountStore<MongoDbArticleViewsCount>>(provider =>
             {
                 var options = provider.GetService<IOptions<MongoDbOptions>>();
-                return new MongoDbArticlesViewCountStore<MongoDbArticleViewCount>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+                return new MongoDbArticlesViewCountStore<MongoDbArticleViewsCount>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
             });
             
             services.AddTransient<IArticlesVotesStore<MongoDbArticleVote>>(provider =>
