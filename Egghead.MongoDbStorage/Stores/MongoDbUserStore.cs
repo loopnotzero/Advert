@@ -64,7 +64,7 @@ namespace Egghead.MongoDbStorage.Stores
         public Task SetNormalizedUserNameAsync(T user, string normalizedName, CancellationToken cancellationToken)
         {     
             cancellationToken.ThrowIfCancellationRequested();          
-            user.NormalizedUserName = normalizedName ?? user.Email.ToUpper();           
+            user.NormalizedUserName = normalizedName ?? user.UserName.ToUpper();           
             return Task.FromResult<object>(null);
         }
 
@@ -149,7 +149,7 @@ namespace Egghead.MongoDbStorage.Stores
             cancellationToken.ThrowIfCancellationRequested();
             var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.Id, user.Id), cancellationToken: cancellationToken);
             var entity = await cursor.FirstOrDefaultAsync(cancellationToken);
-            return entity?.Email;
+            return entity?.NormalizedEmail;
         }
 
         public Task SetNormalizedEmailAsync(T user, string normalizedEmail, CancellationToken cancellationToken)

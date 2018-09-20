@@ -132,7 +132,17 @@ namespace Egghead.MongoDbStorage.Stores
             return OperationResult.Success;
         }
 
-        public async Task<OperationResult> UpdateArticleByTitleAsync(string title, T entity, CancellationToken cancellationToken)
+        public async Task<OperationResult> UpdateArticleViewsCountById(ObjectId articleId, double viewsCount, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            await _collection.UpdateOneAsync(Builders<T>.Filter.Eq(x => x.Id, articleId), Builders<T>.Update.Set(x => x.ViewsCount, viewsCount), new UpdateOptions
+            {
+                BypassDocumentValidation = false
+            }, cancellationToken);
+            return OperationResult.Success;
+        }
+
+        public async Task<OperationResult> UpdateArticleByNormalizedTitleAsync(string title, T entity, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             await _collection.ReplaceOneAsync(Builders<T>.Filter.Eq(x => x.NormalizedTitle, title), entity, new UpdateOptions
@@ -149,7 +159,7 @@ namespace Egghead.MongoDbStorage.Stores
             return OperationResult.Success;
         }
 
-        public async Task<OperationResult> DeleteArticleByTitleAsync(string title, CancellationToken cancellationToken)
+        public async Task<OperationResult> DeleteArticleByNormalizedTitleAsync(string title, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             await _collection.DeleteOneAsync(Builders<T>.Filter.Eq(x => x.NormalizedTitle, title), cancellationToken);          
