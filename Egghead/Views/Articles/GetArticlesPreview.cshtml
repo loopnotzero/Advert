@@ -1,7 +1,7 @@
 ﻿@using Egghead.Models.Articles
 @using Humanizer
 
-@model IEnumerable<ArticleModel>
+@model IEnumerable<ArticlePreviewModel>
 
 @Html.Partial("Header")
 
@@ -67,7 +67,7 @@
                                     <a href="/Profiles/GetProfile"><small class="font-weight-bold">Victor Chicu</small></a> <small class="time"> @article.CreatedAt</small>             
                                 </div>
                                 <div class="card-body card-body__img">
-                                    <a href="/Articles/GetArticleContent?articleId=@article.Id">
+                                    <a href="/Articles/GetArticleContent/@article.Id">
                                         <h4 class="card-title cut-long-text mb-2">@article.Title</h4>
                                     </a>
                                     @Html.Raw(article.Text)
@@ -100,7 +100,7 @@
                                         <small id="article-comments">@article.CommentsCount</small>
 
                                         <small class="text-muted float-right mt-2 mr-4">
-                                            <a href="/Articles/GetArticleContent?articleId=@article.Id">READ MORE...</a>
+                                            <a href="/Articles/GetArticleContent/@article.Id">READ MORE...</a>
                                         </small>
                                     </div>
                                 </div>

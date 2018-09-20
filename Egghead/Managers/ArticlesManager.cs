@@ -44,18 +44,6 @@ namespace Egghead.Managers
             await Store.SetNormalizedTitleAsync(entity, normalizedTitle, CancellationToken);
         }
 
-        public async Task<long> CountArticlesByProfileIdAsync(ObjectId profileId)
-        {
-            ThrowIfDisposed();
-            
-            if (profileId == null)
-            {
-                throw new ArgumentNullException(nameof(profileId));
-            }
-                
-            return await Store.CountArticlesByProfileIdAsync(profileId, CancellationToken);
-        }
-        
         public async Task<T> FindArticleByIdAsync(ObjectId articleId)
         {
             ThrowIfDisposed();
@@ -88,12 +76,6 @@ namespace Egghead.Managers
         {
             ThrowIfDisposed();          
             return await Store.FindArticlesAsync(howManyElements, CancellationToken);
-        }
-
-        public async Task<List<T>> FindRecentArticlesByProfileIdAsync(ObjectId profileId, int limit)
-        {
-            ThrowIfDisposed();          
-            return await Store.FindArticlesByProfileIdAsync(profileId, limit, CancellationToken);
         }
 
         public async Task<OperationResult> CreateArticleAsync(T entity)
@@ -129,9 +111,26 @@ namespace Egghead.Managers
                 throw new ArgumentNullException(nameof(title));
             }
 
-            return await Store.UpdateArticleByTitleAsync(title.ToUpper(), entity, CancellationToken);
+            if (entity == null)
+            {
+                throw new ArgumentNullException(nameof(entity));
+            }
+
+            return await Store.UpdateArticleByNormalizedTitleAsync(title.ToUpper(), entity, CancellationToken);
         }
 
+        public async Task<OperationResult> UpdateArticleViewsCountById(ObjectId articleId, long viewsCount)
+        {
+            ThrowIfDisposed();
+
+            if (articleId == ObjectId.Empty)
+            {
+                throw new ArgumentNullException(nameof(articleId));
+            }
+
+            return await Store.UpdateArticleViewsCountById(articleId, viewsCount, CancellationToken);
+        }
+        
         public async Task<OperationResult> DeleteArticleByIdAsync(ObjectId articleId)
         {
             ThrowIfDisposed();
@@ -155,7 +154,7 @@ namespace Egghead.Managers
 
             title = NormalizeKey(title);
 
-            return await Store.DeleteArticleByTitleAsync(title, CancellationToken);
+            return await Store.DeleteArticleByNormalizedTitleAsync(title, CancellationToken);
         }
     
         public void Dispose()
@@ -185,6 +184,6 @@ namespace Egghead.Managers
             {
                 throw new ObjectDisposedException(GetType().Name);
             }
-        }
+        }      
     }
 }

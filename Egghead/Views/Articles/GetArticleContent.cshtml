@@ -1,6 +1,6 @@
 ﻿@using Egghead.Models.Articles
 @using Humanizer
-@model ArticleModel
+@model ArticlePreviewModel
 
 @Html.Partial("Header")
 
@@ -40,34 +40,34 @@
                 <div style="border-bottom: 1px solid #d5d5d5; margin-bottom: 20px;">
                     <h4 class="text-muted font-weight-bold">Popular on Egghead</h4>
                 </div>
-                @{
-                    var popularArticles = (List<PopularArticleModel>)ViewBag.PopularArticles;
-                    
-                    if (popularArticles != null)
-                    {
-                        <div class="listview">
-                            @foreach (var popularArticle in popularArticles)
-                            {
-                                <div class="listview__item">
-                                    <div class="mr-2" style="width: 50px; height: 50px">
-                                        <img src="/images/users/user_empty.png" class="listview__img" alt=""> 
-                                    </div>
-
-                                    <div class="listview__content">
-                                        <div class="listview__heading">
-                                            <p>
-                                                <a class="font-weight-bold" href="/Articles/GetArticleContent?articleId=@popularArticle.Id">@popularArticle.Title</a>
-                                            </p>
-                                        </div>
-                                        <p>
-                                            <a href="/Profiles/GetProfile">@popularArticle.Name</a> <small class="time"> @popularArticle.CreatedAt.Humanize()</small>
-                                        </p>
-                                    </div>
-                                </div>
-                            }
-                        </div>
-                    }
-                }
+@*                 @{ *@
+@*                     var popularArticles = (List<PopularArticleModel>)ViewBag.PopularArticles; *@
+@*                      *@
+@*                     if (popularArticles != null) *@
+@*                     { *@
+@*                         <div class="listview"> *@
+@*                             @foreach (var popularArticle in popularArticles) *@
+@*                             { *@
+@*                                 <div class="listview__item"> *@
+@*                                     <div class="mr-2" style="width: 50px; height: 50px"> *@
+@*                                         <img src="/images/users/user_empty.png" class="listview__img" alt="">  *@
+@*                                     </div> *@
+@* *@
+@*                                     <div class="listview__content"> *@
+@*                                         <div class="listview__heading"> *@
+@*                                             <p> *@
+@*                                                 <a class="font-weight-bold" href="/Articles/GetArticleContent?articleId=@popularArticle.Id">@popularArticle.Title</a> *@
+@*                                             </p> *@
+@*                                         </div> *@
+@*                                         <p> *@
+@*                                             <a href="/Profiles/GetProfile">@popularArticle.Name</a> <small class="time"> @popularArticle.CreatedAt.Humanize()</small> *@
+@*                                         </p> *@
+@*                                     </div> *@
+@*                                 </div> *@
+@*                             } *@
+@*                         </div> *@
+@*                     } *@
+@*                 } *@
             </div>
         </div>
     </div>    
@@ -155,7 +155,7 @@
     
     function createCommentReplyAsync(articleId, replyTo, comment) {
         $.ajax({
-            url: `/Articles/CreateArticleCommentAsync?articleId=${articleId}`,
+            url: `/Articles/CreateArticleCommentAsync/${articleId}`,
             type: "POST",
             data: JSON.stringify(comment),
             contentType: "application/json",
@@ -189,14 +189,13 @@
                     </div>
                 </div>
                 `);
-                countArticleCommentsByArticleIdAsync(articleId);
             }
         });
     }
 
     function createArticleCommentAsync(articleId, comment) {
         $.ajax({
-            url: `/Articles/CreateArticleCommentAsync?articleId=${articleId}`,
+            url: `/Articles/CreateArticleCommentAsync/${articleId}`,
             type: "POST",
             data: JSON.stringify(comment),
             contentType: "application/json",
@@ -229,7 +228,6 @@
                         <div id="reply-placeholder"></div>
                     </div>
                 </div>`);
-                countArticleCommentsByArticleIdAsync(articleId);
             }
         });
     }
@@ -240,7 +238,7 @@
             commentId: commentId
         }
         $.ajax({
-            url: "/Articles/UpsertArticleCommentVoteAsync?articleId=" + articleId,
+            url: "/Articles/UpsertArticleCommentVoteAsync/" + articleId,
             type: "POST",
             data: JSON.stringify(vote),
             contentType: "application/json",
@@ -269,7 +267,7 @@
 
     function findArticleCommentsByArticleIdAync(articleId) {
         $.ajax({
-            url: `/Articles/FindArticleCommentsByArticleIdAsync?articleId=${articleId}`,
+            url: `/Articles/FindArticleCommentsByArticleIdAsync/${articleId}`,
             type: "GET",
             contentType: "application/json",
             error: function(jqXhr, textStatus, errorThrown) {

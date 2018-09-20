@@ -15,6 +15,7 @@ using Humanizer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 
@@ -29,10 +30,10 @@ namespace Egghead.Controllers
         private readonly ArticlesManager<MongoDbArticle> _articlesManager;
         private readonly ArticlesLikesManager<MongoDbArticleVote> _articlesVotesManager;
         private readonly ArticlesCommentsManager<MongoDbArticleComment> _articlesCommentsManager;
-        private readonly ArticlesViewCountManager<MongoDbArticleViewsCount> _articlesViewCountManager;
+        private readonly ArticlesViewCountManager<MongoDbArticleViewsCount> _articlesViewsCountManager;
         private readonly ArticleCommentsVotesManager<MongoDbArticleCommentVote> _articleCommentsVotesManager;
            
-        public ArticlesController(UserManager<MongoDbUser> userManager, ProfilesManager<MongoDbProfile> profilesManager, ArticlesManager<MongoDbArticle> articlesManager, ArticlesLikesManager<MongoDbArticleVote> articlesVotesManager, ArticlesCommentsManager<MongoDbArticleComment> articlesCommentsManager, ArticlesViewCountManager<MongoDbArticleViewsCount> articlesViewCountManager, ArticleCommentsVotesManager<MongoDbArticleCommentVote> articleCommentsVotesManager, ILoggerFactory loggerFactory, ILookupNormalizer keyNormalizer)
+        public ArticlesController(UserManager<MongoDbUser> userManager, ProfilesManager<MongoDbProfile> profilesManager, ArticlesManager<MongoDbArticle> articlesManager, ArticlesLikesManager<MongoDbArticleVote> articlesVotesManager, ArticlesCommentsManager<MongoDbArticleComment> articlesCommentsManager, ArticlesViewCountManager<MongoDbArticleViewsCount> articlesViewsCountManager, ArticleCommentsVotesManager<MongoDbArticleCommentVote> articleCommentsVotesManager, ILoggerFactory loggerFactory, ILookupNormalizer keyNormalizer)
         {
             _logger = loggerFactory.CreateLogger<AccountController>();
             _keyNormalizer = keyNormalizer;
@@ -41,7 +42,7 @@ namespace Egghead.Controllers
             _articlesManager = articlesManager;
             _articlesVotesManager = articlesVotesManager;
             _articlesCommentsManager = articlesCommentsManager;
-            _articlesViewCountManager = articlesViewCountManager;
+            _articlesViewsCountManager = articlesViewsCountManager;
             _articleCommentsVotesManager = articleCommentsVotesManager;
         }
 
@@ -54,24 +55,26 @@ namespace Egghead.Controllers
 
         [HttpGet]
         [Authorize]
+        [Route("/Articles/GetArticleContent/{articleId}")]
         public async Task<IActionResult> GetArticleContent(string articleId)
         {
             try
             {
-                var opertaionResult = await _articlesViewCountManager.CreateArticleViewCountAsync(new MongoDbArticleViewsCount
+                var identityName = HttpContext.User.Identity.Name;
+
+                var artId = ObjectId.Parse(articleId);
+                    
+                await _articlesViewsCountManager.CreateArticleViewsCountAsync(new MongoDbArticleViewsCount
                 {
-                    ArticleId = ObjectId.Parse(articleId),
+                    ArticleId = artId,
                     CreatedAt = DateTime.UtcNow
                 });
 
-                if (!opertaionResult.Succeeded)
-                {
-                    //todo: Handle error
-                }
+                await _articlesManager.UpdateArticleViewsCountById(artId, await _articlesViewsCountManager.CountArticleViewsCountAsync(artId));
                  
                 var article = await _articlesManager.FindArticleByIdAsync(ObjectId.Parse(articleId));
 
-                return View(new ArticleModel
+                return View(new ArticlePreviewModel
                 {
                     Id = article.Id.ToString(),
                     Title = article.Title,
@@ -96,11 +99,11 @@ namespace Egghead.Controllers
         {
             try
             {
-                var articles = new List<ArticleModel>();
+                var articles = new List<ArticlePreviewModel>();
                 
                 foreach (var article in await _articlesManager.FindArticlesAsync(50))
                 {
-                    articles.Add(new ArticleModel
+                    articles.Add(new ArticlePreviewModel
                     {
                         Id = article.Id.ToString(),
                         Title = article.Title,
@@ -128,23 +131,22 @@ namespace Egghead.Controllers
         {
             try
             {
-                var operationResult = await _articlesManager.CreateArticleAsync(new MongoDbArticle
-                {                   
+                var article = new MongoDbArticle
+                {
                     Title = model.Title,
                     NormalizedTitle = NormalizeKey(model.Title),
-                    Text = model.Text,                
+                    Text = model.Text,
                     CreatedAt = DateTime.UtcNow,
                     ReleaseType = ReleaseType.PreModeration,
-                });
+                };
+                
+                await _articlesManager.CreateArticleAsync(article);
 
-                if (!operationResult.Succeeded)
-                {
-                    //todo: Handle error
-                }
-
+                var url = Url.Action("GetArticleContent", "Articles", new { articleId = article.Id });
+                
                 return Ok(new
                 {
-                    returnUrl = "/"
+                    returnUrl = url
                 });
             }
             catch (Exception e)
@@ -156,6 +158,7 @@ namespace Egghead.Controllers
 
         [HttpGet]
         [Authorize]
+        [Route("/Articles/GetArticleByIdAsync/{articleId}")]
         public async Task<IActionResult> GetArticleByIdAsync(string articleId)
         {
             try
@@ -172,15 +175,16 @@ namespace Egghead.Controllers
 
         [HttpPut]
         [Authorize]
-        public async Task<IActionResult> UdpateArticleByIdAsync(string articleId, [FromBody] ArticleModel model)
+        [Route("/Articles/UdpateArticleByIdAsync/{articleId}")]
+        public async Task<IActionResult> UdpateArticleByIdAsync(string articleId, [FromBody] ArticlePreviewModel previewModel)
         {
             try
             {
                 await _articlesManager.UpdateArticleByIdAsync(ObjectId.Parse(articleId), new MongoDbArticle
                 {
-                    Title = model.Title,
-                    NormalizedTitle = _keyNormalizer.Normalize(model.Title),
-                    Text = model.Text,
+                    Title = previewModel.Title,
+                    NormalizedTitle = _keyNormalizer.Normalize(previewModel.Title),
+                    Text = previewModel.Text,
                     ChangedAt = DateTime.UtcNow
                 });
 
@@ -195,15 +199,16 @@ namespace Egghead.Controllers
 
         [HttpPut]
         [Authorize]
-        public async Task<IActionResult> UdpateArticleByTitleAsync(string title, [FromBody] ArticleModel model)
+        [Route("/Articles/UdpateArticleByTitleAsync/{title}")]
+        public async Task<IActionResult> UdpateArticleByTitleAsync(string title, [FromBody] ArticlePreviewModel previewModel)
         {
             try
             {
                 await _articlesManager.UpdateArticleByTitleAsync(title, new MongoDbArticle
                 {
-                    Title = model.Title,
-                    NormalizedTitle = _keyNormalizer.Normalize(model.Title),
-                    Text = model.Text,
+                    Title = previewModel.Title,
+                    NormalizedTitle = _keyNormalizer.Normalize(previewModel.Title),
+                    Text = previewModel.Text,
                     ChangedAt = DateTime.UtcNow,
                 });
 
@@ -218,6 +223,7 @@ namespace Egghead.Controllers
 
         [HttpDelete]
         [Authorize]
+        [Route("/Articles/DeleteArticleByIdAsync/{articleId}")]
         public async Task<IActionResult> DeleteArticleByIdAsync(string articleId)
         {
             try
@@ -234,6 +240,7 @@ namespace Egghead.Controllers
 
         [HttpDelete]
         [Authorize]
+        [Route("/Articles/DeleteArticleByTitleAsync/{title}")]
         public async Task<IActionResult> DeleteArticleByTitleAsync(string title)
         {
             await _articlesManager.DeleteArticleByTitleAsync(title);
@@ -242,6 +249,7 @@ namespace Egghead.Controllers
 
         [HttpPost]
         [Authorize]
+        [Route("/Articles/CreateArticleVoteAsync/{articleId}")]
         public async Task<IActionResult> CreateArticleVoteAsync(string articleId, [FromBody] ArticleVoteModel model)
         {
             try
@@ -276,6 +284,7 @@ namespace Egghead.Controllers
 
         [HttpPost]
         [Authorize]
+        [Route("/Articles/UpsertArticleCommentVoteAsync/{articleId}")]
         public async Task<IActionResult> UpsertArticleCommentVoteAsync(string articleId, [FromBody] ArticleCommentVoteModel model)
         {
             try
@@ -360,6 +369,7 @@ namespace Egghead.Controllers
           
         [HttpGet]
         [Authorize]
+        [Route("/Articles/CountArticleCommentsByArticleIdAsync/{articleId}")]
         public async Task<long> CountArticleCommentsByArticleIdAsync(string articleId)
         {
             return await _articlesCommentsManager.CountArticleCommentsByArticleIdAsync(articleId);
@@ -367,6 +377,7 @@ namespace Egghead.Controllers
 
         [HttpPost]
         [Authorize]
+        [Route("/Articles/CreateArticleCommentAsync/{articleId}")]
         public async Task<IActionResult> CreateArticleCommentAsync(string articleId, [FromBody] ArticleCommentModel model)
         {
             try
@@ -399,6 +410,7 @@ namespace Egghead.Controllers
 
         [HttpGet]
         [Authorize]
+        [Route("/Articles/FindArticleCommentsByArticleIdAsync/{articleId}")]
         public async Task<IActionResult> FindArticleCommentsByArticleIdAsync(string articleId)
         {
             var user = await _userManager.FindByEmailAsync(HttpContext.User.Identity.Name);
@@ -430,12 +442,12 @@ namespace Egghead.Controllers
 
 //                var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
 
-                var artcilesCount = await _articlesManager.CountArticlesByProfileIdAsync(ObjectId.Empty);
+//                var artcilesCount = await _articlesManager.CountArticlesByProfileIdAsync(ObjectId.Empty);
 
                 return Ok(new ProfileDescription
                 {
                     Headline = "",
-                    ArticlesCount = artcilesCount,
+                    ArticlesCount = 0,
                     FollowingCount = 0,
                     SocialLinks = new List<SocialLink>()
                 });

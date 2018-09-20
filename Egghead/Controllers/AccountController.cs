@@ -73,13 +73,8 @@ namespace Egghead.Controllers
         {
             ViewData["returnUrl"] = returnUrl; 
             
-            var signInResult = await _signInManager.PasswordSignInAsync(model.Email, model.Password, false, false);
+            await _signInManager.PasswordSignInAsync(model.Email, model.Password, false, false);
 
-            if (!signInResult.Succeeded)
-            {
-                //todo: Handle error
-            }
-                
             return Ok(new
             {
                 returnUrl
@@ -97,17 +92,12 @@ namespace Egghead.Controllers
             {
                 Email = model.Email,
                 NormalizedEmail = model.Email,
-                UserName = model.Email,
-                NormalizedUserName = model.Email,
+                UserName = model.Name,
+                NormalizedUserName = model.Name,
             };
 
-            var result = await _userManager.CreateAsync(user, model.Password);
-
-            if (!result.Succeeded)
-            {
-                //todo: Handle error            
-            }
-
+            await _userManager.CreateAsync(user, model.Password);
+        
             await _signInManager.SignInAsync(user, false);
                               
             return Ok(new

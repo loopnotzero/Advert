@@ -40,10 +40,7 @@
         $("#log-in").click(function(e) {
             e.preventDefault();
             
-            var url = $("#form").attr("action");
             var token = $("input[name=__RequestVerificationToken]").val();
-            var email = $("#email").val();
-            var password = $("#password").val();
             var additionalHeaders = {};
 
             if (token) {
@@ -51,9 +48,9 @@
             }
 
             $.ajax({
-                url: url,
+                url: $("#form").attr("action"),
                 type: "POST",
-                data: JSON.stringify({ email: email, password: password }),
+                data: JSON.stringify({ email: $("#email").val(), password: $("#password").val() }),
                 headers: additionalHeaders,
                 contentType: "application/json",
                 error: function() {
@@ -86,11 +83,7 @@
         $("#sign-up").click(function(e) {
             e.preventDefault();
             
-            var url = $("#form").attr("action");
             var token = $("input[name=__RequestVerificationToken]").val();
-            var name = $("#name").val();
-            var email = $("#email").val();
-            var password = $("#password").val();
             var additionalHeaders = {};
 
             if (token) {
@@ -98,9 +91,9 @@
             }
 
             $.ajax({
-                url: url,
+                url: $("#form").attr("action"),
                 type: "POST",
-                data: JSON.stringify({ name: name, email: email, password: password }),
+                data: JSON.stringify({ email: $("#email").val(), name: $("#name").val(), password: $("#password").val() }),
                 headers: additionalHeaders,
                 contentType: "application/json",
                 error: function() {
