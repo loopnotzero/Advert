@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
 using Egghead.Common;
@@ -26,14 +25,9 @@ namespace Egghead.Managers
             Store = store ?? throw new ArgumentNullException(nameof(store));
         }
         
-        public async Task<long> CountArticleCommentVotesAsync(ObjectId articleId, ObjectId commentId, VoteType voteType)
+        public async Task<long> CountArticleCommentVotesAsync(ObjectId commentId, VoteType voteType)
         {
             ThrowIfDisposed();
-
-            if (articleId == null)
-            {
-                throw new ArgumentNullException(nameof(articleId));
-            }
             
             if (commentId == null)
             {
@@ -45,24 +39,19 @@ namespace Egghead.Managers
                 throw new ArgumentNullException(nameof(voteType));
             }
 
-            return await Store.CountArticleCommentVotesAsync(articleId, commentId, voteType, CancellationToken);
+            return await Store.CountArticleCommentVotesAsync(commentId, voteType, CancellationToken);
         }
 
-        public async Task<T> FindArticleCommentVoteAsync(ObjectId articleId, ObjectId commentId)
+        public async Task<T> FindArticleCommentVoteAsync(ObjectId commentId)
         {
-            ThrowIfDisposed();
-
-            if (articleId == null)
-            {
-                throw new ArgumentNullException(nameof(articleId));
-            }
+            ThrowIfDisposed();       
             
             if (commentId == null)
             {
                 throw new ArgumentNullException(nameof(commentId));
             }
 
-            return await Store.FindArticleCommentVoteAsync(articleId, commentId, CancellationToken);
+            return await Store.FindArticleCommentVoteAsync(commentId, CancellationToken);
         }
         
         public async Task<OperationResult> CreateArticleCommentVoteAsync(T entity)

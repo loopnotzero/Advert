@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Egghead.Common.Articles;
-using Egghead.Common.Profiles;
 using Egghead.Exceptions;
 using Egghead.Managers;
 using Egghead.Models.Articles;
-using Egghead.Models.Profiles;
 using Egghead.MongoDbStorage.Articles;
 using Egghead.MongoDbStorage.Profiles;
 using Egghead.MongoDbStorage.Users;
@@ -15,7 +13,7 @@ using Humanizer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 
@@ -24,6 +22,7 @@ namespace Egghead.Controllers
     public class ArticlesController : Controller
     {
         private readonly ILogger _logger;
+        private readonly IConfiguration _configuration;
         private readonly ILookupNormalizer _keyNormalizer;
         private readonly UserManager<MongoDbUser> _userManager;
         private readonly ProfilesManager<MongoDbProfile> _profilesManager;
@@ -33,10 +32,12 @@ namespace Egghead.Controllers
         private readonly ArticlesViewCountManager<MongoDbArticleViewsCount> _articlesViewsCountManager;
         private readonly ArticleCommentsVotesManager<MongoDbArticleCommentVote> _articleCommentsVotesManager;
            
-        public ArticlesController(UserManager<MongoDbUser> userManager, ProfilesManager<MongoDbProfile> profilesManager, ArticlesManager<MongoDbArticle> articlesManager, ArticlesLikesManager<MongoDbArticleVote> articlesVotesManager, ArticlesCommentsManager<MongoDbArticleComment> articlesCommentsManager, ArticlesViewCountManager<MongoDbArticleViewsCount> articlesViewsCountManager, ArticleCommentsVotesManager<MongoDbArticleCommentVote> articleCommentsVotesManager, ILoggerFactory loggerFactory, ILookupNormalizer keyNormalizer)
+        public ArticlesController(UserManager<MongoDbUser> userManager, ProfilesManager<MongoDbProfile> profilesManager, ArticlesManager<MongoDbArticle> articlesManager, ArticlesLikesManager<MongoDbArticleVote> articlesVotesManager, ArticlesCommentsManager<MongoDbArticleComment> articlesCommentsManager, ArticlesViewCountManager<MongoDbArticleViewsCount> articlesViewsCountManager, ArticleCommentsVotesManager<MongoDbArticleCommentVote> articleCommentsVotesManager, IConfiguration configuration, ILoggerFactory loggerFactory, ILookupNormalizer keyNormalizer)
         {
             _logger = loggerFactory.CreateLogger<AccountController>();
             _keyNormalizer = keyNormalizer;
+            _configuration = configuration;
+            
             _userManager = userManager;
             _profilesManager = profilesManager;
             _articlesManager = articlesManager;
@@ -44,6 +45,8 @@ namespace Egghead.Controllers
             _articlesCommentsManager = articlesCommentsManager;
             _articlesViewsCountManager = articlesViewsCountManager;
             _articleCommentsVotesManager = articleCommentsVotesManager;
+
+           
         }
 
         [HttpGet]
@@ -60,7 +63,7 @@ namespace Egghead.Controllers
         {
             try
             {
-                var identityName = HttpContext.User.Identity.Name;
+//                var identityName = HttpContext.User.Identity.Name;
 
                 var artId = ObjectId.Parse(articleId);
                     
@@ -100,8 +103,8 @@ namespace Egghead.Controllers
             try
             {
                 var articles = new List<ArticlePreviewModel>();
-                
-                foreach (var article in await _articlesManager.FindArticlesAsync(50))
+ 
+                foreach (var article in await _articlesManager.FindArticlesAsync(_configuration.GetSection("EggheadOptions").GetValue<int>("ArticlesPerPage")))
                 {
                     articles.Add(new ArticlePreviewModel
                     {
@@ -284,36 +287,33 @@ namespace Egghead.Controllers
 
         [HttpPost]
         [Authorize]
-        [Route("/Articles/UpsertArticleCommentVoteAsync/{articleId}")]
-        public async Task<IActionResult> UpsertArticleCommentVoteAsync(string articleId, [FromBody] ArticleCommentVoteModel model)
+        [Route("/Articles/CreateArticleCommentVoteAsync")]
+        public async Task<IActionResult> CreateArticleCommentVoteAsync([FromBody] ArticleCommentVoteModel model)
         {
             try
             {
                 if (model.VoteType == VoteType.None)
                 {
                     var user = await _userManager.FindByEmailAsync(HttpContext.User.Identity.Name);
-                    var logString = $"Upsert vote type is not valid. Article id: {articleId} By Who: {HttpContext.User.Identity.Name}";
+                    var logString = $"Upsert vote type is not valid. Article id: {model.ArticleId} By Who: {HttpContext.User.Identity.Name}";
                     throw new ArticleCommentVoteException(logString);
                 }
 
-                var articleCommentVote = await _articleCommentsVotesManager.FindArticleCommentVoteAsync(ObjectId.Parse(articleId), ObjectId.Parse(model.CommentId));
+                var articleCommentVote = await _articleCommentsVotesManager.FindArticleCommentVoteAsync(ObjectId.Parse(model.CommentId));
 
                 if (articleCommentVote == null)
                 {
-//                    var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
-
                     articleCommentVote = new MongoDbArticleCommentVote
                     {                  
-                        ArticleId = ObjectId.Parse(articleId),
+                        ArticleId = ObjectId.Parse(model.ArticleId),
                         CommentId = ObjectId.Parse(model.CommentId),
-                        ProfileId = ObjectId.Empty,
                         VoteType = model.VoteType,
                         CreatedAt = DateTime.UtcNow
                     };
                     
                     await _articleCommentsVotesManager.CreateArticleCommentVoteAsync(articleCommentVote);   
                     
-                    var votingPoints = await _articleCommentsVotesManager.CountArticleCommentVotesAsync(articleCommentVote.ArticleId, articleCommentVote.CommentId, VoteType.Like) - await _articleCommentsVotesManager.CountArticleCommentVotesAsync(articleCommentVote.ArticleId, articleCommentVote.CommentId, VoteType.Dislike);
+                    var votingPoints = await _articleCommentsVotesManager.CountArticleCommentVotesAsync(articleCommentVote.CommentId, VoteType.Like) - await _articleCommentsVotesManager.CountArticleCommentVotesAsync(articleCommentVote.CommentId, VoteType.Dislike);
 
                     return Ok(votingPoints);
                 }
@@ -329,7 +329,7 @@ namespace Egghead.Controllers
                         {
                             case VoteType.None:
                                 {
-                                    var logString = $"Upsert vote type is not valid. Vote id: {articleCommentVote.Id} By Who: {articleCommentVote.ProfileId}";
+                                    var logString = $"Upsert vote type is not valid. Vote id: {articleCommentVote.Id}";
                                     throw new ArticleCommentVoteException(logString);
                                 }
                             case VoteType.Like:
@@ -350,7 +350,7 @@ namespace Egghead.Controllers
                         }
                     }
 
-                    var votingPoints = await _articleCommentsVotesManager.CountArticleCommentVotesAsync(articleCommentVote.ArticleId, articleCommentVote.CommentId, VoteType.Like) - await _articleCommentsVotesManager.CountArticleCommentVotesAsync(articleCommentVote.ArticleId, articleCommentVote.CommentId, VoteType.Dislike);
+                    var votingPoints = await _articleCommentsVotesManager.CountArticleCommentVotesAsync(articleCommentVote.CommentId, VoteType.Like) - await _articleCommentsVotesManager.CountArticleCommentVotesAsync(articleCommentVote.CommentId, VoteType.Dislike);
 
                     return Ok(votingPoints);  
                 }     
@@ -431,38 +431,7 @@ namespace Egghead.Controllers
 
             return PartialView("ArticleCommentsPartial", models);
         }
-              
-        [HttpGet]
-        [Authorize]
-        public async Task<IActionResult> GetProfileDescriptionAsync()
-        {
-            try
-            {
-                var user = await _userManager.FindByEmailAsync(HttpContext.User.Identity.Name);
-
-//                var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
-
-//                var artcilesCount = await _articlesManager.CountArticlesByProfileIdAsync(ObjectId.Empty);
-
-                return Ok(new ProfileDescription
-                {
-                    Headline = "",
-                    ArticlesCount = 0,
-                    FollowingCount = 0,
-                    SocialLinks = new List<SocialLink>()
-                });
-            }
-            catch (ProfileDescriptionException e)
-            {
-                _logger.LogError(e.Message, e);
-                return BadRequest(e);
-            }
-            catch (Exception e)
-            {
-                _logger.LogCritical(e.Message, e);
-                return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
-            }
-        }
+        
         
         private string NormalizeKey(string key)
         {

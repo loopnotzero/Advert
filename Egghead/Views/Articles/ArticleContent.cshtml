@@ -8,7 +8,11 @@
     <div class="row">
         <div class="col-md-8">
             <div class="card">
-                <div class="text-muted p-3"><a href="/Profiles/GetProfile"><small class="font-weight-bold">Victor Chicu</small></a> <small class="time"> @Model.CreatedAt.Humanize()</small></div>
+                <div class="text-muted p-3">
+                    <a href="/Profiles/GetProfile">
+                        <small class="font-weight-bold">Victor Chicu</small>
+                    </a> <small class="time"> @Model.CreatedAt.Humanize()</small>
+                </div>
 
                 <div class="card-body card-body__img">
                     <h4>@Model.Title</h4>
@@ -40,40 +44,40 @@
                 <div style="border-bottom: 1px solid #d5d5d5; margin-bottom: 20px;">
                     <h4 class="text-muted font-weight-bold">Popular on Egghead</h4>
                 </div>
-@*                 @{ *@
-@*                     var popularArticles = (List<PopularArticleModel>)ViewBag.PopularArticles; *@
-@*                      *@
-@*                     if (popularArticles != null) *@
-@*                     { *@
-@*                         <div class="listview"> *@
-@*                             @foreach (var popularArticle in popularArticles) *@
-@*                             { *@
-@*                                 <div class="listview__item"> *@
-@*                                     <div class="mr-2" style="width: 50px; height: 50px"> *@
-@*                                         <img src="/images/users/user_empty.png" class="listview__img" alt="">  *@
-@*                                     </div> *@
-@* *@
-@*                                     <div class="listview__content"> *@
-@*                                         <div class="listview__heading"> *@
-@*                                             <p> *@
-@*                                                 <a class="font-weight-bold" href="/Articles/ArticleContent?articleId=@popularArticle.Id">@popularArticle.Title</a> *@
-@*                                             </p> *@
-@*                                         </div> *@
-@*                                         <p> *@
-@*                                             <a href="/Profiles/GetProfile">@popularArticle.Name</a> <small class="time"> @popularArticle.CreatedAt.Humanize()</small> *@
-@*                                         </p> *@
-@*                                     </div> *@
-@*                                 </div> *@
-@*                             } *@
-@*                         </div> *@
-@*                     } *@
-@*                 } *@
+                @*                 @{ *@
+                @*                     var popularArticles = (List<PopularArticleModel>)ViewBag.PopularArticles; *@
+                @*                      *@
+                @*                     if (popularArticles != null) *@
+                @*                     { *@
+                @*                         <div class="listview"> *@
+                @*                             @foreach (var popularArticle in popularArticles) *@
+                @*                             { *@
+                @*                                 <div class="listview__item"> *@
+                @*                                     <div class="mr-2" style="width: 50px; height: 50px"> *@
+                @*                                         <img src="/images/users/user_empty.png" class="listview__img" alt="">  *@
+                @*                                     </div> *@
+                @* *@
+                @*                                     <div class="listview__content"> *@
+                @*                                         <div class="listview__heading"> *@
+                @*                                             <p> *@
+                @*                                                 <a class="font-weight-bold" href="/Articles/ArticleContent?articleId=@popularArticle.Id">@popularArticle.Title</a> *@
+                @*                                             </p> *@
+                @*                                         </div> *@
+                @*                                         <p> *@
+                @*                                             <a href="/Profiles/GetProfile">@popularArticle.Name</a> <small class="time"> @popularArticle.CreatedAt.Humanize()</small> *@
+                @*                                         </p> *@
+                @*                                     </div> *@
+                @*                                 </div> *@
+                @*                             } *@
+                @*                         </div> *@
+                @*                     } *@
+                @*                 } *@
             </div>
         </div>
-    </div>    
+    </div>
 </section>
 
-<script>   
+<script>
     function showReplyForm(replyTo, commentId) {
         removeReplyForm("reply-form");
 
@@ -121,7 +125,8 @@
 
             var parentId = (replyTo == null ? commentId : replyTo);
 
-            createCommentReplyAsync(articleId, parentId,
+            createCommentReplyAsync(articleId,
+                parentId,
                 {
                     text: text,
                     replyTo: parentId
@@ -135,7 +140,7 @@
             form.remove();
         }
     }
-    
+
     function onCommentVoteClick(commentId, voteType) {
         $.urlParam = function(name, url) {
             if (!url) {
@@ -147,12 +152,12 @@
             }
             return results[1] || undefined;
         }
-        
+
         var articleId = $.urlParam('articleId');
 
         createArticleCommentVoteAsync(articleId, commentId, voteType);
     }
-    
+
     function createCommentReplyAsync(articleId, replyTo, comment) {
         $.ajax({
             url: `/Articles/CreateArticleCommentAsync/${articleId}`,
@@ -161,8 +166,8 @@
             contentType: "application/json",
             error: function(jqXhr, textStatus, errorThrown) {
                 console.log("jqXhr: " + jqXhr);
-                console.log("textStatus: " + jqXhr);
-                console.log("errorThrown: " + jqXhr);
+                console.log("textStatus: " + textStatus);
+                console.log("errorThrown: " + errorThrown);
             },
             success: function(response) {
                 $(`#${replyTo} .media-body:first`).append(`
@@ -170,18 +175,21 @@
                     <img src="/images/64x64.svg" width="48" height="48" alt="">
                     <div class="media-body media__img">
                         <div class="col-auto">
-                            ${response.firstName} ${response.lastName} <small class="time"> ${response.createdAt}</small>
+                            ${response.firstName} ${response.lastName} <small class="time"> ${response.createdAt
+                    }</small>
                         </div>
                         <div class="col-auto">
                             <h6>${response.text}</h6>
                         </div>
                         <div class="col-auto">
                             <a href="#reply" onclick="showReplyForm('${replyTo}', '${response.id}')">Reply</a>
-                            <div name="btn-like" onclick="onCommentVoteClick('${response.id}', 1)" class="r-btn r-btn-light r-btn--icon">
+                            <div name="btn-like" onclick="onCommentVoteClick('${response.id
+                    }', 1)" class="r-btn r-btn-light r-btn--icon">
                                 <i class="fa fa-thumbs-o-up"></i>
                             </div>
                             <span name="voting-points">${response.votingPoints}</span>
-                            <div name="btn-dislike" onclick="onCommentVoteClick('${response.id}', 1)" class="r-btn r-btn-light r-btn--icon">
+                            <div name="btn-dislike" onclick="onCommentVoteClick('${response.id
+                    }', 1)" class="r-btn r-btn-light r-btn--icon">
                                 <i class="fa fa-thumbs-o-down"></i>
                             </div>
                         </div>
@@ -210,18 +218,20 @@
                     <img src="/images/64x64.svg" width="48" height="48">
                     <div class="media-body media__img">
                         <div class="col-auto">
-                            ${response.firstName} ${response.lastName} <small class="time"> ${response.createdAt}</small>
+                            ${response.name} <small class="time"> ${response.createdAt}</small>
                         </div>
                         <div class="col-auto">
                             <h6>${response.text}</h6>
                         </div>
                         <div class="col-auto">
                             <a href="#reply" onclick="showReplyForm(null, '${response.id}')">Reply</a>
-                            <div name="btn-like" onclick="onCommentVoteClick('${response.id}', 1)" class="r-btn r-btn-light r-btn--icon">
+                            <div name="btn-like" onclick="onCommentVoteClick('${response.id
+                    }', 1)" class="r-btn r-btn-light r-btn--icon">
                                 <i class="fa fa-thumbs-o-up"></i>
                             </div>
-                            <span name="voting-points">${response.votingPoints}</span>
-                            <div name="btn-dislike" onclick="onCommentVoteClick('${response.id}', 2)" class="r-btn r-btn-light r-btn--icon">
+                            <span name="votes-count">${response.votesCount}</span>
+                            <div name="btn-dislike" onclick="onCommentVoteClick('${response.id
+                    }', 2)" class="r-btn r-btn-light r-btn--icon">
                                 <i class="fa fa-thumbs-o-down"></i>
                             </div>
                         </div>
@@ -231,32 +241,33 @@
             }
         });
     }
-    
+
     function createArticleCommentVoteAsync(articleId, commentId, voteType) {
         var vote = {
-            voteType: voteType,
-            commentId: commentId
+            articleId: articleId,
+            commentId: commentId,
+            voteType: voteType
         }
         $.ajax({
-            url: "/Articles/UpsertArticleCommentVoteAsync/" + articleId,
+            url: "/Articles/CreateArticleCommentVoteAsync",
             type: "POST",
             data: JSON.stringify(vote),
             contentType: "application/json",
             error: function(jqXhr, textStatus, errorThrown) {
                 console.log("jqXhr: " + jqXhr);
-                console.log("textStatus: " + jqXhr);
-                console.log("errorThrown: " + jqXhr);
+                console.log("textStatus: " + textStatus);
+                console.log("errorThrown: " + errorThrown);
             },
             success: function(response) {
                 switch (voteType) {
                 case 1:
                     {
-                        $(`#${commentId} span[name=voting-points]:first`).text(response);
+                        $(`#${commentId} span[name=votes-count]:first`).text(response);
                     }
                     break;
                 case 2:
                     {
-                        $(`#${commentId} span[name=voting-points]:first`).text(response);
+                        $(`#${commentId} span[name=votes-count]:first`).text(response);
                     }
                     break;
                 }
@@ -272,8 +283,8 @@
             contentType: "application/json",
             error: function(jqXhr, textStatus, errorThrown) {
                 console.log("jqXhr: " + jqXhr);
-                console.log("textStatus: " + jqXhr);
-                console.log("errorThrown: " + jqXhr);
+                console.log("textStatus: " + textStatus);
+                console.log("errorThrown: " + errorThrown);
             },
             success: function(response) {
                 $("#article-comments").html(response);
@@ -307,11 +318,12 @@
 
         $("#publish-comment").click(function() {
             var text = editor.options.previewRender(editor.value());
-            createArticleCommentAsync(articleId, {
-                text: text
-            });
+            createArticleCommentAsync(articleId,
+                {
+                    text: text
+                });
         });
-        
+
         findArticleCommentsByArticleIdAync(articleId);
     });
 </script>
