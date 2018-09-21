@@ -45,7 +45,7 @@ namespace Egghead
 
             app.UseAuthentication();
 
-            app.UseMvc(routes => { routes.MapRoute("default", "{controller=Articles}/{action=GetArticlesPreview}/{id?}"); });
+            app.UseMvc(routes => { routes.MapRoute("default", "{controller=Articles}/{action=ArticlesPreview}/{id?}"); });
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.

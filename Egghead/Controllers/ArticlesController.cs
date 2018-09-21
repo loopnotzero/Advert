@@ -55,8 +55,8 @@ namespace Egghead.Controllers
 
         [HttpGet]
         [Authorize]
-        [Route("/Articles/GetArticleContent/{articleId}")]
-        public async Task<IActionResult> GetArticleContent(string articleId)
+        [Route("/Articles/ArticleContent/{articleId}")]
+        public async Task<IActionResult> ArticleContent(string articleId)
         {
             try
             {
@@ -95,7 +95,7 @@ namespace Egghead.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> GetArticlesPreview()
+        public async Task<IActionResult> ArticlesPreview()
         {
             try
             {
@@ -142,7 +142,7 @@ namespace Egghead.Controllers
                 
                 await _articlesManager.CreateArticleAsync(article);
 
-                var url = Url.Action("GetArticleContent", "Articles", new { articleId = article.Id });
+                var url = Url.Action("ArticleContent", "Articles", new { articleId = article.Id });
                 
                 return Ok(new
                 {
@@ -429,7 +429,7 @@ namespace Egghead.Controllers
                 });
             }
 
-            return PartialView("GetArticleCommentsPartial", models);
+            return PartialView("ArticleCommentsPartial", models);
         }
               
         [HttpGet]

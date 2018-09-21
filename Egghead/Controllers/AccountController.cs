@@ -71,8 +71,10 @@ namespace Egghead.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> LogIn([FromBody] LogInModel model, string returnUrl = null)
         {
-            ViewData["returnUrl"] = returnUrl; 
-            
+            ViewData["returnUrl"] = returnUrl;
+
+            var user = await _userManager.FindByEmailAsync(NormalizeKey(model.Email)) ?? await _userManager.FindByNameAsync(NormalizeKey(model.Email));
+
             await _signInManager.PasswordSignInAsync(model.Email, model.Password, false, false);
 
             return Ok(new
@@ -104,6 +106,11 @@ namespace Egghead.Controllers
             {
                 returnUrl
             });
+        }
+        
+        private string NormalizeKey(string key)
+        {
+            return _keyNormalizer != null ? _keyNormalizer.Normalize(key) : key;
         }
     }
 }
