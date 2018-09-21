@@ -32,22 +32,20 @@ namespace Egghead.MongoDbStorage.Stores
             EntityMappings.EnsureMongoDbArticleLikeConfigured();
         }
 
-        public async Task<T> FindArticleCommentVoteAsync(ObjectId articleId, ObjectId commentId, CancellationToken cancellationToken)
+        public async Task<T> FindArticleCommentVoteAsync(ObjectId commentId, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             var filter = Builders<T>.Filter.And(
-                Builders<T>.Filter.Eq(x => x.ArticleId, articleId),
                 Builders<T>.Filter.Eq(x => x.CommentId, commentId)
             );
             var cursor = await _collection.FindAsync(filter, cancellationToken: cancellationToken);
             return await cursor.FirstOrDefaultAsync(cancellationToken);
         }
 
-        public async Task<long> CountArticleCommentVotesAsync(ObjectId articleId, ObjectId commentId, VoteType voteType, CancellationToken cancellationToken)
+        public async Task<long> CountArticleCommentVotesAsync(ObjectId commentId, VoteType voteType, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             var filter = Builders<T>.Filter.And(
-                Builders<T>.Filter.Eq(x => x.ArticleId, articleId),
                 Builders<T>.Filter.Eq(x => x.CommentId, commentId),
                 Builders<T>.Filter.Eq(x => x.VoteType, voteType)
             );
