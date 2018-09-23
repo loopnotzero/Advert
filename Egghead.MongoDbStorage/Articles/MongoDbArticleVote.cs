@@ -14,8 +14,8 @@ namespace Egghead.MongoDbStorage.Articles
 
         public ObjectId Id { get; }  
         public ObjectId ArticleId { get; set; }     
-        public ObjectId ProfileId { get; set; }
         public VoteType VoteType { get; set; }    
+        public string NormalizedEmail { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public DateTime DeletedAt { get; set; }
