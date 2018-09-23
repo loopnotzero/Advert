@@ -44,9 +44,7 @@ namespace Egghead.Controllers
             _articlesVotesManager = articlesVotesManager;
             _articlesCommentsManager = articlesCommentsManager;
             _articlesViewsCountManager = articlesViewsCountManager;
-            _articleCommentsVotesManager = articleCommentsVotesManager;
-
-           
+            _articleCommentsVotesManager = articleCommentsVotesManager;      
         }
 
         [HttpGet]
@@ -58,30 +56,40 @@ namespace Egghead.Controllers
 
         [HttpGet]
         [Authorize]
+        [Route("/Articles/CountArticleCommentsByArticleIdAsync/{articleId}")]
+        public async Task<long> CountArticleCommentsByArticleIdAsync(string articleId)
+        {
+            return await _articlesCommentsManager.CountArticleCommentsByArticleIdAsync(articleId);
+        }
+
+        [HttpGet]
+        [Authorize]
         [Route("/Articles/ArticleContent/{articleId}")]
         public async Task<IActionResult> ArticleContent(string articleId)
         {
             try
-            {
-//                var identityName = HttpContext.User.Identity.Name;
-
-                var artId = ObjectId.Parse(articleId);
-                    
-                await _articlesViewsCountManager.CreateArticleViewsCountAsync(new MongoDbArticleViewsCount
+            {             
+                var articleViewsCount = new MongoDbArticleViewsCount
                 {
-                    ArticleId = artId,
-                    CreatedAt = DateTime.UtcNow
-                });
+                    ArticleId = ObjectId.Parse(articleId),
+                    CreatedAt = DateTime.UtcNow,
+                    NormalizedEmail = NormalizeKey(HttpContext.User.Identity.Name)
+                };
+                    
+                await _articlesViewsCountManager.CreateArticleViewsCountAsync(articleViewsCount);
 
-                await _articlesManager.UpdateArticleViewsCountById(artId, await _articlesViewsCountManager.CountArticleViewsCountAsync(artId));
+                var viewsCount = await _articlesViewsCountManager.CountArticleViewsCountAsync(articleViewsCount.ArticleId);
+
+                await _articlesManager.UpdateArticleViewsCountById(articleViewsCount.ArticleId, viewsCount);
                  
-                var article = await _articlesManager.FindArticleByIdAsync(ObjectId.Parse(articleId));
+                var article = await _articlesManager.FindArticleByIdAsync(articleViewsCount.ArticleId);
 
                 return View(new ArticlePreviewModel
                 {
                     Id = article.Id.ToString(),
                     Title = article.Title,
                     Text = article.Text,
+                    NormalizedEmail = NormalizeKey(HttpContext.User.Identity.Name),
                     LikesCount = article.LikesCount.ToMetric(),
                     DislikesCount = article.DislikesCount.ToMetric(),
                     ViewsCount = article.ViewsCount.ToMetric(),
@@ -111,6 +119,7 @@ namespace Egghead.Controllers
                         Id = article.Id.ToString(),
                         Title = article.Title,
                         Text = article.Text.Length > 1000 ? article.Text.Substring(0, 1000) + "..." : article.Text,
+                        NormalizedEmail = article.NormalizedEmail,
                         LikesCount = article.LikesCount.ToMetric(),
                         DislikesCount = article.DislikesCount.ToMetric(),
                         ViewsCount = article.ViewsCount.ToMetric(),
@@ -139,6 +148,7 @@ namespace Egghead.Controllers
                     Title = model.Title,
                     NormalizedTitle = NormalizeKey(model.Title),
                     Text = model.Text,
+                    NormalizedEmail = NormalizeKey(HttpContext.User.Identity.Name),
                     CreatedAt = DateTime.UtcNow,
                     ReleaseType = ReleaseType.PreModeration,
                 };
@@ -179,15 +189,16 @@ namespace Egghead.Controllers
         [HttpPut]
         [Authorize]
         [Route("/Articles/UdpateArticleByIdAsync/{articleId}")]
-        public async Task<IActionResult> UdpateArticleByIdAsync(string articleId, [FromBody] ArticlePreviewModel previewModel)
+        public async Task<IActionResult> UdpateArticleByIdAsync(string articleId, [FromBody] ArticlePreviewModel articlePreview)
         {
             try
             {
                 await _articlesManager.UpdateArticleByIdAsync(ObjectId.Parse(articleId), new MongoDbArticle
                 {
-                    Title = previewModel.Title,
-                    NormalizedTitle = _keyNormalizer.Normalize(previewModel.Title),
-                    Text = previewModel.Text,
+                    Title = articlePreview.Title,
+                    NormalizedTitle = NormalizeKey(articlePreview.Title),
+                    Text = articlePreview.Text,
+                    NormalizedEmail = NormalizeKey(HttpContext.User.Identity.Name),
                     ChangedAt = DateTime.UtcNow
                 });
 
@@ -203,15 +214,15 @@ namespace Egghead.Controllers
         [HttpPut]
         [Authorize]
         [Route("/Articles/UdpateArticleByTitleAsync/{title}")]
-        public async Task<IActionResult> UdpateArticleByTitleAsync(string title, [FromBody] ArticlePreviewModel previewModel)
+        public async Task<IActionResult> UdpateArticleByTitleAsync(string title, [FromBody] ArticlePreviewModel articlePreview)
         {
             try
             {
                 await _articlesManager.UpdateArticleByTitleAsync(title, new MongoDbArticle
                 {
-                    Title = previewModel.Title,
-                    NormalizedTitle = _keyNormalizer.Normalize(previewModel.Title),
-                    Text = previewModel.Text,
+                    Title = articlePreview.Title,
+                    NormalizedTitle = NormalizeKey(articlePreview.Title),
+                    Text = articlePreview.Text,
                     ChangedAt = DateTime.UtcNow,
                 });
 
@@ -257,26 +268,28 @@ namespace Egghead.Controllers
         {
             try
             {
-                var articleObjectId = ObjectId.Parse(articleId);
+                var articleVote = await _articlesVotesManager.FindArticleVoteByNormalizedEmailAsync(ObjectId.Parse(articleId), NormalizeKey(HttpContext.User.Identity.Name));
 
-//                var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
+                if (articleVote != null) return Ok(await _articlesVotesManager.CountArticleVotesByTypeAsync(articleVote.ArticleId, model.VoteType));
 
-                var articleVote = await _articlesVotesManager.FindArticleVoteByProfileIdAsync(articleObjectId, model.VoteType, ObjectId.Empty);
-
-                if (articleVote == null)
+                var newArticleVote = new MongoDbArticleVote
                 {
-                    await _articlesVotesManager.CreateArticleVoteAsync(new MongoDbArticleVote
-                    {            
-                        ArticleId = articleObjectId,
-                        ProfileId = ObjectId.Empty,
-                        VoteType = model.VoteType,
-                        CreatedAt = DateTime.UtcNow
-                    });
-                }
+                    ArticleId = ObjectId.Parse(articleId),
+                    VoteType = model.VoteType,
+                    NormalizedEmail = NormalizeKey(HttpContext.User.Identity.Name),
+                    CreatedAt = DateTime.UtcNow
+                };
+                    
+                await _articlesVotesManager.CreateArticleVoteAsync(new MongoDbArticleVote
+                {            
+                    ArticleId = newArticleVote.ArticleId,
+                    VoteType = model.VoteType,
+                    NormalizedEmail = NormalizeKey(HttpContext.User.Identity.Name),
+                    CreatedAt = DateTime.UtcNow
+                });
 
-                var articleVotes = await _articlesVotesManager.CountArticleVotesAsync(articleObjectId, model.VoteType);
+                return Ok(await _articlesVotesManager.CountArticleVotesByTypeAsync(newArticleVote.ArticleId, model.VoteType));
 
-                return Ok(articleVotes);
             }
             catch (Exception e)
             {
@@ -366,15 +379,7 @@ namespace Egghead.Controllers
                 return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
             }
         }
-          
-        [HttpGet]
-        [Authorize]
-        [Route("/Articles/CountArticleCommentsByArticleIdAsync/{articleId}")]
-        public async Task<long> CountArticleCommentsByArticleIdAsync(string articleId)
-        {
-            return await _articlesCommentsManager.CountArticleCommentsByArticleIdAsync(articleId);
-        }
-
+       
         [HttpPost]
         [Authorize]
         [Route("/Articles/CreateArticleCommentAsync/{articleId}")]

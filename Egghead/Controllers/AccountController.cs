@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Security.Authentication;
 using System.Threading.Tasks;
 using Egghead.Common;
 using Egghead.Managers;
@@ -28,7 +29,7 @@ namespace Egghead.Controllers
             _userManager = userManager;
             _signInManager = signInManager;
             _profilesManager = profilesManager;
-        }      
+        }
 
         [HttpGet]
         [AllowAnonymous]
@@ -73,8 +74,6 @@ namespace Egghead.Controllers
         {
             ViewData["returnUrl"] = returnUrl;
 
-            var user = await _userManager.FindByEmailAsync(NormalizeKey(model.Email)) ?? await _userManager.FindByNameAsync(NormalizeKey(model.Email));
-
             await _signInManager.PasswordSignInAsync(model.Email, model.Password, false, false);
 
             return Ok(new
@@ -86,20 +85,20 @@ namespace Egghead.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SignUp([FromBody] RegisterModel model, string returnUrl = null)
+        public async Task<IActionResult> SignUp([FromBody] SignUpModel model, string returnUrl = null)
         {
             ViewData["returnUrl"] = returnUrl;
 
             var user = new MongoDbUser
             {
                 Email = model.Email,
-                NormalizedEmail = model.Email,
-                UserName = model.Name,
-                NormalizedUserName = model.Name,
+                NormalizedEmail = NormalizeKey(model.Email),
+                UserName = model.Email,
+                NormalizedUserName = NormalizeKey(model.Email),
             };
 
             await _userManager.CreateAsync(user, model.Password);
-        
+            
             await _signInManager.SignInAsync(user, false);
                               
             return Ok(new

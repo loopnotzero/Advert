@@ -2,7 +2,7 @@
 
 namespace Egghead.Models.Users
 {
-    public class RegisterModel
+    public class SignUpModel
     {
         [Required]
         [DataType(DataType.Text)]

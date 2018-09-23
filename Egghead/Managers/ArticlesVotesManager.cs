@@ -32,7 +32,7 @@ namespace Egghead.Managers
             KeyNormalizer = keyNormalizer;
         }
 
-        public async Task<T> FindArticleVoteByProfileIdAsync(ObjectId articleId, VoteType voteType, ObjectId profileId)
+        public async Task<T> FindArticleVoteByNormalizedEmailAsync(ObjectId articleId, string email)
         {
             ThrowIfDisposed();
 
@@ -41,20 +41,10 @@ namespace Egghead.Managers
                 throw new ArgumentNullException(nameof(articleId));
             }
 
-            if (voteType == VoteType.None)
-            {
-                throw new ArgumentNullException(nameof(voteType));
-            }
-
-            if (profileId == null)
-            {
-                throw new ArgumentNullException(nameof(profileId));
-            }
-            
-            return await Store.FindArticleVoteByProfileIdAsync(articleId, voteType, profileId, CancellationToken);
+            return await Store.FindArticleVoteByNormalizedEmailAsync(articleId, email, CancellationToken);
         }
 
-        public async Task<long> CountArticleVotesAsync(ObjectId articleId, VoteType voteType)
+        public async Task<long> CountArticleVotesByTypeAsync(ObjectId articleId, VoteType voteType)
         {
             ThrowIfDisposed();
 
@@ -63,12 +53,7 @@ namespace Egghead.Managers
                 throw new ArgumentNullException(nameof(articleId));
             }
 
-            if (voteType == VoteType.None)
-            {
-                throw new ArgumentNullException(nameof(voteType));
-            }
-
-            return await Store.CountArticleVotesAsync(articleId, voteType, CancellationToken);
+            return await Store.CountArticleVotesByTypeAsync(articleId, voteType, CancellationToken);
         }
 
         public async Task<OperationResult> CreateArticleVoteAsync(T entity)
