@@ -1,7 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Egghead.Common;
-using Egghead.Common.Stores;
 using Egghead.MongoDbStorage.Common;
 using Egghead.MongoDbStorage.Mappings;
 using Egghead.MongoDbStorage.Profiles;
@@ -13,9 +12,7 @@ namespace Egghead.MongoDbStorage.Stores
     public class MongoDbProfilesImagesStore<T> : IProfilesImagesStore<T> where T : MongoDbProfileImage
     {
         private readonly IMongoCollection<T> _collection;
-
-        
-
+      
         public MongoDbProfilesImagesStore()
         {
             EntityMappings.EnsureMongoDbProfileImageConfigured();
@@ -32,12 +29,12 @@ namespace Egghead.MongoDbStorage.Stores
             
         }
         
-        public Task<T> GetProfileImageByProfileIdAsync(ObjectId profileId, CancellationToken cancellationToken)
+        public Task CreateProfileImageAsync(T entity, CancellationToken cancellationToken)
         {
             throw new System.NotImplementedException();
         }
 
-        public Task<OperationResult> CreateProfileImageAsync(T entity, CancellationToken cancellationToken)
+        public Task<T> GetProfileImageByProfileIdAsync(ObjectId profileId, CancellationToken cancellationToken)
         {
             throw new System.NotImplementedException();
         }

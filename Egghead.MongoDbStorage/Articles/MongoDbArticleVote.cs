@@ -12,7 +12,7 @@ namespace Egghead.MongoDbStorage.Articles
             //Create indeces
         }
 
-        public ObjectId Id { get; }  
+        public ObjectId Id { get; set; }  
         public ObjectId ArticleId { get; set; }     
         public VoteType VoteType { get; set; }    
         public string NormalizedEmail { get; set; }

@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Egghead.Common;
-using Egghead.Common.Stores;
 using Egghead.MongoDbStorage.Articles;
 using Egghead.MongoDbStorage.Common;
 using Egghead.MongoDbStorage.Mappings;
@@ -29,6 +27,15 @@ namespace Egghead.MongoDbStorage.Stores
 
         public void Dispose()
         {
+        }
+
+        public async Task CreateArticleAsync(T entity, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            await _collection.InsertOneAsync(entity, new InsertOneOptions
+            {
+                BypassDocumentValidation = false
+            }, cancellationToken);
         }
 
         public Task SetNormalizedTitleAsync(T entity, string normalizedTitle, CancellationToken cancellationToken)
@@ -97,73 +104,62 @@ namespace Egghead.MongoDbStorage.Stores
             var cursor = await _collection.FindAsync(Builders<T>.Filter.Empty, findOptions, cancellationToken: cancellationToken);
             return await cursor.ToListAsync(cancellationToken);
         }
-
-        public async Task<List<T>> FindArticlesByProfileIdAsync(ObjectId profileId, int qty, CancellationToken cancellationToken)
-        {
-//            cancellationToken.ThrowIfCancellationRequested();
-//            var findOptions = new FindOptions<T>
-//            {
-//                Sort = Builders<T>.Sort.Descending(field => field.CreatedAt),
-//                Limit = qty
-//            };
-//            var filter = Builders<T>.Filter.Eq(x => x.ProfileId, profileId);
-//            var cursor = await _collection.FindAsync(filter, findOptions, cancellationToken: cancellationToken);
-//            return await cursor.ToListAsync(cancellationToken);
-            throw new NotImplementedException();
-        }
-
-        public async Task<OperationResult> CreateArticleAsync(T entity, CancellationToken cancellationToken)
+        
+        public async Task<DeleteResult> DeleteArticleByIdAsync(ObjectId articleId, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            await _collection.InsertOneAsync(entity, new InsertOneOptions
+            return await _collection.DeleteOneAsync(Builders<T>.Filter.Eq(x => x.Id, articleId), cancellationToken);        
+        }
+
+        public async Task<DeleteResult> DeleteArticleByNormalizedTitleAsync(string title, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            return await _collection.DeleteOneAsync(Builders<T>.Filter.Eq(x => x.NormalizedTitle, title), cancellationToken);          
+        }
+
+        public async Task<UpdateResult> UpdateArticleViewsCountByArticleIdAsync(ObjectId articleId, long count, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            return await _collection.UpdateOneAsync(Builders<T>.Filter.Eq(x => x.Id, articleId), Builders<T>.Update.Set(x => x.ViewsCount, count), new UpdateOptions
             {
                 BypassDocumentValidation = false
             }, cancellationToken);
-            return OperationResult.Success;
         }
-
-        public async Task<OperationResult> UpdateArticleByIdAsync(ObjectId articleId, T entity, CancellationToken cancellationToken)
+        
+        public async Task<UpdateResult> UpdateArticleLikesCountByArticleIdAsync(ObjectId articleId, long count, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            await _collection.ReplaceOneAsync(Builders<T>.Filter.Eq(x => x.Id, articleId), entity, new UpdateOptions
+            return await _collection.UpdateOneAsync(Builders<T>.Filter.Eq(x => x.Id, articleId), Builders<T>.Update.Set(x => x.LikesCount, count), new UpdateOptions
             {
                 BypassDocumentValidation = false
             }, cancellationToken);
-            return OperationResult.Success;
         }
 
-        public async Task<OperationResult> UpdateArticleViewsCountById(ObjectId articleId, double viewsCount, CancellationToken cancellationToken)
+        public async Task<UpdateResult> UpdateArticleDislikesCountByArticleIdAsync(ObjectId articleId, long count, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            await _collection.UpdateOneAsync(Builders<T>.Filter.Eq(x => x.Id, articleId), Builders<T>.Update.Set(x => x.ViewsCount, viewsCount), new UpdateOptions
+            return await _collection.UpdateOneAsync(Builders<T>.Filter.Eq(x => x.Id, articleId), Builders<T>.Update.Set(x => x.DislikesCount, count), new UpdateOptions
             {
                 BypassDocumentValidation = false
             }, cancellationToken);
-            return OperationResult.Success;
         }
 
-        public async Task<OperationResult> UpdateArticleByNormalizedTitleAsync(string title, T entity, CancellationToken cancellationToken)
+        public async Task<ReplaceOneResult> ReplaceArticleAsync(T entity, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            await _collection.ReplaceOneAsync(Builders<T>.Filter.Eq(x => x.NormalizedTitle, title), entity, new UpdateOptions
+            return await _collection.ReplaceOneAsync(Builders<T>.Filter.Eq(x => x.Id, entity.Id), entity, new UpdateOptions
             {
                 BypassDocumentValidation = false
             }, cancellationToken);
-            return OperationResult.Success;
         }
 
-        public async Task<OperationResult> DeleteArticleByIdAsync(ObjectId articleId, CancellationToken cancellationToken)
+        public async Task<ReplaceOneResult> ReplaceArticleByNormalizedTitleAsync(string title, T entity, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            await _collection.DeleteOneAsync(Builders<T>.Filter.Eq(x => x.Id, articleId), cancellationToken);        
-            return OperationResult.Success;
-        }
-
-        public async Task<OperationResult> DeleteArticleByNormalizedTitleAsync(string title, CancellationToken cancellationToken)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            await _collection.DeleteOneAsync(Builders<T>.Filter.Eq(x => x.NormalizedTitle, title), cancellationToken);          
-            return OperationResult.Success;
-        }
+            return await _collection.ReplaceOneAsync(Builders<T>.Filter.Eq(x => x.NormalizedTitle, title), entity, new UpdateOptions
+            {
+                BypassDocumentValidation = false
+            }, cancellationToken);
+        } 
     }
 }

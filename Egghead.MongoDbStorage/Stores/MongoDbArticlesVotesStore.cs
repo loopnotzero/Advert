@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Egghead.Common;
 using Egghead.Common.Articles;
-using Egghead.Common.Stores;
 using Egghead.MongoDbStorage.Articles;
 using Egghead.MongoDbStorage.Common;
 using Egghead.MongoDbStorage.Mappings;
@@ -31,17 +30,27 @@ namespace Egghead.MongoDbStorage.Stores
             EntityMappings.EnsureMongoDbArticleLikeConfigured();
         }
 
-        public async Task<T> FindArticleVoteByNormalizedEmailAsync(ObjectId articleId, VoteType voteType, CancellationToken cancellationToken)
+        public async Task CreateArticleVoteAsync(T entity, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var filter = Builders<T>.Filter.And(
-                Builders<T>.Filter.Eq(x => x.ArticleId, articleId),
-                Builders<T>.Filter.Eq(x => x.VoteType, voteType));
-            var cursor = await _collection.FindAsync(filter, cancellationToken: cancellationToken);
+            await _collection.InsertOneAsync(entity, new InsertOneOptions
+            {
+                BypassDocumentValidation = false
+            }, cancellationToken);
+        }
+
+        public async Task<T> FindArticleVoteByAsync(ObjectId articleId, string email, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var filter = Builders<T>.Filter.And(Builders<T>.Filter.Eq(x => x.ArticleId, articleId), Builders<T>.Filter.Eq(x => x.NormalizedEmail, email));
+            var cursor = await _collection.FindAsync(filter, new FindOptions<T>
+            {
+                
+            }, cancellationToken);
             return await cursor.FirstOrDefaultAsync(cancellationToken);
         }
 
-        public async Task<long> CountArticleVotesByTypeAsync(ObjectId articleId, VoteType voteType, CancellationToken cancellationToken)
+        public async Task<long> CountArticleTypedVotesByArticleIdAsync(ObjectId articleId, VoteType voteType, CancellationToken cancellationToken)
         {      
             cancellationToken.ThrowIfCancellationRequested();
             var filter = Builders<T>.Filter.And(
@@ -50,14 +59,10 @@ namespace Egghead.MongoDbStorage.Stores
             return await _collection.CountDocumentsAsync(filter, cancellationToken: cancellationToken);
         }
        
-        public async Task<OperationResult> CreateArticleVoteAsync(T entity, CancellationToken cancellationToken)
+        public async Task<DeleteResult> DeleteArticleVoteByIdAsync(ObjectId voteId, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            await _collection.InsertOneAsync(entity, new InsertOneOptions
-            {
-                BypassDocumentValidation = false
-            }, cancellationToken);
-            return OperationResult.Success;
+            return await _collection.DeleteOneAsync(Builders<T>.Filter.Eq(x => x.Id, voteId), cancellationToken);            
         }
     }
 }

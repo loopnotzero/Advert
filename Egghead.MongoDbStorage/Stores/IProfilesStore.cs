@@ -3,12 +3,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using MongoDB.Bson;
 
-namespace Egghead.Common.Stores
+namespace Egghead.MongoDbStorage.Stores
 {
     public interface IProfilesStore<T> : IDisposable where T : class
     {
+        Task CreateProfileAsync(T entity, CancellationToken cancellationToken);
         Task<T> FindProfileByIdAsync(ObjectId id, CancellationToken cancellationToken);
-//        Task<T> FindProfileByNormalizedEmailAsync(string email, CancellationToken cancellationToken);
-        Task<OperationResult> CreateProfileAsync(T entity, CancellationToken cancellationToken);
     }
 }

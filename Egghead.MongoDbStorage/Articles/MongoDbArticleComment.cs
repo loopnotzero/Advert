@@ -12,8 +12,9 @@ namespace Egghead.MongoDbStorage.Articles
         }
 
         public ObjectId Id { get; set; }
+        public ObjectId ArticleId { get; set; }
         public string Text { get; set; }      
-        public ObjectId ReplyTo { get; set; }   
+        public ObjectId ReplyTo { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime ChangedAt { get; set; }
         public DateTime DeletedAt { get; set; }

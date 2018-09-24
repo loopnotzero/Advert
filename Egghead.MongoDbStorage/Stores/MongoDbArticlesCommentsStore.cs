@@ -1,8 +1,5 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
-using Egghead.Common;
-using Egghead.Common.Stores;
 using Egghead.MongoDbStorage.Articles;
 using Egghead.MongoDbStorage.Mappings;
 using MongoDB.Bson;
@@ -43,10 +40,9 @@ namespace Egghead.MongoDbStorage.Stores
             return false; 
         }
 
-        public OperationResult DeleteArticleCommentsCollection(string collectionName, CancellationToken cancellationToken)
+        public void DeleteArticleCommentsCollection(string collectionName, CancellationToken cancellationToken)
         {
-            _mongoDatabase.DropCollection(collectionName, cancellationToken);        
-            return OperationResult.Success; 
+            _mongoDatabase.DropCollection(collectionName, cancellationToken);
         }
 
         public IArticleCommentsCollection<T> GetArticleCommentsCollection(string collectionName, CancellationToken cancellationToken)

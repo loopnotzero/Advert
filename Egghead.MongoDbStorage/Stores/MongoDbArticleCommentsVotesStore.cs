@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Egghead.Common;
 using Egghead.Common.Articles;
-using Egghead.Common.Stores;
 using Egghead.MongoDbStorage.Articles;
 using Egghead.MongoDbStorage.Common;
 using Egghead.MongoDbStorage.Mappings;
@@ -32,6 +30,15 @@ namespace Egghead.MongoDbStorage.Stores
             EntityMappings.EnsureMongoDbArticleLikeConfigured();
         }
 
+        public async Task CreateArticleCommentVoteAsync(T entity, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            await _collection.InsertOneAsync(entity, new InsertOneOptions
+            {
+                BypassDocumentValidation = false
+            }, cancellationToken);
+        }
+
         public async Task<T> FindArticleCommentVoteAsync(ObjectId commentId, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -52,17 +59,7 @@ namespace Egghead.MongoDbStorage.Stores
             return await _collection.CountDocumentsAsync(filter, cancellationToken: cancellationToken);
         }
 
-        public async Task<OperationResult> CreateArticleCommentVoteAsync(T entity, CancellationToken cancellationToken)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            await _collection.InsertOneAsync(entity, new InsertOneOptions
-            {
-                BypassDocumentValidation = false
-            }, cancellationToken);
-            return OperationResult.Success;
-        }
-
-        public async Task<OperationResult> UpdateArticleCommentVoteAsync(ObjectId voteId, VoteType voteType, CancellationToken cancellationToken)
+        public async Task<UpdateResult> UpdateArticleCommentVoteAsync(ObjectId voteId, VoteType voteType, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -70,19 +67,17 @@ namespace Egghead.MongoDbStorage.Stores
 
             var update = Builders<T>.Update.Set(x => x.VoteType, voteType).Set(x => x.UpdatedAt, DateTime.UtcNow);
 
-            await _collection.UpdateOneAsync(filter, update, new UpdateOptions
+            return await _collection.UpdateOneAsync(filter, update, new UpdateOptions
             {
                 IsUpsert = false
             }, cancellationToken);
-            return OperationResult.Success;
         }
 
-        public async Task<OperationResult> DeleteArticleCommentVoteAsync(ObjectId voteId, CancellationToken cancellationToken)
+        public async Task<DeleteResult> DeleteArticleCommentVoteAsync(ObjectId voteId, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             var filter = Builders<T>.Filter.Eq(x => x.Id, voteId);
-            await _collection.DeleteOneAsync(filter, cancellationToken);
-            return OperationResult.Success;
+            return await _collection.DeleteOneAsync(filter, cancellationToken);
         }
     }
 }

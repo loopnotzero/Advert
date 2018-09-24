@@ -1,7 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Egghead.Common;
-using Egghead.Common.Stores;
 using Egghead.MongoDbStorage.Common;
 using Egghead.MongoDbStorage.Mappings;
 using Egghead.MongoDbStorage.Profiles;
@@ -30,28 +29,20 @@ namespace Egghead.MongoDbStorage.Stores
             
         }
 
-        public async Task<T> FindProfileByIdAsync(ObjectId id, CancellationToken cancellationToken)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.Id, id), cancellationToken: cancellationToken);
-            return await cursor.FirstOrDefaultAsync(cancellationToken);
-        }
-
-//        public async Task<T> FindProfileByNormalizedEmailAsync(string email, CancellationToken cancellationToken)
-//        {
-//            cancellationToken.ThrowIfCancellationRequested();
-//            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.NormalizedEmail, email), cancellationToken: cancellationToken);
-//            return await cursor.FirstOrDefaultAsync(cancellationToken);
-//        }
-
-        public async Task<OperationResult> CreateProfileAsync(T entity, CancellationToken cancellationToken)
+        public async Task CreateProfileAsync(T entity, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             await _collection.InsertOneAsync(entity, new InsertOneOptions
             {
                 BypassDocumentValidation = false
             }, cancellationToken);
-            return OperationResult.Success;
+        }
+
+        public async Task<T> FindProfileByIdAsync(ObjectId id, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.Id, id), cancellationToken: cancellationToken);
+            return await cursor.FirstOrDefaultAsync(cancellationToken);
         }
     }
 }
