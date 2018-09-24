@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Egghead.Common;
-using Egghead.Common.Stores;
 using Egghead.Models.Articles;
 using Egghead.MongoDbStorage.Articles;
+using Egghead.MongoDbStorage.Stores;
 using MongoDB.Bson;
 
 namespace Egghead.Managers
@@ -26,7 +26,26 @@ namespace Egghead.Managers
         {
             Store = store ?? throw new ArgumentNullException(nameof(store));
         }
-            
+        
+        public async Task CreateArticleComment(string collectionName, T entity)
+        {
+            ThrowIfDisposed();
+
+            if (collectionName == null)
+            {
+                throw new ArgumentNullException(nameof(collectionName));
+            }
+
+            if (entity == null)
+            {
+                throw new ArgumentNullException(nameof(entity));
+            }
+
+            var articleComments = Store.GetArticleCommentsCollection(collectionName, CancellationToken);
+
+            await articleComments.CreateArticleCommentAsync(entity, CancellationToken);
+        }
+
         public async Task<T> FindArticleCommentById(string collectionName, ObjectId commendId)
         {
             ThrowIfDisposed();
@@ -36,7 +55,7 @@ namespace Egghead.Managers
                 throw new ArgumentNullException(nameof(collectionName));
             }
             
-            if (commendId == null)
+            if (commendId.Equals(ObjectId.Empty))
             {
                 throw new ArgumentNullException(nameof(commendId));
             }
@@ -56,7 +75,7 @@ namespace Egghead.Managers
             return await Store.GetArticleCommentsCollection(collectionName, CancellationToken).EstimatedArticleCommentsCountAsync(CancellationToken);
         }
         
-        public async Task<List<T>> FindArticleCommentsByArticleId(string collectionName)
+        public async Task<List<T>> FindArticleCommentsByCollectionName(string collectionName, int? howManyElements)
         {
             ThrowIfDisposed();
 
@@ -65,28 +84,8 @@ namespace Egghead.Managers
                 throw new ArgumentNullException(nameof(collectionName));
             }
 
-            return await Store.GetArticleCommentsCollection(collectionName, CancellationToken).FindArticleCommentsAsync(CancellationToken);
+            return await Store.GetArticleCommentsCollection(collectionName, CancellationToken).FindArticleCommentsAsync(howManyElements, CancellationToken);
         }
-
-        public async Task<OperationResult> CreateArticleComment(string collectionName, T entity)
-        {
-            ThrowIfDisposed();
-
-            if (collectionName == null)
-            {
-                throw new ArgumentNullException(nameof(collectionName));
-            }
-
-            if (entity == null)
-            {
-                throw new ArgumentNullException(nameof(entity));
-            }
-
-            var articleComments = Store.GetArticleCommentsCollection(collectionName, CancellationToken);
-
-            return await articleComments.CreateArticleCommentAsync(entity, CancellationToken);
-        }
-     
         
         public void Dispose()
         {

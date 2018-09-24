@@ -2,8 +2,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Egghead.Common;
-using Egghead.Common.Stores;
 using Egghead.MongoDbStorage.Profiles;
+using Egghead.MongoDbStorage.Stores;
 using Microsoft.AspNetCore.Identity;
 using MongoDB.Bson;
 
@@ -37,23 +37,17 @@ namespace Egghead.Managers
             Dispose(true);
             GC.SuppressFinalize(this);
         }
-
-        private void Dispose(bool disposing)
+ 
+        public async Task CreateProfileAsync(T entity)
         {
-            if (!disposing || _disposed)
-                return;
+            ThrowIfDisposed();
 
-            Store.Dispose();
-
-            _disposed = true;
-        }
-
-        protected void ThrowIfDisposed()
-        {
-            if (_disposed)
+            if (entity == null)
             {
-                throw new ObjectDisposedException(GetType().Name);
+                throw new ArgumentNullException(nameof(entity));
             }
+
+            await Store.CreateProfileAsync(entity, CancellationToken);
         }
 
         public async Task<T> FindProfileByIdAsync(ObjectId id)
@@ -67,36 +61,28 @@ namespace Egghead.Managers
             
             return await Store.FindProfileByIdAsync(id, CancellationToken);
         }
-        
-//        public async Task<T> FindProfileByNormalizedEmailAsync(string email)
-//        {
-//            ThrowIfDisposed();
-//
-//            if (string.IsNullOrEmpty(email))
-//            {
-//                throw new ArgumentNullException(nameof(email)); 
-//            }
-//
-//            email = NormalizeKey(email);
-//            
-//            return await Store.FindProfileByNormalizedEmailAsync(email, CancellationToken);
-//        }
-        
-        public async Task<OperationResult> CreateProfileAsync(T entity)
+
+        private void Dispose(bool disposing)
         {
-            ThrowIfDisposed();
+            if (!disposing || _disposed)
+                return;
 
-            if (entity == null)
-            {
-                throw new ArgumentNullException(nameof(entity));
-            }
+            Store.Dispose();
 
-            return await Store.CreateProfileAsync(entity, CancellationToken);
+            _disposed = true;
         }
-    
+
         private string NormalizeKey(string key)
         {
             return _keyNormalizer != null ? _keyNormalizer.Normalize(key) : key;
         }
+
+        protected void ThrowIfDisposed()
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(GetType().Name);
+            }
+        }     
     }
 }

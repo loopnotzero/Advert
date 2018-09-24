@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Egghead.Common;
-using Egghead.Common.Stores;
+using Egghead.MongoDbStorage.Stores;
 using MongoDB.Bson;
 
 namespace Egghead.Managers
@@ -24,6 +24,12 @@ namespace Egghead.Managers
             Store = store ?? throw new ArgumentNullException(nameof(store));
         }
         
+        public async Task CreateArticleViewsCountAsync(T entity)
+        {
+            ThrowIfDisposed();
+            await Store.CreateArticleViewsCountAsync(entity, CancellationToken);
+        }
+
         public async Task<long> CountArticleViewsCountAsync(ObjectId articleId)
         {
             ThrowIfDisposed();
@@ -36,12 +42,6 @@ namespace Egghead.Managers
             return await Store.CountArticleViewsCountByArticleIdAsync(articleId, CancellationToken);
         }
                 
-        public async Task<OperationResult> CreateArticleViewsCountAsync(T entity)
-        {
-            ThrowIfDisposed();
-            return await Store.CreateArticleViewsCountAsync(entity, CancellationToken);
-        }
-
         public void Dispose()
         {
             Dispose(true);

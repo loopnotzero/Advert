@@ -32,14 +32,15 @@
 </html>
 
 <script>
-    $(window).on('load', function () {
-        $('#body').fadeIn(200);
-    });
-    
+    $(window).on('load',
+        function() {
+            $('#body').fadeIn(200);
+        });
+
     $(document).ready(function() {
         $("#log-in").click(function(e) {
             e.preventDefault();
-            
+
             var token = $("input[name=__RequestVerificationToken]").val();
             var additionalHeaders = {};
 
@@ -54,7 +55,9 @@
                 headers: additionalHeaders,
                 contentType: "application/json",
                 error: function() {
-                    console.log("Log in error");
+                    console.log("jqXhr: " + jqXhr);
+                    console.log("textStatus: " + textStatus);
+                    console.log("errorThrown: " + errorThrown);
                 },
                 success: function(response) {
                     window.location.href = response.returnUrl;
@@ -63,7 +66,7 @@
 
             return false;
         });
-        
+
         $("#log-out").click(function(e) {
             e.preventDefault();
             $.ajax({
@@ -71,7 +74,9 @@
                 type: "GET",
                 contentType: "application/json",
                 error: function(jqXhr, textStatus, errorThrown) {
-                    console.log("Sign out error");
+                    console.log("jqXhr: " + jqXhr);
+                    console.log("textStatus: " + textStatus);
+                    console.log("errorThrown: " + errorThrown);
                 },
                 success: function(response) {
                     window.location.href = response.returnUrl;
@@ -79,10 +84,10 @@
             });
             return false;
         });
-        
+
         $("#sign-up").click(function(e) {
             e.preventDefault();
-            
+
             var token = $("input[name=__RequestVerificationToken]").val();
             var additionalHeaders = {};
 
@@ -93,11 +98,17 @@
             $.ajax({
                 url: $("#form").attr("action"),
                 type: "POST",
-                data: JSON.stringify({ email: $("#email").val(), name: $("#name").val(), password: $("#password").val() }),
+                data: JSON.stringify({
+                    email: $("#email").val(),
+                    name: $("#name").val(),
+                    password: $("#password").val()
+                }),
                 headers: additionalHeaders,
                 contentType: "application/json",
-                error: function() {
-                    console.log("Sign up error");
+                error: function(jqXhr, textStatus, errorThrown) {
+                    console.log("jqXhr: " + jqXhr);
+                    console.log("textStatus: " + textStatus);
+                    console.log("errorThrown: " + errorThrown);
                 },
                 success: function(response) {
                     console.log(response);
@@ -107,59 +118,11 @@
 
             return false;
         });
-      
+
         $("#compose-article").click(function(e) {
             e.preventDefault();
             window.location.href = "/Articles/ComposeArticle";
             return false;
         });
-             
-        function onVoteClick(articleId, voteType) {
-            var vote = {
-                voteType: voteType
-            }
-            $.ajax({
-                url: "/Articles/CreateArticleVoteAsync?articleId=" + articleId,
-                type: "POST",
-                data: JSON.stringify(vote),
-                contentType: "application/json",
-                error: function(jqXhr, textStatus, errorThrown) {
-                    console.log("jqXhr: " + jqXhr);
-                    console.log("textStatus: " + jqXhr);
-                    console.log("errorThrown: " + jqXhr);
-                },
-                success: function(response) {
-                    switch (voteType) {
-                    case 1:
-                        {
-                            $(`#${articleId} small[name=likes]`).text(response);
-                        }
-                        break;
-                    case 2:
-                        {
-                            $(`#${articleId} small[name=dislikes]`).text(response);
-                        }
-                        break;
-                    }
-
-                }
-            });
-        }
-
-        function onBookmarkClick(articleId) {
-            $.ajax({
-                url: "/Articles/GetProfileDescriptionAsync",
-                type: "GET",
-                contentType: "application/json",
-                error: function(jqXhr, textStatus, errorThrown) {
-                    console.log("jqXhr: " + jqXhr);
-                    console.log("textStatus: " + jqXhr);
-                    console.log("errorThrown: " + jqXhr);
-                },
-                success: function(response) {
-                    $("#articles-preview").html(response);
-                }
-            });
-        }
     });
 </script>

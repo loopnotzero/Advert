@@ -2,9 +2,9 @@
 
 namespace Egghead.Models.Articles
 {
-    public class ArticleVoteModel
+    public class ArticleVotesModel
     {
-        public string ArticleId { get; set; }
         public VoteType VoteType { get; set; }
+        public string VotesCount { get; set; }
     }
 }

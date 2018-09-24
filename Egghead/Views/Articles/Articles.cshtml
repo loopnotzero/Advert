@@ -1,7 +1,7 @@
 ﻿@using Egghead.Models.Articles
 @using Humanizer
 
-@model IEnumerable<ArticlePreviewModel>
+@model IEnumerable<ArticleModel>
 
 @Html.Partial("Header")
 
@@ -74,20 +74,20 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12 p-1">
-                                        <div name="btn-like" onclick="onVoteClick('@article.Id', 1)" class="r-btn r-btn-light r-btn--icon ml-4">
+                                        <div name="btn-like" onclick="onVoteArticleClick('@article.Id', 1)" class="r-btn r-btn-light r-btn--icon ml-4">
                                             <i class="fa fa-thumbs-o-up"></i>
                                         </div>
-                                        <small name="likes">@article.LikesCount</small>
+                                        <small name="likes-count">@article.LikesCount</small>
 
-                                        <div name="btn-dislike" onclick="onVoteClick('@article.Id', 2)" class="r-btn r-btn-light r-btn--icon">
+                                        <div name="btn-dislike" onclick="onVoteArticleClick('@article.Id', 2)" class="r-btn r-btn-light r-btn--icon">
                                             <i class="fa fa-thumbs-o-down"></i>
                                         </div>
-                                        <small name="dislikes">@article.DislikesCount</small>
+                                        <small name="dislikes-count">@article.DislikesCount</small>
 
                                         <div name="btn-bookmark" class="r-btn r-btn-light r-btn--icon">
                                             <i class="fa fa-bookmark"></i>
                                         </div>
-                                        <small name="bookmarks">@article.BookmarksCount</small>
+                                        <small name="shares-count">@article.SharesCount</small>
 
                                         <div class="r-btn r-btn-light-no-hover r-btn--icon-no-hover">
                                             <i class="fa fa-eye"></i>
@@ -97,7 +97,7 @@
                                         <div class="r-btn r-btn-light-no-hover r-btn--icon-no-hover">
                                             <i class="fa fa-weixin"></i>
                                         </div>
-                                        <small id="article-comments">@article.CommentsCount</small>
+                                        <small id="comments-count">@article.CommentsCount</small>
 
                                         <small class="text-muted float-right mt-2 mr-4">
                                             <a href="/Articles/ArticleContent/@article.Id">READ MORE...</a>
@@ -132,7 +132,7 @@
 @*                                     <div class="listview__content"> *@
 @*                                         <div class="listview__heading"> *@
 @*                                             <p> *@
-@*                                                 <a class="font-weight-bold" href="/Articles/ArticleContent?articleId=@popularArticle.Id">@popularArticle.Title</a> *@
+@*                                                 <a class="font-weight-bold" href="/Articles/ArticleContent?articleId=@popularArticle.CommentId">@popularArticle.Title</a> *@
 @*                                             </p> *@
 @*                                         </div> *@
 @*                                         <p> *@
@@ -148,3 +148,53 @@
         </div>
     </div>
 </section>
+
+<script>
+    function onVoteArticleClick(articleId, voteType) {
+        var vote = {
+            articleId: articleId,
+            voteType: voteType
+        }
+        $.ajax({
+            url: "/Articles/CreateArticleVoteAsync",
+            type: "POST",
+            data: JSON.stringify(vote),
+            contentType: "application/json",
+            error: function(jqXhr, textStatus, errorThrown) {
+                console.log("jqXhr: " + jqXhr);
+                console.log("textStatus: " + textStatus);
+                console.log("errorThrown: " + errorThrown);
+            },
+            success: function(response) {
+                switch (response.voteType) {
+                case 1:
+                    {
+                        $(`#${articleId} small[name=likes-count]`).text(response.votesCount);
+                    }
+                    break;
+                case 2:
+                    {
+                        $(`#${articleId} small[name=dislikes-count]`).text(response.votesCount);
+                    }
+                    break;
+                }
+            }
+        });
+    }
+
+    function onShareArticleClick(articleId) {
+        $.ajax({
+            url: "/Articles/ShareArticleAsync",
+            type: "GET",
+            contentType: "application/json",
+            error: function(jqXhr, textStatus, errorThrown) {
+                console.log("jqXhr: " + jqXhr);
+                console.log("textStatus: " + textStatus);
+                console.log("errorThrown: " + errorThrown);
+            },
+            success: function(response) {
+                $("#articles-preview").html(response);
+            }
+        });
+    }
+</script>

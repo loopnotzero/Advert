@@ -1,5 +1,4 @@
 ﻿using System;
-using Egghead.Common.Stores;
 using Egghead.Managers;
 using Egghead.MongoDbStorage.Articles;
 using Egghead.MongoDbStorage.Common;
@@ -45,7 +44,7 @@ namespace Egghead
 
             app.UseAuthentication();
 
-            app.UseMvc(routes => { routes.MapRoute("default", "{controller=Articles}/{action=ArticlesPreview}/{id?}"); });
+            app.UseMvc(routes => { routes.MapRoute("default", "{controller=Articles}/{action=Articles}/{id?}"); });
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.

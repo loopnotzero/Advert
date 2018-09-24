@@ -3,9 +3,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Egghead.Common;
 using Egghead.Common.Articles;
-using Egghead.Common.Stores;
+using Egghead.MongoDbStorage.Stores;
 using Microsoft.AspNetCore.Identity;
 using MongoDB.Bson;
+using MongoDB.Driver;
 
 namespace Egghead.Managers
 {
@@ -32,31 +33,7 @@ namespace Egghead.Managers
             KeyNormalizer = keyNormalizer;
         }
 
-        public async Task<T> FindArticleVoteByNormalizedEmailAsync(ObjectId articleId, string email)
-        {
-            ThrowIfDisposed();
-
-            if (articleId == null)
-            {
-                throw new ArgumentNullException(nameof(articleId));
-            }
-
-            return await Store.FindArticleVoteByNormalizedEmailAsync(articleId, email, CancellationToken);
-        }
-
-        public async Task<long> CountArticleVotesByTypeAsync(ObjectId articleId, VoteType voteType)
-        {
-            ThrowIfDisposed();
-
-            if (articleId == null)
-            {
-                throw new ArgumentNullException(nameof(articleId));
-            }
-
-            return await Store.CountArticleVotesByTypeAsync(articleId, voteType, CancellationToken);
-        }
-
-        public async Task<OperationResult> CreateArticleVoteAsync(T entity)
+        public async Task CreateArticleVoteAsync(T entity)
         {
             ThrowIfDisposed();
 
@@ -65,9 +42,50 @@ namespace Egghead.Managers
                 throw new ArgumentNullException(nameof(entity));
             }
 
-            return await Store.CreateArticleVoteAsync(entity, CancellationToken);
+            await Store.CreateArticleVoteAsync(entity, CancellationToken);
         }
 
+        public async Task<T> FindArticleVoteByAsync(ObjectId articleId, string normalizedEmail)
+        {
+            ThrowIfDisposed();
+
+            if (articleId == ObjectId.Empty)
+            {
+                throw new ArgumentNullException(nameof(articleId));
+            }
+
+            if (string.IsNullOrEmpty(normalizedEmail))
+            {
+                throw new ArgumentNullException(nameof(normalizedEmail));
+            }
+
+            return await Store.FindArticleVoteByAsync(articleId, normalizedEmail, CancellationToken);
+        }
+
+        public async Task<long> CountArticleTypedVotesByArticleIdAsync(ObjectId articleId, VoteType voteType)
+        {
+            ThrowIfDisposed();
+
+            if (articleId == ObjectId.Empty)
+            {
+                throw new ArgumentNullException(nameof(articleId));
+            }
+
+            return await Store.CountArticleTypedVotesByArticleIdAsync(articleId, voteType, CancellationToken);
+        }
+
+        public async Task<DeleteResult> DeleteArticleVoteByIdAsync(ObjectId voteId)
+        {
+            ThrowIfDisposed();
+
+            if (voteId == ObjectId.Empty)
+            {
+                throw new ArgumentNullException(nameof(voteId));
+            }
+            
+            return await Store.DeleteArticleVoteByIdAsync(voteId, CancellationToken);
+        }
+        
         public void Dispose()
         {
             Dispose(true);
@@ -82,11 +100,6 @@ namespace Egghead.Managers
             Store.Dispose();
 
             _disposed = true;
-        }
-        
-        private string NormalizeKey(string key)
-        {
-            return KeyNormalizer != null ? KeyNormalizer.Normalize(key) : key;
         }
 
         protected void ThrowIfDisposed()

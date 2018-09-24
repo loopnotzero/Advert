@@ -3,8 +3,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Egghead.Common;
 using Egghead.Common.Articles;
-using Egghead.Common.Stores;
+using Egghead.MongoDbStorage.Stores;
 using MongoDB.Bson;
+using MongoDB.Driver;
 
 namespace Egghead.Managers
 {
@@ -25,6 +26,18 @@ namespace Egghead.Managers
             Store = store ?? throw new ArgumentNullException(nameof(store));
         }
         
+        public async Task CreateArticleCommentVoteAsync(T entity)
+        {
+            ThrowIfDisposed();
+
+            if (entity == null)
+            {
+                throw new ArgumentNullException(nameof(entity));
+            }
+
+            await Store.CreateArticleCommentVoteAsync(entity, CancellationToken);
+        }
+
         public async Task<long> CountArticleCommentVotesAsync(ObjectId commentId, VoteType voteType)
         {
             ThrowIfDisposed();
@@ -53,20 +66,8 @@ namespace Egghead.Managers
 
             return await Store.FindArticleCommentVoteAsync(commentId, CancellationToken);
         }
-        
-        public async Task<OperationResult> CreateArticleCommentVoteAsync(T entity)
-        {
-            ThrowIfDisposed();
-
-            if (entity == null)
-            {
-                throw new ArgumentNullException(nameof(entity));
-            }
-
-            return await Store.CreateArticleCommentVoteAsync(entity, CancellationToken);
-        }
-        
-        public async Task<OperationResult> UpdateArticleCommentVoteAsync(ObjectId voteId, VoteType voteType)
+               
+        public async Task<UpdateResult> UpdateArticleCommentVoteAsync(ObjectId voteId, VoteType voteType)
         {
             ThrowIfDisposed();
             
@@ -78,7 +79,7 @@ namespace Egghead.Managers
             return await Store.UpdateArticleCommentVoteAsync(voteId, voteType, CancellationToken);
         }
         
-        public async Task<OperationResult> DeleteArticleCommentVoteAsync(ObjectId voteId)
+        public async Task<DeleteResult> DeleteArticleCommentVoteAsync(ObjectId voteId)
         {
             ThrowIfDisposed();
 

@@ -1,6 +1,6 @@
 ﻿namespace Egghead.Models.Articles
 {
-    public class ArticlePreviewModel
+    public class ArticleModel
     {
         public string Id { get; set; }
         public string Title { get; set; }
@@ -10,7 +10,7 @@
         public string DislikesCount { get; set; }
         public string ViewsCount { get; set; }
         public string CommentsCount { get; set; }
-        public string BookmarksCount { get; set; }
+        public string SharesCount { get; set; }
         public string CreatedAt { get; set; }
     }
 }

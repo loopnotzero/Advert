@@ -1,6 +1,6 @@
 ﻿@using Egghead.Models.Articles
 @using Humanizer
-@model ArticlePreviewModel
+@model ArticleModel
 
 @Html.Partial("Header")
 
@@ -60,7 +60,7 @@
                 @*                                     <div class="listview__content"> *@
                 @*                                         <div class="listview__heading"> *@
                 @*                                             <p> *@
-                @*                                                 <a class="font-weight-bold" href="/Articles/ArticleContent?articleId=@popularArticle.Id">@popularArticle.Title</a> *@
+                @*                                                 <a class="font-weight-bold" href="/Articles/ArticleContent?articleId=@popularArticle.CommentId">@popularArticle.Title</a> *@
                 @*                                             </p> *@
                 @*                                         </div> *@
                 @*                                         <p> *@
@@ -81,7 +81,7 @@
     function showReplyForm(replyTo, commentId) {
         removeReplyForm("reply-form");
 
-        console.log(`Reply To: ${replyTo} Comment ID: ${commentId}`);
+        console.log(`Reply to: ${replyTo} Comment id: ${commentId}`);
 
         $(`#${commentId} #reply-placeholder:first`).append(
             `<div id="reply-form">   
@@ -123,14 +123,11 @@
 
             var text = editor.options.previewRender(editor.value());
 
-            var parentId = (replyTo == null ? commentId : replyTo);
-
-            createCommentReplyAsync(articleId,
-                parentId,
-                {
-                    text: text,
-                    replyTo: parentId
-                });
+            createCommentReplyAsync({
+                articleId: articleId,
+                text: text,
+                replyTo: (replyTo == null ? commentId : replyTo)
+            });
         });
     }
 
@@ -158,9 +155,9 @@
         createArticleCommentVoteAsync(articleId, commentId, voteType);
     }
 
-    function createCommentReplyAsync(articleId, replyTo, comment) {
+    function createCommentReplyAsync(comment) {
         $.ajax({
-            url: `/Articles/CreateArticleCommentAsync/${articleId}`,
+            url: `/Articles/CreateArticleCommentAsync`,
             type: "POST",
             data: JSON.stringify(comment),
             contentType: "application/json",
@@ -170,7 +167,7 @@
                 console.log("errorThrown: " + errorThrown);
             },
             success: function(response) {
-                $(`#${replyTo} .media-body:first`).append(`
+                $(`#${comment.replyTo} .media-body:first`).append(`
                 <div id="${response.id}" class="media p-3">
                     <img src="/images/64x64.svg" width="48" height="48" alt="">
                     <div class="media-body media__img">
@@ -182,12 +179,12 @@
                             <h6>${response.text}</h6>
                         </div>
                         <div class="col-auto">
-                            <a href="#reply" onclick="showReplyForm('${replyTo}', '${response.id}')">Reply</a>
+                            <a href="#reply" onclick="showReplyForm('${comment.replyTo}', '${response.id}')">Reply</a>
                             <div name="btn-like" onclick="onCommentVoteClick('${response.id
                     }', 1)" class="r-btn r-btn-light r-btn--icon">
                                 <i class="fa fa-thumbs-o-up"></i>
                             </div>
-                            <span name="voting-points">${response.votingPoints}</span>
+                            <span name="votes-count">${response.votesCount}</span>
                             <div name="btn-dislike" onclick="onCommentVoteClick('${response.id
                     }', 1)" class="r-btn r-btn-light r-btn--icon">
                                 <i class="fa fa-thumbs-o-down"></i>
@@ -259,15 +256,15 @@
                 console.log("errorThrown: " + errorThrown);
             },
             success: function(response) {
-                switch (voteType) {
+                switch (response.voteType) {
                 case 1:
                     {
-                        $(`#${commentId} span[name=votes-count]:first`).text(response);
+                        $(`#${commentId} span[name=votes-count]:first`).text(response.votesCount);
                     }
                     break;
                 case 2:
                     {
-                        $(`#${commentId} span[name=votes-count]:first`).text(response);
+                        $(`#${commentId} span[name=votes-count]:first`).text(response.votesCount);
                     }
                     break;
                 }

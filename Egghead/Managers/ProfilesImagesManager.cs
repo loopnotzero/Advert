@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Egghead.Common;
-using Egghead.Common.Stores;
+using Egghead.MongoDbStorage.Stores;
 using Microsoft.AspNetCore.Identity;
 using MongoDB.Bson;
 
@@ -24,6 +24,12 @@ namespace Egghead.Managers
         protected internal IProfilesImagesStore<T> Store { get; set; }
 
         protected virtual CancellationToken CancellationToken => CancellationToken.None;
+               
+        public ProfilesImagesManager(IProfilesImagesStore<T> store, ILookupNormalizer keyNormalizer)
+        {
+            Store = store ?? throw new ArgumentNullException(nameof(store));
+            KeyNormalizer = keyNormalizer;
+        }
         
         public void Dispose()
         {
@@ -31,6 +37,18 @@ namespace Egghead.Managers
             GC.SuppressFinalize(this);
         }
 
+        public async Task CreateProfileImageAsync(T entity)
+        {
+            ThrowIfDisposed();
+            await Store.CreateProfileImageAsync(entity, CancellationToken);
+        }      
+
+        public async Task<T> GetProfileImageByProfileIdAsync(ObjectId profileId)
+        {
+            ThrowIfDisposed();          
+            return await Store.GetProfileImageByProfileIdAsync(profileId, CancellationToken);
+        }
+        
         private void Dispose(bool disposing)
         {
             if (!disposing || _disposed)
@@ -53,23 +71,5 @@ namespace Egghead.Managers
                 throw new ObjectDisposedException(GetType().Name);
             }
         }
-        
-        public ProfilesImagesManager(IProfilesImagesStore<T> store, ILookupNormalizer keyNormalizer)
-        {
-            Store = store ?? throw new ArgumentNullException(nameof(store));
-            KeyNormalizer = keyNormalizer;
-        }
-        
-        public async Task<T> GetProfileImageByProfileIdAsync(ObjectId profileId)
-        {
-            ThrowIfDisposed();          
-            return await Store.GetProfileImageByProfileIdAsync(profileId, CancellationToken);
-        }
-
-        public async Task<OperationResult> CreateProfileImageAsync(T entity)
-        {
-            ThrowIfDisposed();
-            return await Store.CreateProfileImageAsync(entity, CancellationToken);
-        }      
     }
 }
