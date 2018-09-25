@@ -44,5 +44,12 @@ namespace Egghead.MongoDbStorage.Stores
             var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.Id, id), cancellationToken: cancellationToken);
             return await cursor.FirstOrDefaultAsync(cancellationToken);
         }
+
+        public async Task<T> FindProfileByNormalizedEmailAsync(string email, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.NormalizedEmail, email), cancellationToken: cancellationToken);
+            return await cursor.FirstOrDefaultAsync(cancellationToken);
+        }
     }
 }

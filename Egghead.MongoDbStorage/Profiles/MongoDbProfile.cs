@@ -13,9 +13,10 @@ namespace Egghead.MongoDbStorage.Profiles
             //Create indeces
         }
 
-        public ObjectId Id { get; }           
+        public ObjectId Id { get; set; }           
         public string Name { get; set; }    
         public string NormalizedName { get; set; }
+        public string NormalizedEmail { get; set; }
         public string Location { get; set; }
         public string LocationNormalized { get; set; }             
         public string PhoneNumber { get; set; }            

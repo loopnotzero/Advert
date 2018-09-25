@@ -38,13 +38,6 @@ namespace Egghead.MongoDbStorage.Stores
             }, cancellationToken);
         }
 
-        public Task SetNormalizedTitleAsync(T entity, string normalizedTitle, CancellationToken cancellationToken)
-        {
-            cancellationToken.ThrowIfCancellationRequested();           
-            entity.NormalizedTitle = normalizedTitle ?? entity.Title.ToUpper();           
-            return Task.FromResult<object>(null);
-        }
-
         public async Task<T> FindArticleByIdAsync(ObjectId articleId, CancellationToken cancellationToken)
         {    
             cancellationToken.ThrowIfCancellationRequested();
@@ -59,30 +52,13 @@ namespace Egghead.MongoDbStorage.Stores
             return await cursor.FirstOrDefaultAsync(cancellationToken);
         }
 
-        public async Task<T> FindArticleByNormalizedTitleAsync(string title, CancellationToken cancellationToken)
-        {                    
-            cancellationToken.ThrowIfCancellationRequested();
-            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.NormalizedTitle, title), cancellationToken: cancellationToken);
-            return await cursor.FirstAsync(cancellationToken);
-        }
-
-        public async Task<T> FindArticleByNormalizedTitleOrDefaultAsync(string title, T defaultValue, CancellationToken cancellationToken)
+        public async Task<long> CountArticlesByNormalizedEmail(string email, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.NormalizedTitle, title), cancellationToken: cancellationToken);
-            return await cursor.FirstOrDefaultAsync(cancellationToken);
+            return await _collection.CountDocumentsAsync(Builders<T>.Filter.Eq(x => x.NormalizedEmail, email), cancellationToken: cancellationToken);
         }
 
-        public async Task<long> CountArticlesByProfileIdAsync(ObjectId profileId, CancellationToken cancellationToken)
-        {
-//            cancellationToken.ThrowIfCancellationRequested();
-//            var filter = Builders<T>.Filter.Eq(x => x.ProfileId, profileId);
-//            var articlesCount = await _collection.CountDocumentsAsync(filter, new CountOptions(), cancellationToken);
-//            return articlesCount;
-            throw new NotImplementedException();
-        }
-
-        public async Task<List<T>> FindLatestArticlesAsync(CancellationToken cancellationToken)
+        public async Task<List<T>> FindArticlesAsync(CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             var findOptions = new FindOptions<T>
@@ -109,12 +85,6 @@ namespace Egghead.MongoDbStorage.Stores
         {
             cancellationToken.ThrowIfCancellationRequested();
             return await _collection.DeleteOneAsync(Builders<T>.Filter.Eq(x => x.Id, articleId), cancellationToken);        
-        }
-
-        public async Task<DeleteResult> DeleteArticleByNormalizedTitleAsync(string title, CancellationToken cancellationToken)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            return await _collection.DeleteOneAsync(Builders<T>.Filter.Eq(x => x.NormalizedTitle, title), cancellationToken);          
         }
 
         public async Task<UpdateResult> UpdateArticleViewsCountByArticleIdAsync(ObjectId articleId, long count, CancellationToken cancellationToken)
@@ -152,14 +122,5 @@ namespace Egghead.MongoDbStorage.Stores
                 BypassDocumentValidation = false
             }, cancellationToken);
         }
-
-        public async Task<ReplaceOneResult> ReplaceArticleByNormalizedTitleAsync(string title, T entity, CancellationToken cancellationToken)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            return await _collection.ReplaceOneAsync(Builders<T>.Filter.Eq(x => x.NormalizedTitle, title), entity, new UpdateOptions
-            {
-                BypassDocumentValidation = false
-            }, cancellationToken);
-        } 
     }
 }

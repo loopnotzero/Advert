@@ -14,7 +14,6 @@ namespace Egghead.MongoDbStorage.Articles
 
         public ObjectId Id { get; set; }    
         public string Title { get; set; }
-        public string NormalizedTitle { get; set; }       
         public string Text { get; set; }      
         public string NormalizedEmail { get; set; }
         public ReleaseType ReleaseType { get; set; }

@@ -9,5 +9,6 @@ namespace Egghead.MongoDbStorage.Stores
     {
         Task CreateProfileAsync(T entity, CancellationToken cancellationToken);
         Task<T> FindProfileByIdAsync(ObjectId id, CancellationToken cancellationToken);
+        Task<T> FindProfileByNormalizedEmailAsync(string email, CancellationToken cancellationToken);
     }
 }
