@@ -70,7 +70,9 @@ namespace Egghead.Controllers
             try
             {
                 var articles = new List<ArticleModel>();
- 
+                
+                var normalizedEmail = NormalizeKey(HttpContext.User.Identity.Name);
+
                 foreach (var article in await _articlesManager.FindArticlesAsync(_configuration.GetSection("EggheadOptions").GetValue<int>("ArticlesPerPage")))
                 {
                     articles.Add(new ArticleModel
@@ -87,14 +89,15 @@ namespace Egghead.Controllers
                     });
                 }
                 
-                var profile = await _profilesManager.FindProfileByNormalizedEmail(NormalizeKey(HttpContext.User.Identity.Name));
+
+                var profile = await _profilesManager.FindProfileByNormalizedEmail(normalizedEmail);
 
                 return View(new ArticlesPreviewViewModel
                 {
-                    ProfileModel = new ProfileModel
+                    Profile = new ProfileModel
                     {
                         Name = profile.Name,
-                        ArticlesCount = ((double)await _articlesManager.CountArticlesByNormalizedEmail(NormalizeKey(HttpContext.User.Identity.Name))).ToMetric(),
+                        ArticlesCount = ((double)await _articlesManager.CountArticlesByNormalizedEmail(normalizedEmail)).ToMetric(),
                         FollowingCount = ((double)0).ToMetric()
                     },
                     Articles = articles
@@ -114,10 +117,12 @@ namespace Egghead.Controllers
         {
             try
             {
+                var normalizedEmail = NormalizeKey(HttpContext.User.Identity.Name);
+                
                 var articleViewsCount = new MongoDbArticleViewsCount
                 {
                     ArticleId = ObjectId.Parse(articleId),
-                    NormalizedEmail = NormalizeKey(HttpContext.User.Identity.Name),
+                    NormalizedEmail = normalizedEmail,
                     CreatedAt = DateTime.UtcNow
                 };
 
@@ -129,17 +134,27 @@ namespace Egghead.Controllers
 
                 var article = await _articlesManager.FindArticleByIdAsync(articleViewsCount.ArticleId);
 
-                return View(new ArticleModel
+                var profile = await _profilesManager.FindProfileByNormalizedEmail(normalizedEmail);
+
+                return View(new ArticleContentViewModel
                 {
-                    Id = article.Id.ToString(),
-                    Title = article.Title,
-                    Text = article.Text,
-                    NormalizedEmail = NormalizeKey(HttpContext.User.Identity.Name),
-                    LikesCount = ((double)article.LikesCount).ToMetric(),
-                    DislikesCount = ((double)article.DislikesCount).ToMetric(),
-                    ViewsCount = ((double)article.ViewsCount).ToMetric(),
-                    CommentsCount = ((double)article.CommentsCount).ToMetric(),
-                    CreatedAt = article.CreatedAt.Humanize()
+                    Profile = new ProfileModel
+                    {
+                        Name = profile.Name,
+                        ArticlesCount = ((double)await _articlesManager.CountArticlesByNormalizedEmail(normalizedEmail)).ToMetric()
+                    },
+                    Article = new ArticleModel
+                    {
+                        Id = article.Id.ToString(),
+                        Title = article.Title,
+                        Text = article.Text,
+                        NormalizedEmail = normalizedEmail,
+                        LikesCount = ((double) article.LikesCount).ToMetric(),
+                        DislikesCount = ((double) article.DislikesCount).ToMetric(),
+                        ViewsCount = ((double) article.ViewsCount).ToMetric(),
+                        CommentsCount = ((double) article.CommentsCount).ToMetric(),
+                        CreatedAt = article.CreatedAt.Humanize()
+                    }
                 });
             }
             catch (Exception e)
@@ -155,11 +170,13 @@ namespace Egghead.Controllers
         {
             try
             {
+                var normalizedEmail = NormalizeKey(HttpContext.User.Identity.Name);
+                              
                 var article = new MongoDbArticle
                 {
                     Title = model.Title,
                     Text = model.Text,
-                    NormalizedEmail = NormalizeKey(HttpContext.User.Identity.Name),
+                    NormalizedEmail = normalizedEmail,
                     ReleaseType = ReleaseType.PreModeration,
                     CreatedAt = DateTime.UtcNow,
                 };
@@ -304,14 +321,14 @@ namespace Egghead.Controllers
         [HttpPost]
         [Authorize]
         [Route("/Articles/CreateArticleCommentAsync")]
-        public async Task<IActionResult> CreateArticleCommentAsync([FromBody] ArticleCommentModel model)
+        public async Task<IActionResult> CreateArticleCommentAsync([FromBody] PublishArticleCommentModel model)
         {
             try
             {
                 var articleId = ObjectId.Parse(model.ArticleId);
 
                 var collectionName = model.ArticleId;
-      
+
                 var articleComment = new MongoDbArticleComment
                 {
                     ArticleId = articleId,
@@ -322,12 +339,17 @@ namespace Egghead.Controllers
 
                 await _articlesCommentsManager.CreateArticleComment(collectionName, articleComment);
 
+                var normalizedEmail = NormalizeKey(HttpContext.User.Identity.Name);
+
+                var profile = await _profilesManager.FindProfileByNormalizedEmail(normalizedEmail);
+                
                 var comment = await _articlesCommentsManager.FindArticleCommentById(collectionName, articleComment.Id);
 
                 return Ok(new ArticleCommentModel
                 {
                     ArticleId = model.ArticleId,
                     CommentId = comment.Id.ToString(),
+                    Name = profile.Name,
                     Text = comment.Text,
                     ReplyTo = comment.ReplyTo == ObjectId.Empty ? null : comment.ReplyTo.ToString(),
                     CreatedAt = comment.CreatedAt.Humanize()

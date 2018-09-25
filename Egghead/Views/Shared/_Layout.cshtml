@@ -54,7 +54,7 @@
                 data: JSON.stringify({ email: $("#email").val(), password: $("#password").val() }),
                 headers: additionalHeaders,
                 contentType: "application/json",
-                error: function() {
+                error: function(jqXhr, textStatus, errorThrown) {
                     console.log("jqXhr: " + jqXhr);
                     console.log("textStatus: " + textStatus);
                     console.log("errorThrown: " + errorThrown);

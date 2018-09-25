@@ -5,7 +5,7 @@ namespace Egghead.Models.Articles
 {
     public class ArticlesPreviewViewModel
     {
-        public ProfileModel ProfileModel { get; set; }
+        public ProfileModel Profile { get; set; }
         public List<ArticleModel> Articles { get; set; }
     }
 }

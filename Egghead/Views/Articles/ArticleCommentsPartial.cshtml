@@ -10,7 +10,7 @@
                 <img src="/images/64x64.svg" width="48" height="48">
                 <div class="media-body media__img">
                     <div class="col-auto">
-                        Victor Chicu <small class="time"> @comment.CreatedAt</small>
+                        @comment.Name <small class="time"> @comment.CreatedAt</small>
                     </div>
                     <div class="col-auto">
                         <h6>@Html.Raw(comment.Text)</h6>
@@ -37,7 +37,7 @@
                         <img src="/images/64x64.svg" width="48" height="48">
                         <div class="media-body media__img">
                             <div class="col-auto">
-                                Victor Chicu <small class="time"> @comment.CreatedAt</small>
+                                @comment.Name <small class="time"> @comment.CreatedAt</small>
                             </div>
                             <div class="col-auto">
                                 <h6>@Html.Raw(comment.Text)</h6>
