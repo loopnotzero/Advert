@@ -100,6 +100,14 @@ namespace Egghead.Controllers
             await _userManager.CreateAsync(user, model.Password);
             
             await _signInManager.SignInAsync(user, false);
+
+            await _profilesManager.CreateProfileAsync(new MongoDbProfile
+            {
+                Name = model.Name,
+                NormalizedName = NormalizeKey(model.Name),
+                NormalizedEmail = NormalizeKey(model.Email),
+                CreatedAt = DateTime.UtcNow
+            });
                               
             return Ok(new
             {

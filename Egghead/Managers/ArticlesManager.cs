@@ -45,18 +45,6 @@ namespace Egghead.Managers
             await Store.CreateArticleAsync(entity, CancellationToken);
         }
 
-        public async Task SetNormalizedTitleAsync(T entity, string normalizedTitle)
-        {
-            ThrowIfDisposed();
-
-            if (entity == null)
-            {
-                throw new ArgumentNullException(nameof(entity));
-            }
-
-            await Store.SetNormalizedTitleAsync(entity, normalizedTitle, CancellationToken);
-        }
-
         public async Task<T> FindArticleByIdAsync(ObjectId articleId)
         {
             ThrowIfDisposed();
@@ -68,21 +56,17 @@ namespace Egghead.Managers
 
             return await Store.FindArticleByIdAsync(articleId, CancellationToken);
         }
-
-        public async Task<T> FindArticleByNormalizedTitleAsync(string title)
+        
+        public async Task<long> CountArticlesByNormalizedEmail(string email)
         {
             ThrowIfDisposed();
 
-            if (title == null)
+            if (string.IsNullOrEmpty(email))
             {
-                throw new ArgumentNullException(nameof(title));
+                throw new ArgumentNullException(nameof(email));
             }
 
-            title = NormalizeKey(title);
-
-            var article = await Store.FindArticleByNormalizedTitleAsync(title.ToUpper(), CancellationToken);
-
-            return article;
+            return await Store.CountArticlesByNormalizedEmail(email, CancellationToken);
         }
 
         public async Task<List<T>> FindArticlesAsync(int howManyElements)
@@ -139,20 +123,6 @@ namespace Egghead.Managers
             return await Store.DeleteArticleByIdAsync(articleId, CancellationToken);
         }
 
-        public async Task<DeleteResult> DeleteArticleByTitleAsync(string title)
-        {
-            ThrowIfDisposed();
-
-            if (string.IsNullOrEmpty(title))
-            {
-                throw new ArgumentNullException(nameof(title));
-            }
-
-            title = NormalizeKey(title);
-
-            return await Store.DeleteArticleByNormalizedTitleAsync(title, CancellationToken);
-        }
-    
         public async Task<ReplaceOneResult> ReplaceArticleAsync(T entity)
         {
             ThrowIfDisposed();
@@ -163,23 +133,6 @@ namespace Egghead.Managers
             }
 
             return await Store.ReplaceArticleAsync(entity, CancellationToken);
-        }
-
-        public async Task<ReplaceOneResult> ReplaceArticleByTitleAsync(string title, T entity)
-        {
-            ThrowIfDisposed();
-
-            if (title == null)
-            {
-                throw new ArgumentNullException(nameof(title));
-            }
-
-            if (entity == null)
-            {
-                throw new ArgumentNullException(nameof(entity));
-            }
-
-            return await Store.ReplaceArticleByNormalizedTitleAsync(title.ToUpper(), entity, CancellationToken);
         }
 
         public void Dispose()
@@ -209,6 +162,6 @@ namespace Egghead.Managers
             {
                 throw new ObjectDisposedException(GetType().Name);
             }
-        }    
+        }   
     }
 }

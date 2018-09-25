@@ -1,7 +1,6 @@
 ﻿@using Egghead.Models.Articles
-@using Humanizer
 
-@model IEnumerable<ArticleModel>
+@model ArticlesPreviewViewModel
 
 @Html.Partial("Header")
 
@@ -14,16 +13,16 @@
                         <img src="/images/users/user_empty.png" class="widget-profile__img widget-profile__img__hover" alt="profile-image">
                     </a>
                     <a href="/Profiles/GetProfile">
-                        <h5 id="profile-fullname" class="mb-3"></h5>
+                        <h5 id="profile-name" class="mb-3">@Model.ProfileModel.Name</h5>
                     </a>
                     <div class="row">
                         <div class="col-md-6">
                             <span class="text-justify">Your articles</span>
-                            <h5 id="profile-articles-count" class="text-center"></h5>
+                            <h5 id="profile-articles" class="text-center">@Model.ProfileModel.ArticlesCount</h5>
                         </div>
                         <div class="col-md-6">
-                            <span class="text-justify">You following</span>
-                            <h5 id="profile-following-count" class="text-center"></h5>
+                            <span class="text-justify">Following</span>
+                            <h5 id="profile-following" class="text-center">@Model.ProfileModel.FollowingCount</h5>
                         </div>
                     </div>
 
@@ -60,7 +59,7 @@
             <div class="container-fluid mb-3">
                 @{
                     <div class="card">
-                        @foreach (var article in Model)
+                        @foreach (var article in Model.Articles)
                         {
                             <article id="@article.Id" class="card-hover">
                                 <div class="text-muted p-3">

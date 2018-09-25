@@ -54,12 +54,24 @@ namespace Egghead.Managers
         {
             ThrowIfDisposed();
 
-            if (id == null || id.Equals(ObjectId.Empty))
+            if (id == ObjectId.Empty)
             {
                 throw new ArgumentNullException(nameof(id)); 
             }
             
             return await Store.FindProfileByIdAsync(id, CancellationToken);
+        }
+
+        public async Task<T> FindProfileByNormalizedEmail(string email)
+        {
+            ThrowIfDisposed();
+
+            if (string.IsNullOrEmpty(email))
+            {
+                throw new ArgumentNullException(nameof(email)); 
+            }
+            
+            return await Store.FindProfileByNormalizedEmailAsync(email, CancellationToken);
         }
 
         private void Dispose(bool disposing)

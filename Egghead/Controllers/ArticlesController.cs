@@ -7,6 +7,7 @@ using Egghead.Common.Articles;
 using Egghead.Exceptions;
 using Egghead.Managers;
 using Egghead.Models.Articles;
+using Egghead.Models.Profiles;
 using Egghead.MongoDbStorage.Articles;
 using Egghead.MongoDbStorage.Profiles;
 using Egghead.MongoDbStorage.Users;
@@ -85,8 +86,19 @@ namespace Egghead.Controllers
                         CreatedAt = article.CreatedAt.Humanize(),
                     });
                 }
+                
+                var profile = await _profilesManager.FindProfileByNormalizedEmail(NormalizeKey(HttpContext.User.Identity.Name));
 
-                return View(articles);
+                return View(new ArticlesPreviewViewModel
+                {
+                    ProfileModel = new ProfileModel
+                    {
+                        Name = profile.Name,
+                        ArticlesCount = ((double)await _articlesManager.CountArticlesByNormalizedEmail(NormalizeKey(HttpContext.User.Identity.Name))).ToMetric(),
+                        FollowingCount = ((double)0).ToMetric()
+                    },
+                    Articles = articles
+                });
             }
             catch (Exception e)
             {
@@ -146,7 +158,6 @@ namespace Egghead.Controllers
                 var article = new MongoDbArticle
                 {
                     Title = model.Title,
-                    NormalizedTitle = NormalizeKey(model.Title),
                     Text = model.Text,
                     NormalizedEmail = NormalizeKey(HttpContext.User.Identity.Name),
                     ReleaseType = ReleaseType.PreModeration,
@@ -194,23 +205,6 @@ namespace Egghead.Controllers
             try
             {
                 await _articlesManager.DeleteArticleByIdAsync(ObjectId.Parse(articleId));
-                return Ok();
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e.Message, e);
-                return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
-            }
-        }
-
-        [HttpDelete]
-        [Authorize]
-        [Route("/Articles/DeleteArticleByTitleAsync/{title}")]
-        public async Task<IActionResult> DeleteArticleByTitleAsync(string title)
-        {
-            try
-            {
-                await _articlesManager.DeleteArticleByTitleAsync(title);
                 return Ok();
             }
             catch (Exception e)
