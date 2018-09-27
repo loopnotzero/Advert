@@ -90,7 +90,7 @@ namespace Egghead.Controllers
                 }
                 
 
-                var profile = await _profilesManager.FindProfileByNormalizedEmail(normalizedEmail);
+                var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(normalizedEmail);
 
                 return View(new ArticlesPreviewViewModel
                 {
@@ -134,7 +134,7 @@ namespace Egghead.Controllers
 
                 var article = await _articlesManager.FindArticleByIdAsync(articleViewsCount.ArticleId);
 
-                var profile = await _profilesManager.FindProfileByNormalizedEmail(normalizedEmail);
+                var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(normalizedEmail);
 
                 return View(new ArticleContentViewModel
                 {
@@ -341,7 +341,7 @@ namespace Egghead.Controllers
 
                 var normalizedEmail = NormalizeKey(HttpContext.User.Identity.Name);
 
-                var profile = await _profilesManager.FindProfileByNormalizedEmail(normalizedEmail);
+                var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(normalizedEmail);
                 
                 var comment = await _articlesCommentsManager.FindArticleCommentById(collectionName, articleComment.Id);
 

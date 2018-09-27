@@ -9,10 +9,10 @@
         <div class="col-md-3 p-1">
             <div class="card">
                 <div class="card-body text-center">
-                    <a href="/Profiles/GetProfile">
+                    <a href="/@Model.Profile.Name">
                         <img src="/images/users/user_empty.png" class="widget-profile__img widget-profile__img__hover" alt="profile-image">
                     </a>
-                    <a href="/Profiles/GetProfile">
+                    <a href="/@Model.Profile.Name">
                         <h5 id="profile-name" class="mb-3">@Model.Profile.Name</h5>
                     </a>
                     <div class="row">
@@ -63,7 +63,7 @@
                         {
                             <article id="@article.Id" class="card-hover">
                                 <div class="text-muted p-3">
-                                    <a href="/Profiles/GetProfile"><small class="font-weight-bold">@Model.Profile.Name</small></a> <small class="time"> @article.CreatedAt</small>             
+                                    <a href="/Profiles/Profile"><small class="font-weight-bold">@Model.Profile.Name</small></a> <small class="time"> @article.CreatedAt</small>             
                                 </div>
                                 <div class="card-body card-body__img">
                                     <a href="/Articles/ArticleContent/@article.Id">

@@ -88,17 +88,17 @@ namespace Egghead.Controllers
                 return View(model);
             }
 
-            var form = HttpContext.Request.Form["g-recaptcha-response"];
-
-            var captchaResult = await GetCaptchaValidationResultAsync(form,
-                _configuration.GetSection("GoogleReCaptchaOptions").GetValue<string>("SecretKey"), _logger);
-
-            if (!captchaResult.Success)
-            {
-                _logger.LogError(captchaResult.ErrorCodes[0]);
-                ModelState.AddModelError(ModelErrorKey.ReCaptchaErrorStringPropertyName, captchaResult.ErrorCodes[0]);
-                return View(model);
-            }
+//            var form = HttpContext.Request.Form["g-recaptcha-response"];
+//
+//            var captchaResult = await GetCaptchaValidationResultAsync(form,
+//                _configuration.GetSection("GoogleReCaptchaOptions").GetValue<string>("SecretKey"), _logger);
+//
+//            if (!captchaResult.Success)
+//            {
+//                _logger.LogError(captchaResult.ErrorCodes[0]);
+//                ModelState.AddModelError(ModelErrorKey.ReCaptchaErrorStringPropertyName, captchaResult.ErrorCodes[0]);
+//                return View(model);
+//            }
 
             await _signInManager.PasswordSignInAsync(model.Email, model.Password, false, false);
 

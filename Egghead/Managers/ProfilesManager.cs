@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Egghead.Common;
-using Egghead.MongoDbStorage.Profiles;
 using Egghead.MongoDbStorage.Stores;
 using Microsoft.AspNetCore.Identity;
 using MongoDB.Bson;
@@ -62,7 +60,36 @@ namespace Egghead.Managers
             return await Store.FindProfileByIdAsync(id, CancellationToken);
         }
 
-        public async Task<T> FindProfileByNormalizedEmail(string email)
+        public async Task<T> FindProfileByIdOrDefaultAsync(ObjectId id, T defaultValue)
+        {
+            throw new NotImplementedException();
+        }
+        
+        public async Task<T> FindProfileByNormalizedNameAsync(string name)
+        {
+            ThrowIfDisposed();
+
+            if (string.IsNullOrEmpty(name))
+            {
+                throw new ArgumentNullException(nameof(name)); 
+            }
+            
+            return await Store.FindProfileByNormalizedNameAsync(name, CancellationToken);
+        }
+
+        public async Task<T> FindProfileByNormalizedNameOrDefaultAsync(string name, T defaultValue)
+        {
+            ThrowIfDisposed();
+
+            if (string.IsNullOrEmpty(name))
+            {
+                throw new ArgumentNullException(nameof(name)); 
+            }
+            
+            return await Store.FindProfileByNormalizedNameOrDefaultAsync(NormalizeKey(name), CancellationToken);
+        }
+
+        public async Task<T> FindProfileByNormalizedEmailAsync(string email)
         {
             ThrowIfDisposed();
 
@@ -74,6 +101,11 @@ namespace Egghead.Managers
             return await Store.FindProfileByNormalizedEmailAsync(email, CancellationToken);
         }
 
+        public async Task<T> FindProfileByNormalizedEmailOrDefaultAsync(string name, T defaultValue)
+        {
+            throw new NotImplementedException();
+        }
+        
         private void Dispose(bool disposing)
         {
             if (!disposing || _disposed)
@@ -95,6 +127,6 @@ namespace Egghead.Managers
             {
                 throw new ObjectDisposedException(GetType().Name);
             }
-        }     
+        }
     }
 }

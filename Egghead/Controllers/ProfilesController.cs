@@ -15,25 +15,31 @@ namespace Egghead.Controllers
         private readonly ILogger _logger;
         private readonly ILookupNormalizer _keyNormalizer;
         private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly ProfilesManager<MongoDbProfile> _profilesManager;
         private readonly ProfilesImagesManager<MongoDbProfileImage> _profilesImagesManager;
 
-        public ProfilesController(
-            ILoggerFactory loggerFactory,
-            ILookupNormalizer keyNormalizer,
-            IHostingEnvironment hostingEnvironment,
-            ProfilesImagesManager<MongoDbProfileImage> profilesImagesManager
-        )
+        public ProfilesController(ILoggerFactory loggerFactory, ILookupNormalizer keyNormalizer, IHostingEnvironment hostingEnvironment, ProfilesManager<MongoDbProfile> profilesManager, ProfilesImagesManager<MongoDbProfileImage> profilesImagesManager)
         {
             _logger = loggerFactory.CreateLogger<ProfilesController>();
             _keyNormalizer = keyNormalizer;
             _hostingEnvironment = hostingEnvironment;
+            
+            _profilesManager = profilesManager;
             _profilesImagesManager = profilesImagesManager;
         }
 
         [HttpGet]
-        public IActionResult Profile()
+        [Route("{name}")]
+        public async Task<IActionResult> Profile(string name)
         {
-            return View();
+            var profile = await _profilesManager.FindProfileByNormalizedNameOrDefaultAsync(name, null);
+
+            if (profile == null)
+            {
+                return NotFound();
+            }
+            
+            return View(profile);
         }
         
         [HttpPost("UploadImage")]

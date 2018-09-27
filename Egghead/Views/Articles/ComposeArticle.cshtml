@@ -15,7 +15,7 @@
                 <i class="fa fa-lg fa-ellipsis-v"></i>
             </a>
             <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-end" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(-171px, 36px, 0px);">
-                <a id="profile" href="/Profiles/GetProfile" class="dropdown-item">Profile</a>
+                <a id="profile" href="/Profiles/Profile" class="dropdown-item">Profile</a>
                 <a id="log-out" href="#" class="dropdown-item">Log out</a>
             </div>
         </li>
@@ -23,23 +23,47 @@
 </header>
 
 <section class="content">
-    <div class="card">      
+    <div class="card">
         <div class="card-body">
             <div class="form-group">
-                <input id="title" type="text" class="form-control" placeholder="Title">
-                <i class="form-group__bar"></i>
+                <small class="font-weight-bold">Title*</small>
+                <input id="title" type="text" class="form-control">
+                <small class="description">Title should be meaningful so that can understand what the article will be about.</small>
             </div>
-            @* <div class="actions"> *@
-            @*     <a id="save-article" href="#" class="actions__item fa fa-save"></a> *@
-            @*     <a id="upload-image" href="#" class="actions__item fa fa-cloud-upload"></a> *@
-            @* </div> *@
-            <textarea id="article-editor" style="display: none;"></textarea>
+
+            <div class="form-group">
+                <small class="font-weight-bold">Category*</small>
+                <select class="select2 select2-hidden-accessible" multiple="" tabindex="-1" aria-hidden="true">
+                    <option>Subaru</option>
+                    <option>Mitsubishi</option>
+                    <option>Scion</option>
+                    <option>Daihatsu</option>
+                    <option>Hino</option>
+                </select>
+                <span class="select2 select2-container select2-container--default select2-container--above" dir="ltr" style="width: 100%;">
+                    <span class="dropdown-wrapper" aria-hidden="true"></span>
+                    <small class="description">Title should be meaningful so that you can understand what the article will be about.</small>
+                </span>
+
+            </div>
+
+            <textarea id="article-editor" style="display: none; margin-top: 25px"></textarea>
         </div>
     </div>
 </section>
 
 <script>
     $(document).ready(function() {
+        if ($('select.select2')[0]) {
+            var select2Parent = $('.select2-parent')[0] ? $('.select2-parent') : $('body');
+
+            $('select.select2').select2({
+                dropdownAutoWidth: true,
+                width: '100%',
+                dropdownParent: select2Parent
+            });
+        }
+
         var simplemde = new SimpleMDE({
             status: false,
             element: $("#article-editor")[0],
@@ -47,7 +71,7 @@
             fullScreen: false,
             withPreview: false
         });
-        
+
         $("#publish-article").click(function(e) {
             e.preventDefault();
             var article = JSON.stringify({
