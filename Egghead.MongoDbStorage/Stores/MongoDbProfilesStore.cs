@@ -1,6 +1,5 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Egghead.Common;
 using Egghead.MongoDbStorage.Common;
 using Egghead.MongoDbStorage.Mappings;
 using Egghead.MongoDbStorage.Profiles;
@@ -45,10 +44,24 @@ namespace Egghead.MongoDbStorage.Stores
             return await cursor.FirstOrDefaultAsync(cancellationToken);
         }
 
+        public async Task<T> FindProfileByNormalizedNameAsync(string name, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.NormalizedName, name), cancellationToken: cancellationToken);
+            return await cursor.FirstAsync(cancellationToken);
+        }
+
         public async Task<T> FindProfileByNormalizedEmailAsync(string email, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.NormalizedEmail, email), cancellationToken: cancellationToken);
+            return await cursor.FirstOrDefaultAsync(cancellationToken);
+        }
+
+        public async Task<T> FindProfileByNormalizedNameOrDefaultAsync(string name, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.NormalizedName, name), cancellationToken: cancellationToken);
             return await cursor.FirstOrDefaultAsync(cancellationToken);
         }
     }
