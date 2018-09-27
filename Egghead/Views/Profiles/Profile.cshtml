@@ -1,8 +1,12 @@
-﻿@using Egghead.Models.Profiles
+﻿@using Egghead.Models.Articles
+@using Egghead.Models.Profiles
 
 @model ProfileModel
 
-@Html.Partial("Header")
+@Html.Partial("Header", new CompositeArticleModel
+{
+    Profile = Model
+})
 
 <section class="content">
     <div class="card">

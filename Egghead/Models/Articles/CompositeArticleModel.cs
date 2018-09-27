@@ -3,7 +3,7 @@ using Egghead.Models.Profiles;
 
 namespace Egghead.Models.Articles
 {
-    public class ArticlesPreviewViewModel
+    public class CompositeArticleModel
     {
         public ProfileModel Profile { get; set; }
         public List<ArticleModel> Articles { get; set; }

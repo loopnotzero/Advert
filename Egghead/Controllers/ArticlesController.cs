@@ -90,7 +90,7 @@ namespace Egghead.Controllers
 
                 var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
 
-                return View(new ArticlesPreviewViewModel
+                return View(new CompositeArticleModel
                 {
                     Profile = new ProfileModel
                     {
@@ -130,7 +130,7 @@ namespace Egghead.Controllers
 
                 var article = await _articlesManager.FindArticleByIdAsync(articleViewsCount.ArticleId);
 
-                return View(new ArticlesPreviewViewModel
+                return View(new CompositeArticleModel
                 {
                     Profile = new ProfileModel
                     {
