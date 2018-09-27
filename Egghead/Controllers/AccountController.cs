@@ -43,7 +43,7 @@ namespace Egghead.Controllers
         [AllowAnonymous]
         public IActionResult LogIn(string returnUrl = null)
         {
-            ViewData["SiteKey"] = _configuration.GetSection("GoogleReCaptchaOptions").GetValue<string>("SiteKey");
+//            ViewData["SiteKey"] = _configuration.GetSection("GoogleReCaptchaOptions").GetValue<string>("SiteKey");
             ViewData["returnUrl"] = returnUrl;
             return View();
         }

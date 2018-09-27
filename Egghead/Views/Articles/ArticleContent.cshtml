@@ -1,6 +1,6 @@
 ﻿@using Egghead.Models.Articles
 @using Humanizer
-@model ArticleContentViewModel
+@model ArticlesPreviewViewModel
 
 @Html.Partial("Header", Model)
 
@@ -11,17 +11,17 @@
                 <div class="text-muted p-3">
                     <a href="/@Model.Profile.Name">
                         <small class="font-weight-bold">@Model.Profile.Name</small>
-                    </a> <small class="time"> @Model.Article.CreatedAt.Humanize()</small>
+                    </a> <small class="time"> @Model.Articles[0].CreatedAt.Humanize()</small>
                 </div>
 
                 <div class="card-body card-body__img">
-                    <h4>@Model.Article.Title</h4>
-                    <p class="card-text">@Html.Raw(Model.Article.Text)</p>
+                    <h4>@Model.Articles[0].Title</h4>
+                    <p class="card-text">@Html.Raw(Model.Articles[0].Text)</p>
                 </div>
 
                 <div style="border-bottom: 1px solid #e3e3e3; padding-left: 20px; padding-bottom: 20px">
                     <h4 id="comments-count">
-                        @Model.Article.CommentsCount Comments
+                        @Model.Articles[0].CommentsCount Comments
                     </h4>
                 </div>
 

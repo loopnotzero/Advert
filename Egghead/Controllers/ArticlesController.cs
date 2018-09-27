@@ -116,7 +116,7 @@ namespace Egghead.Controllers
             try
             {
                 var articleViewsCount = new MongoDbArticleViewsCount
-                {                    
+                {
                     ArticleId = ObjectId.Parse(articleId),
                     Email = HttpContext.User.Identity.Name,
                     CreatedAt = DateTime.UtcNow
@@ -127,28 +127,31 @@ namespace Egghead.Controllers
                 await _articlesManager.UpdateArticleViewsCountByArticleId(articleViewsCount.ArticleId, await _articlesViewsCountManager.CountArticleViewsCountAsync(articleViewsCount.ArticleId));
 
                 var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
-                
+
                 var article = await _articlesManager.FindArticleByIdAsync(articleViewsCount.ArticleId);
 
-                return View(new ArticleContentViewModel
+                return View(new ArticlesPreviewViewModel
                 {
                     Profile = new ProfileModel
                     {
                         Name = profile.Name,
-                        ArticlesCount = ((double)await _articlesManager.CountArticlesByNormalizedEmail(article.NormalizedEmail)).ToMetric(),
-                        FollowingCount = ((double)0).ToMetric()
+                        ArticlesCount = ((double) await _articlesManager.CountArticlesByNormalizedEmail(article.NormalizedEmail)).ToMetric(),
+                        FollowingCount = ((double) 0).ToMetric()
                     },
-                    Article = new ArticleModel
+                    Articles = new List<ArticleModel>
                     {
-                        Id = article.Id.ToString(),
-                        Title = article.Title,
-                        Text = article.Text,
-                        NormalizedEmail = article.NormalizedEmail,
-                        LikesCount = ((double) article.LikesCount).ToMetric(),
-                        DislikesCount = ((double) article.DislikesCount).ToMetric(),
-                        ViewsCount = ((double) article.ViewsCount).ToMetric(),
-                        CommentsCount = ((double) article.CommentsCount).ToMetric(),
-                        CreatedAt = article.CreatedAt.Humanize()
+                        new ArticleModel
+                        {
+                            Id = article.Id.ToString(),
+                            Title = article.Title,
+                            Text = article.Text,
+                            NormalizedEmail = article.NormalizedEmail,
+                            LikesCount = ((double) article.LikesCount).ToMetric(),
+                            DislikesCount = ((double) article.DislikesCount).ToMetric(),
+                            ViewsCount = ((double) article.ViewsCount).ToMetric(),
+                            CommentsCount = ((double) article.CommentsCount).ToMetric(),
+                            CreatedAt = article.CreatedAt.Humanize()
+                        }
                     }
                 });
             }
