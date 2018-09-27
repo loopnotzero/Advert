@@ -243,7 +243,7 @@
     transition: transform 300ms;
 
     &:not(.search--toggled) {
-      transform: translate3d(0,-105%,0);
+      transform: translate3d(0,-115%,0);
     }
   }
 }
@@ -282,7 +282,7 @@
 .search__helper {
   position: absolute;
   left: 0;
-  top: 0;
+  top: 15px;
   font-size: 1.3rem;
   height: 100%;
   width: 3rem;
@@ -306,20 +306,6 @@
   }
 }
 
-.search--focus {
-  .search__helper {
-    color: lighten($input-color, 10%);
-    transform: rotate(180deg);
-    line-height: 2.9rem;
-
-    &:before {
-      content: '\f301';
-    }
-  }
-}
-
-
-// App shortcuts
 .app-shortcuts {
   margin: 0;
   padding: 1rem;
