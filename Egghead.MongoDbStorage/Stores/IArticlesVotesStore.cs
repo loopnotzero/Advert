@@ -10,8 +10,8 @@ namespace Egghead.MongoDbStorage.Stores
     public interface IArticlesVotesStore<T> : IDisposable where T : class
     {
         Task CreateArticleVoteAsync(T entity, CancellationToken cancellationToken);
-        Task<T> FindArticleVoteByAsync(ObjectId articleId, string email, CancellationToken cancellationToken);
-        Task<long> CountArticleTypedVotesByArticleIdAsync(ObjectId articleId, VoteType voteType, CancellationToken cancellationToken);
+        Task<T> FindArticleVoteByNormalizedEmailAsync(ObjectId articleId, string email, CancellationToken cancellationToken);
+        Task<long> CountArticleVotesByVoteTypeAsync(ObjectId articleId, VoteType voteType, CancellationToken cancellationToken);
         Task<DeleteResult> DeleteArticleVoteByIdAsync(ObjectId voteId, CancellationToken cancellationToken);
     }
 }

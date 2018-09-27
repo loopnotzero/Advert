@@ -1,11 +1,9 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Egghead.MongoDbStorage.Common;
 using Egghead.MongoDbStorage.Mappings;
 using Egghead.MongoDbStorage.Users;
 using Microsoft.AspNetCore.Identity;
-using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace Egghead.MongoDbStorage.Stores

@@ -33,10 +33,21 @@ namespace Egghead.MongoDbStorage.Stores
         public async Task CreateArticleViewsCountAsync(T entity, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
+
+            entity.NormalizedEmail = entity.NormalizedEmail ?? entity.Email.ToUpper();
+            
             await _collection.InsertOneAsync(entity, new InsertOneOptions
             {
                 BypassDocumentValidation = false
             }, cancellationToken);
+        }
+
+        public async Task<T> FindArticleViewsCountByIdAsync(ObjectId id, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.Id, id), cancellationToken: cancellationToken);
+            return await cursor.FirstAsync(cancellationToken);
+            
         }
 
         public async Task<long> CountArticleViewsCountByArticleIdAsync(ObjectId articleId, CancellationToken cancellationToken)

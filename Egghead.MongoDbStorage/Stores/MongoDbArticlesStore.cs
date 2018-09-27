@@ -32,6 +32,9 @@ namespace Egghead.MongoDbStorage.Stores
         public async Task CreateArticleAsync(T entity, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
+
+            entity.NormalizedEmail = entity.NormalizedEmail ?? entity.Email.ToUpper();
+            
             await _collection.InsertOneAsync(entity, new InsertOneOptions
             {
                 BypassDocumentValidation = false

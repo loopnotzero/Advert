@@ -10,6 +10,7 @@ namespace Egghead.MongoDbStorage.Stores
     public interface IArticlesViewCountStore<T> : IDisposable where T : class
     {
         Task CreateArticleViewsCountAsync(T entity , CancellationToken cancellationToken);
+        Task<T> FindArticleViewsCountByIdAsync(ObjectId id, CancellationToken cancellationToken);
         Task<long> CountArticleViewsCountByArticleIdAsync(ObjectId articleId, CancellationToken cancellationToken);
     }
 }

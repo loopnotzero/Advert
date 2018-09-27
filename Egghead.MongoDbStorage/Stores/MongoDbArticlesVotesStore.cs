@@ -33,13 +33,16 @@ namespace Egghead.MongoDbStorage.Stores
         public async Task CreateArticleVoteAsync(T entity, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
+
+            entity.NormalizedEmail = entity.NormalizedEmail ?? entity.Email.ToUpper();
+            
             await _collection.InsertOneAsync(entity, new InsertOneOptions
             {
                 BypassDocumentValidation = false
             }, cancellationToken);
         }
 
-        public async Task<T> FindArticleVoteByAsync(ObjectId articleId, string email, CancellationToken cancellationToken)
+        public async Task<T> FindArticleVoteByNormalizedEmailAsync(ObjectId articleId, string email, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             var filter = Builders<T>.Filter.And(Builders<T>.Filter.Eq(x => x.ArticleId, articleId), Builders<T>.Filter.Eq(x => x.NormalizedEmail, email));
@@ -50,7 +53,7 @@ namespace Egghead.MongoDbStorage.Stores
             return await cursor.FirstOrDefaultAsync(cancellationToken);
         }
 
-        public async Task<long> CountArticleTypedVotesByArticleIdAsync(ObjectId articleId, VoteType voteType, CancellationToken cancellationToken)
+        public async Task<long> CountArticleVotesByVoteTypeAsync(ObjectId articleId, VoteType voteType, CancellationToken cancellationToken)
         {      
             cancellationToken.ThrowIfCancellationRequested();
             var filter = Builders<T>.Filter.And(
