@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Security.Authentication;
 using System.Threading.Tasks;
 using Egghead.Common;
 using Egghead.Managers;
+using Egghead.Models.Captcha;
 using Egghead.Models.Users;
 using Egghead.MongoDbStorage.Profiles;
 using Egghead.MongoDbStorage.Users;
@@ -41,8 +43,8 @@ namespace Egghead.Controllers
         [AllowAnonymous]
         public IActionResult LogIn(string returnUrl = null)
         {
+            ViewData["SiteKey"] = _configuration.GetSection("GoogleReCaptchaOptions").GetValue<string>("SiteKey");
             ViewData["returnUrl"] = returnUrl;
-            ViewData["ReCaptchaKey"] = _configuration.GetSection("GoogleReCaptchaOptions").GetValue<string>("ServerKey");
             return View();
         }
 
@@ -77,28 +79,30 @@ namespace Egghead.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> LogIn([FromBody] LogInModel model, string returnUrl = null)
+        public async Task<IActionResult> LogIn(LogInModel model, string returnUrl = null)
         {
             ViewData["returnUrl"] = returnUrl;
 
-            var form = HttpContext.Request.Form["g-recaptcha-response"];
-            
-            _logger.LogInformation("Form: " + form);
-            
-            if (!IsReCaptchaValid(form, _configuration.GetSection("GoogleReCaptchaOptions").GetValue<string>("SecretKey"), _logger))
+            if (!ModelState.IsValid)
             {
-                _logger.LogError("ReCaptcha is not valid");
-                return BadRequest();
+                return View(model);
             }
 
-            _logger.LogInformation("ReCaptcha is valid");
+            var form = HttpContext.Request.Form["g-recaptcha-response"];
+
+            var captchaResult = await GetCaptchaValidationResultAsync(form,
+                _configuration.GetSection("GoogleReCaptchaOptions").GetValue<string>("SecretKey"), _logger);
+
+            if (!captchaResult.Success)
+            {
+                _logger.LogError(captchaResult.ErrorCodes[0]);
+                ModelState.AddModelError(ModelErrorKey.ReCaptchaErrorStringPropertyName, captchaResult.ErrorCodes[0]);
+                return View(model);
+            }
 
             await _signInManager.PasswordSignInAsync(model.Email, model.Password, false, false);
 
-            return Ok(new
-            {
-                returnUrl
-            });
+            return RedirectToLocal(returnUrl);
         }
 
         [HttpPost]
@@ -135,12 +139,22 @@ namespace Egghead.Controllers
         }
         
         
+        private IActionResult RedirectToLocal(string returnUrl)
+        {
+            if (Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
+
+            return RedirectToAction(nameof(ArticlesController.Articles), "Articles");
+        }
+        
         private string NormalizeKey(string key)
         {
             return _keyNormalizer != null ? _keyNormalizer.Normalize(key) : key;
         }
-        
-        public static bool IsReCaptchaValid(string gRecaptchaResponse, string secret, ILogger logger)
+
+        private static async Task<CaptchaResult> GetCaptchaValidationResultAsync(string gRecaptchaResponse, string secret, ILogger logger)
         {
             var httpClient = new HttpClient();
             
@@ -149,12 +163,13 @@ namespace Egghead.Controllers
             if (response.StatusCode != HttpStatusCode.OK)
             {
                 logger.LogError("Error while sending request to ReCaptcha");
-                return false;
+                //todo: throw captcha exception
+                return null;
             }
-    
-            dynamic jsoNdata = JObject.Parse(response.Content.ReadAsStringAsync().Result);
-            
-            return jsoNdata.success == "true";
+
+            var captchaResult = await response.Content.ReadAsAsync<CaptchaResult>();
+           
+            return captchaResult;
         }
     }
 }

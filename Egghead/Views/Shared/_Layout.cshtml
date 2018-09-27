@@ -2,12 +2,15 @@
 <html>
 
 <head>
-    <meta charset="utf-8"/>
+    
     <title>Egghead.md – Cele mai bune publicații pe zi</title>
+    
+    <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description"/>
     <meta content="Coderthemes" name="author"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    
     <link rel="shortcut icon" href="~/images/favicon.ico">
     <link href="~/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
     <link href="~/css/style.css" rel="stylesheet" type="text/css"/>
@@ -15,7 +18,14 @@
     <link href="~/css/simplemde.css" rel="stylesheet" type="text/css">
     <link href="~/css/animate.css" rel="stylesheet" type="text/css">
     <link href="~/css/dropzone.css" rel="stylesheet" type="text/css"/>
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    
+    <script type="text/javascript">
+        var onloadCallback = function() {
+            grecaptcha.render('re-captcha', {
+                'sitekey' : '6LdcUHIUAAAAAAgao-LMxTSjsmC3tj24H4dwLd3I'
+            });
+        };
+    </script>
 </head>
 
 <body id="body" data-ma-theme="egghead" style="display: none">
@@ -39,35 +49,6 @@
         });
 
     $(document).ready(function() {
-        $("#log-in").click(function(e) {
-            e.preventDefault();
-
-            var token = $("input[name=__RequestVerificationToken]").val();
-            var additionalHeaders = {};
-
-            if (token) {
-                additionalHeaders["RequestVerificationToken"] = token;
-            }
-
-            $.ajax({
-                url: $("#form").attr("action"),
-                type: "POST",
-                data: JSON.stringify({ email: $("#email").val(), password: $("#password").val() }),
-                headers: additionalHeaders,
-                contentType: "application/json",
-                error: function(jqXhr, textStatus, errorThrown) {
-                    console.log("jqXhr: " + jqXhr);
-                    console.log("textStatus: " + textStatus);
-                    console.log("errorThrown: " + errorThrown);
-                },
-                success: function(response) {
-                    window.location.href = response.returnUrl;
-                }
-            });
-
-            return false;
-        });
-
         $("#log-out").click(function(e) {
             e.preventDefault();
             $.ajax({
