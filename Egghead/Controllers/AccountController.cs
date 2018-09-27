@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Net.Http;
 using System.Security.Authentication;
 using System.Threading.Tasks;
 using Egghead.Common;
@@ -10,22 +11,27 @@ using Egghead.MongoDbStorage.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 
 namespace Egghead.Controllers
 {
     public class AccountController : Controller
     {
         private readonly ILogger _logger;
+        private readonly IConfiguration _configuration;
         private readonly ILookupNormalizer _keyNormalizer;
         private readonly UserManager<MongoDbUser> _userManager;
         private readonly SignInManager<MongoDbUser> _signInManager;
         private readonly ProfilesManager<MongoDbProfile> _profilesManager;
         
-        public AccountController(ILoggerFactory loggerFactory, ILookupNormalizer keyNormalizer, UserManager<MongoDbUser> userManager, SignInManager<MongoDbUser> signInManager, ProfilesManager<MongoDbProfile> profilesManager)
+        public AccountController(ILoggerFactory loggerFactory, ILookupNormalizer keyNormalizer, IConfiguration configuration, UserManager<MongoDbUser> userManager, SignInManager<MongoDbUser> signInManager, ProfilesManager<MongoDbProfile> profilesManager)
         {
             _logger = loggerFactory.CreateLogger<AccountController>();
             _keyNormalizer = keyNormalizer;
+            _configuration = configuration;     
+            
             _userManager = userManager;
             _signInManager = signInManager;
             _profilesManager = profilesManager;
@@ -36,6 +42,7 @@ namespace Egghead.Controllers
         public IActionResult LogIn(string returnUrl = null)
         {
             ViewData["returnUrl"] = returnUrl;
+            ViewData["ReCaptchaKey"] = _configuration.GetSection("GoogleReCaptchaOptions").GetValue<string>("ServerKey");
             return View();
         }
 
@@ -73,6 +80,18 @@ namespace Egghead.Controllers
         public async Task<IActionResult> LogIn([FromBody] LogInModel model, string returnUrl = null)
         {
             ViewData["returnUrl"] = returnUrl;
+
+            var form = HttpContext.Request.Form["g-recaptcha-response"];
+            
+            _logger.LogInformation("Form: " + form);
+            
+            if (!IsReCaptchaValid(form, _configuration.GetSection("GoogleReCaptchaOptions").GetValue<string>("SecretKey"), _logger))
+            {
+                _logger.LogError("ReCaptcha is not valid");
+                return BadRequest();
+            }
+
+            _logger.LogInformation("ReCaptcha is valid");
 
             await _signInManager.PasswordSignInAsync(model.Email, model.Password, false, false);
 
@@ -115,9 +134,27 @@ namespace Egghead.Controllers
             });
         }
         
+        
         private string NormalizeKey(string key)
         {
             return _keyNormalizer != null ? _keyNormalizer.Normalize(key) : key;
+        }
+        
+        public static bool IsReCaptchaValid(string gRecaptchaResponse, string secret, ILogger logger)
+        {
+            var httpClient = new HttpClient();
+            
+            var response = httpClient.GetAsync($"https://www.google.com/recaptcha/api/siteverify?secret={secret}&response={gRecaptchaResponse}").Result;
+            
+            if (response.StatusCode != HttpStatusCode.OK)
+            {
+                logger.LogError("Error while sending request to ReCaptcha");
+                return false;
+            }
+    
+            dynamic jsoNdata = JObject.Parse(response.Content.ReadAsStringAsync().Result);
+            
+            return jsoNdata.success == "true";
         }
     }
 }

@@ -7,7 +7,7 @@
             Sign in with your Egghead account
         </div>
         
-        <form id="form" asp-controller="Account" asp-action="LogIn" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" novalidate="">
+        <form id="form" asp-controller="Account" asp-action="LogIn" asp-route-returnurl="@ViewData["ReturnUrl"]" data-ajax="true" data-ajax-method="POST" novalidate="">
             <div class="login__block__body">
                 <div class="form-group form-group--float form-group--centered">
                     <input id="email" type="email" class="form-control">
@@ -20,11 +20,14 @@
                     <label>Password</label>
                     <i class="form-group__bar"></i>
                 </div>
+                
+                <div class="g-recaptcha" data-sitekey="@ViewData["ReCaptchaKey"]"></div>
+                
                 <button id="log-in" class="btn btn--icon login__block__btn">
                     <i class="fa fa-long-arrow-right"></i>
                 </button>
                 <p class="mt-4">New to Egghead? <a href="/Account/SignUp?returnUrl=/">Sign Up</a></p>
-            </div>  
+            </div>
         </form>      
     </div>
 </div>
