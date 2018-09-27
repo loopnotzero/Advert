@@ -66,7 +66,7 @@ namespace Egghead.Managers
                 throw new ArgumentNullException(nameof(email));
             }
 
-            return await Store.CountArticlesByNormalizedEmail(email, CancellationToken);
+            return await Store.CountArticlesByNormalizedEmail(NormalizeKey(email), CancellationToken);
         }
 
         public async Task<List<T>> FindArticlesAsync(int howManyElements)

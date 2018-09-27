@@ -2,14 +2,14 @@
 @using Humanizer
 @model ArticleContentViewModel
 
-@Html.Partial("Header")
+@Html.Partial("Header", Model)
 
 <section id="article" class="content">
     <div class="row">
         <div class="col-md-8">
             <div class="card">
                 <div class="text-muted p-3">
-                    <a href="/Profiles/Profile">
+                    <a href="/@Model.Profile.Name">
                         <small class="font-weight-bold">@Model.Profile.Name</small>
                     </a> <small class="time"> @Model.Article.CreatedAt.Humanize()</small>
                 </div>

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Egghead.Managers;
+using Egghead.Models.Profiles;
 using Egghead.MongoDbStorage.Profiles;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -39,7 +40,10 @@ namespace Egghead.Controllers
                 return NotFound();
             }
             
-            return View(profile);
+            return View(new ProfileModel
+            {
+                Name = profile.Name
+            });
         }
         
         [HttpPost("UploadImage")]

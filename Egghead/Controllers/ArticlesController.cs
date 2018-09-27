@@ -70,8 +70,6 @@ namespace Egghead.Controllers
             try
             {
                 var articles = new List<ArticleModel>();
-                
-                var normalizedEmail = NormalizeKey(HttpContext.User.Identity.Name);
 
                 foreach (var article in await _articlesManager.FindArticlesAsync(_configuration.GetSection("EggheadOptions").GetValue<int>("ArticlesPerPage")))
                 {
@@ -90,14 +88,14 @@ namespace Egghead.Controllers
                 }
                 
 
-                var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(normalizedEmail);
+                var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
 
                 return View(new ArticlesPreviewViewModel
                 {
                     Profile = new ProfileModel
                     {
                         Name = profile.Name,
-                        ArticlesCount = ((double)await _articlesManager.CountArticlesByNormalizedEmail(normalizedEmail)).ToMetric(),
+                        ArticlesCount = ((double)await _articlesManager.CountArticlesByNormalizedEmail(HttpContext.User.Identity.Name)).ToMetric(),
                         FollowingCount = ((double)0).ToMetric()
                     },
                     Articles = articles
@@ -117,38 +115,35 @@ namespace Egghead.Controllers
         {
             try
             {
-                var normalizedEmail = NormalizeKey(HttpContext.User.Identity.Name);
-                
                 var articleViewsCount = new MongoDbArticleViewsCount
-                {
+                {                    
                     ArticleId = ObjectId.Parse(articleId),
-                    NormalizedEmail = normalizedEmail,
+                    Email = HttpContext.User.Identity.Name,
                     CreatedAt = DateTime.UtcNow
                 };
 
                 await _articlesViewsCountManager.CreateArticleViewsCountAsync(articleViewsCount);
 
-                var viewsCount = await _articlesViewsCountManager.CountArticleViewsCountAsync(articleViewsCount.ArticleId);
+                await _articlesManager.UpdateArticleViewsCountByArticleId(articleViewsCount.ArticleId, await _articlesViewsCountManager.CountArticleViewsCountAsync(articleViewsCount.ArticleId));
 
-                await _articlesManager.UpdateArticleViewsCountByArticleId(articleViewsCount.ArticleId, viewsCount);
-
+                var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
+                
                 var article = await _articlesManager.FindArticleByIdAsync(articleViewsCount.ArticleId);
-
-                var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(normalizedEmail);
 
                 return View(new ArticleContentViewModel
                 {
                     Profile = new ProfileModel
                     {
                         Name = profile.Name,
-                        ArticlesCount = ((double)await _articlesManager.CountArticlesByNormalizedEmail(normalizedEmail)).ToMetric()
+                        ArticlesCount = ((double)await _articlesManager.CountArticlesByNormalizedEmail(article.NormalizedEmail)).ToMetric(),
+                        FollowingCount = ((double)0).ToMetric()
                     },
                     Article = new ArticleModel
                     {
                         Id = article.Id.ToString(),
                         Title = article.Title,
                         Text = article.Text,
-                        NormalizedEmail = normalizedEmail,
+                        NormalizedEmail = article.NormalizedEmail,
                         LikesCount = ((double) article.LikesCount).ToMetric(),
                         DislikesCount = ((double) article.DislikesCount).ToMetric(),
                         ViewsCount = ((double) article.ViewsCount).ToMetric(),
@@ -169,14 +164,12 @@ namespace Egghead.Controllers
         public async Task<IActionResult> PublishArticleAsync([FromBody] PublishArticleModel model)
         {
             try
-            {
-                var normalizedEmail = NormalizeKey(HttpContext.User.Identity.Name);
-                              
+            {       
                 var article = new MongoDbArticle
                 {
                     Title = model.Title,
                     Text = model.Text,
-                    NormalizedEmail = normalizedEmail,
+                    Email = HttpContext.User.Identity.Name,
                     ReleaseType = ReleaseType.PreModeration,
                     CreatedAt = DateTime.UtcNow,
                 };
@@ -240,7 +233,7 @@ namespace Egghead.Controllers
             {
                 var articleId = ObjectId.Parse(model.ArticleId);
 
-                var vote = await _articlesVotesManager.FindArticleVoteByAsync(articleId, NormalizeKey(HttpContext.User.Identity.Name));
+                var vote = await _articlesVotesManager.FindArticleVoteByNormalizedEmailAsync(articleId, HttpContext.User.Identity.Name);
 
                 if (vote == null)
                 {
@@ -248,11 +241,11 @@ namespace Egghead.Controllers
                     {
                         ArticleId = articleId,
                         VoteType = model.VoteType,
-                        NormalizedEmail = NormalizeKey(HttpContext.User.Identity.Name),
+                        Email = HttpContext.User.Identity.Name,
                         CreatedAt = DateTime.UtcNow
                     });
                     
-                    var votesCount = await _articlesVotesManager.CountArticleTypedVotesByArticleIdAsync(articleId, model.VoteType);
+                    var votesCount = await _articlesVotesManager.CountArticleVotesByVoteTypeAsync(articleId, model.VoteType);
 
                     switch (model.VoteType)
                     {
@@ -282,7 +275,7 @@ namespace Egghead.Controllers
                         await _articlesVotesManager.DeleteArticleVoteByIdAsync(vote.Id);
                     }
                     
-                    var votesCount = await _articlesVotesManager.CountArticleTypedVotesByArticleIdAsync(articleId, model.VoteType);
+                    var votesCount = await _articlesVotesManager.CountArticleVotesByVoteTypeAsync(articleId, model.VoteType);
 
                     switch (model.VoteType)
                     {
@@ -339,9 +332,7 @@ namespace Egghead.Controllers
 
                 await _articlesCommentsManager.CreateArticleComment(collectionName, articleComment);
 
-                var normalizedEmail = NormalizeKey(HttpContext.User.Identity.Name);
-
-                var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(normalizedEmail);
+                var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
                 
                 var comment = await _articlesCommentsManager.FindArticleCommentById(collectionName, articleComment.Id);
 
@@ -431,9 +422,9 @@ namespace Egghead.Controllers
         }
         
         
-        private string NormalizeKey(string key)
-        {
-            return _keyNormalizer != null ? _keyNormalizer.Normalize(key) : key;
-        }
+//        private string NormalizeKey(string key)
+//        {
+//            return _keyNormalizer != null ? _keyNormalizer.Normalize(key) : key;
+//        }
     }
 }

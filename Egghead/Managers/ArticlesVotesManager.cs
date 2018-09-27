@@ -45,7 +45,7 @@ namespace Egghead.Managers
             await Store.CreateArticleVoteAsync(entity, CancellationToken);
         }
 
-        public async Task<T> FindArticleVoteByAsync(ObjectId articleId, string normalizedEmail)
+        public async Task<T> FindArticleVoteByNormalizedEmailAsync(ObjectId articleId, string email)
         {
             ThrowIfDisposed();
 
@@ -54,15 +54,15 @@ namespace Egghead.Managers
                 throw new ArgumentNullException(nameof(articleId));
             }
 
-            if (string.IsNullOrEmpty(normalizedEmail))
+            if (string.IsNullOrEmpty(email))
             {
-                throw new ArgumentNullException(nameof(normalizedEmail));
+                throw new ArgumentNullException(nameof(email));
             }
 
-            return await Store.FindArticleVoteByAsync(articleId, normalizedEmail, CancellationToken);
+            return await Store.FindArticleVoteByNormalizedEmailAsync(articleId, NormalizeKey(email), CancellationToken);
         }
 
-        public async Task<long> CountArticleTypedVotesByArticleIdAsync(ObjectId articleId, VoteType voteType)
+        public async Task<long> CountArticleVotesByVoteTypeAsync(ObjectId articleId, VoteType voteType)
         {
             ThrowIfDisposed();
 
@@ -71,7 +71,7 @@ namespace Egghead.Managers
                 throw new ArgumentNullException(nameof(articleId));
             }
 
-            return await Store.CountArticleTypedVotesByArticleIdAsync(articleId, voteType, CancellationToken);
+            return await Store.CountArticleVotesByVoteTypeAsync(articleId, voteType, CancellationToken);
         }
 
         public async Task<DeleteResult> DeleteArticleVoteByIdAsync(ObjectId voteId)
@@ -100,6 +100,11 @@ namespace Egghead.Managers
             Store.Dispose();
 
             _disposed = true;
+        }
+        
+        private string NormalizeKey(string key)
+        {
+            return KeyNormalizer != null ? KeyNormalizer.Normalize(key) : key;
         }
 
         protected void ThrowIfDisposed()

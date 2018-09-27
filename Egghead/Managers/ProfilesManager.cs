@@ -98,7 +98,7 @@ namespace Egghead.Managers
                 throw new ArgumentNullException(nameof(email)); 
             }
             
-            return await Store.FindProfileByNormalizedEmailAsync(email, CancellationToken);
+            return await Store.FindProfileByNormalizedEmailAsync(NormalizeKey(email), CancellationToken);
         }
 
         public async Task<T> FindProfileByNormalizedEmailOrDefaultAsync(string name, T defaultValue)

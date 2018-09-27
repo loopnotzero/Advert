@@ -10,7 +10,7 @@ namespace Egghead.Managers
     public class ArticlesViewCountManager<T> : IDisposable where T : class
     {
         private bool _disposed;
-        
+
         protected virtual CancellationToken CancellationToken => CancellationToken.None;
 
         /// <summary>
@@ -18,12 +18,12 @@ namespace Egghead.Managers
         /// </summary>
         /// <value>The persistence store the manager operates over.</value>
         protected internal IArticlesViewCountStore<T> Store { get; set; }
-        
+
         public ArticlesViewCountManager(IArticlesViewCountStore<T> store)
         {
             Store = store ?? throw new ArgumentNullException(nameof(store));
         }
-        
+
         public async Task CreateArticleViewsCountAsync(T entity)
         {
             ThrowIfDisposed();
@@ -41,7 +41,7 @@ namespace Egghead.Managers
 
             return await Store.CountArticleViewsCountByArticleIdAsync(articleId, CancellationToken);
         }
-                
+
         public void Dispose()
         {
             Dispose(true);
@@ -64,6 +64,6 @@ namespace Egghead.Managers
             {
                 throw new ObjectDisposedException(GetType().Name);
             }
-        }      
+        }
     }
 }
