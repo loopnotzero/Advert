@@ -87,8 +87,9 @@ namespace Egghead.Controllers
                     });
                 }
                 
-
                 var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
+
+                var popularArticles = await _articlesManager.FindPopularArticlesByAudienceEngagementAsync(_configuration.GetSection("EggheadOptions").GetValue<int>("PopularArticlesPerPage"));
 
                 return View(new CompositeArticleModel
                 {
@@ -98,12 +99,18 @@ namespace Egghead.Controllers
                         ArticlesCount = ((double)await _articlesManager.CountArticlesByNormalizedEmail(HttpContext.User.Identity.Name)).ToMetric(),
                         FollowingCount = ((double)0).ToMetric()
                     },
-                    Articles = articles
+                    Articles = articles,
+                    PopularArticles = popularArticles.Select(x => new PopularArticleModel
+                    {
+                        Id = x.Id.ToString(),
+                        Title = x.Title,
+                        CreatedAt = x.CreatedAt.Humanize()
+                    }).ToList()
                 });
             }
             catch (Exception e)
             {
-                _logger.LogError(e.Message, e);
+//                _logger.LogError(e.Message, e);
                 return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
             }
         }

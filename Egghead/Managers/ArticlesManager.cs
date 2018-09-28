@@ -74,6 +74,12 @@ namespace Egghead.Managers
             ThrowIfDisposed();          
             return await Store.FindArticlesAsync(howManyElements, CancellationToken);
         }
+        
+        public async Task<List<T>> FindPopularArticlesByAudienceEngagementAsync(int howManyElements)
+        {
+            ThrowIfDisposed();          
+            return await Store.FindPopularArticlesByAudienceEngagementAsync(howManyElements, CancellationToken);
+        }
        
         public async Task<UpdateResult> UpdateArticleViewsCountByArticleId(ObjectId articleId, long viewsCount)
         {
@@ -162,6 +168,6 @@ namespace Egghead.Managers
             {
                 throw new ObjectDisposedException(GetType().Name);
             }
-        }   
+        } 
     }
 }
