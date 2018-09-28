@@ -9,15 +9,15 @@
 .content {
   &:not(.content--boxed):not(.content--full) {
     @include media-breakpoint-up(xl) {
-      padding: $header-height + 20px 10% 0 10%;
+      padding: $header-height + 20px 12% 0 12%;
     }
 
     @include media-breakpoint-between(sm, lg) {
-      padding: $header-height + 20px 10% 0 10%;
+      padding: $header-height + 20px 12% 0 12%;
     }
 
     @include media-breakpoint-down(xs) {
-      padding: $header-height + 20px 10% 0 10%;
+      padding: $header-height + 20px 12% 0 12%;
     }
   }
 }
