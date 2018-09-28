@@ -50,19 +50,12 @@ namespace Egghead.Controllers
 
         [HttpGet]
         [Authorize]
+        [Route("/Articles/ComposeArticle")]
         public IActionResult ComposeArticle()
         {
             return View();
         }
-
-        [HttpGet]
-        [Authorize]
-        [Route("/Articles/CountArticleCommentsByArticleIdAsync/{articleId}")]
-        public async Task<long> CountArticleCommentsByArticleIdAsync(string articleId)
-        {
-            return await _articlesCommentsManager.CountArticleCommentsByArticleIdAsync(articleId);
-        }
-
+      
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> Articles()
@@ -110,14 +103,14 @@ namespace Egghead.Controllers
             }
             catch (Exception e)
             {
-//                _logger.LogError(e.Message, e);
+                _logger.LogError(e.Message, e);
                 return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
             }
         }
         
         [HttpGet]
         [Authorize]
-        [Route("/Articles/ArticleContent/{articleId}")]
+        [Route("/Articles/{articleId}")]
         public async Task<IActionResult> ArticleContent(string articleId)
         {
             try
@@ -171,6 +164,7 @@ namespace Egghead.Controllers
   
         [HttpPost]
         [Authorize]
+        [Route("/Articles/PublishArticleAsync")]
         public async Task<IActionResult> PublishArticleAsync([FromBody] PublishArticleModel model)
         {
             try
@@ -430,11 +424,5 @@ namespace Egghead.Controllers
                 CreatedAt = x.CreatedAt.Humanize(),
             }));
         }
-        
-        
-//        private string NormalizeKey(string key)
-//        {
-//            return _keyNormalizer != null ? _keyNormalizer.Normalize(key) : key;
-//        }
     }
 }

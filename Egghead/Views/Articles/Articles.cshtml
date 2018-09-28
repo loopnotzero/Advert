@@ -66,7 +66,7 @@
                                     <a href="/@Model.Profile.Name"><small class="font-weight-bold">@Model.Profile.Name</small></a> <small class="time"> @article.CreatedAt</small>             
                                 </div>
                                 <div class="card-body card-body__img">
-                                    <a href="/Articles/ArticleContent/@article.Id">
+                                    <a href="/Articles/@article.Id">
                                         <h4 class="card-title cut-long-text mb-2">@article.Title</h4>
                                     </a>
                                     @Html.Raw(article.Text)
@@ -99,7 +99,7 @@
                                         <small id="comments-count">@article.CommentsCount</small>
 
                                         <small class="text-muted float-right mt-2 mr-4">
-                                            <a href="/Articles/ArticleContent/@article.Id">READ MORE...</a>
+                                            <a href="/Articles/@article.Id">READ MORE...</a>
                                         </small>
                                     </div>
                                 </div>
@@ -130,7 +130,7 @@
                                      <div class="listview__content">
                                          <div class="listview__heading">
                                              <p>
-                                                 <a class="font-weight-bold" href="/Articles/ArticleContent/@popularArticle.Id">@popularArticle.Title</a>
+                                                 <a class="font-weight-bold" href="/Articles/@popularArticle.Id">@popularArticle.Title</a>
                                              </p>
                                          </div>
                                          <p>

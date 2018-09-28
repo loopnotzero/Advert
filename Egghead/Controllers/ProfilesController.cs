@@ -30,7 +30,7 @@ namespace Egghead.Controllers
         }
 
         [HttpGet]
-        [Route("{name}")]
+        [Route("/{name}")]
         public async Task<IActionResult> Profile(string name)
         {
             var profile = await _profilesManager.FindProfileByNormalizedNameOrDefaultAsync(name, null);
@@ -47,6 +47,7 @@ namespace Egghead.Controllers
         }
         
         [HttpPost("UploadImage")]
+        [Route("/Profile/UploadImage")]
         public async Task<IActionResult> UploadImage(List<IFormFile> files)
         {
             _logger.LogInformation($"Web root path: {_hostingEnvironment.WebRootPath}");
