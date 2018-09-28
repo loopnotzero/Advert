@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using Egghead.MongoDbStorage.Articles;
 using Egghead.MongoDbStorage.Common;
 using Egghead.MongoDbStorage.Mappings;
+using Egghead.MongoDbStorage.Metrics;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
@@ -83,7 +86,28 @@ namespace Egghead.MongoDbStorage.Stores
             var cursor = await _collection.FindAsync(Builders<T>.Filter.Empty, findOptions, cancellationToken: cancellationToken);
             return await cursor.ToListAsync(cancellationToken);
         }
-        
+
+        public async Task<List<T>> FindPopularArticlesByAudienceEngagementAsync(int howManyElements, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+   
+            var list = _collection.AsQueryable().GroupBy(g => g.Id).Select(s => new ArticlePair
+            {
+                ArticleId = s.Key,
+                ViewsCount = s.Sum(x => x.ViewsCount)
+            }).OrderByDescending(x => x.ViewsCount).ToList();
+            
+
+            var findOptions = new FindOptions<T>
+            {
+                Limit = howManyElements
+            };
+                  
+            var cursor = await _collection.FindAsync(Builders<T>.Filter.In(article => article.Id, list.Select(x => x.ArticleId)), findOptions,  cancellationToken);
+
+            return await cursor.ToListAsync(cancellationToken);
+        }
+
         public async Task<DeleteResult> DeleteArticleByIdAsync(ObjectId articleId, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -124,6 +148,12 @@ namespace Egghead.MongoDbStorage.Stores
             {
                 BypassDocumentValidation = false
             }, cancellationToken);
+        }
+
+        class ArticlePair
+        {
+            public ObjectId ArticleId { get; set; }
+            public long ViewsCount { get; set; }
         }
     }
 }

@@ -31,6 +31,10 @@ namespace Egghead.MongoDbStorage.Stores
         public async Task CreateProfileAsync(T entity, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
+
+            entity.NormalizedName = entity.NormalizedName ?? entity.Name.ToUpper();
+            entity.NormalizedEmail = entity.NormalizedEmail ?? entity.Email.ToUpper();
+            
             await _collection.InsertOneAsync(entity, new InsertOneOptions
             {
                 BypassDocumentValidation = false

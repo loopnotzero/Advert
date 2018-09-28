@@ -15,6 +15,7 @@ namespace Egghead.MongoDbStorage.Stores
         Task<T> FindArticleByIdOrDefaultAsync(ObjectId articleId, T defaultValue, CancellationToken cancellationToken);    
         Task<long> CountArticlesByNormalizedEmail(string email, CancellationToken cancellationToken);
         Task<List<T>> FindArticlesAsync(int howManyElements, CancellationToken cancellationToken);      
+        Task<List<T>> FindPopularArticlesByAudienceEngagementAsync(int howManyElements, CancellationToken cancellationToken);
         Task<DeleteResult> DeleteArticleByIdAsync(ObjectId articleId, CancellationToken cancellationToken);      
         Task<UpdateResult> UpdateArticleViewsCountByArticleIdAsync(ObjectId articleId, long count, CancellationToken cancellationToken);
         Task<UpdateResult> UpdateArticleLikesCountByArticleIdAsync(ObjectId articleId, long count, CancellationToken cancellationToken);

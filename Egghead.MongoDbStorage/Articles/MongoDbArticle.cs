@@ -22,6 +22,7 @@ namespace Egghead.MongoDbStorage.Articles
         public long DislikesCount { get; set; }
         public long ViewsCount { get; set; }
         public long CommentsCount { get; set; }
+        public long SharesCount { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime ChangedAt { get; set; }
         public DateTime DeletedAt { get; set; }       
