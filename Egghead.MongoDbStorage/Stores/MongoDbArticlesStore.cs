@@ -86,44 +86,34 @@ namespace Egghead.MongoDbStorage.Stores
             return await cursor.ToListAsync(cancellationToken);
         }
 
+        class EngagementEntity
+        {
+            public object ArticleId { get; set; }
+            public long EngagementRate { get; set; }
+        }
+
         public async Task<List<T>> FindPopularArticlesByEngagementRateAsync(int howManyElements, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var projection = Builders<T>.Projection.Expression(x => Metrics.EngagementMetrics.ComputeAudienceEngagment(x.LikesCount, x.DislikesCount, x.CommentsCount, x.SharesCount, x.ViewsCount));
-            
             PipelineDefinition<T, T> pipelineDefinition = new EmptyPipelineDefinition<T>();
-            
-            var group = pipelineDefinition
-                .Group(x => x.Id, grouping => grouping.Max(x => x.ViewsCount)).Stages.GroupBy(x => x);
 
-            var agg = await _collection.AggregateAsync(group, new AggregateOptions
+            //todo: Compute ER
+            var group = pipelineDefinition
+                .Group(x => x.Id, grouping => new EngagementEntity
+                {
+                    ArticleId = grouping.Key,
+                    EngagementRate = grouping.Sum(rate => rate.ViewsCount)
+                });
+
+            var aggregation = await _collection.AggregateAsync(group, new AggregateOptions
             {             
                
             }, cancellationToken);
 
-            var r = agg.ToList();
+            var r = aggregation.ToList();
 
             return null;
-
-//            var list = _collection.AsQueryable().GroupBy(x => x.Id).Select(x => new ArticlePair
-//            {
-//                ArticleId = x.Key,
-//                ViewsCount = x.Sum(article => article.ViewsCount)
-//            }).OrderByDescending(x => x.ViewsCount).ToList();
-//            
-//            var findOptions = new FindOptions<T>
-//            {
-//                Limit = howManyElements
-//            };
-//
-//            var filter = Builders<T>.Filter.In(article => article.Id, list.Select(x => x.ArticleId));
-//        
-//            var cursor = await _collection.FindAsync(filter, findOptions,  cancellationToken);
-//
-//            var ls = await cursor.ToListAsync(cancellationToken);
-//
-//            return ls;
         }
 
         public async Task<DeleteResult> DeleteArticleByIdAsync(ObjectId articleId, CancellationToken cancellationToken)
