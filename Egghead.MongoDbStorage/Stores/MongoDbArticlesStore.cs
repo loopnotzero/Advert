@@ -1,19 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Egghead.MongoDbStorage.Articles;
 using Egghead.MongoDbStorage.Common;
 using Egghead.MongoDbStorage.Mappings;
-using Egghead.MongoDbStorage.Metrics;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace Egghead.MongoDbStorage.Stores
 {
-    public class MongoDbArticlesStore<T> : IArticlesStore<T> where T : MongoDbArticle
+    public class MongoDbArticlesStore<T> : IArticlesStore<T> where T : MongoDbArticle, new()
     {
         private readonly IMongoCollection<T> _collection;
         
@@ -87,25 +86,44 @@ namespace Egghead.MongoDbStorage.Stores
             return await cursor.ToListAsync(cancellationToken);
         }
 
-        public async Task<List<T>> FindPopularArticlesByAudienceEngagementAsync(int howManyElements, CancellationToken cancellationToken)
+        public async Task<List<T>> FindPopularArticlesByEngagementRateAsync(int howManyElements, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-   
-            var list = _collection.AsQueryable().GroupBy(g => g.Id).Select(s => new ArticlePair
-            {
-                ArticleId = s.Key,
-                ViewsCount = s.Sum(x => x.ViewsCount)
-            }).OrderByDescending(x => x.ViewsCount).ToList();
+
+            var projection = Builders<T>.Projection.Expression(x => Metrics.EngagementMetrics.ComputeAudienceEngagment(x.LikesCount, x.DislikesCount, x.CommentsCount, x.SharesCount, x.ViewsCount));
             
+            PipelineDefinition<T, T> pipelineDefinition = new EmptyPipelineDefinition<T>();
+            
+            var group = pipelineDefinition
+                .Group(x => x.Id, grouping => grouping.Max(x => x.ViewsCount)).Stages.GroupBy(x => x);
 
-            var findOptions = new FindOptions<T>
-            {
-                Limit = howManyElements
-            };
-                  
-            var cursor = await _collection.FindAsync(Builders<T>.Filter.In(article => article.Id, list.Select(x => x.ArticleId)), findOptions,  cancellationToken);
+            var agg = await _collection.AggregateAsync(group, new AggregateOptions
+            {             
+               
+            }, cancellationToken);
 
-            return await cursor.ToListAsync(cancellationToken);
+            var r = agg.ToList();
+
+            return null;
+
+//            var list = _collection.AsQueryable().GroupBy(x => x.Id).Select(x => new ArticlePair
+//            {
+//                ArticleId = x.Key,
+//                ViewsCount = x.Sum(article => article.ViewsCount)
+//            }).OrderByDescending(x => x.ViewsCount).ToList();
+//            
+//            var findOptions = new FindOptions<T>
+//            {
+//                Limit = howManyElements
+//            };
+//
+//            var filter = Builders<T>.Filter.In(article => article.Id, list.Select(x => x.ArticleId));
+//        
+//            var cursor = await _collection.FindAsync(filter, findOptions,  cancellationToken);
+//
+//            var ls = await cursor.ToListAsync(cancellationToken);
+//
+//            return ls;
         }
 
         public async Task<DeleteResult> DeleteArticleByIdAsync(ObjectId articleId, CancellationToken cancellationToken)
@@ -150,7 +168,7 @@ namespace Egghead.MongoDbStorage.Stores
             }, cancellationToken);
         }
 
-        class ArticlePair
+        private class ArticlePair
         {
             public ObjectId ArticleId { get; set; }
             public long ViewsCount { get; set; }
