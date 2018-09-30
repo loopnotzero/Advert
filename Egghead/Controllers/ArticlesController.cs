@@ -25,8 +25,6 @@ namespace Egghead.Controllers
     {
         private readonly ILogger _logger;
         private readonly IConfiguration _configuration;
-        private readonly ILookupNormalizer _keyNormalizer;
-        private readonly UserManager<MongoDbUser> _userManager;
         private readonly ProfilesManager<MongoDbProfile> _profilesManager;
         private readonly ArticlesManager<MongoDbArticle> _articlesManager;
         private readonly ArticlesLikesManager<MongoDbArticleVote> _articlesVotesManager;
@@ -37,9 +35,7 @@ namespace Egghead.Controllers
         public ArticlesController(ILoggerFactory loggerFactory, ILookupNormalizer keyNormalizer, IConfiguration configuration, UserManager<MongoDbUser> userManager, ProfilesManager<MongoDbProfile> profilesManager, ArticlesManager<MongoDbArticle> articlesManager, ArticlesLikesManager<MongoDbArticleVote> articlesVotesManager, ArticlesCommentsManager<MongoDbArticleComment> articlesCommentsManager, ArticlesViewCountManager<MongoDbArticleViewsCount> articlesViewsCountManager, ArticleCommentsVotesManager<MongoDbArticleCommentVote> articleCommentsVotesManager)
         {
             _logger = loggerFactory.CreateLogger<AccountController>();
-            _keyNormalizer = keyNormalizer;
-            _configuration = configuration;           
-            _userManager = userManager;
+            _configuration = configuration;
             _profilesManager = profilesManager;
             _articlesManager = articlesManager;
             _articlesVotesManager = articlesVotesManager;
@@ -82,7 +78,7 @@ namespace Egghead.Controllers
                 
                 var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
 
-                var popularArticles = await _articlesManager.FindPopularArticlesByAudienceEngagementAsync(_configuration.GetSection("EggheadOptions").GetValue<int>("PopularArticlesPerPage"));
+                var popularArticles = await _articlesManager.FindPopularArticlesByEngagementRateAsync(_configuration.GetSection("EggheadOptions").GetValue<int>("PopularArticlesPerPage"));
 
                 return View(new CompositeArticleModel
                 {

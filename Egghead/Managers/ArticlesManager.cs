@@ -75,10 +75,10 @@ namespace Egghead.Managers
             return await Store.FindArticlesAsync(howManyElements, CancellationToken);
         }
         
-        public async Task<List<T>> FindPopularArticlesByAudienceEngagementAsync(int howManyElements)
+        public async Task<List<T>> FindPopularArticlesByEngagementRateAsync(int howManyElements)
         {
             ThrowIfDisposed();          
-            return await Store.FindPopularArticlesByAudienceEngagementAsync(howManyElements, CancellationToken);
+            return await Store.FindPopularArticlesByEngagementRateAsync(howManyElements, CancellationToken);
         }
        
         public async Task<UpdateResult> UpdateArticleViewsCountByArticleId(ObjectId articleId, long viewsCount)
