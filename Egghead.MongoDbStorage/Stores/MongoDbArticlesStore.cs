@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.IO.Compression;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Egghead.MongoDbStorage.Articles;
@@ -91,7 +90,7 @@ namespace Egghead.MongoDbStorage.Stores
             public object ArticleId { get; set; }
             public long EngagementRate { get; set; }
         }
-
+        
         public async Task<List<T>> FindPopularArticlesByEngagementRateAsync(int howManyElements, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -99,21 +98,26 @@ namespace Egghead.MongoDbStorage.Stores
             PipelineDefinition<T, T> pipelineDefinition = new EmptyPipelineDefinition<T>();
 
             //todo: Compute ER
-            var group = pipelineDefinition
-                .Group(x => x.Id, grouping => new EngagementEntity
-                {
-                    ArticleId = grouping.Key,
-                    EngagementRate = grouping.Sum(rate => rate.ViewsCount)
-                });
+//            var group = pipelineDefinition
+//                .Group(x => x.Id, grouping => new EngagementEntity
+//                {
+//                    ArticleId = grouping.Key,
+//                    EngagementRate = 0
+//                });
 
-            var aggregation = await _collection.AggregateAsync(group, new AggregateOptions
-            {             
-               
-            }, cancellationToken);
+            var aggTemp = _collection.Aggregate(new AggregateOptions())
+                .Sort(Builders<T>.Sort.Descending(x => x.ViewsCount));
+            
+//            var pipeline = pipelineDefinition.Project(Builders<T>.Projection.Include(x => x.ViewsCount));
+//
+//            var cursor = await _collection.AggregateAsync(pipeline, new AggregateOptions
+//            {
+//                
+//            }, cancellationToken);
+            
+            var r = await aggTemp.ToListAsync();
 
-            var r = aggregation.ToList();
-
-            return null;
+            return r;
         }
 
         public async Task<DeleteResult> DeleteArticleByIdAsync(ObjectId articleId, CancellationToken cancellationToken)
