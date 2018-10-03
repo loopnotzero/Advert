@@ -120,7 +120,7 @@ namespace Egghead
                 return new MongoDbUserStore<MongoDbUser>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
             });
   
-            services.AddTransient<IUserValidator<MongoDbUser>, CustomUserValidator<MongoDbUser>>();
+            services.AddTransient<IUserValidator<MongoDbUser>, EggheadUserValidator<MongoDbUser>>();
                
             #endregion
             
@@ -136,7 +136,7 @@ namespace Egghead
                 options.Password.RequireUppercase = false;
                 options.Password.RequiredUniqueChars = 1;
                 options.Password.RequireNonAlphanumeric = false;
-            }).AddDefaultTokenProviders().AddUserValidator<CustomUserValidator<MongoDbUser>>();
+            }).AddDefaultTokenProviders().AddUserValidator<EggheadUserValidator<MongoDbUser>>();
             
             #endregion
             

@@ -78,7 +78,7 @@ namespace Egghead.Controllers
                 
                 var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
 
-                var popularArticles = await _articlesManager.FindPopularArticlesByEngagementRateAsync(_configuration.GetSection("EggheadOptions").GetValue<int>("PopularArticlesPerPage"));
+                var articlesByEngagementRAte = await _articlesManager.FindArticlesByEngagementRateAsync(_configuration.GetSection("EggheadOptions").GetValue<int>("PopularArticlesPerPage"));
 
                 return View(new CompositeArticleModel
                 {
@@ -88,8 +88,10 @@ namespace Egghead.Controllers
                         ArticlesCount = ((double)await _articlesManager.CountArticlesByNormalizedEmail(HttpContext.User.Identity.Name)).ToMetric(),
                         FollowingCount = ((double)0).ToMetric()
                     },
+                    
                     Articles = articles,
-                    PopularArticles = popularArticles.Select(x => new PopularArticleModel
+                    
+                    ArticlesByEngagementRate = articlesByEngagementRAte.Select(x => new ArticleByEngagementRateModel
                     {
                         Id = x.Id.ToString(),
                         Title = x.Title,

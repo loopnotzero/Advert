@@ -7,6 +7,6 @@ namespace Egghead.Models.Articles
     {
         public ProfileModel Profile { get; set; }
         public List<ArticleModel> Articles { get; set; }
-        public List<PopularArticleModel> PopularArticles { get; set; }
+        public List<ArticleByEngagementRateModel> ArticlesByEngagementRate { get; set; }
     }
 }

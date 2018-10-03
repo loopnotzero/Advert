@@ -1,5 +1,4 @@
-﻿using Humanizer;
-using Microsoft.AspNetCore;
+﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 
 namespace Egghead

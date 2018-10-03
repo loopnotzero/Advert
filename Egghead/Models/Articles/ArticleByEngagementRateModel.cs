@@ -1,6 +1,6 @@
 ﻿namespace Egghead.Models.Articles
 {
-    public class PopularArticleModel
+    public class ArticleByEngagementRateModel
     {
         public string Id { get; set; }
         public string Title { get; set; }      

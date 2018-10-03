@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Egghead.Common;
 using Egghead.MongoDbStorage.Stores;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
@@ -12,25 +13,18 @@ namespace Egghead.Managers
 {
     public class ArticlesManager<T> : IDisposable where T : class
     {
-        private bool _disposed;
-        
-        /// <summary>
-        /// The <see cref="T:Microsoft.AspNetCore.Identity.ILookupNormalizer" /> used to normalize things like user and role names.
-        /// </summary>
-        private ILookupNormalizer KeyNormalizer { get; set; }
-
-        /// <summary>
-        /// Gets or sets the persistence store the manager operates over.
-        /// </summary>
-        /// <value>The persistence store the manager operates over.</value>
-        protected internal IArticlesStore<T> Store { get; set; }
+        private bool _disposed;       
+        private readonly ILogger _logger;      
+        private ILookupNormalizer _keyNormalizer { get; set; }
+        protected internal IArticlesStore<T> _store { get; set; }
 
         protected virtual CancellationToken CancellationToken => CancellationToken.None;
 
-        public ArticlesManager(IArticlesStore<T> store, ILookupNormalizer keyNormalizer)
+        public ArticlesManager(IArticlesStore<T> store, ILoggerFactory loggerFactory, ILookupNormalizer keyNormalizer)
         {
-            Store = store ?? throw new ArgumentNullException(nameof(store));
-            KeyNormalizer = keyNormalizer;
+            _store = store ?? throw new ArgumentNullException(nameof(store));
+            _logger = loggerFactory.CreateLogger<ArticlesManager<T>>();
+            _keyNormalizer = keyNormalizer;
         }
 
         public async Task CreateArticleAsync(T entity)
@@ -42,7 +36,7 @@ namespace Egghead.Managers
                 throw new ArgumentNullException(nameof(entity));
             }
             
-            await Store.CreateArticleAsync(entity, CancellationToken);
+            await _store.CreateArticleAsync(entity, CancellationToken);
         }
 
         public async Task<T> FindArticleByIdAsync(ObjectId articleId)
@@ -54,7 +48,7 @@ namespace Egghead.Managers
                 throw new ArgumentNullException(nameof(articleId));
             }
 
-            return await Store.FindArticleByIdAsync(articleId, CancellationToken);
+            return await _store.FindArticleByIdAsync(articleId, CancellationToken);
         }
         
         public async Task<long> CountArticlesByNormalizedEmail(string email)
@@ -66,19 +60,19 @@ namespace Egghead.Managers
                 throw new ArgumentNullException(nameof(email));
             }
 
-            return await Store.CountArticlesByNormalizedEmail(NormalizeKey(email), CancellationToken);
+            return await _store.CountArticlesByNormalizedEmail(NormalizeKey(email), CancellationToken);
         }
 
         public async Task<List<T>> FindArticlesAsync(int howManyElements)
         {
             ThrowIfDisposed();          
-            return await Store.FindArticlesAsync(howManyElements, CancellationToken);
+            return await _store.FindArticlesAsync(howManyElements, CancellationToken);
         }
         
-        public async Task<List<T>> FindPopularArticlesByEngagementRateAsync(int howManyElements)
+        public async Task<List<T>> FindArticlesByEngagementRateAsync(int howManyElements)
         {
-            ThrowIfDisposed();          
-            return await Store.FindPopularArticlesByEngagementRateAsync(howManyElements, CancellationToken);
+            ThrowIfDisposed();
+            return await _store.FindArticlesByEngagementRateAsync(howManyElements, CancellationToken);
         }
        
         public async Task<UpdateResult> UpdateArticleViewsCountByArticleId(ObjectId articleId, long viewsCount)
@@ -90,7 +84,7 @@ namespace Egghead.Managers
                 throw new ArgumentNullException(nameof(articleId));
             }
 
-            return await Store.UpdateArticleViewsCountByArticleIdAsync(articleId, viewsCount, CancellationToken);
+            return await _store.UpdateArticleViewsCountByArticleIdAsync(articleId, viewsCount, CancellationToken);
         }
         
         public async Task<UpdateResult> UpdateArticleLikesCountByArticleId(ObjectId articleId, long votesCount)
@@ -102,7 +96,7 @@ namespace Egghead.Managers
                 throw new ArgumentNullException(nameof(articleId));
             }
 
-            return await Store.UpdateArticleLikesCountByArticleIdAsync(articleId, votesCount, CancellationToken);
+            return await _store.UpdateArticleLikesCountByArticleIdAsync(articleId, votesCount, CancellationToken);
         }
 
         public async Task<UpdateResult> UpdateArticleDislikesCountByArticleId(ObjectId articleId, long votesCount)
@@ -114,7 +108,7 @@ namespace Egghead.Managers
                 throw new ArgumentNullException(nameof(articleId));
             }
 
-            return await Store.UpdateArticleDislikesCountByArticleIdAsync(articleId, votesCount, CancellationToken);
+            return await _store.UpdateArticleDislikesCountByArticleIdAsync(articleId, votesCount, CancellationToken);
         }
 
         public async Task<DeleteResult> DeleteArticleByIdAsync(ObjectId articleId)
@@ -126,7 +120,7 @@ namespace Egghead.Managers
                 throw new ArgumentNullException(nameof(articleId));
             }
 
-            return await Store.DeleteArticleByIdAsync(articleId, CancellationToken);
+            return await _store.DeleteArticleByIdAsync(articleId, CancellationToken);
         }
 
         public async Task<ReplaceOneResult> ReplaceArticleAsync(T entity)
@@ -138,7 +132,7 @@ namespace Egghead.Managers
                 throw new ArgumentNullException(nameof(entity));
             }
 
-            return await Store.ReplaceArticleAsync(entity, CancellationToken);
+            return await _store.ReplaceArticleAsync(entity, CancellationToken);
         }
 
         public void Dispose()
@@ -152,14 +146,14 @@ namespace Egghead.Managers
             if (!disposing || _disposed)
                 return;
 
-            Store.Dispose();
+            _store.Dispose();
 
             _disposed = true;
         }
         
         private string NormalizeKey(string key)
         {
-            return KeyNormalizer != null ? KeyNormalizer.Normalize(key) : key;
+            return _keyNormalizer != null ? _keyNormalizer.Normalize(key) : key;
         }
 
         protected void ThrowIfDisposed()
