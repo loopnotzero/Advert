@@ -1,13 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO.Compression;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml.Schema;
+using Egghead.Common.Metrics;
 using Egghead.MongoDbStorage.Articles;
 using Egghead.MongoDbStorage.Common;
 using Egghead.MongoDbStorage.Mappings;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using MongoDB.Driver.Core.Operations;
 
 namespace Egghead.MongoDbStorage.Stores
 {
@@ -85,39 +90,28 @@ namespace Egghead.MongoDbStorage.Stores
             return await cursor.ToListAsync(cancellationToken);
         }
 
-        class EngagementEntity
+        private class EngagementResult
         {
-            public object ArticleId { get; set; }
-            public long EngagementRate { get; set; }
+            public T Article { get; set; }
+            public double EngagementRate { get; set; }
         }
-        
-        public async Task<List<T>> FindPopularArticlesByEngagementRateAsync(int howManyElements, CancellationToken cancellationToken)
+
+        public async Task<List<T>> FindArticlesByEngagementRateAsync(int howManyElements, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            PipelineDefinition<T, T> pipelineDefinition = new EmptyPipelineDefinition<T>();
+            var pipeline = PipelineDefinition<T, T>.Create(new IPipelineStageDefinition[] {});
 
-            //todo: Compute ER
-//            var group = pipelineDefinition
-//                .Group(x => x.Id, grouping => new EngagementEntity
-//                {
-//                    ArticleId = grouping.Key,
-//                    EngagementRate = 0
-//                });
+            pipeline = pipeline.Limit(howManyElements);
 
-            var aggTemp = _collection.Aggregate(new AggregateOptions())
-                .Sort(Builders<T>.Sort.Descending(x => x.ViewsCount));
-            
-//            var pipeline = pipelineDefinition.Project(Builders<T>.Projection.Include(x => x.ViewsCount));
-//
-//            var cursor = await _collection.AggregateAsync(pipeline, new AggregateOptions
-//            {
-//                
-//            }, cancellationToken);
-            
-            var r = await aggTemp.ToListAsync();
+            var cursor = await _collection.AggregateAsync(pipeline, new AggregateOptions
+            {
+                AllowDiskUse = true
+            }, cancellationToken);
 
-            return r;
+            var result = await cursor.ToListAsync(cancellationToken);
+
+            return result;
         }
 
         public async Task<DeleteResult> DeleteArticleByIdAsync(ObjectId articleId, CancellationToken cancellationToken)
