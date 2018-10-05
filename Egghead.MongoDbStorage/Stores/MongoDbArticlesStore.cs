@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.IO.Compression;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Schema;
@@ -90,28 +92,44 @@ namespace Egghead.MongoDbStorage.Stores
             return await cursor.ToListAsync(cancellationToken);
         }
 
+
         private class EngagementResult
         {
             public T Article { get; set; }
+            public ObjectId ArticleId { get; set; }
             public double EngagementRate { get; set; }
         }
 
         public async Task<List<T>> FindArticlesByEngagementRateAsync(int howManyElements, CancellationToken cancellationToken)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var pipeline = PipelineDefinition<T, T>.Create(new IPipelineStageDefinition[] {});
-
-            pipeline = pipeline.Limit(howManyElements);
-
-            var cursor = await _collection.AggregateAsync(pipeline, new AggregateOptions
+            try
             {
-                AllowDiskUse = true
-            }, cancellationToken);
+                cancellationToken.ThrowIfCancellationRequested();
 
-            var result = await cursor.ToListAsync(cancellationToken);
+                PipelineDefinition<T, T> pipelineDefinition = new EmptyPipelineDefinition<T>();
 
-            return result;
+                var groupBy = pipelineDefinition
+                    .Group(x => x.Id, grouping => new EngagementResult
+
+                    {
+                        ArticleId = grouping.Key,
+                        EngagementRate = grouping.Average(x => x.ViewsCount)
+                    });
+
+                var cursor = await _collection.AggregateAsync(groupBy, new AggregateOptions
+                {
+                    AllowDiskUse = true
+                }, cancellationToken);
+
+                var result = await cursor.ToListAsync(cancellationToken);
+
+                return new List<T>();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
         }
 
         public async Task<DeleteResult> DeleteArticleByIdAsync(ObjectId articleId, CancellationToken cancellationToken)
