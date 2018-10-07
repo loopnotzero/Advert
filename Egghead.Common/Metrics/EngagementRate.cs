@@ -1,4 +1,6 @@
-﻿namespace Egghead.Common.Metrics
+﻿using System;
+
+namespace Egghead.Common.Metrics
 {
     public class EngagementRate
     {
@@ -14,12 +16,13 @@
                
         public static double ComputeEngagementRate(double likesCount, double dislikesCount, double sharesCount, double commentsCount, double viewsCount)
         {
-            if (dislikesCount > 0)
-            {
-                return (likesCount / dislikesCount + commentsCount + sharesCount) / (viewsCount > 0 ? viewsCount : 1);
-            }
-
-            return (likesCount + commentsCount + sharesCount) / (viewsCount > 0 ? viewsCount : 1);
+            //todo: Decrease likes percent if user was not made a move to article
+            //todo: Increase percent of engagement rate if user shared an article
+            //todo: Decrease percent of engagement rate if user didn't spent time to read article
+            //todo: Estimate approximate time for reading article  
+            var likesPercent = likesCount / 100;
+            var engagementRate = (likesCount + commentsCount + viewsCount) * likesPercent;
+            return dislikesCount > 0 ? engagementRate / (dislikesCount / 100) : engagementRate;
         }
         
         public static double ComputeDistributionRate(double shares, double viewsCount)
