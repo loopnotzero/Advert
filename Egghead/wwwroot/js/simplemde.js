@@ -6573,7 +6573,7 @@
                     if (signalDOMEvent(cm, e) || eventInWidget(cm.display, e)) return;
 
                     e.dataTransfer.setData("Text", cm.getSelection());
-                    e.dataTransfer.effectAllowed = "copyMove"
+                    e.dataTransfer.effectAllowed = "copyMove";
 
                     // Use dummy image instead of default browsers image.
                     // Recent Safari (~6.0.2) have a tendency to segfault when this happens, so we don't do it there.
@@ -14799,7 +14799,7 @@
                     };
 
                     Renderer.prototype.image = function (href, title, text) {
-                        var out = '<img src="' + href + '" alt="' + text + '"';
+                        var out = '<img src="' + href + '" alt="' + text + '"' + 'style="max-width: 100%"';
                         if (title) {
                             out += ' title="' + title + '"';
                         }
