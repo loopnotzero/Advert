@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using Egghead.Common.Metrics;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 
@@ -9,10 +10,10 @@ namespace Egghead
 {
     public static class Program
     {
-        private const int Like = 0;
-        private const int Dislike = 1;
-        private const int Comment = 2;
-        private const int ViewCount = 3;
+//        private const int Like = 0;
+//        private const int Dislike = 1;
+//        private const int Comment = 2;
+//        private const int ViewCount = 3;
         
         public static void Main(string[] args)
         {
@@ -37,16 +38,21 @@ namespace Egghead
 //                new List<double>
 //                {
 //                    1440, 40, 11, 90
+//                },
+//                new List<double>
+//                {
+//                    0, 1, 0, 4
+//                },
+//                new List<double>
+//                {
+//                    0, 0, 0, 3
 //                }
 //            };
-
-//            var maxDislikes = matrix.Max(x => x[Dislike]);
-
+//
 //            foreach (var list in matrix)
 //            {
-//                var likesPercent = list[Like] / 100;
-//                var dislikePercent = list[Dislike] / 100;
-//                Console.WriteLine($"Likes: {likesPercent}%  Dislikes: {dislikePercent}$, Final ER: {(list[Like] + list[Comment] + list[ViewCount]) * likesPercent / dislikePercent}");           
+//                
+//                Console.WriteLine($"ER: {EngagementRate.ComputeEngagementRate(list[Like], list[Dislike], 0, list[Comment], list[ViewCount])}");           
 //            }
             
             BuildWebHost(args).Run();
