@@ -81,7 +81,8 @@ namespace Egghead.Controllers
                 
                 var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
              
-                var orderedArticlesByEngagementRate = articles.OrderByDescending(x => EngagementRate.ComputeEngagementRate(x.LikesCount, x.DislikesCount, x.SharesCount, x.CommentsCount, x.ViewsCount));
+                // ReSharper disable once InconsistentNaming
+                var orderedTopicsByEngagementRate = articles.OrderByDescending(x => EngagementRate.ComputeEngagementRate(x.LikesCount, x.DislikesCount, x.SharesCount, x.CommentsCount, x.ViewsCount));
 
                 return View(new CompositeArticleModel
                 {
@@ -90,11 +91,20 @@ namespace Egghead.Controllers
                         Name = profile.Name,
                         ArticlesCount = ((double)await _articlesManager.CountArticlesByNormalizedEmail(HttpContext.User.Identity.Name)).ToMetric(),
                         FollowingCount = ((double)0).ToMetric()
-                    },
-                    
-                    Articles = models,
-                    
-                    TopArticles = orderedArticlesByEngagementRate.Select(x => new TopArticleModel
+                    },                   
+                    Articles = articles.Select(x => new ArticleModel
+                    {
+                        Id = x.Id.ToString(),
+                        Title = x.Title,
+                        Text = x.Text.Length > 1000 ? x.Text.Substring(0, 1000) + "..." : x.Text,
+                        NormalizedEmail = x.NormalizedEmail,
+                        LikesCount = ((double)x.LikesCount).ToMetric(),
+                        DislikesCount = ((double)x.DislikesCount).ToMetric(),
+                        ViewsCount = ((double)x.ViewsCount).ToMetric(),
+                        CommentsCount = ((double)x.CommentsCount).ToMetric(),
+                        CreatedAt = x.CreatedAt.Humanize(),
+                    }),             
+                    PopularTopics = orderedTopicsByEngagementRate.Select(x => new PopularTopic
                     {
                         Id = x.Id.ToString(),
                         Title = x.Title,
@@ -131,6 +141,11 @@ namespace Egghead.Controllers
 
                 var article = await _articlesManager.FindArticleByIdAsync(articleViewsCount.ArticleId);
 
+                var articles = await _articlesManager.FindArticlesAsync(_configuration.GetSection("EggheadOptions").GetValue<int>("ArticlesPerPage"));
+
+                // ReSharper disable once InconsistentNaming
+                var orderedTopicsByEngagementRate = articles.OrderByDescending(x => EngagementRate.ComputeEngagementRate(x.LikesCount, x.DislikesCount, x.SharesCount, x.CommentsCount, x.ViewsCount));
+
                 return View(new CompositeArticleModel
                 {
                     Profile = new ProfileModel
@@ -153,7 +168,13 @@ namespace Egghead.Controllers
                             CommentsCount = ((double) article.CommentsCount).ToMetric(),
                             CreatedAt = article.CreatedAt.Humanize()
                         }
-                    }
+                    },
+                    PopularTopics = orderedTopicsByEngagementRate.Select(x => new PopularTopic
+                    {
+                        Id = x.Id.ToString(),
+                        Title = x.Title,
+                        CreatedAt = x.CreatedAt.Humanize()
+                    }).ToList()                   
                 });
             }
             catch (Exception e)

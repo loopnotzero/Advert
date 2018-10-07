@@ -11,17 +11,17 @@
                 <div class="text-muted p-3">
                     <a href="/@Model.Profile.Name">
                         <small class="font-weight-bold">@Model.Profile.Name</small>
-                    </a> <small class="time"> @Model.Articles[0].CreatedAt.Humanize()</small>
+                    </a> <small class="time"> @Model.Articles.First().CreatedAt.Humanize()</small>
                 </div>
 
                 <div class="card-body card-body__img">
-                    <h4>@Model.Articles[0].Title</h4>
-                    <p class="card-text">@Html.Raw(Model.Articles[0].Text)</p>
+                    <h4>@Model.Articles.First().Title</h4>
+                    <p class="card-text">@Html.Raw(Model.Articles.First().Text)</p>
                 </div>
 
                 <div style="border-bottom: 1px solid #e3e3e3; padding-left: 20px; padding-bottom: 20px">
                     <h4 id="comments-count">
-                        @Model.Articles[0].CommentsCount Comments
+                        @Model.Articles.First().CommentsCount Comments
                     </h4>
                 </div>
 
@@ -44,34 +44,33 @@
                 <div style="border-bottom: 1px solid #d5d5d5; margin-bottom: 20px;">
                     <h4 class="text-muted font-weight-bold">Popular on Egghead</h4>
                 </div>
-                @*                 @{ *@
-                @*                     var popularArticles = (List<TopArticleModel>)ViewBag.TopArticles; *@
-                @*                      *@
-                @*                     if (popularArticles != null) *@
-                @*                     { *@
-                @*                         <div class="listview"> *@
-                @*                             @foreach (var popularArticle in popularArticles) *@
-                @*                             { *@
-                @*                                 <div class="listview__item"> *@
-                @*                                     <div class="mr-2" style="width: 50px; height: 50px"> *@
-                @*                                         <img src="/images/users/user_empty.png" class="listview__img" alt="">  *@
-                @*                                     </div> *@
-                @* *@
-                @*                                     <div class="listview__content"> *@
-                @*                                         <div class="listview__heading"> *@
-                @*                                             <p> *@
-                @*                                                 <a class="font-weight-bold" href="/Articles/@popularArticle.CommentId">@popularArticle.Title</a> *@
-                @*                                             </p> *@
-                @*                                         </div> *@
-                @*                                         <p> *@
-                @*                                             <a href="/Profiles/Profile">@popularArticle.Name</a> <small class="time"> @popularArticle.CreatedAt.Humanize()</small> *@
-                @*                                         </p> *@
-                @*                                     </div> *@
-                @*                                 </div> *@
-                @*                             } *@
-                @*                         </div> *@
-                @*                     } *@
-                @*                 } *@
+                @{
+                    var popularArticles = Model.PopularTopics;
+
+                    if (popularArticles != null)
+                    {
+                        <div class="listview">
+                            @foreach (var popularArticle in popularArticles)
+                            {
+                                <div class="listview__item">
+                                    <div class="mr-2" style="width: 50px; height: 50px">
+                                        <img src="/images/users/user_empty.png" class="listview__img" alt="">
+                                    </div>
+                                    <div class="listview__content">
+                                        <div class="listview__heading">
+                                            <p>
+                                                <a class="font-weight-bold" href="/Articles/@popularArticle.Id">@popularArticle.Title</a>
+                                            </p>
+                                        </div>
+                                        <p>
+                                            <a href="/@Model.Profile.Name"></a> <small class="time"> @popularArticle.CreatedAt</small>
+                                        </p>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                }
             </div>
         </div>
     </div>

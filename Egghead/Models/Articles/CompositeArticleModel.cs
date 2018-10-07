@@ -6,7 +6,7 @@ namespace Egghead.Models.Articles
     public class CompositeArticleModel
     {
         public ProfileModel Profile { get; set; }
-        public List<ArticleModel> Articles { get; set; }
-        public List<TopArticleModel> TopArticles { get; set; }
+        public IEnumerable<ArticleModel> Articles { get; set; }
+        public IEnumerable<PopularTopic> PopularTopics { get; set; }
     }
 }

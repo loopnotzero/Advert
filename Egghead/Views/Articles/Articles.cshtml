@@ -48,10 +48,10 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="card">
                 <div class="card-title">
-                    
+
                 </div>
             </div>
         </div>
@@ -63,7 +63,9 @@
                         {
                             <article id="@article.Id" class="card-hover">
                                 <div class="text-muted p-3">
-                                    <a href="/@Model.Profile.Name"><small class="font-weight-bold">@Model.Profile.Name</small></a> <small class="time"> @article.CreatedAt</small>             
+                                    <a href="/@Model.Profile.Name">
+                                        <small class="font-weight-bold">@Model.Profile.Name</small>
+                                    </a> <small class="time"> @article.CreatedAt</small>
                                 </div>
                                 <div class="card-body card-body__img">
                                     <a href="/Articles/@article.Id">
@@ -116,31 +118,31 @@
                     <h4 class="text-muted font-weight-bold">Popular on Egghead</h4>
                 </div>
                 @{
-                    var popularArticles = Model.TopArticles;
+                    var popularArticles = Model.PopularTopics;
 
-                     if (popularArticles != null)
-                     {
-                         <div class="listview">
-                             @foreach (var popularArticle in popularArticles)
-                             {
-                                 <div class="listview__item">
-                                     <div class="mr-2" style="width: 50px; height: 50px">
-                                         <img src="/images/users/user_empty.png" class="listview__img" alt="">
-                                     </div>
-                                     <div class="listview__content">
-                                         <div class="listview__heading">
-                                             <p>
-                                                 <a class="font-weight-bold" href="/Articles/@popularArticle.Id">@popularArticle.Title</a>
-                                             </p>
-                                         </div>
-                                         <p>
-                                             <a href="/@Model.Profile.Name"></a> <small class="time"> @popularArticle.CreatedAt</small>
-                                         </p>
-                                     </div>
-                                 </div>
-                             }
-                         </div>
-                     }
+                    if (popularArticles != null)
+                    {
+                        <div class="listview">
+                            @foreach (var popularArticle in popularArticles)
+                            {
+                                <div class="listview__item">
+                                    <div class="mr-2" style="width: 50px; height: 50px">
+                                        <img src="/images/users/user_empty.png" class="listview__img" alt="">
+                                    </div>
+                                    <div class="listview__content">
+                                        <div class="listview__heading">
+                                            <p>
+                                                <a class="font-weight-bold" href="/Articles/@popularArticle.Id">@popularArticle.Title</a>
+                                            </p>
+                                        </div>
+                                        <p>
+                                            <a href="/@Model.Profile.Name"></a> <small class="time"> @popularArticle.CreatedAt</small>
+                                        </p>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
                 }
             </div>
         </div>
