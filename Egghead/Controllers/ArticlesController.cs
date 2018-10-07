@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Egghead.Common.Articles;
+using Egghead.Common.Metrics;
 using Egghead.Exceptions;
 using Egghead.Managers;
 using Egghead.Models.Articles;
@@ -58,11 +59,13 @@ namespace Egghead.Controllers
         {
             try
             {
-                var articles = new List<ArticleModel>();
+                var models = new List<ArticleModel>();
 
-                foreach (var article in await _articlesManager.FindArticlesAsync(_configuration.GetSection("EggheadOptions").GetValue<int>("ArticlesPerPage")))
+                var articles = await _articlesManager.FindArticlesAsync(_configuration.GetSection("EggheadOptions").GetValue<int>("ArticlesPerPage"));
+                
+                foreach (var article in articles)
                 {
-                    articles.Add(new ArticleModel
+                    models.Add(new ArticleModel
                     {
                         Id = article.Id.ToString(),
                         Title = article.Title,
@@ -77,8 +80,8 @@ namespace Egghead.Controllers
                 }
                 
                 var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
-
-                var articlesByEngagementRAte = await _articlesManager.FindArticlesByEngagementRateAsync(_configuration.GetSection("EggheadOptions").GetValue<int>("PopularArticlesPerPage"));
+             
+                var orderedArticlesByEngagementRate = articles.OrderByDescending(x => EngagementRate.ComputeEngagementRate(x.LikesCount, x.DislikesCount, x.SharesCount, x.CommentsCount, x.ViewsCount));
 
                 return View(new CompositeArticleModel
                 {
@@ -89,9 +92,9 @@ namespace Egghead.Controllers
                         FollowingCount = ((double)0).ToMetric()
                     },
                     
-                    Articles = articles,
+                    Articles = models,
                     
-                    ArticlesByEngagementRate = articlesByEngagementRAte.Select(x => new ArticleByEngagementRateModel
+                    TopArticles = orderedArticlesByEngagementRate.Select(x => new TopArticleModel
                     {
                         Id = x.Id.ToString(),
                         Title = x.Title,

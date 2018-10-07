@@ -68,12 +68,6 @@ namespace Egghead.Managers
             ThrowIfDisposed();          
             return await _store.FindArticlesAsync(howManyElements, CancellationToken);
         }
-        
-        public async Task<List<T>> FindArticlesByEngagementRateAsync(int howManyElements)
-        {
-            ThrowIfDisposed();
-            return await _store.FindArticlesByEngagementRateAsync(howManyElements, CancellationToken);
-        }
        
         public async Task<UpdateResult> UpdateArticleViewsCountByArticleId(ObjectId articleId, long viewsCount)
         {
