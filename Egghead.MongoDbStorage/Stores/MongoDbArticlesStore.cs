@@ -4,6 +4,7 @@ using System.Data.Common;
 using System.IO.Compression;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
@@ -91,47 +92,7 @@ namespace Egghead.MongoDbStorage.Stores
             var cursor = await _collection.FindAsync(Builders<T>.Filter.Empty, findOptions, cancellationToken: cancellationToken);
             return await cursor.ToListAsync(cancellationToken);
         }
-
-
-        private class EngagementResult
-        {
-            public T Article { get; set; }
-            public ObjectId ArticleId { get; set; }
-            public double EngagementRate { get; set; }
-        }
-
-        public async Task<List<T>> FindArticlesByEngagementRateAsync(int howManyElements, CancellationToken cancellationToken)
-        {
-            try
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-
-                PipelineDefinition<T, T> pipelineDefinition = new EmptyPipelineDefinition<T>();
-
-                var groupBy = pipelineDefinition
-                    .Group(x => x.Id, grouping => new EngagementResult
-
-                    {
-                        ArticleId = grouping.Key,
-                        EngagementRate = grouping.Average(x => x.ViewsCount)
-                    });
-
-                var cursor = await _collection.AggregateAsync(groupBy, new AggregateOptions
-                {
-                    AllowDiskUse = true
-                }, cancellationToken);
-
-                var result = await cursor.ToListAsync(cancellationToken);
-
-                return new List<T>();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                return null;
-            }
-        }
-
+    
         public async Task<DeleteResult> DeleteArticleByIdAsync(ObjectId articleId, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
