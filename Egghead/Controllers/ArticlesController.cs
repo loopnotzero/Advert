@@ -32,7 +32,7 @@ namespace Egghead.Controllers
         private readonly ArticlesCommentsManager<MongoDbArticleComment> _articlesCommentsManager;
         private readonly ArticlesViewCountManager<MongoDbArticleViewsCount> _articlesViewsCountManager;
         private readonly ArticleCommentsVotesManager<MongoDbArticleCommentVote> _articleCommentsVotesManager;
-           
+
         public ArticlesController(ILoggerFactory loggerFactory, ILookupNormalizer keyNormalizer, IConfiguration configuration, UserManager<MongoDbUser> userManager, ProfilesManager<MongoDbProfile> profilesManager, ArticlesManager<MongoDbArticle> articlesManager, ArticlesLikesManager<MongoDbArticleVote> articlesVotesManager, ArticlesCommentsManager<MongoDbArticleComment> articlesCommentsManager, ArticlesViewCountManager<MongoDbArticleViewsCount> articlesViewsCountManager, ArticleCommentsVotesManager<MongoDbArticleCommentVote> articleCommentsVotesManager)
         {
             _logger = loggerFactory.CreateLogger<AccountController>();
@@ -42,7 +42,7 @@ namespace Egghead.Controllers
             _articlesVotesManager = articlesVotesManager;
             _articlesCommentsManager = articlesCommentsManager;
             _articlesViewsCountManager = articlesViewsCountManager;
-            _articleCommentsVotesManager = articleCommentsVotesManager;      
+            _articleCommentsVotesManager = articleCommentsVotesManager;
         }
 
         [HttpGet]
@@ -52,7 +52,7 @@ namespace Egghead.Controllers
         {
             return View();
         }
-      
+
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> Articles()
@@ -62,7 +62,7 @@ namespace Egghead.Controllers
                 var models = new List<ArticleModel>();
 
                 var articles = await _articlesManager.FindArticlesAsync(_configuration.GetSection("EggheadOptions").GetValue<int>("ArticlesPerPage"));
-                
+
                 foreach (var article in articles)
                 {
                     models.Add(new ArticleModel
@@ -71,16 +71,16 @@ namespace Egghead.Controllers
                         Title = article.Title,
                         Text = article.Text.Length > 1000 ? article.Text.Substring(0, 1000) + "..." : article.Text,
                         NormalizedEmail = article.NormalizedEmail,
-                        LikesCount = ((double)article.LikesCount).ToMetric(),
-                        DislikesCount = ((double)article.DislikesCount).ToMetric(),
-                        ViewsCount = ((double)article.ViewsCount).ToMetric(),
-                        CommentsCount = ((double)article.CommentsCount).ToMetric(),
+                        LikesCount = ((double) article.LikesCount).ToMetric(),
+                        DislikesCount = ((double) article.DislikesCount).ToMetric(),
+                        ViewsCount = ((double) article.ViewsCount).ToMetric(),
+                        CommentsCount = ((double) article.CommentsCount).ToMetric(),
                         CreatedAt = article.CreatedAt.Humanize(),
                     });
                 }
-                
+
                 var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
-             
+
                 // ReSharper disable once InconsistentNaming
                 var orderedTopicsByEngagementRate = articles.OrderByDescending(x => EngagementRate.ComputeEngagementRate(x.LikesCount, x.DislikesCount, x.SharesCount, x.CommentsCount, x.ViewsCount));
 
@@ -89,21 +89,21 @@ namespace Egghead.Controllers
                     Profile = new ProfileModel
                     {
                         Name = profile.Name,
-                        ArticlesCount = ((double)await _articlesManager.CountArticlesByNormalizedEmail(HttpContext.User.Identity.Name)).ToMetric(),
-                        FollowingCount = ((double)0).ToMetric()
-                    },                   
+                        ArticlesCount = ((double) await _articlesManager.CountArticlesByNormalizedEmail(HttpContext.User.Identity.Name)).ToMetric(),
+                        FollowingCount = ((double) 0).ToMetric()
+                    },
                     Articles = articles.Select(x => new ArticleModel
                     {
                         Id = x.Id.ToString(),
                         Title = x.Title,
                         Text = x.Text.Length > 1000 ? x.Text.Substring(0, 1000) + "..." : x.Text,
                         NormalizedEmail = x.NormalizedEmail,
-                        LikesCount = ((double)x.LikesCount).ToMetric(),
-                        DislikesCount = ((double)x.DislikesCount).ToMetric(),
-                        ViewsCount = ((double)x.ViewsCount).ToMetric(),
-                        CommentsCount = ((double)x.CommentsCount).ToMetric(),
+                        LikesCount = ((double) x.LikesCount).ToMetric(),
+                        DislikesCount = ((double) x.DislikesCount).ToMetric(),
+                        ViewsCount = ((double) x.ViewsCount).ToMetric(),
+                        CommentsCount = ((double) x.CommentsCount).ToMetric(),
                         CreatedAt = x.CreatedAt.Humanize(),
-                    }),             
+                    }),
                     PopularTopics = orderedTopicsByEngagementRate.Select(x => new PopularTopic
                     {
                         Id = x.Id.ToString(),
@@ -118,7 +118,7 @@ namespace Egghead.Controllers
                 return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
             }
         }
-        
+
         [HttpGet]
         [Authorize]
         [Route("/Articles/{articleId}")]
@@ -174,7 +174,7 @@ namespace Egghead.Controllers
                         Id = x.Id.ToString(),
                         Title = x.Title,
                         CreatedAt = x.CreatedAt.Humanize()
-                    }).ToList()                   
+                    }).ToList()
                 });
             }
             catch (Exception e)
@@ -183,14 +183,14 @@ namespace Egghead.Controllers
                 return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
             }
         }
-  
+
         [HttpPost]
         [Authorize]
         [Route("/Articles/PublishArticleAsync")]
         public async Task<IActionResult> PublishArticleAsync([FromBody] PublishArticleModel model)
         {
             try
-            {       
+            {
                 var article = new MongoDbArticle
                 {
                     Title = model.Title,
@@ -199,11 +199,11 @@ namespace Egghead.Controllers
                     ReleaseType = ReleaseType.PreModeration,
                     CreatedAt = DateTime.UtcNow,
                 };
-                
+
                 await _articlesManager.CreateArticleAsync(article);
 
-                var url = Url.Action("ArticleContent", "Articles", new { articleId = article.Id });
-                
+                var url = Url.Action("ArticleContent", "Articles", new {articleId = article.Id});
+
                 return Ok(new
                 {
                     returnUrl = url
@@ -270,7 +270,7 @@ namespace Egghead.Controllers
                         Email = HttpContext.User.Identity.Name,
                         CreatedAt = DateTime.UtcNow
                     });
-                    
+
                     var votesCount = await _articlesVotesManager.CountArticleVotesByVoteTypeAsync(articleId, model.VoteType);
 
                     switch (model.VoteType)
@@ -287,7 +287,7 @@ namespace Egghead.Controllers
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
-                    
+
                     return Ok(new ArticleVotesModel
                     {
                         VoteType = model.VoteType,
@@ -300,7 +300,7 @@ namespace Egghead.Controllers
                     {
                         await _articlesVotesManager.DeleteArticleVoteByIdAsync(vote.Id);
                     }
-                    
+
                     var votesCount = await _articlesVotesManager.CountArticleVotesByVoteTypeAsync(articleId, model.VoteType);
 
                     switch (model.VoteType)
@@ -317,13 +317,13 @@ namespace Egghead.Controllers
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
-                    
+
                     return Ok(new ArticleVotesModel
                     {
                         VoteType = model.VoteType,
                         VotesCount = ((double) votesCount).ToMetric()
                     });
-                }   
+                }
             }
             catch (ArticleVoteException e)
             {
@@ -351,7 +351,7 @@ namespace Egghead.Controllers
                 var articleComment = new MongoDbArticleComment
                 {
                     ArticleId = articleId,
-                    Text = model.Text,         
+                    Text = model.Text,
                     ReplyTo = model.ReplyTo == null ? ObjectId.Empty : ObjectId.Parse(model.ReplyTo),
                     CreatedAt = DateTime.UtcNow
                 };
@@ -359,7 +359,7 @@ namespace Egghead.Controllers
                 await _articlesCommentsManager.CreateArticleComment(collectionName, articleComment);
 
                 var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
-                
+
                 var comment = await _articlesCommentsManager.FindArticleCommentById(collectionName, articleComment.Id);
 
                 return Ok(new ArticleCommentModel
@@ -378,7 +378,7 @@ namespace Egghead.Controllers
                 return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
             }
         }
-      
+
         [HttpPost]
         [Authorize]
         [Route("/Articles/CreateArticleCommentVoteAsync")]
@@ -387,20 +387,20 @@ namespace Egghead.Controllers
             try
             {
                 var articleId = ObjectId.Parse(model.ArticleId);
-               
+
                 var commentId = ObjectId.Parse(model.CommentId);
-                
+
                 var vote = await _articleCommentsVotesManager.FindArticleCommentVoteAsync(commentId);
 
                 if (vote == null)
                 {
                     await _articleCommentsVotesManager.CreateArticleCommentVoteAsync(new MongoDbArticleCommentVote
-                    {                  
+                    {
                         ArticleId = articleId,
                         CommentId = commentId,
                         VoteType = model.VoteType,
                         CreatedAt = DateTime.UtcNow
-                    });   
+                    });
                 }
                 else
                 {
@@ -415,8 +415,8 @@ namespace Egghead.Controllers
                 return Ok(new ArticleCommentVotesModel
                 {
                     VoteType = model.VoteType,
-                    VotesCount = ((double)votesCount).ToMetric()
-                });         
+                    VotesCount = ((double) votesCount).ToMetric()
+                });
             }
             catch (ArticleCommentVoteException e)
             {
@@ -429,12 +429,12 @@ namespace Egghead.Controllers
                 return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
             }
         }
-            
+
         [HttpGet]
         [Authorize]
         [Route("/Articles/FindArticleCommentsByArticleIdAsync/{articleId}")]
         public async Task<IActionResult> FindArticleCommentsByArticleIdAsync(string articleId)
-        {          
+        {
             var articleComments = await _articlesCommentsManager.FindArticleCommentsByCollectionName(articleId, _configuration.GetSection("EggheadOptions").GetValue<int>("CommentsPerArticle"));
 
             return PartialView("ArticleCommentsPartial", articleComments.Select(x => new ArticleCommentModel
