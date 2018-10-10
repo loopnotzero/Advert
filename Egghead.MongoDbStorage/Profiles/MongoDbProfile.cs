@@ -20,7 +20,8 @@ namespace Egghead.MongoDbStorage.Profiles
         public string NormalizedEmail { get; set; }
         public string Location { get; set; }
         public string LocationNormalized { get; set; }             
-        public string PhoneNumber { get; set; }            
+        public string PhoneNumber { get; set; }  
+        public string ImagePath { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime ChangedAt { get; set; }  
         public DateTime DeletedAt { get; set; }     
