@@ -12,7 +12,7 @@ namespace Egghead.MongoDbStorage.Profiles
         }
 
         public ObjectId Id { get; set; }
-        public string FilePath { get; set; }     
+        public string ImagePath { get; set; }     
         public ObjectId ProfileId { get; set; }       
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
