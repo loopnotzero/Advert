@@ -9,11 +9,11 @@
         <div class="col-md-3 p-1">
             <div class="card">
                 <div class="card-body text-center">
-                    <a href="/@Model.Profile.Id">
+                    <a href="/Profile">
                         <img src="/images/users/user_empty.png" class="widget-profile__img widget-profile__img__hover" alt="profile-image">
                     </a>
-                    <a href="/@Model.Profile.Id">
-                        <h5 id="profile-name" class="mb-3">@Model.Profile.Id</h5>
+                    <a href="/Profile">
+                        <h5 id="profile-name" class="mb-3">@Model.Profile.Name</h5>
                     </a>
                     <div class="row">
                         <div class="col-md-6">
@@ -63,8 +63,8 @@
                         {
                             <article id="@article.Id" class="card-hover">
                                 <div class="text-muted p-3">
-                                    <a href="/@Model.Profile.Id">
-                                        <small class="font-weight-bold">@Model.Profile.Id</small>
+                                    <a href="/Profile">
+                                        <small class="font-weight-bold">@Model.Profile.Name</small>
                                     </a> <small class="time"> @article.CreatedAt</small>
                                 </div>
                                 <div class="card-body card-body__img">
@@ -136,7 +136,7 @@
                                             </p>
                                         </div>
                                         <p>
-                                            <a href="/@Model.Profile.Id"></a> <small class="time"> @popularArticle.CreatedAt</small>
+                                            <a href="/@Model.Profile.Name"></a> <small class="time"> @popularArticle.CreatedAt</small>
                                         </p>
                                     </div>
                                 </div>

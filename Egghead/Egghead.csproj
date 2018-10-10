@@ -1553,4 +1553,7 @@
     <_ContentIncludedByDefault Remove="wwwroot\scss\vendors\select2\dist\js\select2.js" />
     <_ContentIncludedByDefault Remove="wwwroot\scss\vendors\select2\dist\js\select2.min.js" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="wwwroot\images\profiles" />
+  </ItemGroup>
 </Project>

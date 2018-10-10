@@ -88,6 +88,7 @@ namespace Egghead.Controllers
                 {
                     Profile = new ProfileModel
                     {
+                        Id = profile.Id.ToString(),
                         Name = profile.Name,
                         ArticlesCount = ((double) await _articlesManager.CountArticlesByNormalizedEmail(HttpContext.User.Identity.Name)).ToMetric(),
                         FollowingCount = ((double) 0).ToMetric()

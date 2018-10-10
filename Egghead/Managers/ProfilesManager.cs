@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Egghead.MongoDbStorage.Profiles;
 using Egghead.MongoDbStorage.Stores;
 using Microsoft.AspNetCore.Identity;
 using MongoDB.Bson;
@@ -46,6 +47,18 @@ namespace Egghead.Managers
             }
 
             await Store.CreateProfileAsync(entity, CancellationToken);
+        }
+        
+        public async Task UpdateProfileAsync(T entity)
+        {
+            ThrowIfDisposed();
+
+            if (entity == null)
+            {
+                throw new ArgumentNullException(nameof(entity));
+            }
+
+            await Store.UpdateProfileAsync(entity, CancellationToken);
         }
 
         public async Task<T> FindProfileByIdAsync(ObjectId id)
