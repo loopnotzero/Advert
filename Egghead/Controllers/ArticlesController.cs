@@ -90,7 +90,7 @@ namespace Egghead.Controllers
                     {
                         ProfileName = profile.Name,
                         ProfileId = profile.Id.ToString(),
-                        ProfilePhoto = profile.PhotoPath,
+                        ProfilePhoto = profile.PhotoPath ?? "/images/64x64.svg",
                         ArticlesCount = ((double) await _articlesManager.CountArticlesByProfileId(profile.Id)).ToMetric(),
                         FollowingCount = ((double) 0).ToMetric()
                     },
@@ -164,7 +164,7 @@ namespace Egghead.Controllers
                                 ArticleId = comment.ArticleId.ToString(),
                                 CreatedAt = comment.CreatedAt.Humanize(),
                                 ProfileName = comment.ProfileName,
-                                ProfilePhoto = comment.ProfilePhoto,
+                                ProfilePhoto = comment.ProfilePhoto ?? "/images/64x64.svg",
                                 VotingPoints = ((double) comment.VotingPoints).ToMetric()
                             });
                         }
@@ -177,7 +177,7 @@ namespace Egghead.Controllers
                             {
                                 if (comments.Any())
                                 {
-                                    articleComment.Comments = comments.Select(comment =>
+                                    articleComment.Comments = comments.OrderBy(x => x.CreatedAt).Select(comment =>
                                     {
                                         var model = new ArticleCommentViewModel
                                         {
@@ -187,7 +187,7 @@ namespace Egghead.Controllers
                                             ArticleId = comment.ArticleId.ToString(),
                                             CreatedAt = comment.CreatedAt.Humanize(),
                                             ProfileName = comment.ProfileName,
-                                            ProfilePhoto = comment.ProfilePhoto,
+                                            ProfilePhoto = comment.ProfilePhoto ?? "/images/64x64.svg",
                                             VotingPoints = ((double) comment.VotingPoints).ToMetric()
                                         };
                                         return model;
@@ -196,7 +196,7 @@ namespace Egghead.Controllers
                             }
                             else
                             {
-                                articleComment.Comments.AddRange(comments.Select(comment =>
+                                articleComment.Comments.AddRange(comments.OrderBy(x => x.CreatedAt).Select(comment =>
                                 {
                                     var model = new ArticleCommentViewModel
                                     {
@@ -206,7 +206,7 @@ namespace Egghead.Controllers
                                         ArticleId = comment.ArticleId.ToString(),
                                         CreatedAt = comment.CreatedAt.Humanize(),
                                         ProfileName = comment.ProfileName,
-                                        ProfilePhoto = comment.ProfilePhoto,
+                                        ProfilePhoto = comment.ProfilePhoto ?? "/images/64x64.svg",
                                         VotingPoints = ((double) comment.VotingPoints).ToMetric()
                                     };
                                     return model;
@@ -224,7 +224,7 @@ namespace Egghead.Controllers
                     {
                         ProfileName = profile.Name,
                         ProfileId = profile.Id.ToString(),
-                        ProfilePhoto = profile.PhotoPath,
+                        ProfilePhoto = profile.PhotoPath ?? "/images/64x64.svg",
                         ArticlesCount = ((double) await _articlesManager.CountArticlesByProfileId(article.ProfileId)).ToMetric(),
                         FollowingCount = ((double) 0).ToMetric()
                     },
@@ -437,7 +437,7 @@ namespace Egghead.Controllers
                     CreatedAt = DateTime.UtcNow,
                     ArticleId = articleId,
                     ProfileName = profile.Name,
-                    ProfilePhoto = profile.PhotoPath,
+                    ProfilePhoto = profile.PhotoPath ?? "/images/64x64.svg",
                     VotingPoints = 0,
                 };
               
@@ -455,7 +455,7 @@ namespace Egghead.Controllers
                     CommentId = comment.Id.ToString(),
                     ArticleId = viewModel.ArticleId,
                     ProfileName = comment.ProfileName,
-                    ProfilePhoto = comment.ProfilePhoto,     
+                    ProfilePhoto = comment.ProfilePhoto ?? "/images/64x64.svg",     
                     VotingPoints = ((double)comment.VotingPoints).ToMetric()
                 });
             }

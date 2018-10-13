@@ -40,7 +40,7 @@
                         foreach (var comment in Model.ArticleComments)
                         {
                             <div id="@comment.CommentId" class="media p-3">
-                                <img src="@comment.ProfilePhoto" width="48" height="48">
+                                <img src="@comment.ProfilePhoto" width="48" height="48" alt="profile-photo">
                                 <div class="media-body media__img">
                                     <div class="col-auto">
                                         <a href="/Profile/@comment.ProfileName">@comment.ProfileName</a> <small class="time"> @comment.CreatedAt</small>
@@ -64,7 +64,7 @@
                                         foreach (var reply in comment.Comments)
                                         {
                                             <div id="@reply.CommentId" class="media p-3">
-                                                <img src="@reply.ProfilePhoto" width="48" height="48">
+                                                <img src="@reply.ProfilePhoto" width="48" height="48" alt="profile-photo">
                                                 <div class="media-body media__img">
                                                     <div class="col-auto">
                                                         <a href="/Profile/@comment.ProfileName">@comment.ProfileName</a> <small class="time"> @reply.CreatedAt</small>
@@ -84,8 +84,8 @@
                                                     </div>
                                                     <div id="reply-placeholder"></div>
                                                 </div>
-                                            </div> 
-                                        }   
+                                            </div>
+                                        }
                                     }
                                 </div>
                             </div>
@@ -134,7 +134,7 @@
 <script>
     function showReplyForm(replyTo, commentId) {
         removeReplyForm("reply-form");
-        
+
         $(`#${commentId} #reply-placeholder:first`).append(
             `<div id="reply-form">   
                 <textarea id="reply-editor" style="display: none"></textarea>    
@@ -146,7 +146,7 @@
                 </div>
             </div>`
         );
-            
+
         var editor = new SimpleMDE({
             status: false,
             element: $("#reply-editor")[0],
@@ -195,7 +195,7 @@
             success: function(response) {
                 $(`#${comment.replyTo} .media-body:first`).append(`
                 <div id="${response.commentId}" class="media p-3">
-                    <img src="/images/64x64.svg" width="48" height="48" alt="">
+                    <img src="${response.profilePhoto}" width="48" height="48" alt="profile-photo">
                     <div class="media-body media__img">
                         <div class="col-auto">
                             ${response.profileName} <small class="time"> ${response.createdAt}</small>
@@ -238,7 +238,7 @@
             success: function(response) {
                 $("#article-comments").append(`
                 <div id="${response.commentId}" class="media p-3">
-                    <img src="${response.profileImagePath}" width="48" height="48">
+                    <img src="${response.profilePhoto}" width="48" height="48" alt="profile-photo">
                     <div class="media-body media__img">
                         <div class="col-auto">
                             ${response.profileName} <small class="time"> ${response.createdAt}</small>
@@ -299,7 +299,7 @@
         });
     }
 
-    function findArticleCommentsByArticleIdAync(articleId) {
+    function findArticleCommentsByArticleIdAsync(articleId) {
         $.ajax({
             url: `/Articles/FindArticleCommentsByArticleIdAsync/${articleId}`,
             type: "GET",
@@ -335,6 +335,6 @@
                     text: text
                 });
         });
-//        findArticleCommentsByArticleIdAync(articleId);
+//        findArticleCommentsByArticleIdAsync(articleId);
     });
 </script>
