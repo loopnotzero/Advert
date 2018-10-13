@@ -159,11 +159,11 @@ namespace Egghead.MongoDbStorage.Mappings
         
         private static void ConfigureMongoDbProfileImage()
         {
-            BsonClassMap.RegisterClassMap<MongoDbProfileImage>(bsonClassMap =>
+            BsonClassMap.RegisterClassMap<MongoDbProfilePhoto>(bsonClassMap =>
             {
                 bsonClassMap.AutoMap();
                 bsonClassMap.MapIdMember(profileImage => profileImage.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
-                bsonClassMap.MapCreator(profileImage => new MongoDbProfileImage());
+                bsonClassMap.MapCreator(profileImage => new MongoDbProfilePhoto());
             });
         }
     }

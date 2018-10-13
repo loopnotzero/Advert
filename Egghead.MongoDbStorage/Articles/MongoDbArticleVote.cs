@@ -11,12 +11,12 @@ namespace Egghead.MongoDbStorage.Articles
             Id = ObjectId.GenerateNewId();
             //Create indeces
         }
-
-        public ObjectId Id { get; set; }  
-        public ObjectId ArticleId { get; set; }     
-        public VoteType VoteType { get; set; }  
+        
         public string Email { get; set; }
         public string NormalizedEmail { get; set; }
+        public ObjectId Id { get; set; }  
+        public ObjectId ArticleId { get; set; }     
+        public VoteType VoteType { get; set; }   
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public DateTime DeletedAt { get; set; }

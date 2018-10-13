@@ -32,7 +32,7 @@ namespace Egghead.MongoDbStorage.Stores
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            entity.NormalizedEmail = entity.NormalizedEmail ?? entity.Email.ToUpper();
+            entity.NormalizedProfileName = entity.NormalizedProfileName ?? entity.ProfileName.ToUpper();
             
             await _collection.InsertOneAsync(entity, new InsertOneOptions
             {
@@ -54,10 +54,10 @@ namespace Egghead.MongoDbStorage.Stores
             return await cursor.FirstOrDefaultAsync(cancellationToken);
         }
 
-        public async Task<long> CountArticlesByNormalizedEmail(string email, CancellationToken cancellationToken)
+        public async Task<long> CountArticlesByProfileId(ObjectId profileId, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            return await _collection.CountDocumentsAsync(Builders<T>.Filter.Eq(x => x.NormalizedEmail, email), cancellationToken: cancellationToken);
+            return await _collection.CountDocumentsAsync(Builders<T>.Filter.Eq(x => x.ProfileId, profileId), cancellationToken: cancellationToken);
         }
 
         public async Task<List<T>> FindArticlesAsync(CancellationToken cancellationToken)

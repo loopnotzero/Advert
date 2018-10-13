@@ -11,7 +11,7 @@ namespace Egghead.MongoDbStorage.Articles
             Id = ObjectId.GenerateNewId();
             //Create indeces
         }
-
+        
         public ObjectId Id { get; set; }
         public ObjectId ArticleId { get; set; }      
         public ObjectId CommentId { get; set; }  
