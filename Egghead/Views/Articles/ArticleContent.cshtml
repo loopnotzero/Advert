@@ -63,7 +63,7 @@
                                     {
                                         foreach (var reply in comment.Comments)
                                         {
-                                            <div id="@reply.ReplyTo .media-body:first" class="media p-3">
+                                            <div id="@reply.CommentId" class="media p-3">
                                                 <img src="@reply.ProfilePhoto" width="48" height="48">
                                                 <div class="media-body media__img">
                                                     <div class="col-auto">
@@ -73,7 +73,7 @@
                                                         <h6>@Html.Raw(reply.Text)</h6>
                                                     </div>
                                                     <div class="col-auto">
-                                                        <a href="#reply" onclick="showReplyForm(null, '@reply.CommentId')">Reply</a>
+                                                        <a href="#reply" onclick="showReplyForm('@reply.ReplyTo', '@reply.CommentId')">Reply</a>
                                                         <div name="btn-like" onclick="onCommentVoteClick('@reply.CommentId', 1)" class="r-btn r-btn-light r-btn--icon">
                                                             <i class="fa fa-thumbs-o-up"></i>
                                                         </div>
@@ -134,9 +134,7 @@
 <script>
     function showReplyForm(replyTo, commentId) {
         removeReplyForm("reply-form");
-
-        console.log(`Reply to: ${replyTo} Comment id: ${commentId}`);
-
+        
         $(`#${commentId} #reply-placeholder:first`).append(
             `<div id="reply-form">   
                 <textarea id="reply-editor" style="display: none"></textarea>    
@@ -148,7 +146,7 @@
                 </div>
             </div>`
         );
-
+            
         var editor = new SimpleMDE({
             status: false,
             element: $("#reply-editor")[0],
@@ -164,9 +162,9 @@
             var text = editor.options.previewRender(editor.value());
             var articleId = $(`[name='article']`).attr("id");
             createCommentReplyAsync({
-                articleId: articleId,
                 text: text,
-                replyTo: (replyTo == null ? commentId : replyTo)
+                replyTo: (replyTo == null ? commentId : replyTo),
+                articleId: articleId,
             });
         });
     }
