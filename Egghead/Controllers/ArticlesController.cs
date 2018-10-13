@@ -154,7 +154,7 @@ namespace Egghead.Controllers
                 {
                     if (comments.Key == ObjectId.Empty)
                     {
-                        foreach (var comment in comments.OrderByDescending(x => x.CreatedAt))
+                        foreach (var comment in comments.OrderBy(x => x.CreatedAt))
                         {
                             commentsReplies.Add(comment.Id, new ArticleCommentViewModel
                             {
@@ -177,7 +177,7 @@ namespace Egghead.Controllers
                             {
                                 if (comments.Any())
                                 {
-                                    articleComment.Comments = comments.OrderByDescending(x => x.CreatedAt).Select(comment =>
+                                    articleComment.Comments = comments.Select(comment =>
                                     {
                                         var model = new ArticleCommentViewModel
                                         {
@@ -196,7 +196,7 @@ namespace Egghead.Controllers
                             }
                             else
                             {
-                                articleComment.Comments.AddRange(comments.OrderByDescending(x => x.CreatedAt).Select(comment =>
+                                articleComment.Comments.AddRange(comments.Select(comment =>
                                 {
                                     var model = new ArticleCommentViewModel
                                     {
