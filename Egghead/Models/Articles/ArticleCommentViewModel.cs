@@ -11,7 +11,7 @@ namespace Egghead.Models.Articles
         public string ArticleId { get; set; }
         public string ProfileName { get; set; }
         public string ProfilePhoto { get; set; }
-        public string VotingPoints { get; set; }
+        public string VotesCount { get; set; }
         public List<ArticleCommentViewModel> Comments { get; set; }
     }
 }

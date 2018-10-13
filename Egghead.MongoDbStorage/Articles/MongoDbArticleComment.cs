@@ -11,7 +11,7 @@ namespace Egghead.MongoDbStorage.Articles
             //Create indeces
         }
         
-        public long VotingPoints { get; set; }
+        public long VotesCount { get; set; }
         public string Text { get; set; }  
         public string ProfileName { get; set; }
         public string ProfilePhoto { get; set; }

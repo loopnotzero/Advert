@@ -165,7 +165,7 @@ namespace Egghead.Controllers
                                 CreatedAt = comment.CreatedAt.Humanize(),
                                 ProfileName = comment.ProfileName,
                                 ProfilePhoto = comment.ProfilePhoto ?? "/images/64x64.svg",
-                                VotingPoints = ((double) comment.VotingPoints).ToMetric()
+                                VotesCount = ((double) comment.VotesCount).ToMetric()
                             });
                         }
                     }
@@ -188,7 +188,7 @@ namespace Egghead.Controllers
                                             CreatedAt = comment.CreatedAt.Humanize(),
                                             ProfileName = comment.ProfileName,
                                             ProfilePhoto = comment.ProfilePhoto ?? "/images/64x64.svg",
-                                            VotingPoints = ((double) comment.VotingPoints).ToMetric()
+                                            VotesCount = ((double) comment.VotesCount).ToMetric()
                                         };
                                         return model;
                                     }).ToList();
@@ -207,7 +207,7 @@ namespace Egghead.Controllers
                                         CreatedAt = comment.CreatedAt.Humanize(),
                                         ProfileName = comment.ProfileName,
                                         ProfilePhoto = comment.ProfilePhoto ?? "/images/64x64.svg",
-                                        VotingPoints = ((double) comment.VotingPoints).ToMetric()
+                                        VotesCount = ((double) comment.VotesCount).ToMetric()
                                     };
                                     return model;
                                 }));
@@ -438,7 +438,7 @@ namespace Egghead.Controllers
                     ArticleId = articleId,
                     ProfileName = profile.Name,
                     ProfilePhoto = profile.PhotoPath ?? "/images/64x64.svg",
-                    VotingPoints = 0,
+                    VotesCount = 0,
                 };
               
                 var collectionName = viewModel.ArticleId;
@@ -456,7 +456,7 @@ namespace Egghead.Controllers
                     ArticleId = viewModel.ArticleId,
                     ProfileName = comment.ProfileName,
                     ProfilePhoto = comment.ProfilePhoto ?? "/images/64x64.svg",     
-                    VotingPoints = ((double)comment.VotingPoints).ToMetric()
+                    VotesCount = ((double)comment.VotesCount).ToMetric()
                 });
             }
             catch (Exception e)
