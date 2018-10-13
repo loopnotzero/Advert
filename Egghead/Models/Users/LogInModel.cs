@@ -13,9 +13,5 @@ namespace Egghead.Models.Users
         [Required]
         [DataType(DataType.Password)]
         public string Password { get; set; }
-              
-        [DataType(DataType.Text)]
-        [DisplayName(ModelErrorKey.ReCaptchaErrorStringPropertyName)]
-        public string ReCaptchaErrorString { get; set; }
     }
 }

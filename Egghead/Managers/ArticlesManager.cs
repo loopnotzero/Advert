@@ -51,16 +51,11 @@ namespace Egghead.Managers
             return await _store.FindArticleByIdAsync(articleId, CancellationToken);
         }
         
-        public async Task<long> CountArticlesByNormalizedEmail(string email)
+        public async Task<long> CountArticlesByProfileId(ObjectId profileId)
         {
             ThrowIfDisposed();
 
-            if (string.IsNullOrEmpty(email))
-            {
-                throw new ArgumentNullException(nameof(email));
-            }
-
-            return await _store.CountArticlesByNormalizedEmail(NormalizeKey(email), CancellationToken);
+            return await _store.CountArticlesByProfileId(profileId, CancellationToken);
         }
 
         public async Task<List<T>> FindArticlesAsync(int howManyElements)

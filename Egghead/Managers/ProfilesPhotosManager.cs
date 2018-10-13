@@ -8,7 +8,7 @@ using MongoDB.Bson;
 
 namespace Egghead.Managers
 {
-    public class ProfilesImagesManager<T> : IDisposable where T : class
+    public class ProfilesPhotosManager<T> : IDisposable where T : class
     {
         private bool _disposed;
         
@@ -21,11 +21,11 @@ namespace Egghead.Managers
         /// Gets or sets the persistence store the manager operates over.
         /// </summary>
         /// <value>The persistence store the manager operates over.</value>
-        protected internal IProfilesImagesStore<T> Store { get; set; }
+        protected internal IProfilesPhotosStore<T> Store { get; set; }
 
         protected virtual CancellationToken CancellationToken => CancellationToken.None;
                
-        public ProfilesImagesManager(IProfilesImagesStore<T> store, ILookupNormalizer keyNormalizer)
+        public ProfilesPhotosManager(IProfilesPhotosStore<T> store, ILookupNormalizer keyNormalizer)
         {
             Store = store ?? throw new ArgumentNullException(nameof(store));
             KeyNormalizer = keyNormalizer;
@@ -40,13 +40,13 @@ namespace Egghead.Managers
         public async Task CreateProfileImageAsync(T entity)
         {
             ThrowIfDisposed();
-            await Store.CreateProfileImageAsync(entity, CancellationToken);
+            await Store.CreateProfilePhotoAsync(entity, CancellationToken);
         }      
 
         public async Task<T> GetProfileImageByProfileIdAsync(ObjectId profileId)
         {
             ThrowIfDisposed();          
-            return await Store.GetProfileImageByProfileIdAsync(profileId, CancellationToken);
+            return await Store.GetProfilePhotoByProfileIdAsync(profileId, CancellationToken);
         }
         
         private void Dispose(bool disposing)

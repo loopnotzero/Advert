@@ -87,7 +87,7 @@ namespace Egghead.Managers
                 throw new ArgumentNullException(nameof(name)); 
             }
             
-            return await Store.FindProfileByNormalizedNameAsync(name, CancellationToken);
+            return await Store.FindProfileByNormalizedNameAsync(NormalizeKey(name), CancellationToken);
         }
 
         public async Task<T> FindProfileByNormalizedNameOrDefaultAsync(string name, T defaultValue)

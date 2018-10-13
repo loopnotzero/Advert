@@ -59,23 +59,23 @@ namespace Egghead.Controllers
         {
             try
             {
-                var models = new List<ArticleModel>();
-
                 var articles = await _articlesManager.FindArticlesAsync(_configuration.GetSection("EggheadOptions").GetValue<int>("ArticlesPerPage"));
+                
+                var viewModels = new List<ArticleViewModel>();
 
                 foreach (var article in articles)
                 {
-                    models.Add(new ArticleModel
+                    viewModels.Add(new ArticleViewModel
                     {
-                        Id = article.Id.ToString(),
-                        Title = article.Title,
                         Text = article.Text.Length > 1000 ? article.Text.Substring(0, 1000) + "..." : article.Text,
-                        NormalizedEmail = article.NormalizedEmail,
-                        LikesCount = ((double) article.LikesCount).ToMetric(),
-                        DislikesCount = ((double) article.DislikesCount).ToMetric(),
-                        ViewsCount = ((double) article.ViewsCount).ToMetric(),
-                        CommentsCount = ((double) article.CommentsCount).ToMetric(),
+                        Title = article.Title,
+                        ArticleId = article.Id.ToString(),
                         CreatedAt = article.CreatedAt.Humanize(),
+                        LikesCount = ((double) article.LikesCount).ToMetric(),
+                        ViewsCount = ((double) article.ViewsCount).ToMetric(),
+                        ProfileName = article.ProfileName,
+                        DislikesCount = ((double) article.DislikesCount).ToMetric(),
+                        CommentsCount = ((double) article.CommentsCount).ToMetric(),
                     });
                 }
 
@@ -84,32 +84,34 @@ namespace Egghead.Controllers
                 // ReSharper disable once InconsistentNaming
                 var orderedTopicsByEngagementRate = articles.OrderByDescending(x => EngagementRate.ComputeEngagementRate(x.LikesCount, x.DislikesCount, x.SharesCount, x.CommentsCount, x.ViewsCount));
 
-                return View(new CompositeArticleModel
+                return View(new AggregatorViewModel
                 {
                     Profile = new ProfileModel
                     {
-                        Id = profile.Id.ToString(),
-                        Name = profile.Name,
-                        ArticlesCount = ((double) await _articlesManager.CountArticlesByNormalizedEmail(HttpContext.User.Identity.Name)).ToMetric(),
+                        ProfileName = profile.Name,
+                        ProfileId = profile.Id.ToString(),
+                        ProfilePhoto = profile.PhotoPath,
+                        ArticlesCount = ((double) await _articlesManager.CountArticlesByProfileId(profile.Id)).ToMetric(),
                         FollowingCount = ((double) 0).ToMetric()
                     },
-                    Articles = articles.Select(x => new ArticleModel
+                    Articles = articles.Select(article => new ArticleViewModel
                     {
-                        Id = x.Id.ToString(),
-                        Title = x.Title,
-                        Text = x.Text.Length > 1000 ? x.Text.Substring(0, 1000) + "..." : x.Text,
-                        NormalizedEmail = x.NormalizedEmail,
-                        LikesCount = ((double) x.LikesCount).ToMetric(),
-                        DislikesCount = ((double) x.DislikesCount).ToMetric(),
-                        ViewsCount = ((double) x.ViewsCount).ToMetric(),
-                        CommentsCount = ((double) x.CommentsCount).ToMetric(),
-                        CreatedAt = x.CreatedAt.Humanize(),
+                        Text = article.Text.Length > 1000 ? article.Text.Substring(0, 1000) + "..." : article.Text,
+                        Title = article.Title,
+                        ArticleId = article.Id.ToString(),
+                        CreatedAt = article.CreatedAt.Humanize(),
+                        LikesCount = ((double) article.LikesCount).ToMetric(),
+                        ViewsCount = ((double) article.ViewsCount).ToMetric(),
+                        ProfileName = article.ProfileName,
+                        DislikesCount = ((double) article.DislikesCount).ToMetric(),
+                        CommentsCount = ((double) article.CommentsCount).ToMetric(),
                     }),
-                    PopularTopics = orderedTopicsByEngagementRate.Select(x => new PopularTopic
+                    PopularArticles = orderedTopicsByEngagementRate.Select(article => new PopularArticleViewModel
                     {
-                        Id = x.Id.ToString(),
-                        Title = x.Title,
-                        CreatedAt = x.CreatedAt.Humanize()
+                        Title = article.Title,
+                        ArticleId = article.Id.ToString(),
+                        CreatedAt = article.CreatedAt.Humanize(),
+                        ProfileName = article.ProfileName
                     }).ToList()
                 });
             }
@@ -119,7 +121,7 @@ namespace Egghead.Controllers
                 return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
             }
         }
-
+        
         [HttpGet]
         [Authorize]
         [Route("/Articles/{articleId}")]
@@ -129,8 +131,8 @@ namespace Egghead.Controllers
             {
                 var articleViewsCount = new MongoDbArticleViewsCount
                 {
-                    ArticleId = ObjectId.Parse(articleId),
                     Email = HttpContext.User.Identity.Name,
+                    ArticleId = ObjectId.Parse(articleId),
                     CreatedAt = DateTime.UtcNow
                 };
 
@@ -144,38 +146,114 @@ namespace Egghead.Controllers
 
                 var articles = await _articlesManager.FindArticlesAsync(_configuration.GetSection("EggheadOptions").GetValue<int>("ArticlesPerPage"));
 
-                // ReSharper disable once InconsistentNaming
-                var orderedTopicsByEngagementRate = articles.OrderByDescending(x => EngagementRate.ComputeEngagementRate(x.LikesCount, x.DislikesCount, x.SharesCount, x.CommentsCount, x.ViewsCount));
+                var articleComments = await _articlesCommentsManager.FindArticleCommentsByCollectionName(articleId, _configuration.GetSection("EggheadOptions").GetValue<int>("CommentsPerArticle"));
+   
+                var commentsReplies = new Dictionary<ObjectId, ArticleCommentViewModel>();
 
-                return View(new CompositeArticleModel
+                foreach (var comments in articleComments.GroupBy(comment => comment.ReplyTo))
+                {
+                    if (comments.Key == ObjectId.Empty)
+                    {
+                        foreach (var comment in comments.OrderByDescending(x => x.CreatedAt))
+                        {
+                            commentsReplies.Add(comment.Id, new ArticleCommentViewModel
+                            {
+                                Text = comment.Text,
+                                ReplyTo = comment.ReplyTo.ToString(),
+                                CommentId = comment.Id.ToString(),
+                                ArticleId = comment.ArticleId.ToString(),
+                                CreatedAt = comment.CreatedAt.Humanize(),
+                                ProfileName = comment.ProfileName,
+                                ProfilePhoto = comment.ProfilePhoto,
+                                VotingPoints = ((double) comment.VotingPoints).ToMetric()
+                            });
+                        }
+                    }
+                    else
+                    {
+                        if (commentsReplies.TryGetValue(comments.Key, out var articleComment))
+                        {
+                            if (articleComment.Comments == null)
+                            {
+                                if (comments.Any())
+                                {
+                                    articleComment.Comments = comments.OrderByDescending(x => x.CreatedAt).Select(comment =>
+                                    {
+                                        var model = new ArticleCommentViewModel
+                                        {
+                                            Text = comment.Text,
+                                            ReplyTo = comment.ReplyTo.ToString(),
+                                            CommentId = comment.Id.ToString(),
+                                            ArticleId = comment.ArticleId.ToString(),
+                                            CreatedAt = comment.CreatedAt.Humanize(),
+                                            ProfileName = comment.ProfileName,
+                                            ProfilePhoto = comment.ProfilePhoto,
+                                            VotingPoints = ((double) comment.VotingPoints).ToMetric()
+                                        };
+                                        return model;
+                                    }).ToList();
+                                }
+                            }
+                            else
+                            {
+                                articleComment.Comments.AddRange(comments.OrderByDescending(x => x.CreatedAt).Select(comment =>
+                                {
+                                    var model = new ArticleCommentViewModel
+                                    {
+                                        Text = comment.Text,
+                                        ReplyTo = comment.ReplyTo.ToString(),
+                                        CommentId = comment.Id.ToString(),
+                                        ArticleId = comment.ArticleId.ToString(),
+                                        CreatedAt = comment.CreatedAt.Humanize(),
+                                        ProfileName = comment.ProfileName,
+                                        ProfilePhoto = comment.ProfilePhoto,
+                                        VotingPoints = ((double) comment.VotingPoints).ToMetric()
+                                    };
+                                    return model;
+                                }));
+                            }
+                        }
+                    }
+                }
+
+                var popularArticles = articles.OrderByDescending(x => EngagementRate.ComputeEngagementRate(x.LikesCount, x.DislikesCount, x.SharesCount, x.CommentsCount, x.ViewsCount));
+
+                return View(new AggregatorViewModel
                 {
                     Profile = new ProfileModel
                     {
-                        Name = profile.Name,
-                        ArticlesCount = ((double) await _articlesManager.CountArticlesByNormalizedEmail(article.NormalizedEmail)).ToMetric(),
+                        ProfileName = profile.Name,
+                        ProfileId = profile.Id.ToString(),
+                        ProfilePhoto = profile.PhotoPath,
+                        ArticlesCount = ((double) await _articlesManager.CountArticlesByProfileId(article.ProfileId)).ToMetric(),
                         FollowingCount = ((double) 0).ToMetric()
                     },
-                    Articles = new List<ArticleModel>
+                    
+                    Articles = new List<ArticleViewModel>
                     {
-                        new ArticleModel
+                        new ArticleViewModel
                         {
-                            Id = article.Id.ToString(),
-                            Title = article.Title,
                             Text = article.Text,
-                            NormalizedEmail = article.NormalizedEmail,
+                            Title = article.Title,
+                            ArticleId = article.Id.ToString(),
+                            CreatedAt = article.CreatedAt.Humanize(),
                             LikesCount = ((double) article.LikesCount).ToMetric(),
-                            DislikesCount = ((double) article.DislikesCount).ToMetric(),
                             ViewsCount = ((double) article.ViewsCount).ToMetric(),
+                            ProfileName = article.ProfileName,
+                            DislikesCount = ((double) article.DislikesCount).ToMetric(),
                             CommentsCount = ((double) article.CommentsCount).ToMetric(),
-                            CreatedAt = article.CreatedAt.Humanize()
                         }
                     },
-                    PopularTopics = orderedTopicsByEngagementRate.Select(x => new PopularTopic
+                    
+                    PopularArticles = popularArticles.Select(popularArticle => new PopularArticleViewModel
                     {
-                        Id = x.Id.ToString(),
-                        Title = x.Title,
-                        CreatedAt = x.CreatedAt.Humanize()
-                    }).ToList()
+                        Title = popularArticle.Title,
+                        ArticleId = popularArticle.Id.ToString(),
+                        CreatedAt = popularArticle.CreatedAt.Humanize(),
+                        ProfileName = popularArticle.ProfileName
+                    }).ToList(),
+                    
+                    ArticleComments = commentsReplies.Values.ToList()
                 });
             }
             catch (Exception e)
@@ -188,17 +266,20 @@ namespace Egghead.Controllers
         [HttpPost]
         [Authorize]
         [Route("/Articles/PublishArticleAsync")]
-        public async Task<IActionResult> PublishArticleAsync([FromBody] PublishArticleModel model)
+        public async Task<IActionResult> PublishArticleAsync([FromBody] PublishArticleViewModel viewModel)
         {
             try
             {
+                var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
+                
                 var article = new MongoDbArticle
                 {
-                    Title = model.Title,
-                    Text = model.Text,
-                    Email = HttpContext.User.Identity.Name,
-                    ReleaseType = ReleaseType.PreModeration,
+                    Text = viewModel.Text,
+                    Title = viewModel.Title,             
                     CreatedAt = DateTime.UtcNow,
+                    ProfileId = profile.Id,
+                    ProfileName = profile.Name,
+                    ReleaseType = ReleaseType.PreModeration,
                 };
 
                 await _articlesManager.CreateArticleAsync(article);
@@ -254,11 +335,11 @@ namespace Egghead.Controllers
         [HttpPost]
         [Authorize]
         [Route("/Articles/CreateArticleVoteAsync")]
-        public async Task<IActionResult> CreateArticleVoteAsync([FromBody] ArticleVoteModel model)
+        public async Task<IActionResult> CreateArticleVoteAsync([FromBody] ArticleVoteViewModel viewModel)
         {
             try
             {
-                var articleId = ObjectId.Parse(model.ArticleId);
+                var articleId = ObjectId.Parse(viewModel.ArticleId);
 
                 var vote = await _articlesVotesManager.FindArticleVoteByNormalizedEmailAsync(articleId, HttpContext.User.Identity.Name);
 
@@ -266,18 +347,18 @@ namespace Egghead.Controllers
                 {
                     await _articlesVotesManager.CreateArticleVoteAsync(new MongoDbArticleVote
                     {
-                        ArticleId = articleId,
-                        VoteType = model.VoteType,
                         Email = HttpContext.User.Identity.Name,
+                        VoteType = viewModel.VoteType,
+                        ArticleId = articleId,
                         CreatedAt = DateTime.UtcNow
                     });
 
-                    var votesCount = await _articlesVotesManager.CountArticleVotesByVoteTypeAsync(articleId, model.VoteType);
+                    var votesCount = await _articlesVotesManager.CountArticleVotesByVoteTypeAsync(articleId, viewModel.VoteType);
 
-                    switch (model.VoteType)
+                    switch (viewModel.VoteType)
                     {
                         case VoteType.None:
-                            var logString = $"Vote type is not valid. Article id: {model.ArticleId} Email: {HttpContext.User.Identity.Name}";
+                            var logString = $"Vote type is not valid. Article id: {viewModel.ArticleId} Email: {HttpContext.User.Identity.Name}";
                             throw new ArticleCommentVoteException(logString);
                         case VoteType.Like:
                             await _articlesManager.UpdateArticleLikesCountByArticleId(articleId, votesCount);
@@ -289,25 +370,25 @@ namespace Egghead.Controllers
                             throw new ArgumentOutOfRangeException();
                     }
 
-                    return Ok(new ArticleVotesModel
+                    return Ok(new ArticleVotesViewModel
                     {
-                        VoteType = model.VoteType,
+                        VoteType = viewModel.VoteType,
                         VotesCount = ((double) votesCount).ToMetric()
                     });
                 }
                 else
                 {
-                    if (vote.VoteType == model.VoteType)
+                    if (vote.VoteType == viewModel.VoteType)
                     {
                         await _articlesVotesManager.DeleteArticleVoteByIdAsync(vote.Id);
                     }
 
-                    var votesCount = await _articlesVotesManager.CountArticleVotesByVoteTypeAsync(articleId, model.VoteType);
+                    var votesCount = await _articlesVotesManager.CountArticleVotesByVoteTypeAsync(articleId, viewModel.VoteType);
 
-                    switch (model.VoteType)
+                    switch (viewModel.VoteType)
                     {
                         case VoteType.None:
-                            var logString = $"Vote type is not valid. Article id: {model.ArticleId} Email: {HttpContext.User.Identity.Name}";
+                            var logString = $"Vote type is not valid. Article id: {viewModel.ArticleId} Email: {HttpContext.User.Identity.Name}";
                             throw new ArticleCommentVoteException(logString);
                         case VoteType.Like:
                             await _articlesManager.UpdateArticleLikesCountByArticleId(articleId, votesCount);
@@ -319,9 +400,9 @@ namespace Egghead.Controllers
                             throw new ArgumentOutOfRangeException();
                     }
 
-                    return Ok(new ArticleVotesModel
+                    return Ok(new ArticleVotesViewModel
                     {
-                        VoteType = model.VoteType,
+                        VoteType = viewModel.VoteType,
                         VotesCount = ((double) votesCount).ToMetric()
                     });
                 }
@@ -341,36 +422,41 @@ namespace Egghead.Controllers
         [HttpPost]
         [Authorize]
         [Route("/Articles/CreateArticleCommentAsync")]
-        public async Task<IActionResult> CreateArticleCommentAsync([FromBody] PublishArticleCommentModel model)
+        public async Task<IActionResult> CreateArticleCommentAsync([FromBody] PublicCommentViewModel viewModel)
         {
             try
             {
-                var articleId = ObjectId.Parse(model.ArticleId);
-
-                var collectionName = model.ArticleId;
+                var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
+                
+                var articleId = ObjectId.Parse(viewModel.ArticleId);
 
                 var articleComment = new MongoDbArticleComment
                 {
+                    Text = viewModel.Text,
+                    ReplyTo = viewModel.ReplyTo == null ? ObjectId.Empty : ObjectId.Parse(viewModel.ReplyTo),
+                    CreatedAt = DateTime.UtcNow,
                     ArticleId = articleId,
-                    Text = model.Text,
-                    ReplyTo = model.ReplyTo == null ? ObjectId.Empty : ObjectId.Parse(model.ReplyTo),
-                    CreatedAt = DateTime.UtcNow
+                    ProfileName = profile.Name,
+                    ProfilePhoto = profile.PhotoPath,
+                    VotingPoints = 0,
                 };
+              
+                var collectionName = viewModel.ArticleId;
 
                 await _articlesCommentsManager.CreateArticleComment(collectionName, articleComment);
 
-                var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
-
                 var comment = await _articlesCommentsManager.FindArticleCommentById(collectionName, articleComment.Id);
 
-                return Ok(new ArticleCommentModel
+                return Ok(new ArticleCommentViewModel
                 {
-                    ArticleId = model.ArticleId,
-                    CommentId = comment.Id.ToString(),
-                    Name = profile.Name,
                     Text = comment.Text,
                     ReplyTo = comment.ReplyTo == ObjectId.Empty ? null : comment.ReplyTo.ToString(),
-                    CreatedAt = comment.CreatedAt.Humanize()
+                    CreatedAt = comment.CreatedAt.Humanize(),
+                    CommentId = comment.Id.ToString(),
+                    ArticleId = viewModel.ArticleId,
+                    ProfileName = comment.ProfileName,
+                    ProfilePhoto = comment.ProfilePhoto,     
+                    VotingPoints = ((double)comment.VotingPoints).ToMetric()
                 });
             }
             catch (Exception e)
@@ -383,13 +469,13 @@ namespace Egghead.Controllers
         [HttpPost]
         [Authorize]
         [Route("/Articles/CreateArticleCommentVoteAsync")]
-        public async Task<IActionResult> CreateArticleCommentVoteAsync([FromBody] ArticleCommentVoteModel model)
+        public async Task<IActionResult> CreateArticleCommentVoteAsync([FromBody] ArticleCommentVoteViewModel viewModel)
         {
             try
             {
-                var articleId = ObjectId.Parse(model.ArticleId);
+                var articleId = ObjectId.Parse(viewModel.ArticleId);
 
-                var commentId = ObjectId.Parse(model.CommentId);
+                var commentId = ObjectId.Parse(viewModel.CommentId);
 
                 var vote = await _articleCommentsVotesManager.FindArticleCommentVoteAsync(commentId);
 
@@ -397,25 +483,25 @@ namespace Egghead.Controllers
                 {
                     await _articleCommentsVotesManager.CreateArticleCommentVoteAsync(new MongoDbArticleCommentVote
                     {
+                        VoteType = viewModel.VoteType,
                         ArticleId = articleId,
                         CommentId = commentId,
-                        VoteType = model.VoteType,
                         CreatedAt = DateTime.UtcNow
                     });
                 }
                 else
                 {
-                    if (vote.VoteType == model.VoteType)
+                    if (vote.VoteType == viewModel.VoteType)
                     {
                         await _articleCommentsVotesManager.DeleteArticleCommentVoteAsync(vote.Id);
                     }
                 }
 
-                var votesCount = await _articleCommentsVotesManager.CountArticleCommentVotesAsync(commentId, model.VoteType);
+                var votesCount = await _articleCommentsVotesManager.CountArticleCommentVotesAsync(commentId, viewModel.VoteType);
 
                 return Ok(new ArticleCommentVotesModel
                 {
-                    VoteType = model.VoteType,
+                    VoteType = viewModel.VoteType,
                     VotesCount = ((double) votesCount).ToMetric()
                 });
             }
@@ -429,23 +515,6 @@ namespace Egghead.Controllers
                 _logger.LogCritical(e.Message, e);
                 return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
             }
-        }
-
-        [HttpGet]
-        [Authorize]
-        [Route("/Articles/FindArticleCommentsByArticleIdAsync/{articleId}")]
-        public async Task<IActionResult> FindArticleCommentsByArticleIdAsync(string articleId)
-        {
-            var articleComments = await _articlesCommentsManager.FindArticleCommentsByCollectionName(articleId, _configuration.GetSection("EggheadOptions").GetValue<int>("CommentsPerArticle"));
-
-            return PartialView("ArticleCommentsPartial", articleComments.Select(x => new ArticleCommentModel
-            {
-                ArticleId = articleId,
-                CommentId = x.Id.ToString(),
-                Text = x.Text,
-                ReplyTo = x.ReplyTo == ObjectId.Empty ? null : x.ReplyTo.ToString(),
-                CreatedAt = x.CreatedAt.Humanize(),
-            }));
         }
     }
 }

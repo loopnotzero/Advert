@@ -12,7 +12,7 @@ namespace Egghead
     {
 //        private const int Like = 0;
 //        private const int Dislike = 1;
-//        private const int Comment = 2;
+//        private const int RootComment = 2;
 //        private const int ViewCount = 3;
         
         public static void Main(string[] args)
@@ -52,7 +52,7 @@ namespace Egghead
 //            foreach (var list in matrix)
 //            {
 //                
-//                Console.WriteLine($"ER: {EngagementRate.ComputeEngagementRate(list[Like], list[Dislike], 0, list[Comment], list[ViewCount])}");           
+//                Console.WriteLine($"ER: {EngagementRate.ComputeEngagementRate(list[Like], list[Dislike], 0, list[RootComment], list[ViewCount])}");           
 //            }
             
             BuildWebHost(args).Run();

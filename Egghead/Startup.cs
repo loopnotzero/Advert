@@ -60,7 +60,7 @@ namespace Egghead
             services.AddScoped<ArticlesManager<MongoDbArticle>, ArticlesManager<MongoDbArticle>>();
             services.AddScoped<ArticlesViewCountManager<MongoDbArticleViewsCount>, ArticlesViewCountManager<MongoDbArticleViewsCount>>();
             services.AddScoped<ProfilesManager<MongoDbProfile>, ProfilesManager<MongoDbProfile>>();
-            services.AddScoped<ProfilesImagesManager<MongoDbProfileImage>, ProfilesImagesManager<MongoDbProfileImage>>();
+            services.AddScoped<ProfilesPhotosManager<MongoDbProfilePhoto>, ProfilesPhotosManager<MongoDbProfilePhoto>>();
             
             #endregion
 
@@ -96,10 +96,10 @@ namespace Egghead
                 return new MongoDbArticlesVotesStore<MongoDbArticleVote>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
             });
             
-            services.AddTransient<IProfilesImagesStore<MongoDbProfileImage>>(provider =>
+            services.AddTransient<IProfilesPhotosStore<MongoDbProfilePhoto>>(provider =>
             {
                 var options = provider.GetService<IOptions<MongoDbOptions>>();
-                return new MongoDbProfilesImagesStore<MongoDbProfileImage>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+                return new MongoDbProfilesPhotosStore<MongoDbProfilePhoto>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
             });
                                
             services.AddTransient<IProfilesStore<MongoDbProfile>>(provider =>

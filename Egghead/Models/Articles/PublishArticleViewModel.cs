@@ -1,8 +1,8 @@
 ﻿namespace Egghead.Models.Articles
 {
-    public class PublishArticleModel
+    public class PublishArticleViewModel
     {
-        public string Title { get; set; }
         public string Text { get; set; }
+        public string Title { get; set; }
     }
 }

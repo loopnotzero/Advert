@@ -1,16 +1,16 @@
 ﻿@using Egghead.Models.Articles
 @using Humanizer
-@model CompositeArticleModel
+@model AggregatorViewModel
 
 @Html.Partial("Header", Model)
 
-<section id="article" class="content">
+<section id="@Model.Articles.First().ArticleId" name="article" class="content">
     <div class="row">
         <div class="col-md-8">
             <div class="card">
                 <div class="text-muted p-3">
-                    <a href="/@Model.Profile.Name">
-                        <small class="font-weight-bold">@Model.Profile.Name</small>
+                    <a href="/Profile">
+                        <small class="font-weight-bold">@Model.Profile.ProfileName</small>
                     </a> <small class="time"> @Model.Articles.First().CreatedAt.Humanize()</small>
                 </div>
 
@@ -35,7 +35,62 @@
                 </div>
 
                 <div id="article-comments" class="container-fluid">
-                    @* @Html.Partial("ArticleCommentsPartial") *@
+                    @if (Model.ArticleComments != null && Model.ArticleComments.Any())
+                    {
+                        foreach (var comment in Model.ArticleComments)
+                        {
+                            <div id="@comment.CommentId" class="media p-3">
+                                <img src="@comment.ProfilePhoto" width="48" height="48">
+                                <div class="media-body media__img">
+                                    <div class="col-auto">
+                                        <a href="/Profile/@comment.ProfileName">@comment.ProfileName</a> <small class="time"> @comment.CreatedAt</small>
+                                    </div>
+                                    <div class="col-auto">
+                                        <h6>@Html.Raw(comment.Text)</h6>
+                                    </div>
+                                    <div class="col-auto">
+                                        <a href="#reply" onclick="showReplyForm(null, '@comment.CommentId')">Reply</a>
+                                        <div name="btn-like" onclick="onCommentVoteClick('@comment.CommentId', 1)" class="r-btn r-btn-light r-btn--icon">
+                                            <i class="fa fa-thumbs-o-up"></i>
+                                        </div>
+                                        <span name="voting-points">100500</span>
+                                        <div name="btn-dislike" onclick="onCommentVoteClick('@comment.CommentId', 2)" class="r-btn r-btn-light r-btn--icon">
+                                            <i class="fa fa-thumbs-o-down"></i>
+                                        </div>
+                                    </div>
+                                    <div id="reply-placeholder"></div>
+                                    @if (comment.Comments != null)
+                                    {
+                                        foreach (var reply in comment.Comments)
+                                        {
+                                            <div id="@reply.ReplyTo .media-body:first" class="media p-3">
+                                                <img src="@reply.ProfilePhoto" width="48" height="48">
+                                                <div class="media-body media__img">
+                                                    <div class="col-auto">
+                                                        <a href="/Profile/@comment.ProfileName">@comment.ProfileName</a> <small class="time"> @reply.CreatedAt</small>
+                                                    </div>
+                                                    <div class="col-auto">
+                                                        <h6>@Html.Raw(reply.Text)</h6>
+                                                    </div>
+                                                    <div class="col-auto">
+                                                        <a href="#reply" onclick="showReplyForm(null, '@reply.CommentId')">Reply</a>
+                                                        <div name="btn-like" onclick="onCommentVoteClick('@reply.CommentId', 1)" class="r-btn r-btn-light r-btn--icon">
+                                                            <i class="fa fa-thumbs-o-up"></i>
+                                                        </div>
+                                                        <span name="voting-points">100500</span>
+                                                        <div name="btn-dislike" onclick="onCommentVoteClick('@reply.CommentId', 2)" class="r-btn r-btn-light r-btn--icon">
+                                                            <i class="fa fa-thumbs-o-down"></i>
+                                                        </div>
+                                                    </div>
+                                                    <div id="reply-placeholder"></div>
+                                                </div>
+                                            </div> 
+                                        }   
+                                    }
+                                </div>
+                            </div>
+                        }
+                    }
                 </div>
             </div>
         </div>
@@ -45,7 +100,7 @@
                     <h4 class="text-muted font-weight-bold">Popular on Egghead</h4>
                 </div>
                 @{
-                    var popularArticles = Model.PopularTopics;
+                    var popularArticles = Model.PopularArticles;
 
                     if (popularArticles != null)
                     {
@@ -59,11 +114,11 @@
                                     <div class="listview__content">
                                         <div class="listview__heading">
                                             <p>
-                                                <a class="font-weight-bold" href="/Articles/@popularArticle.Id">@popularArticle.Title</a>
+                                                <a class="font-weight-bold" href="/Articles/@popularArticle.ArticleId">@popularArticle.Title</a>
                                             </p>
                                         </div>
                                         <p>
-                                            <a href="/@Model.Profile.Name"></a> <small class="time"> @popularArticle.CreatedAt</small>
+                                            <a href="/Profile">@popularArticle.ProfileName</a> <small class="time"> @popularArticle.CreatedAt</small>
                                         </p>
                                     </div>
                                 </div>
@@ -104,24 +159,10 @@
 
         $(".CodeMirror, .CodeMirror-scroll").css('min-height', '150px');
 
-        $.urlParam = function(name, url) {
-            if (!url) {
-                url = window.location.href;
-            }
-            var results = new RegExp('[\\?&]' + name + '=([^&#]*)').exec(url);
-            if (!results) {
-                return undefined;
-            }
-            return results[1] || undefined;
-        }
-
-        var articleId = $.urlParam('articleId');
-
         $("#submit-reply").click(function() {
             removeReplyForm("reply-form");
-
             var text = editor.options.previewRender(editor.value());
-
+            var articleId = $(`[name='article']`).attr("id");
             createCommentReplyAsync({
                 articleId: articleId,
                 text: text,
@@ -138,19 +179,7 @@
     }
 
     function onCommentVoteClick(commentId, voteType) {
-        $.urlParam = function(name, url) {
-            if (!url) {
-                url = window.location.href;
-            }
-            var results = new RegExp('[\\?&]' + name + '=([^&#]*)').exec(url);
-            if (!results) {
-                return undefined;
-            }
-            return results[1] || undefined;
-        }
-
-        var articleId = $.urlParam('articleId');
-
+        var articleId = $(`[name='article']`).attr("id");
         createArticleCommentVoteAsync(articleId, commentId, voteType);
     }
 
@@ -167,23 +196,24 @@
             },
             success: function(response) {
                 $(`#${comment.replyTo} .media-body:first`).append(`
-                <div id="${response.id}" class="media p-3">
+                <div id="${response.commentId}" class="media p-3">
                     <img src="/images/64x64.svg" width="48" height="48" alt="">
                     <div class="media-body media__img">
                         <div class="col-auto">
-                            ${response.name} <small class="time"> ${response.createdAt}</small>
+                            ${response.profileName} <small class="time"> ${response.createdAt}</small>
                         </div>
                         <div class="col-auto">
                             <h6>${response.text}</h6>
                         </div>
                         <div class="col-auto">
-                            <a href="#reply" onclick="showReplyForm('${comment.replyTo}', '${response.id}')">Reply</a>
-                            <div name="btn-like" onclick="onCommentVoteClick('${response.id
+                            <a href="#reply" onclick="showReplyForm('${comment.replyTo}', '${response.commentId
+                    }')">Reply</a>
+                            <div name="btn-like" onclick="onCommentVoteClick('${response.commentId
                     }', 1)" class="r-btn r-btn-light r-btn--icon">
                                 <i class="fa fa-thumbs-o-up"></i>
                             </div>
                             <span name="votes-count">${response.votesCount}</span>
-                            <div name="btn-dislike" onclick="onCommentVoteClick('${response.id
+                            <div name="btn-dislike" onclick="onCommentVoteClick('${response.commentId
                     }', 1)" class="r-btn r-btn-light r-btn--icon">
                                 <i class="fa fa-thumbs-o-down"></i>
                             </div>
@@ -209,23 +239,23 @@
             },
             success: function(response) {
                 $("#article-comments").append(`
-                <div id="${response.id}" class="media p-3">
-                    <img src="/images/64x64.svg" width="48" height="48">
+                <div id="${response.commentId}" class="media p-3">
+                    <img src="${response.profileImagePath}" width="48" height="48">
                     <div class="media-body media__img">
                         <div class="col-auto">
-                            ${response.name} <small class="time"> ${response.createdAt}</small>
+                            ${response.profileName} <small class="time"> ${response.createdAt}</small>
                         </div>
                         <div class="col-auto">
                             <h6>${response.text}</h6>
                         </div>
                         <div class="col-auto">
-                            <a href="#reply" onclick="showReplyForm(null, '${response.id}')">Reply</a>
-                            <div name="btn-like" onclick="onCommentVoteClick('${response.id
+                            <a href="#reply" onclick="showReplyForm(null, '${response.commentId}')">Reply</a>
+                            <div name="btn-like" onclick="onCommentVoteClick('${response.commentId
                     }', 1)" class="r-btn r-btn-light r-btn--icon">
                                 <i class="fa fa-thumbs-o-up"></i>
                             </div>
                             <span name="votes-count">${response.votesCount}</span>
-                            <div name="btn-dislike" onclick="onCommentVoteClick('${response.id
+                            <div name="btn-dislike" onclick="onCommentVoteClick('${response.commentId
                     }', 2)" class="r-btn r-btn-light r-btn--icon">
                                 <i class="fa fa-thumbs-o-down"></i>
                             </div>
@@ -298,28 +328,15 @@
 
         $(".CodeMirror, .CodeMirror-scroll").css('min-height', '150px');
 
-        $.urlParam = function(name, url) {
-            if (!url) {
-                url = window.location.href;
-            }
-            var results = new RegExp('[\\?&/]' + name + '=([^&#]*)').exec(url);
-            if (!results) {
-                return undefined;
-            }
-            return results[1] || undefined;
-        }
-        
-        var articleId = $.urlParam('articleId');
-
         $("#publish-comment").click(function() {
             var text = editor.options.previewRender(editor.value());
+            var articleId = $(`[name='article']`).attr("id");
             createArticleCommentAsync(
                 {
                     articleId: articleId,
                     text: text
                 });
         });
-
-        findArticleCommentsByArticleIdAync(articleId);
+//        findArticleCommentsByArticleIdAync(articleId);
     });
 </script>

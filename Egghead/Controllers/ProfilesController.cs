@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.OData.Query.SemanticAst;
 using Microsoft.Extensions.Logging;
 
 namespace Egghead.Controllers
@@ -19,15 +18,15 @@ namespace Egghead.Controllers
         private readonly ILogger _logger;
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly ProfilesManager<MongoDbProfile> _profilesManager;
-        private readonly ProfilesImagesManager<MongoDbProfileImage> _profilesImagesManager;
+        private readonly ProfilesPhotosManager<MongoDbProfilePhoto> _profilesPhotosManager;
 
-        public ProfilesController(ILoggerFactory loggerFactory, ILookupNormalizer keyNormalizer, IHostingEnvironment hostingEnvironment, ProfilesManager<MongoDbProfile> profilesManager, ProfilesImagesManager<MongoDbProfileImage> profilesImagesManager)
+        public ProfilesController(ILoggerFactory loggerFactory, ILookupNormalizer keyNormalizer, IHostingEnvironment hostingEnvironment, ProfilesManager<MongoDbProfile> profilesManager, ProfilesPhotosManager<MongoDbProfilePhoto> profilesPhotosManager)
         {
             _logger = loggerFactory.CreateLogger<ProfilesController>();
             _hostingEnvironment = hostingEnvironment;
             
             _profilesManager = profilesManager;
-            _profilesImagesManager = profilesImagesManager;
+            _profilesPhotosManager = profilesPhotosManager;
         }
 
         [HttpGet]
@@ -44,9 +43,31 @@ namespace Egghead.Controllers
             
             return View(new ProfileModel
             {
-                Id = profile.Id.ToString(),
-                Name = profile.Name,
-                ImagePath = profile.ImagePath,
+                ProfileId = profile.Id.ToString(),
+                ProfileName = profile.Name,
+                ProfilePhoto = profile.PhotoPath,
+                ArticlesCount = ((double)0).ToMetric(),
+                FollowingCount = ((double)0).ToMetric()
+            });
+        }
+        
+        [HttpGet]
+        [Route("/Profile/{name}")]
+        public async Task<IActionResult> Profile(string name)
+        {
+            var profile = await _profilesManager.FindProfileByNormalizedNameAsync(name);
+
+            if (profile == null)
+            {
+                //todo: Add user not found page
+                return NotFound();
+            }
+            
+            return View(new ProfileModel
+            {
+                ProfileId = profile.Id.ToString(),
+                ProfileName = profile.Name,
+                ProfilePhoto = profile.PhotoPath,
                 ArticlesCount = ((double)0).ToMetric(),
                 FollowingCount = ((double)0).ToMetric()
             });
@@ -89,22 +110,22 @@ namespace Egghead.Controllers
             // process uploaded files
             // Don't rely on or trust the FileName property without validation.
 
-            await _profilesImagesManager.CreateProfileImageAsync(new MongoDbProfileImage
+            await _profilesPhotosManager.CreateProfileImageAsync(new MongoDbProfilePhoto
             {
-                ImagePath = imagePath,
-                ProfileId = profile.Id,
+                PhotoPath = imagePath,
+                Id = profile.Id,
                 CreatedAt = DateTime.UtcNow
             });
 
-            profile.ImagePath = Path.Combine(dirPath, file.FileName);
+            profile.PhotoPath = Path.Combine(dirPath, file.FileName);
 
             await _profilesManager.UpdateProfileAsync(profile);
 
             return View("Profile", new ProfileModel
             {
-                Id = profile.Id.ToString(),
-                Name = profile.Name,
-                ImagePath = profile.ImagePath,
+                ProfileId = profile.Id.ToString(),
+                ProfileName = profile.Name,
+                ProfilePhoto = profile.PhotoPath,
                 ArticlesCount = ((double)0).ToMetric(),
                 FollowingCount = ((double)0).ToMetric()
             });
