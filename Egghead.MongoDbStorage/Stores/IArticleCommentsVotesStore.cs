@@ -11,7 +11,8 @@ namespace Egghead.MongoDbStorage.Stores
     {
         Task CreateArticleCommentVoteAsync(T entity, CancellationToken cancellationToken);
         Task<T> FindArticleCommentVoteAsync(ObjectId commentId, CancellationToken cancellationToken);
-        Task<long> CountArticleCommentVotesAsync(ObjectId commentId, VoteType voteType, CancellationToken cancellationToken);
+        Task<long> CountArticleCommentVotesAsync(ObjectId commentId, CancellationToken cancellationToken);
+        Task<long> CountArticleCommentVotesByTypeAsync(ObjectId commentId, VoteType voteType, CancellationToken cancellationToken);
         Task<UpdateResult> UpdateArticleCommentVoteAsync(ObjectId voteId, VoteType voteType, CancellationToken cancellationToken);
         Task<DeleteResult> DeleteArticleCommentVoteAsync(ObjectId voteId, CancellationToken cancellationToken);
     }

@@ -124,11 +124,5 @@ namespace Egghead.MongoDbStorage.Stores
                 BypassDocumentValidation = false
             }, cancellationToken);
         }
-
-        private class ArticlePair
-        {
-            public ObjectId ArticleId { get; set; }
-            public long ViewsCount { get; set; }
-        }
     }
 }

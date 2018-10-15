@@ -49,12 +49,21 @@ namespace Egghead.MongoDbStorage.Stores
             return await cursor.FirstOrDefaultAsync(cancellationToken);
         }
 
-        public async Task<long> CountArticleCommentVotesAsync(ObjectId commentId, VoteType voteType, CancellationToken cancellationToken)
+        public async Task<long> CountArticleCommentVotesAsync(ObjectId commentId, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             var filter = Builders<T>.Filter.And(
-                Builders<T>.Filter.Eq(x => x.CommentId, commentId),
-                Builders<T>.Filter.Eq(x => x.VoteType, voteType)
+                Builders<T>.Filter.Eq(x => x.CommentId, commentId)
+            );
+            return await _collection.CountDocumentsAsync(filter, cancellationToken: cancellationToken);
+        }
+
+        public async Task<long> CountArticleCommentVotesByTypeAsync(ObjectId commentId, VoteType voteType, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var filter = Builders<T>.Filter.And(
+                Builders<T>.Filter.Eq(x => x.VoteType, voteType),
+                Builders<T>.Filter.Eq(x => x.CommentId, commentId)
             );
             return await _collection.CountDocumentsAsync(filter, cancellationToken: cancellationToken);
         }
