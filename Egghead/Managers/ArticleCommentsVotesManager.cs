@@ -38,21 +38,10 @@ namespace Egghead.Managers
             await Store.CreateArticleCommentVoteAsync(entity, CancellationToken);
         }
 
-        public async Task<long> CountArticleCommentVotesAsync(ObjectId commentId, VoteType voteType)
+        public async Task<long> CountArticleCommentVotesAsync(ObjectId commentId)
         {
-            ThrowIfDisposed();
-            
-            if (commentId == null)
-            {
-                throw new ArgumentNullException(nameof(commentId));
-            }
-            
-            if (voteType == VoteType.None)
-            {
-                throw new ArgumentNullException(nameof(voteType));
-            }
-
-            return await Store.CountArticleCommentVotesAsync(commentId, voteType, CancellationToken);
+            ThrowIfDisposed();           
+            return await Store.CountArticleCommentVotesAsync(commentId, CancellationToken);
         }
 
         public async Task<T> FindArticleCommentVoteAsync(ObjectId commentId)

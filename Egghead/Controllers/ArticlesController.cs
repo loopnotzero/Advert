@@ -32,6 +32,8 @@ namespace Egghead.Controllers
         private readonly ArticlesCommentsManager<MongoDbArticleComment> _articlesCommentsManager;
         private readonly ArticlesViewCountManager<MongoDbArticleViewsCount> _articlesViewsCountManager;
         private readonly ArticleCommentsVotesManager<MongoDbArticleCommentVote> _articleCommentsVotesManager;
+        
+        private const string ProfileNoImage = "/images/64x64.svg";
 
         public ArticlesController(ILoggerFactory loggerFactory, ILookupNormalizer keyNormalizer, IConfiguration configuration, UserManager<MongoDbUser> userManager, ProfilesManager<MongoDbProfile> profilesManager, ArticlesManager<MongoDbArticle> articlesManager, ArticlesLikesManager<MongoDbArticleVote> articlesVotesManager, ArticlesCommentsManager<MongoDbArticleComment> articlesCommentsManager, ArticlesViewCountManager<MongoDbArticleViewsCount> articlesViewsCountManager, ArticleCommentsVotesManager<MongoDbArticleCommentVote> articleCommentsVotesManager)
         {
@@ -59,27 +61,9 @@ namespace Egghead.Controllers
         {
             try
             {
-                var articles = await _articlesManager.FindArticlesAsync(_configuration.GetSection("EggheadOptions").GetValue<int>("ArticlesPerPage"));
-                
-                var viewModels = new List<ArticleViewModel>();
-
-                foreach (var article in articles)
-                {
-                    viewModels.Add(new ArticleViewModel
-                    {
-                        Text = article.Text.Length > 1000 ? article.Text.Substring(0, 1000) + "..." : article.Text,
-                        Title = article.Title,
-                        ArticleId = article.Id.ToString(),
-                        CreatedAt = article.CreatedAt.Humanize(),
-                        LikesCount = ((double) article.LikesCount).ToMetric(),
-                        ViewsCount = ((double) article.ViewsCount).ToMetric(),
-                        ProfileName = article.ProfileName,
-                        DislikesCount = ((double) article.DislikesCount).ToMetric(),
-                        CommentsCount = ((double) article.CommentsCount).ToMetric(),
-                    });
-                }
-
                 var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
+
+                var articles = await _articlesManager.FindArticlesAsync(_configuration.GetSection("EggheadOptions").GetValue<int>("ArticlesPerPage"));
 
                 // ReSharper disable once InconsistentNaming
                 var orderedTopicsByEngagementRate = articles.OrderByDescending(x => EngagementRate.ComputeEngagementRate(x.LikesCount, x.DislikesCount, x.SharesCount, x.CommentsCount, x.ViewsCount));
@@ -90,7 +74,7 @@ namespace Egghead.Controllers
                     {
                         ProfileName = profile.Name,
                         ProfileId = profile.Id.ToString(),
-                        ProfilePhoto = profile.PhotoPath ?? "/images/64x64.svg",
+                        ProfilePhoto = profile.PhotoPath ?? ProfileNoImage,
                         ArticlesCount = ((double) await _articlesManager.CountArticlesByProfileId(profile.Id)).ToMetric(),
                         FollowingCount = ((double) 0).ToMetric()
                     },
@@ -101,10 +85,11 @@ namespace Egghead.Controllers
                         ArticleId = article.Id.ToString(),
                         CreatedAt = article.CreatedAt.Humanize(),
                         LikesCount = ((double) article.LikesCount).ToMetric(),
-                        ViewsCount = ((double) article.ViewsCount).ToMetric(),
-                        ProfileName = article.ProfileName,
                         DislikesCount = ((double) article.DislikesCount).ToMetric(),
+                        SharesCount = ((double)0).ToMetric(),
+                        ViewsCount = ((double) article.ViewsCount).ToMetric(),
                         CommentsCount = ((double) article.CommentsCount).ToMetric(),
+                        ProfileName = article.ProfileName
                     }),
                     PopularArticles = orderedTopicsByEngagementRate.Select(article => new PopularArticleViewModel
                     {
@@ -164,7 +149,7 @@ namespace Egghead.Controllers
                                 ArticleId = comment.ArticleId.ToString(),
                                 CreatedAt = comment.CreatedAt.Humanize(),
                                 ProfileName = comment.ProfileName,
-                                ProfilePhoto = comment.ProfilePhoto ?? "/images/64x64.svg",
+                                ProfilePhoto = comment.ProfilePhoto ?? ProfileNoImage,
                                 VotesCount = ((double) comment.VotesCount).ToMetric()
                             });
                         }
@@ -187,7 +172,7 @@ namespace Egghead.Controllers
                                             ArticleId = comment.ArticleId.ToString(),
                                             CreatedAt = comment.CreatedAt.Humanize(),
                                             ProfileName = comment.ProfileName,
-                                            ProfilePhoto = comment.ProfilePhoto ?? "/images/64x64.svg",
+                                            ProfilePhoto = comment.ProfilePhoto ?? ProfileNoImage,
                                             VotesCount = ((double) comment.VotesCount).ToMetric()
                                         };
                                         return model;
@@ -206,7 +191,7 @@ namespace Egghead.Controllers
                                         ArticleId = comment.ArticleId.ToString(),
                                         CreatedAt = comment.CreatedAt.Humanize(),
                                         ProfileName = comment.ProfileName,
-                                        ProfilePhoto = comment.ProfilePhoto ?? "/images/64x64.svg",
+                                        ProfilePhoto = comment.ProfilePhoto ?? ProfileNoImage,
                                         VotesCount = ((double) comment.VotesCount).ToMetric()
                                     };
                                     return model;
@@ -224,7 +209,7 @@ namespace Egghead.Controllers
                     {
                         ProfileName = profile.Name,
                         ProfileId = profile.Id.ToString(),
-                        ProfilePhoto = profile.PhotoPath ?? "/images/64x64.svg",
+                        ProfilePhoto = profile.PhotoPath ?? ProfileNoImage,
                         ArticlesCount = ((double) await _articlesManager.CountArticlesByProfileId(article.ProfileId)).ToMetric(),
                         FollowingCount = ((double) 0).ToMetric()
                     },
@@ -233,15 +218,16 @@ namespace Egghead.Controllers
                     {
                         new ArticleViewModel
                         {
-                            Text = article.Text,
+                            Text = article.Text.Length > 1000 ? article.Text.Substring(0, 1000) + "..." : article.Text,
                             Title = article.Title,
                             ArticleId = article.Id.ToString(),
                             CreatedAt = article.CreatedAt.Humanize(),
                             LikesCount = ((double) article.LikesCount).ToMetric(),
-                            ViewsCount = ((double) article.ViewsCount).ToMetric(),
-                            ProfileName = article.ProfileName,
                             DislikesCount = ((double) article.DislikesCount).ToMetric(),
+                            SharesCount = ((double)0).ToMetric(),
+                            ViewsCount = ((double) article.ViewsCount).ToMetric(),
                             CommentsCount = ((double) article.CommentsCount).ToMetric(),
+                            ProfileName = article.ProfileName
                         }
                     },
                     
@@ -437,7 +423,7 @@ namespace Egghead.Controllers
                     CreatedAt = DateTime.UtcNow,
                     ArticleId = articleId,
                     ProfileName = profile.Name,
-                    ProfilePhoto = profile.PhotoPath ?? "/images/64x64.svg",
+                    ProfilePhoto = profile.PhotoPath ?? ProfileNoImage,
                     VotesCount = 0,
                 };
               
@@ -455,7 +441,7 @@ namespace Egghead.Controllers
                     CommentId = comment.Id.ToString(),
                     ArticleId = viewModel.ArticleId,
                     ProfileName = comment.ProfileName,
-                    ProfilePhoto = comment.ProfilePhoto ?? "/images/64x64.svg",     
+                    ProfilePhoto = comment.ProfilePhoto ?? ProfileNoImage,     
                     VotesCount = ((double)comment.VotesCount).ToMetric()
                 });
             }
@@ -497,7 +483,7 @@ namespace Egghead.Controllers
                     }
                 }
 
-                var votesCount = await _articleCommentsVotesManager.CountArticleCommentVotesAsync(commentId, viewModel.VoteType);
+                var votesCount = await _articleCommentsVotesManager.CountArticleCommentVotesAsync(commentId);
 
                 return Ok(new ArticleCommentVotesModel
                 {
