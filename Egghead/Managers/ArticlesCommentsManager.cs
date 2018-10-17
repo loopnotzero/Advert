@@ -45,6 +45,20 @@ namespace Egghead.Managers
 
             await articleComments.CreateArticleCommentAsync(entity, CancellationToken);
         }
+        
+        public async Task UpdateArticleCommentByIdAsync(string collectionName, ObjectId commentId, T entity)
+        {
+            ThrowIfDisposed();
+
+            if (entity == null)
+            {
+                throw new ArgumentNullException(nameof(entity));
+            }
+
+            var articleComments = Store.GetArticleCommentsCollection(collectionName, CancellationToken);
+
+            await articleComments.UpdateArticleCommentByIdAsync(commentId, entity, CancellationToken);
+        }
 
         public async Task<T> FindArticleCommentById(string collectionName, ObjectId commendId)
         {
@@ -109,6 +123,6 @@ namespace Egghead.Managers
             {
                 throw new ObjectDisposedException(GetType().Name);
             }
-        }
+        }     
     }
 }

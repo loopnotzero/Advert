@@ -32,10 +32,21 @@ namespace Egghead.Controllers
         private readonly ArticlesCommentsManager<MongoDbArticleComment> _articlesCommentsManager;
         private readonly ArticlesViewCountManager<MongoDbArticleViewsCount> _articlesViewsCountManager;
         private readonly ArticleCommentsVotesManager<MongoDbArticleCommentVote> _articleCommentsVotesManager;
+        private readonly ArticleCommentsVotesAggregationManager<MongoDbArticleCommentVote, MongoDbArticleCommentVoteAggregation> _articleCommentsVotesAggregationManager;
         
-        private const string ProfileNoImage = "/images/64x64.svg";
+        private const string NoProfileImage = "/images/64x64.svg";
 
-        public ArticlesController(ILoggerFactory loggerFactory, ILookupNormalizer keyNormalizer, IConfiguration configuration, UserManager<MongoDbUser> userManager, ProfilesManager<MongoDbProfile> profilesManager, ArticlesManager<MongoDbArticle> articlesManager, ArticlesLikesManager<MongoDbArticleVote> articlesVotesManager, ArticlesCommentsManager<MongoDbArticleComment> articlesCommentsManager, ArticlesViewCountManager<MongoDbArticleViewsCount> articlesViewsCountManager, ArticleCommentsVotesManager<MongoDbArticleCommentVote> articleCommentsVotesManager)
+        public ArticlesController(ILoggerFactory loggerFactory,
+            IConfiguration configuration,
+            ILookupNormalizer keyNormalizer,
+            UserManager<MongoDbUser> userManager,
+            ProfilesManager<MongoDbProfile> profilesManager,
+            ArticlesManager<MongoDbArticle> articlesManager,
+            ArticlesLikesManager<MongoDbArticleVote> articlesVotesManager,
+            ArticlesCommentsManager<MongoDbArticleComment> articlesCommentsManager,
+            ArticlesViewCountManager<MongoDbArticleViewsCount> articlesViewsCountManager,
+            ArticleCommentsVotesManager<MongoDbArticleCommentVote> articleCommentsVotesManager,
+            ArticleCommentsVotesAggregationManager<MongoDbArticleCommentVote, MongoDbArticleCommentVoteAggregation> articleCommentsVotesAggregationManager)
         {
             _logger = loggerFactory.CreateLogger<AccountController>();
             _configuration = configuration;
@@ -45,6 +56,7 @@ namespace Egghead.Controllers
             _articlesCommentsManager = articlesCommentsManager;
             _articlesViewsCountManager = articlesViewsCountManager;
             _articleCommentsVotesManager = articleCommentsVotesManager;
+            _articleCommentsVotesAggregationManager = articleCommentsVotesAggregationManager;
         }
 
         [HttpGet]
@@ -65,8 +77,10 @@ namespace Egghead.Controllers
 
                 var articles = await _articlesManager.FindArticlesAsync(_configuration.GetSection("EggheadOptions").GetValue<int>("ArticlesPerPage"));
 
+                //todo: Find articles by engagement rate with category list param
+                
                 // ReSharper disable once InconsistentNaming
-                var orderedTopicsByEngagementRate = articles.OrderByDescending(x => EngagementRate.ComputeEngagementRate(x.LikesCount, x.DislikesCount, x.SharesCount, x.CommentsCount, x.ViewsCount));
+                var popularArticles = articles.OrderByDescending(x => EngagementRate.ComputeEngagementRate(x.LikesCount, x.DislikesCount, x.SharesCount, x.CommentsCount, x.ViewsCount));
 
                 return View(new AggregatorViewModel
                 {
@@ -74,10 +88,11 @@ namespace Egghead.Controllers
                     {
                         ProfileName = profile.Name,
                         ProfileId = profile.Id.ToString(),
-                        ProfilePhoto = profile.PhotoPath ?? ProfileNoImage,
+                        ProfilePhoto = profile.PhotoPath ?? NoProfileImage,
                         ArticlesCount = ((double) await _articlesManager.CountArticlesByProfileId(profile.Id)).ToMetric(),
                         FollowingCount = ((double) 0).ToMetric()
                     },
+                    
                     Articles = articles.Select(article => new ArticleViewModel
                     {
                         Text = article.Text.Length > 1000 ? article.Text.Substring(0, 1000) + "..." : article.Text,
@@ -91,7 +106,8 @@ namespace Egghead.Controllers
                         CommentsCount = ((double) article.CommentsCount).ToMetric(),
                         ProfileName = article.ProfileName
                     }),
-                    PopularArticles = orderedTopicsByEngagementRate.Select(article => new PopularArticleViewModel
+                    
+                    PopularArticles = popularArticles.Select(article => new PopularArticleViewModel
                     {
                         Title = article.Title,
                         ArticleId = article.Id.ToString(),
@@ -122,12 +138,15 @@ namespace Egghead.Controllers
                 };
 
                 await _articlesViewsCountManager.CreateArticleViewsCountAsync(articleViewsCount);
-
-                await _articlesManager.UpdateArticleViewsCountByArticleId(articleViewsCount.ArticleId, await _articlesViewsCountManager.CountArticleViewsCountAsync(articleViewsCount.ArticleId));
-
-                var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
-
+                
                 var article = await _articlesManager.FindArticleByIdAsync(articleViewsCount.ArticleId);
+
+                article.ViewsCount = await _articlesViewsCountManager.CountArticleViewsCountAsync(articleViewsCount.ArticleId);
+                article.CommentsCount = await _articlesCommentsManager.CountArticleCommentsByArticleIdAsync(articleId);
+
+                await _articlesManager.UpdateArticleAsync(article);
+                
+                var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
 
                 var articles = await _articlesManager.FindArticlesAsync(_configuration.GetSection("EggheadOptions").GetValue<int>("ArticlesPerPage"));
 
@@ -149,7 +168,7 @@ namespace Egghead.Controllers
                                 ArticleId = comment.ArticleId.ToString(),
                                 CreatedAt = comment.CreatedAt.Humanize(),
                                 ProfileName = comment.ProfileName,
-                                ProfilePhoto = comment.ProfilePhoto ?? ProfileNoImage,
+                                ProfilePhoto = comment.ProfilePhoto ?? NoProfileImage,
                                 VotesCount = ((double) comment.VotesCount).ToMetric()
                             });
                         }
@@ -172,7 +191,7 @@ namespace Egghead.Controllers
                                             ArticleId = comment.ArticleId.ToString(),
                                             CreatedAt = comment.CreatedAt.Humanize(),
                                             ProfileName = comment.ProfileName,
-                                            ProfilePhoto = comment.ProfilePhoto ?? ProfileNoImage,
+                                            ProfilePhoto = comment.ProfilePhoto ?? NoProfileImage,
                                             VotesCount = ((double) comment.VotesCount).ToMetric()
                                         };
                                         return model;
@@ -191,7 +210,7 @@ namespace Egghead.Controllers
                                         ArticleId = comment.ArticleId.ToString(),
                                         CreatedAt = comment.CreatedAt.Humanize(),
                                         ProfileName = comment.ProfileName,
-                                        ProfilePhoto = comment.ProfilePhoto ?? ProfileNoImage,
+                                        ProfilePhoto = comment.ProfilePhoto ?? NoProfileImage,
                                         VotesCount = ((double) comment.VotesCount).ToMetric()
                                     };
                                     return model;
@@ -201,6 +220,8 @@ namespace Egghead.Controllers
                     }
                 }
 
+                //todo: Find articles by engagement rate with category list param
+
                 var popularArticles = articles.OrderByDescending(x => EngagementRate.ComputeEngagementRate(x.LikesCount, x.DislikesCount, x.SharesCount, x.CommentsCount, x.ViewsCount));
 
                 return View(new AggregatorViewModel
@@ -209,7 +230,7 @@ namespace Egghead.Controllers
                     {
                         ProfileName = profile.Name,
                         ProfileId = profile.Id.ToString(),
-                        ProfilePhoto = profile.PhotoPath ?? ProfileNoImage,
+                        ProfilePhoto = profile.PhotoPath ?? NoProfileImage,
                         ArticlesCount = ((double) await _articlesManager.CountArticlesByProfileId(article.ProfileId)).ToMetric(),
                         FollowingCount = ((double) 0).ToMetric()
                     },
@@ -423,7 +444,7 @@ namespace Egghead.Controllers
                     CreatedAt = DateTime.UtcNow,
                     ArticleId = articleId,
                     ProfileName = profile.Name,
-                    ProfilePhoto = profile.PhotoPath ?? ProfileNoImage,
+                    ProfilePhoto = profile.PhotoPath ?? NoProfileImage,
                     VotesCount = 0,
                 };
               
@@ -441,7 +462,7 @@ namespace Egghead.Controllers
                     CommentId = comment.Id.ToString(),
                     ArticleId = viewModel.ArticleId,
                     ProfileName = comment.ProfileName,
-                    ProfilePhoto = comment.ProfilePhoto ?? ProfileNoImage,     
+                    ProfilePhoto = comment.ProfilePhoto ?? NoProfileImage,     
                     VotesCount = ((double)comment.VotesCount).ToMetric()
                 });
             }
@@ -459,36 +480,33 @@ namespace Egghead.Controllers
         {
             try
             {
-                var articleId = ObjectId.Parse(viewModel.ArticleId);
+                var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
 
                 var commentId = ObjectId.Parse(viewModel.CommentId);
-
-                var vote = await _articleCommentsVotesManager.FindArticleCommentVoteAsync(commentId);
-
-                if (vote == null)
+                
+                //todo: Find comment vote by profile id
+              
+                await _articleCommentsVotesManager.CreateArticleCommentVoteAsync(new MongoDbArticleCommentVote
                 {
-                    await _articleCommentsVotesManager.CreateArticleCommentVoteAsync(new MongoDbArticleCommentVote
-                    {
-                        VoteType = viewModel.VoteType,
-                        ArticleId = articleId,
-                        CommentId = commentId,
-                        CreatedAt = DateTime.UtcNow
-                    });
-                }
-                else
-                {
-                    if (vote.VoteType == viewModel.VoteType)
-                    {
-                        await _articleCommentsVotesManager.DeleteArticleCommentVoteAsync(vote.Id);
-                    }
-                }
+                    VoteType = viewModel.VoteType,
+                    ArticleId = ObjectId.Parse(viewModel.ArticleId),
+                    CommentId = commentId,
+                    ProfileId = profile.Id,
+                    CreatedAt = DateTime.UtcNow,
+                });
+                
+                var articleComment = await _articlesCommentsManager.FindArticleCommentById(viewModel.ArticleId, commentId);
 
-                var votesCount = await _articleCommentsVotesManager.CountArticleCommentVotesAsync(commentId);
+                var articleCommentVoteAggregation = await _articleCommentsVotesAggregationManager.CountArticleCommentVotesByCommentIdAsync(commentId);
+
+                articleComment.VotesCount = articleCommentVoteAggregation?.VotesCount ?? 0;
+
+                await _articlesCommentsManager.UpdateArticleCommentByIdAsync(viewModel.ArticleId, commentId, articleComment);
 
                 return Ok(new ArticleCommentVotesModel
                 {
                     VoteType = viewModel.VoteType,
-                    VotesCount = ((double) votesCount).ToMetric()
+                    VotesCount = ((double) (articleCommentVoteAggregation?.VotesCount ?? 0)).ToMetric()
                 });
             }
             catch (ArticleCommentVoteException e)

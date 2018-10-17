@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Egghead.Common;
@@ -37,14 +38,8 @@ namespace Egghead.Managers
 
             await Store.CreateArticleCommentVoteAsync(entity, CancellationToken);
         }
-
-        public async Task<long> CountArticleCommentVotesAsync(ObjectId commentId)
-        {
-            ThrowIfDisposed();           
-            return await Store.CountArticleCommentVotesAsync(commentId, CancellationToken);
-        }
-
-        public async Task<T> FindArticleCommentVoteAsync(ObjectId commentId)
+     
+        public async Task<T> FindArticleCommentVoteByIdAsync(ObjectId commentId)
         {
             ThrowIfDisposed();       
             
@@ -53,22 +48,16 @@ namespace Egghead.Managers
                 throw new ArgumentNullException(nameof(commentId));
             }
 
-            return await Store.FindArticleCommentVoteAsync(commentId, CancellationToken);
+            return await Store.FindArticleCommentVoteByCommentIdAsync(commentId, CancellationToken);
         }
-               
-        public async Task<UpdateResult> UpdateArticleCommentVoteAsync(ObjectId voteId, VoteType voteType)
+          
+        public async Task<long> CountArticleCommentVotesByCommentIdAsync(ObjectId commentId)
         {
-            ThrowIfDisposed();
-            
-            if (voteId == null)
-            {
-                throw new ArgumentNullException(nameof(voteId));
-            }
-            
-            return await Store.UpdateArticleCommentVoteAsync(voteId, voteType, CancellationToken);
+            ThrowIfDisposed();           
+            return await Store.CountArticleCommentVotesByCommentIdAsync(commentId, CancellationToken);
         }
         
-        public async Task<DeleteResult> DeleteArticleCommentVoteAsync(ObjectId voteId)
+        public async Task<DeleteResult> DeleteArticleCommentVoteByIdAsync(ObjectId voteId)
         {
             ThrowIfDisposed();
 
@@ -77,7 +66,19 @@ namespace Egghead.Managers
                 throw new ArgumentNullException(nameof(voteId));
             }
             
-            return await Store.DeleteArticleCommentVoteAsync(voteId, CancellationToken);
+            return await Store.DeleteArticleCommentVoteByIdAsync(voteId, CancellationToken);
+        }
+
+        public async Task<UpdateResult> UpdateArticleCommentVoteTypeByIdAsync(ObjectId voteId, VoteType voteType)
+        {
+            ThrowIfDisposed();
+            
+            if (voteId == null)
+            {
+                throw new ArgumentNullException(nameof(voteId));
+            }
+            
+            return await Store.UpdateArticleCommentVoteTypeByIdAsync(voteId, voteType, CancellationToken);
         }
 
         public void Dispose()

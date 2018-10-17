@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Egghead.Common;
+using Egghead.MongoDbStorage.Articles;
 using Egghead.MongoDbStorage.Stores;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
@@ -37,6 +38,18 @@ namespace Egghead.Managers
             }
             
             await _store.CreateArticleAsync(entity, CancellationToken);
+        }
+        
+        public async Task UpdateArticleAsync(T entity)
+        {
+            ThrowIfDisposed();
+
+            if (entity == null)
+            {
+                throw new ArgumentNullException(nameof(entity));
+            }
+            
+            await _store.UpdateArticleAsync(entity, CancellationToken);
         }
 
         public async Task<T> FindArticleByIdAsync(ObjectId articleId)
@@ -151,6 +164,6 @@ namespace Egghead.Managers
             {
                 throw new ObjectDisposedException(GetType().Name);
             }
-        } 
+        }       
     }
 }
