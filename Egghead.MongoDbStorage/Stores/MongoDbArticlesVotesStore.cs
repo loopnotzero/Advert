@@ -27,7 +27,7 @@ namespace Egghead.MongoDbStorage.Stores
 
         private MongoDbArticlesVotesStore()
         {
-            EntityMappings.EnsureMongoDbArticleLikeConfigured();
+            EntityMappings.EnsureMongoDbArticleVoteConfigured();
         }
 
         public async Task CreateArticleVoteAsync(T entity, CancellationToken cancellationToken)

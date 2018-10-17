@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Egghead.Common.Articles;
@@ -10,10 +11,9 @@ namespace Egghead.MongoDbStorage.Stores
     public interface IArticleCommentsVotesStore<T> : IDisposable where T : class
     {
         Task CreateArticleCommentVoteAsync(T entity, CancellationToken cancellationToken);
-        Task<T> FindArticleCommentVoteAsync(ObjectId commentId, CancellationToken cancellationToken);
-        Task<long> CountArticleCommentVotesAsync(ObjectId commentId, CancellationToken cancellationToken);
-        Task<long> CountArticleCommentVotesByTypeAsync(ObjectId commentId, VoteType voteType, CancellationToken cancellationToken);
-        Task<UpdateResult> UpdateArticleCommentVoteAsync(ObjectId voteId, VoteType voteType, CancellationToken cancellationToken);
-        Task<DeleteResult> DeleteArticleCommentVoteAsync(ObjectId voteId, CancellationToken cancellationToken);
+        Task<T> FindArticleCommentVoteByCommentIdAsync(ObjectId commentId, CancellationToken cancellationToken);
+        Task<long> CountArticleCommentVotesByCommentIdAsync(ObjectId commentId, CancellationToken cancellationToken);
+        Task<DeleteResult> DeleteArticleCommentVoteByIdAsync(ObjectId voteId, CancellationToken cancellationToken);
+        Task<UpdateResult> UpdateArticleCommentVoteTypeByIdAsync(ObjectId voteId, VoteType voteType, CancellationToken cancellationToken);
     }
 }

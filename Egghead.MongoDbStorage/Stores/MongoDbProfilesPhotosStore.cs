@@ -15,7 +15,7 @@ namespace Egghead.MongoDbStorage.Stores
       
         public MongoDbProfilesPhotosStore()
         {
-            EntityMappings.EnsureMongoDbProfileImageConfigured();
+            EntityMappings.EnsureMongoDbProfilePhotoConfigured();
         }
         
         public MongoDbProfilesPhotosStore(IMongoDatabase mongoDatabase) : this()

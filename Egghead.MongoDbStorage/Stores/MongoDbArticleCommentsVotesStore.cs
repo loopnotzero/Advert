@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Egghead.Common.Articles;
@@ -27,7 +28,7 @@ namespace Egghead.MongoDbStorage.Stores
 
         private MongoDbArticleCommentsVotesStore()
         {
-            EntityMappings.EnsureMongoDbArticleLikeConfigured();
+            EntityMappings.EnsureMongoDbArticleCommentVoteConfigured();
         }
 
         public async Task CreateArticleCommentVoteAsync(T entity, CancellationToken cancellationToken)
@@ -39,7 +40,7 @@ namespace Egghead.MongoDbStorage.Stores
             }, cancellationToken);
         }
 
-        public async Task<T> FindArticleCommentVoteAsync(ObjectId commentId, CancellationToken cancellationToken)
+        public async Task<T> FindArticleCommentVoteByCommentIdAsync(ObjectId commentId, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             var filter = Builders<T>.Filter.And(
@@ -49,7 +50,7 @@ namespace Egghead.MongoDbStorage.Stores
             return await cursor.FirstOrDefaultAsync(cancellationToken);
         }
 
-        public async Task<long> CountArticleCommentVotesAsync(ObjectId commentId, CancellationToken cancellationToken)
+        public async Task<long> CountArticleCommentVotesByCommentIdAsync(ObjectId commentId, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             var filter = Builders<T>.Filter.And(
@@ -58,17 +59,14 @@ namespace Egghead.MongoDbStorage.Stores
             return await _collection.CountDocumentsAsync(filter, cancellationToken: cancellationToken);
         }
 
-        public async Task<long> CountArticleCommentVotesByTypeAsync(ObjectId commentId, VoteType voteType, CancellationToken cancellationToken)
+        public async Task<DeleteResult> DeleteArticleCommentVoteByIdAsync(ObjectId voteId, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var filter = Builders<T>.Filter.And(
-                Builders<T>.Filter.Eq(x => x.VoteType, voteType),
-                Builders<T>.Filter.Eq(x => x.CommentId, commentId)
-            );
-            return await _collection.CountDocumentsAsync(filter, cancellationToken: cancellationToken);
+            var filter = Builders<T>.Filter.Eq(x => x.Id, voteId);
+            return await _collection.DeleteOneAsync(filter, cancellationToken);
         }
-
-        public async Task<UpdateResult> UpdateArticleCommentVoteAsync(ObjectId voteId, VoteType voteType, CancellationToken cancellationToken)
+        
+        public async Task<UpdateResult> UpdateArticleCommentVoteTypeByIdAsync(ObjectId voteId, VoteType voteType, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -80,13 +78,6 @@ namespace Egghead.MongoDbStorage.Stores
             {
                 IsUpsert = false
             }, cancellationToken);
-        }
-
-        public async Task<DeleteResult> DeleteArticleCommentVoteAsync(ObjectId voteId, CancellationToken cancellationToken)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            var filter = Builders<T>.Filter.Eq(x => x.Id, voteId);
-            return await _collection.DeleteOneAsync(filter, cancellationToken);
         }
     }
 }

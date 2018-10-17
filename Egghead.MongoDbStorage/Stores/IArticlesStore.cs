@@ -11,6 +11,7 @@ namespace Egghead.MongoDbStorage.Stores
     public interface IArticlesStore<T> : IDisposable where T : class
     {      
         Task CreateArticleAsync(T entity, CancellationToken cancellationToken);
+        Task UpdateArticleAsync(T entity, CancellationToken cancellationToken);
         Task<T> FindArticleByIdAsync(ObjectId articleId, CancellationToken cancellationToken);
         Task<T> FindArticleByIdOrDefaultAsync(ObjectId articleId, T defaultValue, CancellationToken cancellationToken);    
         Task<long> CountArticlesByProfileId(ObjectId profileId, CancellationToken cancellationToken);

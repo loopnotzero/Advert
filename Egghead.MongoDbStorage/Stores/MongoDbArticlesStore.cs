@@ -40,6 +40,15 @@ namespace Egghead.MongoDbStorage.Stores
             }, cancellationToken);
         }
 
+        public async Task UpdateArticleAsync(T entity, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            await _collection.ReplaceOneAsync(Builders<T>.Filter.Eq(x => x.Id, entity.Id), entity, new UpdateOptions
+            {
+                BypassDocumentValidation = false
+            }, cancellationToken);
+        }
+
         public async Task<T> FindArticleByIdAsync(ObjectId articleId, CancellationToken cancellationToken)
         {    
             cancellationToken.ThrowIfCancellationRequested();
