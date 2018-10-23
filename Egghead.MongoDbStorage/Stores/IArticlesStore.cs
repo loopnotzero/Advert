@@ -19,7 +19,6 @@ namespace Egghead.MongoDbStorage.Stores
         Task<DeleteResult> DeleteArticleByIdAsync(ObjectId articleId, CancellationToken cancellationToken);      
         Task<UpdateResult> UpdateArticleViewsCountByArticleIdAsync(ObjectId articleId, long count, CancellationToken cancellationToken);
         Task<UpdateResult> UpdateArticleLikesCountByArticleIdAsync(ObjectId articleId, long count, CancellationToken cancellationToken);
-        Task<UpdateResult> UpdateArticleDislikesCountByArticleIdAsync(ObjectId articleId, long count, CancellationToken cancellationToken);
         Task<ReplaceOneResult> ReplaceArticleAsync(T entity, CancellationToken cancellationToken);
     }
 }

@@ -31,8 +31,7 @@ namespace Egghead.MongoDbStorage.Stores
         {
             var pipeline = new EmptyPipelineDefinition<T>();
 
-            var groupBy = pipeline
-                .Match(x => x.CommentId.Equals(commentId))
+            var groupBy = pipeline.Match(x => x.CommentId.Equals(commentId))
                 .Group(x => x.VoteType, grouping => new
                 {
                     VoteType = grouping.Key,
@@ -40,14 +39,13 @@ namespace Egghead.MongoDbStorage.Stores
                 })
                 .Project(x => new A
                 {
-                   
                     VoteType = x.VoteType,
                     VotesCount = x.VotesCount
                 });
 
             var asyncCursor = await _collection.AggregateAsync(groupBy, cancellationToken: cancellationToken);
 
-            var list = await asyncCursor.ToListAsync(cancellationToken: cancellationToken);
+            var list = await asyncCursor.ToListAsync(cancellationToken);
 
             return await asyncCursor.FirstOrDefaultAsync(cancellationToken);
         }

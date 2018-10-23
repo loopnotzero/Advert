@@ -11,9 +11,8 @@ namespace Egghead.MongoDbStorage.Stores
     public interface IArticleCommentsVotesStore<T> : IDisposable where T : class
     {
         Task CreateArticleCommentVoteAsync(T entity, CancellationToken cancellationToken);
-        Task<T> FindArticleCommentVoteByCommentIdAsync(ObjectId commentId, CancellationToken cancellationToken);
+        Task<T> FindArticleCommentVoteOrDefaultAsync(ObjectId commentId, ObjectId profileId, T defaultValue, CancellationToken cancellationToken);
         Task<long> CountArticleCommentVotesByCommentIdAsync(ObjectId commentId, CancellationToken cancellationToken);
         Task<DeleteResult> DeleteArticleCommentVoteByIdAsync(ObjectId voteId, CancellationToken cancellationToken);
-        Task<UpdateResult> UpdateArticleCommentVoteTypeByIdAsync(ObjectId voteId, VoteType voteType, CancellationToken cancellationToken);
     }
 }

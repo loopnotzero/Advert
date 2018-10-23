@@ -114,16 +114,7 @@ namespace Egghead.MongoDbStorage.Stores
             {
                 BypassDocumentValidation = false
             }, cancellationToken);
-        }
-
-        public async Task<UpdateResult> UpdateArticleDislikesCountByArticleIdAsync(ObjectId articleId, long count, CancellationToken cancellationToken)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            return await _collection.UpdateOneAsync(Builders<T>.Filter.Eq(x => x.Id, articleId), Builders<T>.Update.Set(x => x.DislikesCount, count), new UpdateOptions
-            {
-                BypassDocumentValidation = false
-            }, cancellationToken);
-        }
+        } 
 
         public async Task<ReplaceOneResult> ReplaceArticleAsync(T entity, CancellationToken cancellationToken)
         {

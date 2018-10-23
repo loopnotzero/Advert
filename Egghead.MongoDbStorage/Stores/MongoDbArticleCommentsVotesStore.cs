@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
-using Egghead.Common.Articles;
 using Egghead.MongoDbStorage.Articles;
 using Egghead.MongoDbStorage.Common;
 using Egghead.MongoDbStorage.Mappings;
@@ -40,14 +37,20 @@ namespace Egghead.MongoDbStorage.Stores
             }, cancellationToken);
         }
 
-        public async Task<T> FindArticleCommentVoteByCommentIdAsync(ObjectId commentId, CancellationToken cancellationToken)
+        public async Task<T> FindArticleCommentVoteOrDefaultAsync(ObjectId commentId, ObjectId profileId, T defaultValue, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
+            
             var filter = Builders<T>.Filter.And(
-                Builders<T>.Filter.Eq(x => x.CommentId, commentId)
+                Builders<T>.Filter.Eq(x => x.CommentId, commentId),
+                Builders<T>.Filter.Eq(x => x.ProfileId, profileId)
             );
+            
             var cursor = await _collection.FindAsync(filter, cancellationToken: cancellationToken);
-            return await cursor.FirstOrDefaultAsync(cancellationToken);
+
+            var commentVote = await cursor.FirstOrDefaultAsync(cancellationToken);
+
+            return commentVote ?? defaultValue;
         }
 
         public async Task<long> CountArticleCommentVotesByCommentIdAsync(ObjectId commentId, CancellationToken cancellationToken)
@@ -64,20 +67,6 @@ namespace Egghead.MongoDbStorage.Stores
             cancellationToken.ThrowIfCancellationRequested();
             var filter = Builders<T>.Filter.Eq(x => x.Id, voteId);
             return await _collection.DeleteOneAsync(filter, cancellationToken);
-        }
-        
-        public async Task<UpdateResult> UpdateArticleCommentVoteTypeByIdAsync(ObjectId voteId, VoteType voteType, CancellationToken cancellationToken)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var filter = Builders<T>.Filter.Eq(x => x.Id, voteId);
-
-            var update = Builders<T>.Update.Set(x => x.VoteType, voteType).Set(x => x.UpdatedAt, DateTime.UtcNow);
-
-            return await _collection.UpdateOneAsync(filter, update, new UpdateOptions
-            {
-                IsUpsert = false
-            }, cancellationToken);
         }
     }
 }
