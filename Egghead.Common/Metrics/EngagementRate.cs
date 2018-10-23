@@ -15,7 +15,7 @@ namespace Egghead.Common.Metrics
             return commentsCount / articlesCount;
         }
 
-        public static double ComputeEngagementRate(double likesCount, double dislikesCount, double sharesCount, double commentsCount, double viewsCount)
+        public static double ComputeEngagementRate(double likesCount, double sharesCount, double commentsCount, double viewsCount)
         {
             //todo: Decrease likes percent if user was not made a move to article
             //todo: Increase percent of engagement rate if user shared an article
@@ -28,22 +28,12 @@ namespace Egghead.Common.Metrics
 
                 var engagementRate = (likesCount + commentsCount + viewsCount) * likesPercent;
 
-                if (dislikesCount > 0)
-                {
-                    return engagementRate * (dislikesCount / 100);
-                }
-
                 return engagementRate;
             }
             else
             {
                 var engagementRate = (likesCount + commentsCount + viewsCount) / 100;
-
-                if (dislikesCount > 0)
-                {
-                    return engagementRate * (dislikesCount / 100);
-                }
-
+               
                 return engagementRate;
             }
         }
