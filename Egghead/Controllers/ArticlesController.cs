@@ -80,7 +80,7 @@ namespace Egghead.Controllers
                 //todo: Find articles by engagement rate with category list param
                 
                 // ReSharper disable once InconsistentNaming
-                var popularArticles = articles.OrderByDescending(x => EngagementRate.ComputeEngagementRate(x.LikesCount, x.DislikesCount, x.SharesCount, x.CommentsCount, x.ViewsCount));
+                var popularArticles = articles.OrderByDescending(x => EngagementRate.ComputeEngagementRate(x.LikesCount, x.SharesCount, x.CommentsCount, x.ViewsCount));
 
                 return View(new AggregatorViewModel
                 {
@@ -100,7 +100,6 @@ namespace Egghead.Controllers
                         ArticleId = article.Id.ToString(),
                         CreatedAt = article.CreatedAt.Humanize(),
                         LikesCount = ((double) article.LikesCount).ToMetric(),
-                        DislikesCount = ((double) article.DislikesCount).ToMetric(),
                         SharesCount = ((double)0).ToMetric(),
                         ViewsCount = ((double) article.ViewsCount).ToMetric(),
                         CommentsCount = ((double) article.CommentsCount).ToMetric(),
@@ -222,7 +221,7 @@ namespace Egghead.Controllers
 
                 //todo: Find articles by engagement rate with category list param
 
-                var popularArticles = articles.OrderByDescending(x => EngagementRate.ComputeEngagementRate(x.LikesCount, x.DislikesCount, x.SharesCount, x.CommentsCount, x.ViewsCount));
+                var popularArticles = articles.OrderByDescending(x => EngagementRate.ComputeEngagementRate(x.LikesCount, x.SharesCount, x.CommentsCount, x.ViewsCount));
 
                 return View(new AggregatorViewModel
                 {
@@ -244,7 +243,6 @@ namespace Egghead.Controllers
                             ArticleId = article.Id.ToString(),
                             CreatedAt = article.CreatedAt.Humanize(),
                             LikesCount = ((double) article.LikesCount).ToMetric(),
-                            DislikesCount = ((double) article.DislikesCount).ToMetric(),
                             SharesCount = ((double)0).ToMetric(),
                             ViewsCount = ((double) article.ViewsCount).ToMetric(),
                             CommentsCount = ((double) article.CommentsCount).ToMetric(),
@@ -370,9 +368,6 @@ namespace Egghead.Controllers
                         case VoteType.Like:
                             await _articlesManager.UpdateArticleLikesCountByArticleId(articleId, votesCount);
                             break;
-                        case VoteType.Dislike:
-                            await _articlesManager.UpdateArticleDislikesCountByArticleId(articleId, votesCount);
-                            break;
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
@@ -399,9 +394,6 @@ namespace Egghead.Controllers
                             throw new ArticleCommentVoteException(logString);
                         case VoteType.Like:
                             await _articlesManager.UpdateArticleLikesCountByArticleId(articleId, votesCount);
-                            break;
-                        case VoteType.Dislike:
-                            await _articlesManager.UpdateArticleDislikesCountByArticleId(articleId, votesCount);
                             break;
                         default:
                             throw new ArgumentOutOfRangeException();
@@ -483,36 +475,38 @@ namespace Egghead.Controllers
                 var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
 
                 var commentId = ObjectId.Parse(viewModel.CommentId);
-                
-                //todo: Find comment vote by profile id
-              
-                await _articleCommentsVotesManager.CreateArticleCommentVoteAsync(new MongoDbArticleCommentVote
+
+                var commentVote = await _articleCommentsVotesManager.FindArticleCommentVoteOrDefaultAsync(commentId, profile.Id, null);
+
+                if (commentVote != null)
                 {
-                    VoteType = viewModel.VoteType,
-                    ArticleId = ObjectId.Parse(viewModel.ArticleId),
-                    CommentId = commentId,
-                    ProfileId = profile.Id,
-                    CreatedAt = DateTime.UtcNow,
-                });
+                    await _articleCommentsVotesManager.DeleteArticleCommentVoteByIdAsync(commentVote.Id);   
+                }
+                else
+                {
+                    await _articleCommentsVotesManager.CreateArticleCommentVoteAsync(new MongoDbArticleCommentVote
+                    {
+                        VoteType = viewModel.VoteType,
+                        ArticleId = ObjectId.Parse(viewModel.ArticleId),
+                        CommentId = commentId,
+                        ProfileId = profile.Id,
+                        CreatedAt = DateTime.UtcNow,
+                    });   
+                }
                 
+                var votesCount = await _articleCommentsVotesManager.CountArticleCommentVotesByCommentIdAsync(commentId);
+
                 var articleComment = await _articlesCommentsManager.FindArticleCommentById(viewModel.ArticleId, commentId);
 
-                var articleCommentVoteAggregation = await _articleCommentsVotesAggregationManager.CountArticleCommentVotesByCommentIdAsync(commentId);
-
-                articleComment.VotesCount = articleCommentVoteAggregation?.VotesCount ?? 0;
+                articleComment.VotesCount = votesCount;
 
                 await _articlesCommentsManager.UpdateArticleCommentByIdAsync(viewModel.ArticleId, commentId, articleComment);
 
                 return Ok(new ArticleCommentVotesModel
                 {
                     VoteType = viewModel.VoteType,
-                    VotesCount = ((double) (articleCommentVoteAggregation?.VotesCount ?? 0)).ToMetric()
+                    VotesCount = ((double) votesCount).ToMetric()
                 });
-            }
-            catch (ArticleCommentVoteException e)
-            {
-                _logger.LogError(e.Message, e);
-                return BadRequest(e.Message);
             }
             catch (Exception e)
             {

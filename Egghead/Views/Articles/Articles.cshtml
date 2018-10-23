@@ -74,30 +74,20 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12 p-1">
-                                        <div name="btn-like" onclick="onVoteArticleClick('@article.ArticleId', 1)" class="r-btn r-btn-light r-btn--icon ml-4">
-                                            <i class="fa fa-thumbs-o-up"></i>
+                                        <div class="r-btn r-btn-light r-btn--icon ml-4" onclick="onVoteArticleClick('@article.ArticleId', 1)" >
+                                            <i class="fa fa-heart-o"></i>
                                         </div>
-                                        <small name="likes-count">@article.LikesCount</small>
-
-                                        <div name="btn-dislike" onclick="onVoteArticleClick('@article.ArticleId', 2)" class="r-btn r-btn-light r-btn--icon">
-                                            <i class="fa fa-thumbs-o-down"></i>
-                                        </div>
-                                        <small name="dislikes-count">@article.DislikesCount</small>
-
-                                        <div name="btn-bookmark" class="r-btn r-btn-light r-btn--icon">
-                                            <i class="fa fa-bookmark"></i>
-                                        </div>
-                                        <small name="shares-count">@article.SharesCount</small>
-
-                                        <div class="r-btn r-btn-light-no-hover r-btn--icon-no-hover">
-                                            <i class="fa fa-eye"></i>
-                                        </div>
-                                        <small id="article-view-count">@article.ViewsCount</small>
-
+                                        <small id="votes-count">@article.LikesCount</small>
+                                        
                                         <div class="r-btn r-btn-light-no-hover r-btn--icon-no-hover">
                                             <i class="fa fa-weixin"></i>
                                         </div>
                                         <small id="comments-count">@article.CommentsCount</small>
+                                        
+                                        <div class="r-btn r-btn-light-no-hover r-btn--icon-no-hover">
+                                            <i class="fa fa-eye"></i>
+                                        </div>
+                                        <small id="article-view-count">@article.ViewsCount</small>
 
                                         <small class="text-muted float-right mt-2 mr-4">
                                             <a href="/Articles/@article.ArticleId">READ MORE...</a>
@@ -167,12 +157,7 @@
                 switch (response.voteType) {
                 case 1:
                     {
-                        $(`#${articleId} small[name=likes-count]`).text(response.votesCount);
-                    }
-                    break;
-                case 2:
-                    {
-                        $(`#${articleId} small[name=dislikes-count]`).text(response.votesCount);
+                        $(`#${articleId} small[id=votes-count]`).text(response.votesCount);
                     }
                     break;
                 }

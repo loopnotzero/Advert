@@ -105,6 +105,14 @@ time {
   content: "\00b7"
 }
 
+.reply {
+  color: #657786
+}
+
+.reply:before {
+  content: "\00b7"
+}
+
 blockquote {
   padding: 0 1rem;
   margin-left: 0;

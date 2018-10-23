@@ -101,18 +101,6 @@ namespace Egghead.Managers
             return await _store.UpdateArticleLikesCountByArticleIdAsync(articleId, votesCount, CancellationToken);
         }
 
-        public async Task<UpdateResult> UpdateArticleDislikesCountByArticleId(ObjectId articleId, long votesCount)
-        {
-            ThrowIfDisposed();
-
-            if (articleId == ObjectId.Empty)
-            {
-                throw new ArgumentNullException(nameof(articleId));
-            }
-
-            return await _store.UpdateArticleDislikesCountByArticleIdAsync(articleId, votesCount, CancellationToken);
-        }
-
         public async Task<DeleteResult> DeleteArticleByIdAsync(ObjectId articleId)
         {
             ThrowIfDisposed();

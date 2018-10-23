@@ -49,14 +49,11 @@
                                         <h6>@Html.Raw(comment.Text)</h6>
                                     </div>
                                     <div class="col-auto">
-                                        <a href="#reply" onclick="showReplyForm(null, '@comment.CommentId')">Reply</a>
-                                        <div name="btn-like" onclick="onCommentVoteClick('@comment.CommentId', 1)" class="r-btn r-btn-light r-btn--icon">
-                                            <i class="fa fa-thumbs-o-up"></i>
+                                        <div class="r-btn r-btn-light r-btn--icon" onclick="onCommentVoteClick('@comment.CommentId', 1)">
+                                            <i class="fa fa-heart-o"></i>
                                         </div>
-                                        <span name="votes-count">@comment.VotesCount</span>
-                                        <div name="btn-dislike" onclick="onCommentVoteClick('@comment.CommentId', 2)" class="r-btn r-btn-light r-btn--icon">
-                                            <i class="fa fa-thumbs-o-down"></i>
-                                        </div>
+                                        <span name="votes-count">@comment.VotesCount</span>   
+                                        <span class="reply"></span> <a href="#reply" onclick="showReplyForm(null, '@comment.CommentId')">Reply</a>
                                     </div>
                                     <div id="reply-placeholder"></div>
                                     @if (comment.Comments != null)
@@ -73,14 +70,11 @@
                                                         <h6>@Html.Raw(reply.Text)</h6>
                                                     </div>
                                                     <div class="col-auto">
-                                                        <a href="#reply" onclick="showReplyForm('@reply.ReplyTo', '@reply.CommentId')">Reply</a>
-                                                        <div name="btn-like" onclick="onCommentVoteClick('@reply.CommentId', 1)" class="r-btn r-btn-light r-btn--icon">
-                                                            <i class="fa fa-thumbs-o-up"></i>
+                                                        <div class="r-btn r-btn-light r-btn--icon" onclick="onCommentVoteClick('@reply.CommentId', 1)">
+                                                            <i class="fa fa-heart-o"></i>
                                                         </div>
-                                                        <span name="votes-count">@reply.VotesCount</span>
-                                                        <div name="btn-dislike" onclick="onCommentVoteClick('@reply.CommentId', 2)" class="r-btn r-btn-light r-btn--icon">
-                                                            <i class="fa fa-thumbs-o-down"></i>
-                                                        </div>
+                                                        <span name="votes-count">@reply.VotesCount</span>      
+                                                        <span class="reply"></span> <a href="#reply" onclick="showReplyForm('@reply.ReplyTo', '@reply.CommentId')">Reply</a>
                                                     </div>
                                                     <div id="reply-placeholder"></div>
                                                 </div>
@@ -150,7 +144,7 @@
         var editor = new SimpleMDE({
             status: false,
             element: $("#reply-editor")[0],
-            placeholder: "Add a public comment...",
+            placeholder: "Add a public reply...",
             fullScreen: false,
             withPreview: false
         });
@@ -204,17 +198,11 @@
                             <h6>${response.text}</h6>
                         </div>
                         <div class="col-auto">
-                            <a href="#reply" onclick="showReplyForm('${comment.replyTo}', '${response.commentId
-                    }')">Reply</a>
-                            <div name="btn-like" onclick="onCommentVoteClick('${response.commentId
-                    }', 1)" class="r-btn r-btn-light r-btn--icon">
-                                <i class="fa fa-thumbs-o-up"></i>
+                            <div class="r-btn r-btn-light r-btn--icon" onclick="onCommentVoteClick('${response.commentId}', 1)" >
+                                <i class="fa fa-heart-o"></i>
                             </div>
                             <span name="votes-count">${response.votesCount}</span>
-                            <div name="btn-dislike" onclick="onCommentVoteClick('${response.commentId
-                    }', 1)" class="r-btn r-btn-light r-btn--icon">
-                                <i class="fa fa-thumbs-o-down"></i>
-                            </div>
+                            <a href="#reply" onclick="showReplyForm('${comment.replyTo}', '${response.commentId}')">Reply</a>
                         </div>
                         <div id="reply-placeholder"></div>
                     </div>
@@ -247,16 +235,11 @@
                             <h6>${response.text}</h6>
                         </div>
                         <div class="col-auto">
-                            <a href="#reply" onclick="showReplyForm(null, '${response.commentId}')">Reply</a>
-                            <div name="btn-like" onclick="onCommentVoteClick('${response.commentId
-                    }', 1)" class="r-btn r-btn-light r-btn--icon">
-                                <i class="fa fa-thumbs-o-up"></i>
+                            <div class="r-btn r-btn-light r-btn--icon" onclick="onCommentVoteClick('${response.commentId}', 1)">
+                                <i class="fa fa-heart-o"></i>
                             </div>
                             <span name="votes-count">${response.votesCount}</span>
-                            <div name="btn-dislike" onclick="onCommentVoteClick('${response.commentId
-                    }', 2)" class="r-btn r-btn-light r-btn--icon">
-                                <i class="fa fa-thumbs-o-down"></i>
-                            </div>
+                            <a href="#reply" onclick="showReplyForm(null, '${response.commentId}')">Reply</a>
                         </div>
                         <div id="reply-placeholder"></div>
                     </div>
@@ -287,12 +270,7 @@
                     {
                         $(`#${commentId} span[name=votes-count]:first`).text(response.votesCount);
                     }
-                    break;
-                case 2:
-                    {
-                        $(`#${commentId} span[name=votes-count]:first`).text(response.votesCount);
-                    }
-                    break;
+                    break;    
                 }
 
             }
@@ -335,6 +313,5 @@
                     text: text
                 });
         });
-//        findArticleCommentsByArticleIdAsync(articleId);
     });
 </script>

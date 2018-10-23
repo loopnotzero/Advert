@@ -38,19 +38,13 @@ namespace Egghead.Managers
 
             await Store.CreateArticleCommentVoteAsync(entity, CancellationToken);
         }
-     
-        public async Task<T> FindArticleCommentVoteByIdAsync(ObjectId commentId)
+       
+        public async Task<T> FindArticleCommentVoteOrDefaultAsync(ObjectId commentId, ObjectId profileId, T defaultValue)
         {
-            ThrowIfDisposed();       
-            
-            if (commentId == null)
-            {
-                throw new ArgumentNullException(nameof(commentId));
-            }
-
-            return await Store.FindArticleCommentVoteByCommentIdAsync(commentId, CancellationToken);
+            ThrowIfDisposed();           
+            return await Store.FindArticleCommentVoteOrDefaultAsync(commentId, profileId, defaultValue, CancellationToken);
         }
-          
+        
         public async Task<long> CountArticleCommentVotesByCommentIdAsync(ObjectId commentId)
         {
             ThrowIfDisposed();           
@@ -67,18 +61,6 @@ namespace Egghead.Managers
             }
             
             return await Store.DeleteArticleCommentVoteByIdAsync(voteId, CancellationToken);
-        }
-
-        public async Task<UpdateResult> UpdateArticleCommentVoteTypeByIdAsync(ObjectId voteId, VoteType voteType)
-        {
-            ThrowIfDisposed();
-            
-            if (voteId == null)
-            {
-                throw new ArgumentNullException(nameof(voteId));
-            }
-            
-            return await Store.UpdateArticleCommentVoteTypeByIdAsync(voteId, voteType, CancellationToken);
         }
 
         public void Dispose()

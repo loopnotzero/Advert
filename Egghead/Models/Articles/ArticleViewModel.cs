@@ -7,7 +7,6 @@
         public string ArticleId { get; set; }
         public string CreatedAt { get; set; }
         public string LikesCount { get; set; }
-        public string DislikesCount { get; set; }
         public string SharesCount { get; set; }
         public string ViewsCount { get; set; }
         public string CommentsCount { get; set; }
