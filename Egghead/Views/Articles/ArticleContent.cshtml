@@ -11,7 +11,8 @@
                 <div class="text-muted p-3">
                     <a href="/Profile">
                         <small class="font-weight-bold">@Model.Profile.Name</small>
-                    </a> <small class="time"> @Model.Articles.First().CreatedAt.Humanize()</small>
+                    </a> 
+                    <small class="time"> @Model.Articles.First().CreatedAt.Humanize()</small>
                 </div>
 
                 <div class="card-body card-body__img">
@@ -50,7 +51,8 @@
                                 }
                                 <div class="media-body media__img">
                                     <div class="col-auto">
-                                        <a href="/Profile/@comment.ProfileName">@comment.ProfileName</a> <small class="time"> @comment.CreatedAt</small>
+                                        <a href="/Profile/@comment.ProfileName">@comment.ProfileName</a> 
+                                        <small class="time"> @comment.CreatedAt</small>
                                     </div>
                                     <div class="col-auto">
                                         <h6>@Html.Raw(comment.Text)</h6>
