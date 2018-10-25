@@ -109,7 +109,7 @@
         <div class="col-md-3 p-2">
             <div class="card p-4">
                 <div style="border-bottom: 1px solid #d5d5d5; margin-bottom: 20px;">
-                    <h4 class="text-muted font-weight-bold">Popular on Egghead</h4>
+                    <h4 class="text-muted">Popular on Egghead</h4>
                 </div>
                 @{
                     var popularArticles = Model.PopularArticles;
@@ -137,7 +137,8 @@
                                             </p>
                                         </div>
                                         <p>
-                                            <a href="/Profile">@popularArticle.ProfileName</a> <small class="time"> @popularArticle.CreatedAt</small>
+                                            <a href="/Profile" style="font-size: 0.8rem">@popularArticle.ProfileName</a>
+                                            <small class="time"> @popularArticle.CreatedAt</small>
                                         </p>
                                     </div>
                                 </div>
