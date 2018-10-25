@@ -32,27 +32,6 @@
                             <h5 id="profile-following" class="text-center">@Model.Profile.FollowingCount</h5>
                         </div>
                     </div>
-
-                    <div class="profile__links text-center">
-                        <ul class="list-inline">
-                            <li class="list-inline-item">
-                                <a title="" data-placement="top" data-toggle="tooltip" href="" data-original-title="Facebook">
-                                    <i class="fa fa-facebook"></i>
-                                </a>
-                            </li>
-                            <li class="list-inline-item">
-                                <a title="" data-placement="top" data-toggle="tooltip" href="" data-original-title="Twitter">
-                                    <i class="fa fa-twitter"></i>
-                                </a>
-                            </li>
-                            <li class="list-inline-item">
-                                <a title="" data-placement="top" data-toggle="tooltip" href="" data-original-title="Skype">
-                                    <i class="fa fa-skype"></i>
-                                </a>
-                            </li>
-                        </ul>
-
-                    </div>
                 </div>
             </div>
 
@@ -71,7 +50,27 @@
                                 <div class="text-muted p-3">
                                     <a href="/Profile">
                                         <small class="font-weight-bold">@Model.Profile.Name</small>
-                                    </a> <small class="time"> @article.CreatedAt</small>
+                                    </a> 
+                                    
+                                    <small class="time"> @article.CreatedAt</small>
+                                    
+                                    <ul class="list-inline pull-right">
+                                        <li class="list-inline-item">
+                                            <a title="" data-placement="top" data-toggle="tooltip" href="" data-original-title="Facebook">
+                                                <i class="fa fa-facebook"></i>
+                                            </a>
+                                        </li>
+                                        <li class="list-inline-item">
+                                            <a title="" data-placement="top" data-toggle="tooltip" href="" data-original-title="Twitter">
+                                                <i class="fa fa-twitter"></i>
+                                            </a>
+                                        </li>
+                                        <li class="list-inline-item">
+                                            <a title="" data-placement="top" data-toggle="tooltip" href="" data-original-title="Skype">
+                                                <i class="fa fa-skype"></i>
+                                            </a>
+                                        </li>
+                                    </ul>
                                 </div>
                                 <div class="card-body card-body__img">
                                     <a href="/Articles/@article.ArticleId">
