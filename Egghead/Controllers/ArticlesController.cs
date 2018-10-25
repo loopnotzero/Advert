@@ -238,7 +238,7 @@ namespace Egghead.Controllers
                     {
                         new ArticleViewModel
                         {
-                            Text = article.Text.Length > 1000 ? article.Text.Substring(0, 1000) + "..." : article.Text,
+                            Text = article.Text,
                             Title = article.Title,
                             ArticleId = article.Id.ToString(),
                             CreatedAt = article.CreatedAt.Humanize(),
