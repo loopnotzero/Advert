@@ -64,12 +64,17 @@ namespace Egghead.Managers
             return await _store.FindArticleByIdAsync(articleId, CancellationToken);
         }
         
-        public async Task<long> CountArticlesByProfileId(ObjectId profileId)
+        public async Task<long> CountArticlesByProfileIdAsync(ObjectId profileId)
         {
             ThrowIfDisposed();
-
-            return await _store.CountArticlesByProfileId(profileId, CancellationToken);
+            return await _store.CountArticlesByProfileIdAsync(profileId, CancellationToken);
         }
+
+        public async Task<long> EstimatedArticlesCountAsync()
+        {
+            ThrowIfDisposed();
+            return await _store.EstimatedArticlesCountAsync(CancellationToken);           
+        } 
 
         public async Task<List<T>> FindArticlesAsync(int howManyElements)
         {

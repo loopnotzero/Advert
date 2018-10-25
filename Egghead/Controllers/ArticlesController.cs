@@ -34,7 +34,7 @@ namespace Egghead.Controllers
         private readonly ArticleCommentsVotesManager<MongoDbArticleCommentVote> _articleCommentsVotesManager;
         private readonly ArticleCommentsVotesAggregationManager<MongoDbArticleCommentVote, MongoDbArticleCommentVoteAggregation> _articleCommentsVotesAggregationManager;
         
-        private const string NoProfileImage = "/images/64x64.svg";
+        private const string NoProfileImage = "/images/no_image.png";
 
         public ArticlesController(ILoggerFactory loggerFactory,
             IConfiguration configuration,
@@ -89,7 +89,7 @@ namespace Egghead.Controllers
                         Id = profile.Id.ToString(),
                         Name = profile.Name,
                         Image = profile.ImagePath ?? NoProfileImage,
-                        ArticlesCount = ((double) await _articlesManager.CountArticlesByProfileId(profile.Id)).ToMetric(),
+                        ArticlesCount = ((double) await _articlesManager.CountArticlesByProfileIdAsync(profile.Id)).ToMetric(),
                         FollowingCount = ((double) 0).ToMetric()
                     },
                     
@@ -230,7 +230,7 @@ namespace Egghead.Controllers
                         Name = profile.Name,
                         Id = profile.Id.ToString(),
                         Image = profile.ImagePath ?? NoProfileImage,
-                        ArticlesCount = ((double) await _articlesManager.CountArticlesByProfileId(article.ProfileId)).ToMetric(),
+                        ArticlesCount = ((double) await _articlesManager.CountArticlesByProfileIdAsync(article.ProfileId)).ToMetric(),
                         FollowingCount = ((double) 0).ToMetric()
                     },
                     
@@ -435,6 +435,7 @@ namespace Egghead.Controllers
                     ReplyTo = viewModel.ReplyTo == null ? ObjectId.Empty : ObjectId.Parse(viewModel.ReplyTo),
                     CreatedAt = DateTime.UtcNow,
                     ArticleId = articleId,
+                    ProfileId = profile.Id.ToString(),
                     ProfileName = profile.Name,
                     ProfileImage = profile.ImagePath ?? NoProfileImage,
                     VotesCount = 0,
@@ -453,6 +454,7 @@ namespace Egghead.Controllers
                     CreatedAt = comment.CreatedAt.Humanize(),
                     CommentId = comment.Id.ToString(),
                     ArticleId = viewModel.ArticleId,
+                    ProfileId = comment.ProfileId,
                     ProfileName = comment.ProfileName,
                     ProfileImage = comment.ProfileImage ?? NoProfileImage,     
                     VotesCount = ((double)comment.VotesCount).ToMetric()

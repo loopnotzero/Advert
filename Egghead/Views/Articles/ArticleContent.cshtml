@@ -40,7 +40,14 @@
                         foreach (var comment in Model.ArticleComments)
                         {
                             <div id="@comment.CommentId" class="media p-2">
-                                <img src="@comment.ProfileImage" width="48" height="48" alt="profile-image">
+                                @if (!string.IsNullOrEmpty(Model.Profile.Image))
+                                {
+                                    <img src="@comment.ProfileImage" width="48" height="48" alt="profile-image">
+                                }
+                                else
+                                {
+                                    <img src="/images/no_image.png" width="48" height="48" alt="profile-image">
+                                }
                                 <div class="media-body media__img">
                                     <div class="col-auto">
                                         <a href="/Profile/@comment.ProfileName">@comment.ProfileName</a> <small class="time"> @comment.CreatedAt</small>
@@ -52,7 +59,7 @@
                                         <div class="r-btn r-btn-light r-btn--icon" onclick="onCommentVoteClick('@comment.CommentId', 1)">
                                             <i class="fa fa-heart-o"></i>
                                         </div>
-                                        <span name="votes-count">@comment.VotesCount</span>   
+                                        <span name="votes-count">@comment.VotesCount</span>
                                         <span class="reply"></span> <a href="#reply" onclick="showReplyForm(null, '@comment.CommentId')">Reply</a>
                                     </div>
                                     <div id="reply-placeholder"></div>
@@ -61,7 +68,14 @@
                                         foreach (var reply in comment.Comments)
                                         {
                                             <div id="@reply.CommentId" class="media p-2">
-                                                <img src="@reply.ProfileImage" width="48" height="48" alt="profile-image">
+                                                @if (!string.IsNullOrEmpty(Model.Profile.Image))
+                                                {
+                                                    <img src="@Model.Profile.Image" width="48" height="48" alt="profile-image">
+                                                }
+                                                else
+                                                {
+                                                    <img src="/images/no_image.png" width="48" height="48" alt="profile-image">
+                                                }
                                                 <div class="media-body media__img">
                                                     <div class="col-auto">
                                                         <a href="/Profile/@comment.ProfileName">@comment.ProfileName</a> <small class="time"> @reply.CreatedAt</small>
@@ -73,7 +87,7 @@
                                                         <div class="r-btn r-btn-light r-btn--icon" onclick="onCommentVoteClick('@reply.CommentId', 1)">
                                                             <i class="fa fa-heart-o"></i>
                                                         </div>
-                                                        <span name="votes-count">@reply.VotesCount</span>      
+                                                        <span name="votes-count">@reply.VotesCount</span>
                                                         <span class="reply"></span> <a href="#reply" onclick="showReplyForm('@reply.ReplyTo', '@reply.CommentId')">Reply</a>
                                                     </div>
                                                     <div id="reply-placeholder"></div>
@@ -103,7 +117,14 @@
                             {
                                 <div class="listview__item">
                                     <div class="mr-2" style="width: 50px; height: 50px">
-                                        <img src="/images/users/user_empty.png" class="listview__img" alt="">
+                                        @if (!string.IsNullOrEmpty(Model.Profile.Image))
+                                        {
+                                            <img src="@Model.Profile.Image" class="listview__img" alt="">
+                                        }
+                                        else
+                                        {
+                                            <img src="/images/no_image.png" class="listview__img" alt="">
+                                        }
                                     </div>
                                     <div class="listview__content">
                                         <div class="listview__heading">

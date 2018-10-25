@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Egghead.Managers;
 using Egghead.Models.Profiles;
+using Egghead.MongoDbStorage.Articles;
 using Egghead.MongoDbStorage.Profiles;
 using Humanizer;
 using Microsoft.AspNetCore.Hosting;
@@ -20,13 +21,17 @@ namespace Egghead.Controllers
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly ProfilesManager<MongoDbProfile> _profilesManager;
         private readonly ProfilesImagesManager<MongoDbProfileImage> _profilesImagesManager;
+        private readonly ArticlesManager<MongoDbArticle> _articlesManager;
+        private readonly ArticlesCommentsManager<MongoDbArticleComment> _articlesCommentsManager;
 
-        public ProfilesController(ILoggerFactory loggerFactory, ILookupNormalizer keyNormalizer, IHostingEnvironment hostingEnvironment, ProfilesManager<MongoDbProfile> profilesManager, ProfilesImagesManager<MongoDbProfileImage> profilesImagesManager)
+        public ProfilesController(ILoggerFactory loggerFactory, ILookupNormalizer keyNormalizer, IHostingEnvironment hostingEnvironment, ProfilesManager<MongoDbProfile> profilesManager, ProfilesImagesManager<MongoDbProfileImage> profilesImagesManager, ArticlesManager<MongoDbArticle> articlesManager, ArticlesCommentsManager<MongoDbArticleComment> articlesCommentsManager)
         {
             _logger = loggerFactory.CreateLogger<ProfilesController>();
             _hostingEnvironment = hostingEnvironment;         
             _profilesManager = profilesManager;
             _profilesImagesManager = profilesImagesManager;
+            _articlesManager = articlesManager;
+            _articlesCommentsManager = articlesCommentsManager;
         }
 
         [HttpGet]
@@ -113,6 +118,27 @@ namespace Egghead.Controllers
             profile.ImagePath = $"/images/profiles/{profile.Id}/{file.FileName}";
 
             await _profilesManager.UpdateProfileAsync(profile);
+
+            var articlesCount = await _articlesManager.EstimatedArticlesCountAsync();
+
+            var articles = await _articlesManager.FindArticlesAsync((int) articlesCount);
+
+            foreach (var article in articles)
+            {
+                var commentsCount = await _articlesCommentsManager.CountArticleCommentsByArticleIdAsync(article.Id.ToString());
+
+                var articleComments = await _articlesCommentsManager.FindArticleCommentsByCollectionName(article.Id.ToString(), (int) commentsCount);
+
+                foreach (var articleComment in articleComments)
+                {
+                    if (profile.Id.Equals(article.ProfileId) && !profile.ImagePath.Equals(articleComment.ProfileImage))
+                    {
+                        articleComment.ProfileImage = profile.ImagePath;
+                        await _articlesCommentsManager.UpdateArticleCommentByIdAsync(article.Id.ToString(), articleComment.Id, articleComment);
+                    }
+                }
+            }
+
 
             return RedirectToAction("Articles", "Articles");
         }
