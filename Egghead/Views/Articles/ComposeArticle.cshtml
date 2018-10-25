@@ -74,18 +74,28 @@
 
         $("#publish-article").click(function(e) {
             e.preventDefault();
+
+            var title = $("#title").val();
+
+            if (title === null || title === "")
+                return;
+            
+            var text = simplemde.options.previewRender(simplemde.value());
+
+            if (text === null || text === "")
+                return;
+           
             var article = JSON.stringify({
-                title: $("#title").val(),
-                text: simplemde.options.previewRender(simplemde.value())
+                title: title,
+                text: text
             });
+            
             publishArticle(article);
+            
             return false;
         });
 
         function publishArticle(article) {
-            if (article.title === null || article.title === "")
-                return;
-            
             $.ajax({
                 url: "/Articles/PublishArticleAsync",
                 type: "POST",

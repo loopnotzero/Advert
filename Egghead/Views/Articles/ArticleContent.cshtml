@@ -135,7 +135,7 @@
                                             </p>
                                         </div>
                                         <p>
-                                            <a href="/Profile" style="font-size: 0.6rem">@popularArticle.ProfileName</a>
+                                            <a href="/Profile" style="font-size: 0.8rem">@popularArticle.ProfileName</a>
                                             <small class="time"> @popularArticle.CreatedAt</small>
                                         </p>
                                     </div>
@@ -212,7 +212,7 @@
             },
             success: function(response) {
                 $(`#${comment.replyTo} .media-body:first`).append(`
-                <div id="${response.commentId}" class="media p-3">
+                <div id="${response.commentId}" class="media p-2">
                     <img src="${response.profileImage}" width="48" height="48" alt="profile-image">
                     <div class="media-body media__img">
                         <div class="col-auto">
@@ -232,6 +232,11 @@
                     </div>
                 </div>
                 `);
+                
+                $([document.documentElement, document.body]).animate({
+                        scrollTop: $(`#${response.commentId}`).offset().top - 250
+                    },
+                    200);
             }
         });
     }
@@ -249,7 +254,7 @@
             },
             success: function(response) {
                 $("#article-comments").append(`
-                <div id="${response.commentId}" class="media p-3">
+                <div id="${response.commentId}" class="media p-2">
                     <img src="${response.profileImage}" width="48" height="48" alt="profile-image">
                     <div class="media-body media__img">
                         <div class="col-auto">
@@ -268,6 +273,11 @@
                         <div id="reply-placeholder"></div>
                     </div>
                 </div>`);
+
+                $([document.documentElement, document.body]).animate({
+                        scrollTop: $(`#${response.commentId}`).offset().top - 250
+                    },
+                    200);
             }
         });
     }
@@ -327,10 +337,12 @@
         });
 
         $(".CodeMirror, .CodeMirror-scroll").css('min-height', '150px');
-
+       
         $("#publish-comment").click(function() {
             var text = editor.options.previewRender(editor.value());
+            
             var articleId = $(`[name='article']`).attr("id");
+            
             createArticleCommentAsync(
                 {
                     articleId: articleId,
