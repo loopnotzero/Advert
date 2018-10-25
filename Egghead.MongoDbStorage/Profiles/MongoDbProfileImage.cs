@@ -4,17 +4,17 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Egghead.MongoDbStorage.Profiles
 {
-    public class MongoDbProfilePhoto
+    public class MongoDbProfileImage
     {
-        public MongoDbProfilePhoto()
+        public MongoDbProfileImage()
         {
             Id = ObjectId.GenerateNewId();
             //Create indeces
         }
         
-        public string PhotoPath { get; set; }     
         public ObjectId Id { get; set; }
-        public ObjectId ProfileId { get; set; }       
+        public ObjectId ProfileId { get; set; }  
+        public string ImagePath { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public DateTime DeletedAt { get; set; }

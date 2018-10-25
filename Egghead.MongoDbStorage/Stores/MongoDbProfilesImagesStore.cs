@@ -9,16 +9,16 @@ using MongoDB.Driver;
 
 namespace Egghead.MongoDbStorage.Stores
 {
-    public class MongoDbProfilesPhotosStore<T> : IProfilesPhotosStore<T> where T : MongoDbProfilePhoto
+    public class MongoDbProfilesImagesStore<T> : IProfilesImagesStore<T> where T : MongoDbProfileImage
     {
         private readonly IMongoCollection<T> _collection;
       
-        public MongoDbProfilesPhotosStore()
+        public MongoDbProfilesImagesStore()
         {
-            EntityMappings.EnsureMongoDbProfilePhotoConfigured();
+            EntityMappings.EnsureMongoDbProfileImageConfigured();
         }
         
-        public MongoDbProfilesPhotosStore(IMongoDatabase mongoDatabase) : this()
+        public MongoDbProfilesImagesStore(IMongoDatabase mongoDatabase) : this()
         {          
             _collection = mongoDatabase.GetCollection<T>(MongoDbCollections.ProfilesImages);          
             //todo: Create indices
@@ -29,7 +29,7 @@ namespace Egghead.MongoDbStorage.Stores
             
         }
         
-        public async Task CreateProfilePhotoAsync(T entity, CancellationToken cancellationToken)
+        public async Task CreateProfileImageAsync(T entity, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
  
@@ -39,7 +39,7 @@ namespace Egghead.MongoDbStorage.Stores
             }, cancellationToken);
         }
 
-        public async Task<T> GetProfilePhotoById(ObjectId imageId, CancellationToken cancellationToken)
+        public async Task<T> GetProfileImageById(ObjectId imageId, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.Id, imageId), cancellationToken: cancellationToken);
@@ -47,7 +47,7 @@ namespace Egghead.MongoDbStorage.Stores
         }
 
 
-        public async Task<T> GetProfilePhotoByProfileIdAsync(ObjectId profileId, CancellationToken cancellationToken)
+        public async Task<T> GetProfileImageByProfileIdAsync(ObjectId profileId, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.ProfileId, profileId), cancellationToken: cancellationToken);

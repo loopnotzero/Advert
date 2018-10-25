@@ -42,11 +42,11 @@ namespace Egghead.MongoDbStorage.Mappings
             });
         }
 
-        public static void EnsureMongoDbProfilePhotoConfigured()
+        public static void EnsureMongoDbProfileImageConfigured()
         {
             LazyInitializer.EnsureInitialized(ref _initializationTarget, ref _initialized, ref _initializationLock, () =>
             {
-                ConfigureMongoDbProfilePhoto();
+                ConfigureMongoDbProfileImage();
                 return null;
             });
         }
@@ -136,13 +136,13 @@ namespace Egghead.MongoDbStorage.Mappings
             });
         }
 
-        private static void ConfigureMongoDbProfilePhoto()
+        private static void ConfigureMongoDbProfileImage()
         {
-            BsonClassMap.RegisterClassMap<MongoDbProfilePhoto>(bsonClassMap =>
+            BsonClassMap.RegisterClassMap<MongoDbProfileImage>(bsonClassMap =>
             {
                 bsonClassMap.AutoMap();
                 bsonClassMap.MapIdMember(profileImage => profileImage.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
-                bsonClassMap.MapCreator(profileImage => new MongoDbProfilePhoto());
+                bsonClassMap.MapCreator(profileImage => new MongoDbProfileImage());
             });
         }
 

@@ -12,6 +12,7 @@ namespace Egghead.MongoDbStorage.Stores
         Task<T> FindProfileByIdAsync(ObjectId id, CancellationToken cancellationToken);
         Task<T> FindProfileByNormalizedNameAsync(string name, CancellationToken cancellationToken);
         Task<T> FindProfileByNormalizedEmailAsync(string email, CancellationToken cancellationToken);
-        Task<T> FindProfileByNormalizedNameOrDefaultAsync(string name, CancellationToken cancellationToken);
+        Task<T> FindProfileByNormalizedNameOrDefaultAsync(string name, T defaultValue, CancellationToken cancellationToken);
+        Task<T> FindProfileByNormalizedEmailOrDefaultAsync(string email, T defaultValue, CancellationToken cancellationToken);
     }
 }

@@ -68,14 +68,21 @@ namespace Egghead.MongoDbStorage.Stores
         {
             cancellationToken.ThrowIfCancellationRequested();
             var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.NormalizedEmail, email), cancellationToken: cancellationToken);
-            return await cursor.FirstOrDefaultAsync(cancellationToken);
+            return await cursor.FirstAsync(cancellationToken);
         }
 
-        public async Task<T> FindProfileByNormalizedNameOrDefaultAsync(string name, CancellationToken cancellationToken)
+        public async Task<T> FindProfileByNormalizedNameOrDefaultAsync(string name, T defaultValue, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.NormalizedName, name), cancellationToken: cancellationToken);
-            return await cursor.FirstOrDefaultAsync(cancellationToken);
+            return await cursor.FirstOrDefaultAsync(cancellationToken) ?? defaultValue;
+        }
+        
+        public async Task<T> FindProfileByNormalizedEmailOrDefaultAsync(string email, T defaultValue, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.NormalizedEmail, email), cancellationToken: cancellationToken);
+            return await cursor.FirstOrDefaultAsync(cancellationToken) ?? defaultValue;
         }
     }
 }

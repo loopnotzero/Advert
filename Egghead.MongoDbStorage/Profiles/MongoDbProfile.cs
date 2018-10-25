@@ -17,7 +17,7 @@ namespace Egghead.MongoDbStorage.Profiles
         public string Name { get; set; }    
         public string Email { get; set; }
         public string Location { get; set; }
-        public string PhotoPath { get; set; }
+        public string ImagePath { get; set; }
         public string PhoneNumber { get; set; }  
         public string NormalizedName { get; set; }
         public string NormalizedEmail { get; set; }
