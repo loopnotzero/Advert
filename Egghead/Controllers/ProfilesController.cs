@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Remotion.Linq.Clauses.ResultOperators;
 
 namespace Egghead.Controllers
 {
@@ -18,15 +19,14 @@ namespace Egghead.Controllers
         private readonly ILogger _logger;
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly ProfilesManager<MongoDbProfile> _profilesManager;
-        private readonly ProfilesPhotosManager<MongoDbProfilePhoto> _profilesPhotosManager;
+        private readonly ProfilesImagesManager<MongoDbProfileImage> _profilesImagesManager;
 
-        public ProfilesController(ILoggerFactory loggerFactory, ILookupNormalizer keyNormalizer, IHostingEnvironment hostingEnvironment, ProfilesManager<MongoDbProfile> profilesManager, ProfilesPhotosManager<MongoDbProfilePhoto> profilesPhotosManager)
+        public ProfilesController(ILoggerFactory loggerFactory, ILookupNormalizer keyNormalizer, IHostingEnvironment hostingEnvironment, ProfilesManager<MongoDbProfile> profilesManager, ProfilesImagesManager<MongoDbProfileImage> profilesImagesManager)
         {
             _logger = loggerFactory.CreateLogger<ProfilesController>();
-            _hostingEnvironment = hostingEnvironment;
-            
+            _hostingEnvironment = hostingEnvironment;         
             _profilesManager = profilesManager;
-            _profilesPhotosManager = profilesPhotosManager;
+            _profilesImagesManager = profilesImagesManager;
         }
 
         [HttpGet]
@@ -43,9 +43,9 @@ namespace Egghead.Controllers
             
             return View(new ProfileModel
             {
-                ProfileId = profile.Id.ToString(),
-                ProfileName = profile.Name,
-                ProfilePhoto = profile.PhotoPath,
+                Id = profile.Id.ToString(),
+                Name = profile.Name,
+                Image = profile.ImagePath,
                 ArticlesCount = ((double)0).ToMetric(),
                 FollowingCount = ((double)0).ToMetric()
             });
@@ -65,9 +65,9 @@ namespace Egghead.Controllers
             
             return View(new ProfileModel
             {
-                ProfileId = profile.Id.ToString(),
-                ProfileName = profile.Name,
-                ProfilePhoto = profile.PhotoPath,
+                Id = profile.Id.ToString(),
+                Name = profile.Name,
+                Image = profile.ImagePath,
                 ArticlesCount = ((double)0).ToMetric(),
                 FollowingCount = ((double)0).ToMetric()
             });
@@ -87,48 +87,34 @@ namespace Egghead.Controllers
             
             var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
 
-            if (profile == null)
+            var absoluteDir = $"{_hostingEnvironment.WebRootPath}/images/profiles/{profile.Id.ToString()}";
+
+            if (Directory.Exists(absoluteDir))
             {
-                //todo: Add user not found page
-                return NotFound();
+                Directory.Delete(absoluteDir, true);
             }
+            
+            Directory.CreateDirectory(absoluteDir);
 
-            var dirPath = Path.Combine(_hostingEnvironment.WebRootPath + "/images/profiles/", profile.Id.ToString());
+            var absoluteImagePath = Path.Combine(absoluteDir, file.FileName);
 
-            if (!Directory.Exists(dirPath))
-            {
-                Directory.CreateDirectory(dirPath);
-            }
-
-            var imagePath = Path.Combine(dirPath, file.FileName);
-
-            using (var stream = new FileStream(imagePath, FileMode.Create))
+            using (var stream = new FileStream(absoluteImagePath, FileMode.Create))
             {
                 await file.CopyToAsync(stream);
             }
 
-            // process uploaded files
-            // Don't rely on or trust the FileName property without validation.
-
-            await _profilesPhotosManager.CreateProfileImageAsync(new MongoDbProfilePhoto
+            await _profilesImagesManager.CreateProfileImageAsync(new MongoDbProfileImage
             {
-                PhotoPath = imagePath,
-                Id = profile.Id,
+                ProfileId = profile.Id,
+                ImagePath = $"/images/profiles/{profile.Id}/{file.FileName}",
                 CreatedAt = DateTime.UtcNow
             });
 
-            profile.PhotoPath = Path.Combine(dirPath, file.FileName);
+            profile.ImagePath = $"/images/profiles/{profile.Id}/{file.FileName}";
 
             await _profilesManager.UpdateProfileAsync(profile);
 
-            return View("Profile", new ProfileModel
-            {
-                ProfileId = profile.Id.ToString(),
-                ProfileName = profile.Name,
-                ProfilePhoto = profile.PhotoPath,
-                ArticlesCount = ((double)0).ToMetric(),
-                FollowingCount = ((double)0).ToMetric()
-            });
+            return RedirectToAction("Articles", "Articles");
         }
     }
 }

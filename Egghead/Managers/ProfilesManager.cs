@@ -99,7 +99,7 @@ namespace Egghead.Managers
                 throw new ArgumentNullException(nameof(name)); 
             }
             
-            return await Store.FindProfileByNormalizedNameOrDefaultAsync(NormalizeKey(name), CancellationToken);
+            return await Store.FindProfileByNormalizedNameOrDefaultAsync(NormalizeKey(name), defaultValue, CancellationToken);
         }
 
         public async Task<T> FindProfileByNormalizedEmailAsync(string email)
@@ -114,9 +114,16 @@ namespace Egghead.Managers
             return await Store.FindProfileByNormalizedEmailAsync(NormalizeKey(email), CancellationToken);
         }
 
-        public async Task<T> FindProfileByNormalizedEmailOrDefaultAsync(string name, T defaultValue)
+        public async Task<T> FindProfileByNormalizedEmailOrDefaultAsync(string email, T defaultValue)
         {
-            throw new NotImplementedException();
+            ThrowIfDisposed();
+
+            if (string.IsNullOrEmpty(email))
+            {
+                throw new ArgumentNullException(nameof(email)); 
+            }
+            
+            return await Store.FindProfileByNormalizedEmailOrDefaultAsync(NormalizeKey(email), defaultValue, CancellationToken);
         }
         
         private void Dispose(bool disposing)

@@ -56,7 +56,7 @@ namespace Egghead
             services.AddScoped<ProfilesManager<MongoDbProfile>, ProfilesManager<MongoDbProfile>>();
             services.AddScoped<ArticlesManager<MongoDbArticle>, ArticlesManager<MongoDbArticle>>();
             services.AddScoped<ArticlesLikesManager<MongoDbArticleVote>, ArticlesLikesManager<MongoDbArticleVote>>();
-            services.AddScoped<ProfilesPhotosManager<MongoDbProfilePhoto>, ProfilesPhotosManager<MongoDbProfilePhoto>>();
+            services.AddScoped<ProfilesImagesManager<MongoDbProfileImage>, ProfilesImagesManager<MongoDbProfileImage>>();
             services.AddScoped<ArticlesCommentsManager<MongoDbArticleComment>, ArticlesCommentsManager<MongoDbArticleComment>>();
             services.AddScoped<ArticlesViewCountManager<MongoDbArticleViewsCount>, ArticlesViewCountManager<MongoDbArticleViewsCount>>();
             services.AddScoped<ArticleCommentsVotesManager<MongoDbArticleCommentVote>, ArticleCommentsVotesManager<MongoDbArticleCommentVote>>(); 
@@ -95,10 +95,10 @@ namespace Egghead
                 return new MongoDbArticlesVotesStore<MongoDbArticleVote>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
             });
             
-            services.AddTransient<IProfilesPhotosStore<MongoDbProfilePhoto>>(provider =>
+            services.AddTransient<IProfilesImagesStore<MongoDbProfileImage>>(provider =>
             {
                 var options = provider.GetService<IOptions<MongoDbOptions>>();
-                return new MongoDbProfilesPhotosStore<MongoDbProfilePhoto>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+                return new MongoDbProfilesImagesStore<MongoDbProfileImage>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
             });
             
             services.AddTransient<IArticlesCommentsStore<MongoDbArticleComment>>(provider =>

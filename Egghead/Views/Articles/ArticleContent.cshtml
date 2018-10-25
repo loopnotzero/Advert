@@ -10,7 +10,7 @@
             <div class="card">
                 <div class="text-muted p-3">
                     <a href="/Profile">
-                        <small class="font-weight-bold">@Model.Profile.ProfileName</small>
+                        <small class="font-weight-bold">@Model.Profile.Name</small>
                     </a> <small class="time"> @Model.Articles.First().CreatedAt.Humanize()</small>
                 </div>
 
@@ -40,7 +40,7 @@
                         foreach (var comment in Model.ArticleComments)
                         {
                             <div id="@comment.CommentId" class="media p-2">
-                                <img src="@comment.ProfilePhoto" width="48" height="48" alt="profile-photo">
+                                <img src="@comment.ProfileImage" width="48" height="48" alt="profile-image">
                                 <div class="media-body media__img">
                                     <div class="col-auto">
                                         <a href="/Profile/@comment.ProfileName">@comment.ProfileName</a> <small class="time"> @comment.CreatedAt</small>
@@ -61,7 +61,7 @@
                                         foreach (var reply in comment.Comments)
                                         {
                                             <div id="@reply.CommentId" class="media p-2">
-                                                <img src="@reply.ProfilePhoto" width="48" height="48" alt="profile-photo">
+                                                <img src="@reply.ProfileImage" width="48" height="48" alt="profile-image">
                                                 <div class="media-body media__img">
                                                     <div class="col-auto">
                                                         <a href="/Profile/@comment.ProfileName">@comment.ProfileName</a> <small class="time"> @reply.CreatedAt</small>
@@ -189,7 +189,7 @@
             success: function(response) {
                 $(`#${comment.replyTo} .media-body:first`).append(`
                 <div id="${response.commentId}" class="media p-3">
-                    <img src="${response.profilePhoto}" width="48" height="48" alt="profile-photo">
+                    <img src="${response.profileImage}" width="48" height="48" alt="profile-image">
                     <div class="media-body media__img">
                         <div class="col-auto">
                             ${response.profileName} <small class="time"> ${response.createdAt}</small>
@@ -226,7 +226,7 @@
             success: function(response) {
                 $("#article-comments").append(`
                 <div id="${response.commentId}" class="media p-3">
-                    <img src="${response.profilePhoto}" width="48" height="48" alt="profile-photo">
+                    <img src="${response.profileImage}" width="48" height="48" alt="profile-image">
                     <div class="media-body media__img">
                         <div class="col-auto">
                             ${response.profileName} <small class="time"> ${response.createdAt}</small>

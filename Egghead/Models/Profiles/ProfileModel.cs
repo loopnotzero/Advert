@@ -2,9 +2,9 @@
 {
     public class ProfileModel
     {
-        public string ProfileId { get; set; }
-        public string ProfileName { get; set; }
-        public string ProfilePhoto { get; set; }
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public string Image { get; set; }
         public string ArticlesCount { get; set; }
         public string FollowingCount { get; set; }
     }

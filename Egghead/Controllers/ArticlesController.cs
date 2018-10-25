@@ -86,9 +86,9 @@ namespace Egghead.Controllers
                 {
                     Profile = new ProfileModel
                     {
-                        ProfileName = profile.Name,
-                        ProfileId = profile.Id.ToString(),
-                        ProfilePhoto = profile.PhotoPath ?? NoProfileImage,
+                        Id = profile.Id.ToString(),
+                        Name = profile.Name,
+                        Image = profile.ImagePath ?? NoProfileImage,
                         ArticlesCount = ((double) await _articlesManager.CountArticlesByProfileId(profile.Id)).ToMetric(),
                         FollowingCount = ((double) 0).ToMetric()
                     },
@@ -167,7 +167,7 @@ namespace Egghead.Controllers
                                 ArticleId = comment.ArticleId.ToString(),
                                 CreatedAt = comment.CreatedAt.Humanize(),
                                 ProfileName = comment.ProfileName,
-                                ProfilePhoto = comment.ProfilePhoto ?? NoProfileImage,
+                                ProfileImage = comment.ProfileImage ?? NoProfileImage,
                                 VotesCount = ((double) comment.VotesCount).ToMetric()
                             });
                         }
@@ -190,7 +190,7 @@ namespace Egghead.Controllers
                                             ArticleId = comment.ArticleId.ToString(),
                                             CreatedAt = comment.CreatedAt.Humanize(),
                                             ProfileName = comment.ProfileName,
-                                            ProfilePhoto = comment.ProfilePhoto ?? NoProfileImage,
+                                            ProfileImage = comment.ProfileImage ?? NoProfileImage,
                                             VotesCount = ((double) comment.VotesCount).ToMetric()
                                         };
                                         return model;
@@ -209,7 +209,7 @@ namespace Egghead.Controllers
                                         ArticleId = comment.ArticleId.ToString(),
                                         CreatedAt = comment.CreatedAt.Humanize(),
                                         ProfileName = comment.ProfileName,
-                                        ProfilePhoto = comment.ProfilePhoto ?? NoProfileImage,
+                                        ProfileImage = comment.ProfileImage ?? NoProfileImage,
                                         VotesCount = ((double) comment.VotesCount).ToMetric()
                                     };
                                     return model;
@@ -227,9 +227,9 @@ namespace Egghead.Controllers
                 {
                     Profile = new ProfileModel
                     {
-                        ProfileName = profile.Name,
-                        ProfileId = profile.Id.ToString(),
-                        ProfilePhoto = profile.PhotoPath ?? NoProfileImage,
+                        Name = profile.Name,
+                        Id = profile.Id.ToString(),
+                        Image = profile.ImagePath ?? NoProfileImage,
                         ArticlesCount = ((double) await _articlesManager.CountArticlesByProfileId(article.ProfileId)).ToMetric(),
                         FollowingCount = ((double) 0).ToMetric()
                     },
@@ -436,7 +436,7 @@ namespace Egghead.Controllers
                     CreatedAt = DateTime.UtcNow,
                     ArticleId = articleId,
                     ProfileName = profile.Name,
-                    ProfilePhoto = profile.PhotoPath ?? NoProfileImage,
+                    ProfileImage = profile.ImagePath ?? NoProfileImage,
                     VotesCount = 0,
                 };
               
@@ -454,7 +454,7 @@ namespace Egghead.Controllers
                     CommentId = comment.Id.ToString(),
                     ArticleId = viewModel.ArticleId,
                     ProfileName = comment.ProfileName,
-                    ProfilePhoto = comment.ProfilePhoto ?? NoProfileImage,     
+                    ProfileImage = comment.ProfileImage ?? NoProfileImage,     
                     VotesCount = ((double)comment.VotesCount).ToMetric()
                 });
             }
