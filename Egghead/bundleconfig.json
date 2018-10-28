@@ -1,14 +1,14 @@
 ﻿[
   {
-    "outputFileName": "wwwroot/css/site.min.css",
+    "outputFileName": "wwwroot/css/style.min.css",
     "inputFiles": [
-      "wwwroot/css/site.css"
+      "wwwroot/css/style.css"
     ]
   },
   {
-    "outputFileName": "wwwroot/js/site.min.js",
+    "outputFileName": "wwwroot/js/egghead.min.js",
     "inputFiles": [
-      "wwwroot/js/site.js"
+      "wwwroot/js/egghead.js"
     ],
     "minify": {
       "enabled": true,

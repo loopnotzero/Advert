@@ -1552,6 +1552,27 @@
     <_ContentIncludedByDefault Remove="wwwroot\scss\vendors\select2\dist\js\select2.full.min.js" />
     <_ContentIncludedByDefault Remove="wwwroot\scss\vendors\select2\dist\js\select2.js" />
     <_ContentIncludedByDefault Remove="wwwroot\scss\vendors\select2\dist\js\select2.min.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\scss\vendors\material-design-iconic-font\dist\css\material-design-iconic-font.css" />
+    <_ContentIncludedByDefault Remove="wwwroot\scss\vendors\material-design-iconic-font\dist\css\material-design-iconic-font.min.css" />
+    <_ContentIncludedByDefault Remove="wwwroot\scss\vendors\material-design-iconic-font\dist\fonts\Material-Design-Iconic-Font.eot" />
+    <_ContentIncludedByDefault Remove="wwwroot\scss\vendors\material-design-iconic-font\dist\fonts\Material-Design-Iconic-Font.svg" />
+    <_ContentIncludedByDefault Remove="wwwroot\scss\vendors\material-design-iconic-font\dist\fonts\Material-Design-Iconic-Font.ttf" />
+    <_ContentIncludedByDefault Remove="wwwroot\scss\vendors\material-design-iconic-font\dist\fonts\Material-Design-Iconic-Font.woff" />
+    <_ContentIncludedByDefault Remove="wwwroot\scss\vendors\material-design-iconic-font\dist\fonts\Material-Design-Iconic-Font.woff2" />
+    <_ContentIncludedByDefault Remove="wwwroot\scss\vendors\material-design-iconic-font\less\aliases.less" />
+    <_ContentIncludedByDefault Remove="wwwroot\scss\vendors\material-design-iconic-font\less\border.less" />
+    <_ContentIncludedByDefault Remove="wwwroot\scss\vendors\material-design-iconic-font\less\core.less" />
+    <_ContentIncludedByDefault Remove="wwwroot\scss\vendors\material-design-iconic-font\less\fixed-width.less" />
+    <_ContentIncludedByDefault Remove="wwwroot\scss\vendors\material-design-iconic-font\less\icons.less" />
+    <_ContentIncludedByDefault Remove="wwwroot\scss\vendors\material-design-iconic-font\less\list.less" />
+    <_ContentIncludedByDefault Remove="wwwroot\scss\vendors\material-design-iconic-font\less\material-design-iconic-font.less" />
+    <_ContentIncludedByDefault Remove="wwwroot\scss\vendors\material-design-iconic-font\less\path.less" />
+    <_ContentIncludedByDefault Remove="wwwroot\scss\vendors\material-design-iconic-font\less\pulled.less" />
+    <_ContentIncludedByDefault Remove="wwwroot\scss\vendors\material-design-iconic-font\less\rotated.less" />
+    <_ContentIncludedByDefault Remove="wwwroot\scss\vendors\material-design-iconic-font\less\sizes.less" />
+    <_ContentIncludedByDefault Remove="wwwroot\scss\vendors\material-design-iconic-font\less\spinned.less" />
+    <_ContentIncludedByDefault Remove="wwwroot\scss\vendors\material-design-iconic-font\less\stacked.less" />
+    <_ContentIncludedByDefault Remove="wwwroot\scss\vendors\material-design-iconic-font\less\variables.less" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="wwwroot\images\profiles" />

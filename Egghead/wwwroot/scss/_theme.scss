@@ -11,12 +11,10 @@
   .navigation__sub--active > a,
   .navigation__active > a,
   .navigation__active:before,
-  .fa-thumbs-o-up, 
-  .fa-thumbs-o-down, 
-  .fa-bookmark, 
-  .fa-eye, 
-  .fa-weixin,
-  .fa-heart-o {
+  .zmdi-eye,
+  .zmdi-comments,
+  .zmdi zmdi-more-vert,
+  .zmdi-favorite-outline {
     color: $color;
   }
 

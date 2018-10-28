@@ -2,22 +2,22 @@
 <html>
 
 <head>
-    
+
     <title>Egghead.md – Cele mai bune publicații pe zi</title>
-    
+
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description"/>
     <meta content="Coderthemes" name="author"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    
+
     <link rel="shortcut icon" href="~/images/favicon.ico">
     <link href="~/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
     <link href="~/css/style.css" rel="stylesheet" type="text/css"/>
-    <link href="~/css/icons.css" rel="stylesheet" type="text/css"/>
     <link href="~/css/simplemde.css" rel="stylesheet" type="text/css">
     <link href="~/css/animate.css" rel="stylesheet" type="text/css">
-    <link href="~/css/dropzone.css" rel="stylesheet" type="text/css"/> 
+    <link href="~/css/dropzone.css" rel="stylesheet" type="text/css"/>
+    <link href="~/css/font.css" rel="stylesheet" type="text/css"/>
 </head>
 
 <body id="body" data-ma-theme="egghead" style="display: none">
@@ -99,5 +99,45 @@
             window.location.href = "/Articles/ComposeArticle";
             return false;
         });
+
+        var body = $('body');
+
+        body.on('focus',
+            '.search__text',
+            function() {
+                $(this).closest('.search').addClass('search--focus');
+            });
+
+        body.on('blur',
+            '.search__text',
+            function() {
+                $(this).val('');
+                $(this).closest('.search').removeClass('search--focus');
+            });
+
+        body.on('click',
+            '[data-ma-action]',
+            function(e) {             
+                e.preventDefault();
+                var $this = $(this);
+                var action = $this.data('ma-action');
+                var target = '';
+                switch (action) {
+                case 'search-open':
+                    $('.search').addClass('search--toggled');
+                    break;
+                case 'search-close':
+                    $('.search').removeClass('search--toggled');
+                    break;
+                case 'toolbar-search-open':
+                    $(this).closest('.toolbar').find('.toolbar__search').fadeIn(200);
+                    $(this).closest('.toolbar').find('.toolbar__search input').focus();
+                    break;
+                case 'toolbar-search-close':
+                    $(this).closest('.toolbar').find('.toolbar__search input').val('');
+                    $(this).closest('.toolbar').find('.toolbar__search').fadeOut(200);
+                    break;
+                }
+            });
     });
 </script>

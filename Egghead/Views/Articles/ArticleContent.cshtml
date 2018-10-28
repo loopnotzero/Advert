@@ -59,7 +59,7 @@
                                     </div>
                                     <div class="col-auto">
                                         <div class="r-btn r-btn-light r-btn--icon" onclick="onCommentVoteClick('@comment.CommentId', 1)">
-                                            <i class="fa fa-heart-o"></i>
+                                            <i class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
                                         </div>
                                         <span name="votes-count">@comment.VotesCount</span>
                                         <span class="reply"></span> <a href="#reply" onclick="showReplyForm(null, '@comment.CommentId')">Reply</a>
@@ -87,7 +87,7 @@
                                                     </div>
                                                     <div class="col-auto">
                                                         <div class="r-btn r-btn-light r-btn--icon" onclick="onCommentVoteClick('@reply.CommentId', 1)">
-                                                            <i class="fa fa-heart-o"></i>
+                                                            <i class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
                                                         </div>
                                                         <span name="votes-count">@reply.VotesCount</span>
                                                         <span class="reply"></span> <a href="#reply" onclick="showReplyForm('@reply.ReplyTo', '@reply.CommentId')">Reply</a>
@@ -107,7 +107,7 @@
         <div class="col-md-4 p-2">
             <div class="card p-4">
                 <div style="border-bottom: 1px solid #d5d5d5; margin-bottom: 20px;">
-                    <h4 class="text-muted font-weight-bold">Popular on Egghead</h4>
+                    <h4 class="text-muted">Popular on Egghead</h4>
                 </div>
                 @{
                     var popularArticles = Model.PopularArticles;
@@ -223,7 +223,7 @@
                         </div>
                         <div class="col-auto">
                             <div class="r-btn r-btn-light r-btn--icon" onclick="onCommentVoteClick('${response.commentId}', 1)" >
-                                <i class="fa fa-heart-o"></i>
+                                <i class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
                             </div>
                             <span name="votes-count">${response.votesCount}</span>
                             <a href="#reply" onclick="showReplyForm('${comment.replyTo}', '${response.commentId}')">Reply</a>
@@ -265,7 +265,7 @@
                         </div>
                         <div class="col-auto">
                             <div class="r-btn r-btn-light r-btn--icon" onclick="onCommentVoteClick('${response.commentId}', 1)">
-                                <i class="fa fa-heart-o"></i>
+                                <i class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
                             </div>
                             <span name="votes-count">${response.votesCount}</span>
                             <a href="#reply" onclick="showReplyForm(null, '${response.commentId}')">Reply</a>

@@ -141,3 +141,17 @@ blockquote {
   font-size: 13px;
   line-height: 15px;
 }
+
+@media (min-width: 1200px) {
+  .hidden-lg-up,.hidden-md-up,.hidden-sm-up,.hidden-unless-lg,.hidden-unless-md,.hidden-unless-sm,.hidden-unless-xs,.hidden-xl-down,.hidden-xl-up,.hidden-xs-up {
+    display:none!important;
+  }
+
+  .content:not(.content--boxed):not(.content--full) {
+    padding: 102px 30px 0 270px
+  }
+
+  .header__logo {
+    min-width: calc(270px - 2rem)
+  }
+}

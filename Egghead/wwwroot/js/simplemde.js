@@ -16827,7 +16827,7 @@
                     }, 1);
                     if (toolbar) {
                         toolbar.className += " active";
-                        toolbar_div.className += " disabled-for-preview";
+                        // toolbar_div.className += " disabled-for-preview";
                     }
                 }
                 preview.innerHTML = editor.options.previewRender(editor.value(), preview);
@@ -17118,34 +17118,35 @@
                 "bold": {
                     name: "bold",
                     action: toggleBold,
-                    className: "fa fa-bold",
+                    className: "zmdi zmdi-format-bold zmdi-hc-lg",
                     title: "Bold",
                     default: true
                 },
                 "italic": {
                     name: "italic",
                     action: toggleItalic,
-                    className: "fa fa-italic",
+                    className: "zmdi zmdi-format-italic zmdi-hc-lg",
                     title: "Italic",
                     default: true
                 },
-                "strikethrough": {
+                "strike.through": {
                     name: "strikethrough",
                     action: toggleStrikethrough,
-                    className: "fa fa-strikethrough",
-                    title: "Strikethrough"
+                    className: "zmdi zmdi-format-strikethrough zmdi-hc-lg",
+                    title: "Strikethrough",
+                    default: true
                 },
                 "heading": {
                     name: "heading",
                     action: toggleHeadingSmaller,
-                    className: "fa fa-header",
+                    className: "zmdi zmdi-format-size zmdi-hc-lg",
                     title: "Heading",
                     default: true
                 },
                 "heading-smaller": {
                     name: "heading-smaller",
                     action: toggleHeadingSmaller,
-                    className: "fa fa-header fa-header-x fa-header-smaller",
+                    className: "zmdi zmdi-format-size fa-header-x fa-header-smaller",
                     title: "Smaller Heading"
                 },
                 "heading-bigger": {
@@ -17178,35 +17179,37 @@
                 "code": {
                     name: "code",
                     action: toggleCodeBlock,
-                    className: "fa fa-code",
-                    title: "Code"
+                    className: "zmdi zmdi-code zmdi-hc-lg",
+                    title: "Code",
+                    default: true
                 },
                 "quote": {
                     name: "quote",
                     action: toggleBlockquote,
-                    className: "fa fa-quote-left",
+                    className: "zmdi zmdi-quote zmdi-hc-lg",
                     title: "Quote",
                     default: true
                 },
                 "unordered-list": {
                     name: "unordered-list",
                     action: toggleUnorderedList,
-                    className: "fa fa-list-ul",
+                    className: "zmdi zmdi-format-list-bulleted zmdi-hc-lg",
                     title: "Generic List",
                     default: true
                 },
                 "ordered-list": {
                     name: "ordered-list",
                     action: toggleOrderedList,
-                    className: "fa fa-list-ol",
+                    className: "zmdi zmdi-format-list-numbered zmdi-hc-lg",
                     title: "Numbered List",
                     default: true
                 },
                 "clean-block": {
                     name: "clean-block",
                     action: cleanBlock,
-                    className: "fa fa-eraser fa-clean-block",
+                    className: "zmdi zmdi-format-clear-all zmdi-hc-lg",
                     title: "Clean block"
+                    // default: true
                 },
                 "separator-2": {
                     name: "separator-2"
@@ -17214,28 +17217,30 @@
                 "link": {
                     name: "link",
                     action: drawLink,
-                    className: "fa fa-link",
+                    className: "zmdi zmdi-link zmdi-hc-lg",
                     title: "Create Link",
                     default: true
                 },
                 "image": {
                     name: "image",
                     action: drawImage,
-                    className: "fa fa-picture-o",
+                    className: "zmdi zmdi-image-o zmdi-hc-lg",
                     title: "Insert Image",
                     default: true
                 },
                 "table": {
                     name: "table",
                     action: drawTable,
-                    className: "fa fa-table",
-                    title: "Insert Table"
+                    className: "zmdi zmdi-view-column zmdi-hc-lg",
+                    title: "Insert Table",
+                    default: true
                 },
                 "horizontal-rule": {
                     name: "horizontal-rule",
                     action: drawHorizontalRule,
-                    className: "fa fa-minus",
-                    title: "Insert Horizontal Line"
+                    className: "zmdi zmdi-minus zmdi-hc-lg",
+                    title: "Insert Horizontal Line",
+                    default: true
                 },
                 "separator-3": {
                     name: "separator-3"
@@ -17243,21 +17248,21 @@
                 "preview": {
                     name: "preview",
                     action: togglePreview,
-                    className: "fa fa-eye no-disable",
+                    className: "zmdi zmdi-eye zmdi-hc-lg",
                     title: "Toggle Preview",
                     default: true
                 },
                 "side-by-side": {
                     name: "side-by-side",
                     action: toggleSideBySide,
-                    className: "fa fa-columns no-disable no-mobile",
+                    className: "zmdi zmdi-flip zmdi-hc-lg",
                     title: "Toggle Side by Side",
                     default: true
                 },
                 "fullscreen": {
                     name: "fullscreen",
                     action: toggleFullScreen,
-                    className: "fa fa-arrows-alt no-disable no-mobile",
+                    className: "zmdi zmdi-fullscreen zmdi-hc-lg",
                     title: "Toggle Fullscreen",
                     default: true
                 },
@@ -17267,24 +17272,26 @@
                 "guide": {
                     name: "guide",
                     action: "https://simplemde.com/markdown-guide",
-                    className: "fa fa-question-circle",
+                    className: "zmdi zmdi-book zmdi-hc-lg",
                     title: "Markdown Guide",
-                    default: true
+                    default: false
                 },
-                "separator-5": {
-                    name: "separator-5"
-                },
+                // "separator-5": {
+                //     name: "separator-5"
+                // },
                 "undo": {
                     name: "undo",
                     action: undo,
-                    className: "fa fa-undo no-disable",
-                    title: "Undo"
+                    className: "zmdi zmdi-undo zmdi-hc-lg",
+                    title: "Undo",
+                    default: true
                 },
                 "redo": {
                     name: "redo",
                     action: redo,
-                    className: "fa fa-repeat no-disable",
-                    title: "Redo"
+                    className: "zmdi zmdi-redo zmdi-hc-lg",
+                    title: "Redo",
+                    default: true
                 }
             };
 
