@@ -9,10 +9,10 @@ namespace Egghead.Models.Articles
         public string CreatedAt { get; set; }    
         public string CommentId { get; set; }        
         public string ArticleId { get; set; }
+        public string VotesCount { get; set; }
         public string ProfileId { get; set; }
         public string ProfileName { get; set; }
-        public string ProfileImage { get; set; }
-        public string VotesCount { get; set; }
+        public string ProfileImagePath { get; set; }
         public List<ArticleCommentViewModel> Comments { get; set; }
     }
 }

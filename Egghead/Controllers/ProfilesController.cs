@@ -50,7 +50,7 @@ namespace Egghead.Controllers
             {
                 Id = profile.Id.ToString(),
                 Name = profile.Name,
-                Image = profile.ImagePath,
+                ImagePath = profile.ImagePath,
                 ArticlesCount = ((double)0).ToMetric(),
                 FollowingCount = ((double)0).ToMetric()
             });
@@ -72,7 +72,7 @@ namespace Egghead.Controllers
             {
                 Id = profile.Id.ToString(),
                 Name = profile.Name,
-                Image = profile.ImagePath,
+                ImagePath = profile.ImagePath,
                 ArticlesCount = ((double)0).ToMetric(),
                 FollowingCount = ((double)0).ToMetric()
             });
@@ -118,28 +118,33 @@ namespace Egghead.Controllers
             profile.ImagePath = $"/images/profiles/{profile.Id}/{file.FileName}";
 
             await _profilesManager.UpdateProfileAsync(profile);
-
-            var articlesCount = await _articlesManager.EstimatedArticlesCountAsync();
-
-            var articles = await _articlesManager.FindArticlesAsync((int) articlesCount);
+          
+            //todo: Update optimization
+            
+            var articles = await _articlesManager.FindArticlesAsync(null);
 
             foreach (var article in articles)
             {
-                var commentsCount = await _articlesCommentsManager.CountArticleCommentsByArticleIdAsync(article.Id.ToString());
-
-                var articleComments = await _articlesCommentsManager.FindArticleCommentsByCollectionName(article.Id.ToString(), (int) commentsCount);
-
+                var articleComments = await _articlesCommentsManager.FindArticleCommentsByProfileIdAsync(article.Id.ToString(), article.ProfileId);
                 foreach (var articleComment in articleComments)
-                {
-                    if (profile.Id.Equals(article.ProfileId) && !profile.ImagePath.Equals(articleComment.ProfileImage))
+                {              
+                    // ReSharper disable once InvertIf
+                    if (articleComment.ProfileId.Equals(profile.Id) && articleComment.ProfileImagePath != profile.ImagePath && !article.ProfileImagePath.Equals(profile.ImagePath))
                     {
-                        articleComment.ProfileImage = profile.ImagePath;
-                        await _articlesCommentsManager.UpdateArticleCommentByIdAsync(article.Id.ToString(), articleComment.Id, articleComment);
+                        articleComment.ProfileImagePath = profile.ImagePath;
+                        await _articlesCommentsManager.UpdateArticleCommentByIdAsync(articleComment.ArticleId.ToString(), articleComment.Id, articleComment);
                     }
                 }
             }
 
-
+            var profileArticles = await _articlesManager.FindArticlesByProfileIdAsync(profile.Id);
+      
+            foreach (var profileArticle in profileArticles)
+            {
+                profileArticle.ProfileImagePath = profile.ImagePath;
+                await _articlesManager.UpdateArticleAsync(profileArticle);
+            }
+            
             return RedirectToAction("Articles", "Articles");
         }
     }

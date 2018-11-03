@@ -31,7 +31,7 @@ namespace Egghead.Managers
         {
             ThrowIfDisposed();
 
-            if (collectionName == null)
+            if (string.IsNullOrEmpty(collectionName))
             {
                 throw new ArgumentNullException(nameof(collectionName));
             }
@@ -64,7 +64,7 @@ namespace Egghead.Managers
         {
             ThrowIfDisposed();
 
-            if (collectionName == null)
+            if (string.IsNullOrEmpty(collectionName))
             {
                 throw new ArgumentNullException(nameof(collectionName));
             }
@@ -81,7 +81,7 @@ namespace Egghead.Managers
         {
             ThrowIfDisposed();
 
-            if (collectionName == null)
+            if (string.IsNullOrEmpty(collectionName))
             {
                 throw new ArgumentNullException(nameof(collectionName));
             }
@@ -89,16 +89,33 @@ namespace Egghead.Managers
             return await Store.GetArticleCommentsCollection(collectionName, CancellationToken).EstimatedArticleCommentsCountAsync(CancellationToken);
         }
         
-        public async Task<List<T>> FindArticleCommentsByCollectionName(string collectionName, int? howManyElements)
+        public async Task<List<T>> FindArticleCommentsAsync(string collectionName, int? howManyElements)
         {
             ThrowIfDisposed();
 
-            if (collectionName == null)
+            if (string.IsNullOrEmpty(collectionName))
             {
                 throw new ArgumentNullException(nameof(collectionName));
             }
 
             return await Store.GetArticleCommentsCollection(collectionName, CancellationToken).FindArticleCommentsAsync(howManyElements, CancellationToken);
+        }
+        
+        public async Task<List<T>> FindArticleCommentsByProfileIdAsync(string collectionName, ObjectId profileId)
+        {
+            ThrowIfDisposed();
+
+            if (string.IsNullOrEmpty(collectionName))
+            {
+                throw new ArgumentNullException(nameof(collectionName));
+            }
+
+            if (profileId.Equals(ObjectId.Empty))
+            {
+                throw new ArgumentNullException(nameof(profileId)); 
+            }
+
+            return await Store.GetArticleCommentsCollection(collectionName, CancellationToken).FindArticleCommentsByProfileIdAsync(profileId, CancellationToken);
         }
         
         public void Dispose()
@@ -123,6 +140,6 @@ namespace Egghead.Managers
             {
                 throw new ObjectDisposedException(GetType().Name);
             }
-        }     
+        }   
     }
 }

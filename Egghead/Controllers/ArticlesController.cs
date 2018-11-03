@@ -77,9 +77,6 @@ namespace Egghead.Controllers
 
                 var articles = await _articlesManager.FindArticlesAsync(_configuration.GetSection("EggheadOptions").GetValue<int>("ArticlesPerPage"));
 
-                //todo: Find articles by engagement rate with category list param
-                
-                // ReSharper disable once InconsistentNaming
                 var popularArticles = articles.OrderByDescending(x => EngagementRate.ComputeEngagementRate(x.LikesCount, x.SharesCount, x.CommentsCount, x.ViewsCount));
 
                 return View(new AggregatorViewModel
@@ -88,30 +85,30 @@ namespace Egghead.Controllers
                     {
                         Id = profile.Id.ToString(),
                         Name = profile.Name,
-                        Image = profile.ImagePath ?? NoProfileImage,
+                        ImagePath = profile.ImagePath ?? NoProfileImage,
                         ArticlesCount = ((double) await _articlesManager.CountArticlesByProfileIdAsync(profile.Id)).ToMetric(),
                         FollowingCount = ((double) 0).ToMetric()
-                    },
-                    
+                    },                  
                     Articles = articles.Select(article => new ArticleViewModel
-                    {
+                    {                      
+                        ArticleId = article.Id.ToString(),
+                        ProfileName = article.ProfileName,
+                        ProfileImagePath = article.ProfileImagePath,
                         Text = article.Text.Length > 1000 ? article.Text.Substring(0, 1000) + "..." : article.Text,
                         Title = article.Title,
-                        ArticleId = article.Id.ToString(),
-                        CreatedAt = article.CreatedAt.Humanize(),
                         LikesCount = ((double) article.LikesCount).ToMetric(),
                         SharesCount = ((double)0).ToMetric(),
                         ViewsCount = ((double) article.ViewsCount).ToMetric(),
                         CommentsCount = ((double) article.CommentsCount).ToMetric(),
-                        ProfileName = article.ProfileName
-                    }),
-                    
-                    PopularArticles = popularArticles.Select(article => new PopularArticleViewModel
+                        CreatedAt = article.CreatedAt.Humanize()
+                    }),                    
+                    PopularArticles = popularArticles.Select(popularArticle => new PopularArticleViewModel
                     {
-                        Title = article.Title,
-                        ArticleId = article.Id.ToString(),
-                        CreatedAt = article.CreatedAt.Humanize(),
-                        ProfileName = article.ProfileName
+                        ArticleId = popularArticle.Id.ToString(),
+                        ProfileName = popularArticle.ProfileName,
+                        ProfileImagePath = popularArticle.ProfileImagePath,
+                        Title = popularArticle.Title,
+                        CreatedAt = popularArticle.CreatedAt.Humanize(),                      
                     }).ToList()
                 });
             }
@@ -149,7 +146,7 @@ namespace Egghead.Controllers
 
                 var articles = await _articlesManager.FindArticlesAsync(_configuration.GetSection("EggheadOptions").GetValue<int>("ArticlesPerPage"));
 
-                var articleComments = await _articlesCommentsManager.FindArticleCommentsByCollectionName(articleId, _configuration.GetSection("EggheadOptions").GetValue<int>("CommentsPerArticle"));
+                var articleComments = await _articlesCommentsManager.FindArticleCommentsAsync(articleId, _configuration.GetSection("EggheadOptions").GetValue<int>("CommentsPerArticle"));
    
                 var commentsReplies = new Dictionary<ObjectId, ArticleCommentViewModel>();
 
@@ -167,7 +164,7 @@ namespace Egghead.Controllers
                                 ArticleId = comment.ArticleId.ToString(),
                                 CreatedAt = comment.CreatedAt.Humanize(),
                                 ProfileName = comment.ProfileName,
-                                ProfileImage = comment.ProfileImage ?? NoProfileImage,
+                                ProfileImagePath = comment.ProfileImagePath ?? NoProfileImage,
                                 VotesCount = ((double) comment.VotesCount).ToMetric()
                             });
                         }
@@ -190,7 +187,7 @@ namespace Egghead.Controllers
                                             ArticleId = comment.ArticleId.ToString(),
                                             CreatedAt = comment.CreatedAt.Humanize(),
                                             ProfileName = comment.ProfileName,
-                                            ProfileImage = comment.ProfileImage ?? NoProfileImage,
+                                            ProfileImagePath = comment.ProfileImagePath ?? NoProfileImage,
                                             VotesCount = ((double) comment.VotesCount).ToMetric()
                                         };
                                         return model;
@@ -209,7 +206,7 @@ namespace Egghead.Controllers
                                         ArticleId = comment.ArticleId.ToString(),
                                         CreatedAt = comment.CreatedAt.Humanize(),
                                         ProfileName = comment.ProfileName,
-                                        ProfileImage = comment.ProfileImage ?? NoProfileImage,
+                                        ProfileImagePath = comment.ProfileImagePath ?? NoProfileImage,
                                         VotesCount = ((double) comment.VotesCount).ToMetric()
                                     };
                                     return model;
@@ -229,35 +226,34 @@ namespace Egghead.Controllers
                     {
                         Name = profile.Name,
                         Id = profile.Id.ToString(),
-                        Image = profile.ImagePath ?? NoProfileImage,
+                        ImagePath = profile.ImagePath ?? NoProfileImage,
                         ArticlesCount = ((double) await _articlesManager.CountArticlesByProfileIdAsync(article.ProfileId)).ToMetric(),
                         FollowingCount = ((double) 0).ToMetric()
-                    },
-                    
+                    },                   
                     Articles = new List<ArticleViewModel>
                     {
                         new ArticleViewModel
                         {
-                            Text = article.Text,
-                            Title = article.Title,
                             ArticleId = article.Id.ToString(),
-                            CreatedAt = article.CreatedAt.Humanize(),
+                            ProfileName = article.ProfileName,
+                            ProfileImagePath = article.ProfileImagePath,
+                            Text = article.Text.Length > 1000 ? article.Text.Substring(0, 1000) + "..." : article.Text,
+                            Title = article.Title,
                             LikesCount = ((double) article.LikesCount).ToMetric(),
                             SharesCount = ((double)0).ToMetric(),
                             ViewsCount = ((double) article.ViewsCount).ToMetric(),
                             CommentsCount = ((double) article.CommentsCount).ToMetric(),
-                            ProfileName = article.ProfileName
+                            CreatedAt = article.CreatedAt.Humanize()                           
                         }
-                    },
-                    
+                    },                  
                     PopularArticles = popularArticles.Select(popularArticle => new PopularArticleViewModel
                     {
-                        Title = popularArticle.Title,
                         ArticleId = popularArticle.Id.ToString(),
-                        CreatedAt = popularArticle.CreatedAt.Humanize(),
-                        ProfileName = popularArticle.ProfileName
-                    }).ToList(),
-                    
+                        ProfileName = popularArticle.ProfileName,
+                        ProfileImagePath = popularArticle.ProfileImagePath,
+                        Title = popularArticle.Title,
+                        CreatedAt = popularArticle.CreatedAt.Humanize(),                      
+                    }).ToList(),                  
                     ArticleComments = commentsReplies.Values.ToList()
                 });
             }
@@ -276,15 +272,16 @@ namespace Egghead.Controllers
             try
             {
                 var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
-                
+
                 var article = new MongoDbArticle
                 {
                     Text = viewModel.Text,
-                    Title = viewModel.Title,             
-                    CreatedAt = DateTime.UtcNow,
+                    Title = viewModel.Title,
+                    ReleaseType = ReleaseType.PreModeration,
                     ProfileId = profile.Id,
                     ProfileName = profile.Name,
-                    ReleaseType = ReleaseType.PreModeration,
+                    ProfileImagePath = profile.ImagePath,
+                    CreatedAt = DateTime.UtcNow,
                 };
 
                 await _articlesManager.CreateArticleAsync(article);
@@ -435,9 +432,9 @@ namespace Egghead.Controllers
                     ReplyTo = viewModel.ReplyTo == null ? ObjectId.Empty : ObjectId.Parse(viewModel.ReplyTo),
                     CreatedAt = DateTime.UtcNow,
                     ArticleId = articleId,
-                    ProfileId = profile.Id.ToString(),
+                    ProfileId = profile.Id,
                     ProfileName = profile.Name,
-                    ProfileImage = profile.ImagePath ?? NoProfileImage,
+                    ProfileImagePath = profile.ImagePath ?? NoProfileImage,
                     VotesCount = 0,
                 };
               
@@ -454,9 +451,9 @@ namespace Egghead.Controllers
                     CreatedAt = comment.CreatedAt.Humanize(),
                     CommentId = comment.Id.ToString(),
                     ArticleId = viewModel.ArticleId,
-                    ProfileId = comment.ProfileId,
+                    ProfileId = comment.ProfileId.ToString(),
                     ProfileName = comment.ProfileName,
-                    ProfileImage = comment.ProfileImage ?? NoProfileImage,     
+                    ProfileImagePath = comment.ProfileImagePath ?? NoProfileImage,     
                     VotesCount = ((double)comment.VotesCount).ToMetric()
                 });
             }

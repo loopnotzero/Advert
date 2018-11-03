@@ -63,7 +63,7 @@ namespace Egghead.Managers
 
             return await _store.FindArticleByIdAsync(articleId, CancellationToken);
         }
-        
+            
         public async Task<long> CountArticlesByProfileIdAsync(ObjectId profileId)
         {
             ThrowIfDisposed();
@@ -76,12 +76,24 @@ namespace Egghead.Managers
             return await _store.EstimatedArticlesCountAsync(CancellationToken);           
         } 
 
-        public async Task<List<T>> FindArticlesAsync(int howManyElements)
+        public async Task<List<T>> FindArticlesAsync(int? howManyElements)
         {
             ThrowIfDisposed();          
             return await _store.FindArticlesAsync(howManyElements, CancellationToken);
         }
        
+        public async Task<List<T>> FindArticlesByProfileIdAsync(ObjectId profileId)
+        {
+            ThrowIfDisposed();
+            
+            if (profileId == ObjectId.Empty)
+            {
+                throw new ArgumentNullException(nameof(profileId));
+            }
+
+            return await _store.FindArticlesByProfileIdAsync(profileId, CancellationToken);
+        }
+
         public async Task<UpdateResult> UpdateArticleViewsCountByArticleId(ObjectId articleId, long viewsCount)
         {
             ThrowIfDisposed();
@@ -157,6 +169,6 @@ namespace Egghead.Managers
             {
                 throw new ObjectDisposedException(GetType().Name);
             }
-        }       
+        }
     }
 }
