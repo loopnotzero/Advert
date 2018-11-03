@@ -75,29 +75,36 @@ namespace Egghead.MongoDbStorage.Stores
             return await _collection.CountDocumentsAsync(Builders<T>.Filter.Eq(x => x.ProfileId, profileId), cancellationToken: cancellationToken);
         }
 
-        public async Task<List<T>> FindArticlesAsync(CancellationToken cancellationToken)
+        public async Task<List<T>> FindArticlesAsync(int? howManyElements, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
+           
             var findOptions = new FindOptions<T>
             {
                 Sort = Builders<T>.Sort.Descending(field => field.CreatedAt),                
             };
+
+            if (howManyElements.HasValue)
+            {
+                findOptions.Limit = howManyElements;
+            }
+            
             var cursor = await _collection.FindAsync(Builders<T>.Filter.Empty, findOptions, cancellationToken: cancellationToken);
+           
             return await cursor.ToListAsync(cancellationToken);
         }
 
-        public async Task<List<T>> FindArticlesAsync(int howManyElements, CancellationToken cancellationToken)
+        public async Task<List<T>> FindArticlesByProfileIdAsync(ObjectId profileId, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             var findOptions = new FindOptions<T>
             {
                 Sort = Builders<T>.Sort.Descending(field => field.CreatedAt),
-                Limit = howManyElements
             };
-            var cursor = await _collection.FindAsync(Builders<T>.Filter.Empty, findOptions, cancellationToken: cancellationToken);
-            return await cursor.ToListAsync(cancellationToken);
+            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.ProfileId, profileId), findOptions, cancellationToken: cancellationToken);
+            return await cursor.ToListAsync(cancellationToken);           
         }
-    
+
         public async Task<DeleteResult> DeleteArticleByIdAsync(ObjectId articleId, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
