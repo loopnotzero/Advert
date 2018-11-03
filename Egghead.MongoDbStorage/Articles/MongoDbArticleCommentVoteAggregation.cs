@@ -12,8 +12,8 @@ namespace Egghead.MongoDbStorage.Articles
             //Create indeces
         }
         
-        public ObjectId Id { get; set; }
         public long VotesCount { get; set; }
+        public ObjectId Id { get; set; }
         public VoteType VoteType { get; set; }
     }
 }

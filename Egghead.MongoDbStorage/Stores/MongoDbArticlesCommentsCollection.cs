@@ -43,16 +43,36 @@ namespace Egghead.MongoDbStorage.Stores
         public async Task<List<T>> FindArticleCommentsAsync(int? howManyElements, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
+            
             var findOptions = new FindOptions<T>
             {
                 Sort = Builders<T>.Sort.Ascending(field => field.CreatedAt),
-                Limit = howManyElements,
             };
+
+            if (howManyElements.HasValue)
+            {
+                findOptions.Limit = howManyElements;
+            }
+            
             var cursor = await _collection.FindAsync(Builders<T>.Filter.Empty, findOptions, cancellationToken);
+            
             return await cursor.ToListAsync(cancellationToken);
         }
 
+        public async Task<List<T>> FindArticleCommentsByProfileIdAsync(ObjectId profileId, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            
+            var findOptions = new FindOptions<T>
+            {
+                Sort = Builders<T>.Sort.Ascending(field => field.CreatedAt),
+            };
 
+            var cursor = await _collection.FindAsync(Builders<T>.Filter.Empty, findOptions, cancellationToken);
+
+            return await cursor.ToListAsync(cancellationToken);
+        }
+        
         public async Task<DeleteResult> DeleteArticleCommentByIdAsync(ObjectId commentId, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();

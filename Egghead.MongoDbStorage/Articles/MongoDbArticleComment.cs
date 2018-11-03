@@ -13,11 +13,11 @@ namespace Egghead.MongoDbStorage.Articles
         
         public long VotesCount { get; set; }
         public string Text { get; set; }  
-        public string ProfileId { get; set; }
         public string ProfileName { get; set; }
-        public string ProfileImage { get; set; }
+        public string ProfileImagePath { get; set; }
         public ObjectId Id { get; set; }
         public ObjectId ReplyTo { get; set; }
+        public ObjectId ProfileId { get; set; }
         public ObjectId ArticleId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime ChangedAt { get; set; }

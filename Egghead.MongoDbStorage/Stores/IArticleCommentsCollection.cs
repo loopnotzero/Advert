@@ -13,6 +13,7 @@ namespace Egghead.MongoDbStorage.Stores
         Task<T> FindArticleCommentByIdAsync(ObjectId commentId, CancellationToken cancellationToken);
         Task<long> EstimatedArticleCommentsCountAsync(CancellationToken cancellationToken);
         Task<List<T>> FindArticleCommentsAsync(int? howManyElements, CancellationToken cancellationToken);
+        Task<List<T>> FindArticleCommentsByProfileIdAsync(ObjectId profileId, CancellationToken cancellationToken);
         Task<DeleteResult> DeleteArticleCommentByIdAsync(ObjectId commentId, CancellationToken cancellationToken);
         Task<ReplaceOneResult> UpdateArticleCommentByIdAsync(ObjectId commentId, T entity, CancellationToken cancellationToken);
     }

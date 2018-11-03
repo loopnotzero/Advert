@@ -19,6 +19,7 @@ namespace Egghead.MongoDbStorage.Articles
         public string Text { get; set; }   
         public string Title { get; set; }
         public string ProfileName { get; set; }
+        public string ProfileImagePath { get; set; }
         public string NormalizedProfileName { get; set; }
         public ObjectId Id { get; set; } 
         public ObjectId ProfileId { get; set; }
