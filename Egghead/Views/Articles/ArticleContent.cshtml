@@ -41,7 +41,7 @@
                         foreach (var comment in Model.ArticleComments)
                         {
                             <div id="@comment.CommentId" class="media p-2">
-                                @if (!string.IsNullOrEmpty(Model.Profile.ImagePath))
+                                @if (!string.IsNullOrEmpty(@comment.ProfileImagePath))
                                 {
                                     <img src="@comment.ProfileImagePath" width="48" height="48" alt="profile-image">
                                 }
@@ -70,9 +70,9 @@
                                         foreach (var reply in comment.Comments)
                                         {
                                             <div id="@reply.CommentId" class="media p-2">
-                                                @if (!string.IsNullOrEmpty(Model.Profile.ImagePath))
+                                                @if (!string.IsNullOrEmpty(@comment.ProfileImagePath))
                                                 {
-                                                    <img src="@Model.Profile.ImagePath" width="48" height="48" alt="profile-image">
+                                                    <img src="@comment.ProfileImagePath" width="48" height="48" alt="profile-image">
                                                 }
                                                 else
                                                 {
