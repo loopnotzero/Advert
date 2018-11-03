@@ -444,6 +444,12 @@ namespace Egghead.Controllers
 
                 var comment = await _articlesCommentsManager.FindArticleCommentById(collectionName, articleComment.Id);
 
+                var article = await _articlesManager.FindArticleByIdAsync(comment.ArticleId);
+                
+                article.CommentsCount = await _articlesCommentsManager.CountArticleCommentsByArticleIdAsync(collectionName);
+                
+                await _articlesManager.UpdateArticleAsync(article);
+
                 return Ok(new ArticleCommentViewModel
                 {
                     Text = comment.Text,

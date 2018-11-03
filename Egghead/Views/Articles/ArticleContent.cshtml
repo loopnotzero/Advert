@@ -311,22 +311,6 @@
         });
     }
 
-    function findArticleCommentsByArticleIdAsync(articleId) {
-        $.ajax({
-            url: `/Articles/FindArticleCommentsByArticleIdAsync/${articleId}`,
-            type: "GET",
-            contentType: "application/json",
-            error: function(jqXhr, textStatus, errorThrown) {
-                console.log("jqXhr: " + jqXhr);
-                console.log("textStatus: " + textStatus);
-                console.log("errorThrown: " + errorThrown);
-            },
-            success: function(response) {
-                $("#article-comments").html(response);
-            }
-        });
-    }
-
     $(document).ready(function() {
         var editor = new SimpleMDE({
             status: false,
