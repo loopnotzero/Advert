@@ -9,8 +9,8 @@
         <div class="col-md-8 p-2">
             <div class="card">
                 <div class="text-muted p-3">
-                    <a href="/Profile">
-                        <small class="font-weight-bold">@Model.Profile.Name</small>
+                    <a href="/Profile/@Model.Articles.First().ProfileName">
+                        <small class="font-weight-bold">@Model.Articles.First().ProfileName</small>
                     </a> 
                     <small class="time"> @Model.Articles.First().CreatedAt.Humanize()</small>
                 </div>
@@ -135,7 +135,7 @@
                                             </p>
                                         </div>
                                         <p>
-                                            <a href="/Profile" style="font-size: 0.8rem">@popularArticle.ProfileName</a>
+                                            <a href="/Profile/@popularArticle.ProfileName" style="font-size: 0.8rem">@popularArticle.ProfileName</a>
                                             <small class="time"> @popularArticle.CreatedAt</small>
                                         </p>
                                     </div>

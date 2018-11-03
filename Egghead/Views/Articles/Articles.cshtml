@@ -48,8 +48,8 @@
                         {
                             <article id="@article.ArticleId" class="card-hover">
                                 <div class="text-muted p-3">
-                                    <a href="/Profile">
-                                        <small class="font-weight-bold">@Model.Profile.Name</small>
+                                    <a href="/Profile/@article.ProfileName">
+                                        <small class="font-weight-bold">@article.ProfileName</small>
                                     </a> 
                                     
                                     <small class="time"> @article.CreatedAt</small>
@@ -137,7 +137,7 @@
                                             </p>
                                         </div>
                                         <p>
-                                            <a href="/Profile" style="font-size: 0.8rem">@popularArticle.ProfileName</a>
+                                            <a href="/Profile/@popularArticle.ProfileName" style="font-size: 0.8rem">@popularArticle.ProfileName</a>
                                             <small class="time"> @popularArticle.CreatedAt</small>
                                         </p>
                                     </div>
