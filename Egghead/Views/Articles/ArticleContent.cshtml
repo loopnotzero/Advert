@@ -11,7 +11,7 @@
                 <div class="text-muted p-3">
                     <a href="/Profile/@Model.Articles.First().ProfileName">
                         <small class="font-weight-bold">@Model.Articles.First().ProfileName</small>
-                    </a> 
+                    </a>
                     <small class="time"> @Model.Articles.First().CreatedAt.Humanize()</small>
                 </div>
 
@@ -41,7 +41,7 @@
                         foreach (var comment in Model.ArticleComments)
                         {
                             <div id="@comment.CommentId" class="media p-2">
-                                @if (!string.IsNullOrEmpty(@comment.ProfileImagePath))
+                                @if (!string.IsNullOrEmpty(comment.ProfileImagePath))
                                 {
                                     <img src="@comment.ProfileImagePath" width="48" height="48" alt="profile-image">
                                 }
@@ -51,7 +51,7 @@
                                 }
                                 <div class="media-body content__wrap media__img">
                                     <div class="col-auto">
-                                        <a href="/Profile/@comment.ProfileName">@comment.ProfileName</a> 
+                                        <a href="/Profile/@comment.ProfileName">@comment.ProfileName</a>
                                         <small class="time"> @comment.CreatedAt</small>
                                     </div>
                                     <div class="col-auto">
@@ -70,9 +70,9 @@
                                         foreach (var reply in comment.Comments)
                                         {
                                             <div id="@reply.CommentId" class="media p-2">
-                                                @if (!string.IsNullOrEmpty(@comment.ProfileImagePath))
+                                                @if (!string.IsNullOrEmpty(reply.ProfileImagePath))
                                                 {
-                                                    <img src="@comment.ProfileImagePath" width="48" height="48" alt="profile-image">
+                                                    <img src="@reply.ProfileImagePath" width="48" height="48" alt="profile-image">
                                                 }
                                                 else
                                                 {
@@ -80,7 +80,7 @@
                                                 }
                                                 <div class="media-body content__wrap media__img">
                                                     <div class="col-auto">
-                                                        <a href="/Profile/@comment.ProfileName">@comment.ProfileName</a> <small class="time"> @reply.CreatedAt</small>
+                                                        <a href="/Profile/@reply.ProfileName">@reply.ProfileName</a> <small class="time"> @reply.CreatedAt</small>
                                                     </div>
                                                     <div class="col-auto">
                                                         <h6>@Html.Raw(reply.Text)</h6>
@@ -222,17 +222,19 @@
                             <h6>${response.text}</h6>
                         </div>
                         <div class="col-auto">
-                            <div class="r-btn r-btn-light r-btn--icon" onclick="onCommentVoteClick('${response.commentId}', 1)" >
+                            <div class="r-btn r-btn-light r-btn--icon" onclick="onCommentVoteClick('${response
+                    .commentId}', 1)" >
                                 <i class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
                             </div>
                             <span name="votes-count">${response.votesCount}</span>
-                            <a href="#reply" onclick="showReplyForm('${comment.replyTo}', '${response.commentId}')">Reply</a>
+                            <a href="#reply" onclick="showReplyForm('${comment.replyTo}', '${response.commentId
+                    }')">Reply</a>
                         </div>
                         <div id="reply-placeholder"></div>
                     </div>
                 </div>
                 `);
-                
+
                 $([document.documentElement, document.body]).animate({
                         scrollTop: $(`#${response.commentId}`).offset().top - 250
                     },
@@ -264,7 +266,8 @@
                             <h6>${response.text}</h6>
                         </div>
                         <div class="col-auto">
-                            <div class="r-btn r-btn-light r-btn--icon" onclick="onCommentVoteClick('${response.commentId}', 1)">
+                            <div class="r-btn r-btn-light r-btn--icon" onclick="onCommentVoteClick('${response
+                    .commentId}', 1)">
                                 <i class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
                             </div>
                             <span name="votes-count">${response.votesCount}</span>
@@ -304,7 +307,7 @@
                     {
                         $(`#${commentId} span[name=votes-count]:first`).text(response.votesCount);
                     }
-                    break;    
+                    break;
                 }
 
             }
@@ -321,12 +324,12 @@
         });
 
         $(".CodeMirror, .CodeMirror-scroll").css('min-height', '150px');
-       
+
         $("#publish-comment").click(function() {
             var text = editor.options.previewRender(editor.value());
-            
+
             var articleId = $(`[name='article']`).attr("id");
-            
+
             createArticleCommentAsync(
                 {
                     articleId: articleId,

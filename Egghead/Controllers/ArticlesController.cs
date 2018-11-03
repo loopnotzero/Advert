@@ -138,7 +138,6 @@ namespace Egghead.Controllers
                 var article = await _articlesManager.FindArticleByIdAsync(articleViewsCount.ArticleId);
 
                 article.ViewsCount = await _articlesViewsCountManager.CountArticleViewsCountAsync(articleViewsCount.ArticleId);
-                article.CommentsCount = await _articlesCommentsManager.CountArticleCommentsByArticleIdAsync(articleId);
 
                 await _articlesManager.UpdateArticleAsync(article);
                 
