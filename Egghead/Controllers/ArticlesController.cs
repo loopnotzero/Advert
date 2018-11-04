@@ -518,5 +518,28 @@ namespace Egghead.Controllers
                 return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
             }
         }
+        
+        
+        [HttpGet]
+        [Authorize]
+        [Route("/Articles/CountArticleCommentsByArticleIdAsync/{articleId}")]
+        public async Task<IActionResult> CountArticleCommentsByArticleIdAsync(string articleId)
+        {
+            try
+            {
+                var commentsCount = await _articlesCommentsManager.CountArticleCommentsByArticleIdAsync(articleId);
+                return Ok(new ArticleCommentsCountModel
+                {
+                    ArticleId = articleId,
+                    CommentsCount = ((double)commentsCount).ToMetric()
+                });
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
+            }
+        }
+
     }
 }

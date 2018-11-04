@@ -21,8 +21,8 @@
                 </div>
 
                 <div style="border-bottom: 1px solid #e3e3e3; padding-left: 20px; padding-bottom: 20px">
-                    <h4 id="comments-count">
-                        @Model.Articles.First().CommentsCount Comments
+                    <h4>
+                        <span id="comments-count">@Model.Articles.First().CommentsCount</span> Comments
                     </h4>
                 </div>
 
@@ -49,7 +49,7 @@
                                 {
                                     <img src="/images/no_image.png" width="48" height="48" alt="profile-image">
                                 }
-                                <div class="media-body content__wrap media__img">
+                                <div class="media-body media__img content__break">
                                     <div class="col-auto">
                                         <a href="/Profile/@comment.ProfileName">@comment.ProfileName</a>
                                         <small class="time"> @comment.CreatedAt</small>
@@ -78,7 +78,7 @@
                                                 {
                                                     <img src="/images/no_image.png" width="48" height="48" alt="profile-image">
                                                 }
-                                                <div class="media-body content__wrap media__img">
+                                                <div class="media-body media__img content__break">
                                                     <div class="col-auto">
                                                         <a href="/Profile/@reply.ProfileName">@reply.ProfileName</a> <small class="time"> @reply.CreatedAt</small>
                                                     </div>
@@ -214,7 +214,7 @@
                 $(`#${comment.replyTo} .media-body:first`).append(`
                 <div id="${response.commentId}" class="media p-2">
                     <img src="${response.profileImagePath}" width="48" height="48" alt="profile-image">
-                    <div class="media-body media__img">
+                    <div class="media-body media__img content__break">
                         <div class="col-auto">
                             ${response.profileName} <small class="time"> ${response.createdAt}</small>
                         </div>
@@ -239,6 +239,8 @@
                         scrollTop: $(`#${response.commentId}`).offset().top - 250
                     },
                     200);
+
+                updateArticleCommentsCountByArticleId(response.articleId);
             }
         });
     }
@@ -258,7 +260,7 @@
                 $("#article-comments").append(`
                 <div id="${response.commentId}" class="media p-2">
                     <img src="${response.profileImagePath}" width="48" height="48" alt="profile-image">
-                    <div class="media-body media__img">
+                    <div class="media-body media__img content__break">
                         <div class="col-auto">
                             ${response.profileName} <small class="time"> ${response.createdAt}</small>
                         </div>
@@ -281,6 +283,8 @@
                         scrollTop: $(`#${response.commentId}`).offset().top - 250
                     },
                     200);
+                
+                updateArticleCommentsCountByArticleId(response.articleId);
             }
         });
     }
@@ -310,6 +314,22 @@
                     break;
                 }
 
+            }
+        });
+    }
+    
+    function updateArticleCommentsCountByArticleId(articleId) {
+        $.ajax({
+            url: `/Articles/CountArticleCommentsByArticleIdAsync/${articleId}`,
+            type: "GET",
+            contentType: "application/json",
+            error: function(jqXhr, textStatus, errorThrown) {
+                console.log("jqXhr: " + jqXhr);
+                console.log("textStatus: " + textStatus);
+                console.log("errorThrown: " + errorThrown);
+            },
+            success: function(response) {
+                $("#comments-count").text(response.commentsCount);
             }
         });
     }
