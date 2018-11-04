@@ -16,7 +16,7 @@
                         }
                         else
                         {
-                            <img src="/images/no_image.png" class="widget-profile__img widget-profile__img__hover" alt="profile-image"> 
+                            <img src="/images/no_image.png" class="widget-profile__img widget-profile__img__hover" alt="profile-image">
                         }
                     </a>
                     <a href="/Profile">
@@ -42,69 +42,87 @@
             </div>
         </div>
         <div class="col-md-6 p-2">
-              @{
-                    <div class="card">
-                        @foreach (var article in Model.Articles)
-                        {
-                            <article id="@article.ArticleId" class="card-hover">
-                                <div class="text-muted p-3">
-                                    <a href="/Profile/@article.ProfileName">
-                                        <small class="font-weight-bold">@article.ProfileName</small>
-                                    </a> 
-                                    
-                                    <small class="time"> @article.CreatedAt</small>
-                                    
-                                    <ul class="list-inline float-md-right">
-                                        <li class="list-inline-item">
-                                            <a title="" data-placement="top" data-toggle="tooltip" href="" data-original-title="Facebook">
-                                                <i class="zmdi zmdi-facebook zmdi-hc-fw"></i>
-                                            </a>
-                                        </li>
-                                        <li class="list-inline-item">
-                                            <a title="" data-placement="top" data-toggle="tooltip" href="" data-original-title="Twitter">
-                                                <i class="zmdi zmdi-twitter zmdi-hc-fw"></i>
-                                            </a>
-                                        </li>
-                                        <li class="list-inline-item">
-                                            <a title="" data-placement="top" data-toggle="tooltip" href="" data-original-title="Skype">
-                                                <i class="zmdi zmdi-skype zmdi-hc-fw"></i>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div class="card-body card-body__img">
-                                    <a href="/Articles/@article.ArticleId">
-                                        <h4 class="card-title font-weight-bold cut-long-text mb-2">@article.Title</h4>
-                                    </a>
-                                    @Html.Raw(article.Text)
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-12 p-1">
-                                        <div class="r-btn r-btn-light r-btn--icon waves-effect ml-4" onclick="onVoteArticleClick('@article.ArticleId', 1)" >
-                                            <i class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
-                                        </div>
-                                        <small id="votes-count">@article.LikesCount</small>
-                                        
-                                        <div class="r-btn r-btn-light-no-hover r-btn--icon-no-hover">
-                                            <i class="zmdi zmdi-comments zmdi-hc-fw"></i>
-                                        </div>
-                                        <small id="comments-count">@article.CommentsCount</small>
-                                        
-                                        <div class="r-btn r-btn-light-no-hover r-btn--icon-no-hover">
-                                            <i class="zmdi zmdi-eye zmdi-hc-fw"></i>
-                                        </div>
-                                        <small id="article-view-count">@article.ViewsCount</small>
+            @{
+                <div class="card">
+                    @foreach (var article in Model.Articles)
+                    {
+                        <article id="@article.ArticleId" class="card-hover">
+                            <div class="text-muted p-3">
+                                <a href="/Profile/@article.ProfileName">
+                                    <small class="font-weight-bold">@article.ProfileName</small>
+                                </a>
 
-                                        <small class="text-muted float-right mt-2 mr-4">
-                                            <a href="/Articles/@article.ArticleId">READ MORE...</a>
-                                        </small>
+                                <small class="time"> @article.CreatedAt</small>
+
+                                <ul class="list-inline float-md-right">
+                                    <li class="list-inline-item">
+                                        <a title="" data-placement="top" data-toggle="tooltip" href="" data-original-title="Facebook">
+                                            <i class="zmdi zmdi-facebook zmdi-hc-fw"></i>
+                                        </a>
+                                    </li>
+                                    <li class="list-inline-item">
+                                        <a title="" data-placement="top" data-toggle="tooltip" href="" data-original-title="Twitter">
+                                            <i class="zmdi zmdi-twitter zmdi-hc-fw"></i>
+                                        </a>
+                                    </li>
+                                    <li class="list-inline-item">
+                                        <a title="" data-placement="top" data-toggle="tooltip" href="" data-original-title="Skype">
+                                            <i class="zmdi zmdi-skype zmdi-hc-fw"></i>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="card-body card-body__img">
+                                <a href="/Articles/@article.ArticleId">
+                                    <h4 class="card-title font-weight-bold cut-long-text mb-2">@article.Title</h4>
+                                </a>
+                                @Html.Raw(article.Text)
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12 p-1">
+                                    <div class="r-btn r-btn-light r-btn--icon waves-effect ml-4" onclick="onVoteArticleClick('@article.ArticleId', 1)">
+                                        <i class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
                                     </div>
+                                    <small id="votes-count">@article.LikesCount</small>
+
+                                    <div class="r-btn r-btn-light-no-hover r-btn--icon-no-hover">
+                                        <i class="zmdi zmdi-comments zmdi-hc-fw"></i>
+                                    </div>
+                                    <small id="comments-count">@article.CommentsCount</small>
+
+                                    <div class="r-btn r-btn-light-no-hover r-btn--icon-no-hover">
+                                        <i class="zmdi zmdi-eye zmdi-hc-fw"></i>
+                                    </div>
+                                    <small id="article-view-count">@article.ViewsCount</small>
+
+                                    <small class="text-muted float-right mt-2 mr-4">
+                                        <a href="/Articles/@article.ArticleId">READ MORE...</a>
+                                    </small>
                                 </div>
-                            </article>
-                            <div style="border-bottom: 1px solid #d5d5d5;"></div>
-                        }
-                    </div>
-                }
+                            </div>
+                        </article>
+                        <div style="border-bottom: 1px solid #d5d5d5;"></div>
+                    }
+                </div>
+            }
+            <div class="card">
+                <div class="card-body">
+                    <nav>
+                        <ul class="pagination">
+                            <li class="page-item pagination-first disabled"><a class="page-link" href="#"></a></li>
+                            <li class="page-item pagination-prev disabled"><a class="page-link" href="#"></a></li>
+                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                            <li class="page-item"><a class="page-link" href="#">4</a></li>
+                            <li class="page-item"><a class="page-link" href="#">5</a></li>
+                            <li class="page-item"><a class="page-link" href="#">6</a></li>
+                            <li class="page-item pagination-next"><a class="page-link" href="#"></a></li>
+                            <li class="page-item pagination-last"><a class="page-link" href="#"></a></li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
         </div>
         <div class="col-md-3 p-2">
             <div class="card p-4">
