@@ -5,6 +5,8 @@
 @import "bootstrap/mixins/breakpoints";
 @import "bootstrap/mixins/size";
 @import "bootstrap/mixins/forms";
+@import "bootstrap/mixins/pagination";
+@import "bootstrap/mixins/lists";
 @import "bootstrap/mixins/border-radius";
 @import "bootstrap/mixins/box-shadow";
 @import "bootstrap/mixins/gradients";
@@ -14,6 +16,7 @@
 @import "bootstrap/functions";
 @import "bootstrap/variables";
 @import "bootstrap/forms";
+@import "bootstrap/pagination";
 
 @import "bootstrap-overrides/card";
 @import "bootstrap-overrides/buttons";
