@@ -69,14 +69,19 @@ namespace Egghead.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> Articles()
+        [Route("/{pageIndex?}")]
+        public async Task<IActionResult> Articles(int pageIndex = 1)
         {
             try
             {
                 var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
-
-                var articles = await _articlesManager.FindArticlesAsync(_configuration.GetSection("EggheadOptions").GetValue<int>("ArticlesPerPage"));
-
+                var maxArticlesPerPage = _configuration.GetSection("EggheadOptions").GetValue<int>("MaxArticlesPerPage");
+                var offset = (pageIndex - 1) * maxArticlesPerPage;               
+                var articles = await _articlesManager.FindArticlesAsync(offset, maxArticlesPerPage);
+                var articlesCount = await _articlesManager.EstimatedArticlesCountAsync();
+                
+                var pagesCount = (int)Math.Ceiling(articlesCount / (double)maxArticlesPerPage);
+              
                 var popularArticles = articles.OrderByDescending(x => EngagementRate.ComputeEngagementRate(x.LikesCount, x.SharesCount, x.CommentsCount, x.ViewsCount));
 
                 return View(new AggregatorViewModel
@@ -88,28 +93,30 @@ namespace Egghead.Controllers
                         ImagePath = profile.ImagePath ?? NoProfileImage,
                         ArticlesCount = ((double) await _articlesManager.CountArticlesByProfileIdAsync(profile.Id)).ToMetric(),
                         FollowingCount = ((double) 0).ToMetric()
-                    },                  
+                    },
                     Articles = articles.Select(article => new ArticleViewModel
-                    {                      
+                    {
                         ArticleId = article.Id.ToString(),
                         ProfileName = article.ProfileName,
                         ProfileImagePath = article.ProfileImagePath,
                         Text = article.Text.Length > 1000 ? article.Text.Substring(0, 1000) + "..." : article.Text,
                         Title = article.Title,
                         LikesCount = ((double) article.LikesCount).ToMetric(),
-                        SharesCount = ((double)0).ToMetric(),
+                        SharesCount = ((double) 0).ToMetric(),
                         ViewsCount = ((double) article.ViewsCount).ToMetric(),
                         CommentsCount = ((double) article.CommentsCount).ToMetric(),
                         CreatedAt = article.CreatedAt.Humanize()
-                    }),                    
+                    }),
                     PopularArticles = popularArticles.Select(popularArticle => new PopularArticleViewModel
                     {
                         ArticleId = popularArticle.Id.ToString(),
                         ProfileName = popularArticle.ProfileName,
                         ProfileImagePath = popularArticle.ProfileImagePath,
                         Title = popularArticle.Title,
-                        CreatedAt = popularArticle.CreatedAt.Humanize(),                      
-                    }).ToList()
+                        CreatedAt = popularArticle.CreatedAt.Humanize(),
+                    }).ToList(),
+                    PagesCount = pagesCount,
+                    CurrentPage = pageIndex
                 });
             }
             catch (Exception e)
@@ -118,7 +125,7 @@ namespace Egghead.Controllers
                 return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
             }
         }
-        
+
         [HttpGet]
         [Authorize]
         [Route("/Articles/{articleId}")]
@@ -143,9 +150,9 @@ namespace Egghead.Controllers
                 
                 var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
 
-                var articles = await _articlesManager.FindArticlesAsync(_configuration.GetSection("EggheadOptions").GetValue<int>("ArticlesPerPage"));
+                var articles = await _articlesManager.FindArticlesAsync(_configuration.GetSection("EggheadOptions").GetValue<int>("MaxArticlesPerPage"));
 
-                var articleComments = await _articlesCommentsManager.FindArticleCommentsAsync(articleId, _configuration.GetSection("EggheadOptions").GetValue<int>("CommentsPerArticle"));
+                var articleComments = await _articlesCommentsManager.FindArticleCommentsAsync(articleId, _configuration.GetSection("EggheadOptions").GetValue<int>("MaxCommentsPerArticle"));
    
                 var commentsReplies = new Dictionary<ObjectId, ArticleCommentViewModel>();
 
@@ -236,7 +243,7 @@ namespace Egghead.Controllers
                             ArticleId = article.Id.ToString(),
                             ProfileName = article.ProfileName,
                             ProfileImagePath = article.ProfileImagePath,
-                            Text = article.Text.Length > 1000 ? article.Text.Substring(0, 1000) + "..." : article.Text,
+                            Text = article.Text,
                             Title = article.Title,
                             LikesCount = ((double) article.LikesCount).ToMetric(),
                             SharesCount = ((double)0).ToMetric(),
@@ -540,6 +547,5 @@ namespace Egghead.Controllers
                 return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
             }
         }
-
     }
 }

@@ -1,5 +1,4 @@
 ﻿@using Egghead.Models.Articles
-
 @model AggregatorViewModel
 
 @Html.Partial("Header", Model)
@@ -108,17 +107,54 @@
             
             <div class="mt-4">
                 <nav>
-                    <ul class="pagination justify-content-center">
-                        <li class="page-item pagination-first"><a class="page-link" href="#"></a></li>
-                        <li class="page-item pagination-prev"><a class="page-link" href="#"></a></li>
-                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                        <li class="page-item"><a class="page-link" href="#">4</a></li>
-                        <li class="page-item"><a class="page-link" href="#">5</a></li>
-                        <li class="page-item"><a class="page-link" href="#">6</a></li>
-                        <li class="page-item pagination-next"><a class="page-link" href="#"></a></li>
-                        <li class="page-item pagination-last"><a class="page-link" href="#"></a></li>
+                    <ul class="pagination justify-content-center">                        
+                        @if (Model.CurrentPage > 1)
+                        {
+                            <li class="page-item pagination-first"><a class="page-link" href="/1"></a></li>                            
+                            <li class="page-item pagination-prev">
+                                <a class="page-link" href="/@(Model.CurrentPage - 1)"></a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="page-item pagination-first disabled"><a class="page-link" href="#"></a></li>
+                            <li class="page-item pagination-prev disabled">
+                                <a class="page-link"></a>
+                            </li>                                             
+                        }
+                        
+                        @{
+                            for (var index = 1; index < Model.PagesCount + 1; index++)
+                            {
+                                if (Model.CurrentPage == index)
+                                {
+                                    <li class="page-item active">
+                                        <a class="page-link" href="/@index">@index</a>
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li class="page-item">
+                                        <a class="page-link" href="/@index">@index</a>
+                                    </li> 
+                                }                               
+                            }
+                        }  
+                        
+                        @if (Model.CurrentPage >= Model.PagesCount)
+                        {
+                            <li class="page-item pagination-next disabled">
+                                <a class="page-link" href="#"></a>
+                            </li>
+                            <li class="page-item pagination-last disabled"><a class="page-link" href="#"></a></li>
+                        }
+                        else
+                        {
+                            <li class="page-item pagination-next">
+                                <a class="page-link" href="/@(Model.CurrentPage + 1)"></a>
+                            </li>
+                            <li class="page-item pagination-last"><a class="page-link" href="/@Model.PagesCount"></a></li>
+                        }                                        
                     </ul>
                 </nav> 
             </div>

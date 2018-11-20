@@ -81,6 +81,12 @@ namespace Egghead.Managers
             ThrowIfDisposed();          
             return await _store.FindArticlesAsync(howManyElements, CancellationToken);
         }
+        
+        public async Task<List<T>> FindArticlesAsync(int offset, int? howManyElements)
+        {
+            ThrowIfDisposed();          
+            return await _store.FindArticlesAsync(offset, howManyElements, CancellationToken);
+        }
        
         public async Task<List<T>> FindArticlesByProfileIdAsync(ObjectId profileId)
         {
