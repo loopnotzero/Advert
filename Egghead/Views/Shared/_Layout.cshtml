@@ -117,7 +117,7 @@
 
         body.on('click',
             '[data-ma-action]',
-            function(e) {             
+            function(e) {
                 e.preventDefault();
                 var $this = $(this);
                 var action = $this.data('ma-action');
@@ -128,7 +128,7 @@
                     break;
                 case 'search-close':
                     $('.search').removeClass('search--toggled');
-                    break;               
+                    break;
                 }
             });
     });

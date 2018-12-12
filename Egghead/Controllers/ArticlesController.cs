@@ -70,18 +70,23 @@ namespace Egghead.Controllers
         [HttpGet]
         [Authorize]
         [Route("/{pageIndex?}")]
-        public async Task<IActionResult> Articles(int pageIndex = 1)
+        public async Task<IActionResult> GetArticles(int pageIndex = 1)
         {
             try
             {
-                var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
-                var maxArticlesPerPage = _configuration.GetSection("EggheadOptions").GetValue<int>("MaxArticlesPerPage");
-                var offset = (pageIndex - 1) * maxArticlesPerPage;               
-                var articles = await _articlesManager.FindArticlesAsync(offset, maxArticlesPerPage);
-                var articlesCount = await _articlesManager.EstimatedArticlesCountAsync();
+                var maxArticlesPerPage = _configuration.GetSection("Egghead").GetValue<int>("ArticlesPerPage");
                 
-                var pagesCount = (int)Math.Ceiling(articlesCount / (double)maxArticlesPerPage);
-              
+                var offset = (pageIndex - 1) * maxArticlesPerPage;
+                   
+                var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
+
+                var articles = await _articlesManager.FindArticlesAsync(offset, maxArticlesPerPage);
+
+                var articlesCount = await _articlesManager.EstimatedArticlesCountAsync(); 
+
+                var pagesCount = (int)Math.Ceiling(articlesCount / (double)maxArticlesPerPage); 
+
+                //todo: fix popular articles
                 var popularArticles = articles.OrderByDescending(x => EngagementRate.ComputeEngagementRate(x.LikesCount, x.SharesCount, x.CommentsCount, x.ViewsCount));
 
                 return View(new AggregatorViewModel
@@ -105,7 +110,7 @@ namespace Egghead.Controllers
                         SharesCount = ((double) 0).ToMetric(),
                         ViewsCount = ((double) article.ViewsCount).ToMetric(),
                         CommentsCount = ((double) article.CommentsCount).ToMetric(),
-                        CreatedAt = article.CreatedAt.Humanize()
+                        CreatedAt = article.CreatedAt.Humanize(),
                     }),
                     PopularArticles = popularArticles.Select(popularArticle => new PopularArticleViewModel
                     {
@@ -115,8 +120,9 @@ namespace Egghead.Controllers
                         Title = popularArticle.Title,
                         CreatedAt = popularArticle.CreatedAt.Humanize(),
                     }).ToList(),
-                    PagesCount = pagesCount,
-                    CurrentPage = pageIndex
+                                  
+                    PageIndex = pageIndex,
+                    PagesCount = pagesCount
                 });
             }
             catch (Exception e)
@@ -128,8 +134,8 @@ namespace Egghead.Controllers
 
         [HttpGet]
         [Authorize]
-        [Route("/Articles/{articleId}")]
-        public async Task<IActionResult> ArticleContent(string articleId)
+        [Route("/Articles/{articleId}/{pageIndex}")]
+        public async Task<IActionResult> GetArticleContent(string articleId, int pageIndex = 1)
         {
             try
             {
@@ -139,28 +145,24 @@ namespace Egghead.Controllers
                     ArticleId = ObjectId.Parse(articleId),
                     CreatedAt = DateTime.UtcNow
                 };
-
+                
                 await _articlesViewsCountManager.CreateArticleViewsCountAsync(articleViewsCount);
-                
+               
                 var article = await _articlesManager.FindArticleByIdAsync(articleViewsCount.ArticleId);
-
-                article.ViewsCount = await _articlesViewsCountManager.CountArticleViewsCountAsync(articleViewsCount.ArticleId);
-
-                await _articlesManager.UpdateArticleAsync(article);
                 
-                var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
-
-                var articles = await _articlesManager.FindArticlesAsync(_configuration.GetSection("EggheadOptions").GetValue<int>("MaxArticlesPerPage"));
-
-                var articleComments = await _articlesCommentsManager.FindArticleCommentsAsync(articleId, _configuration.GetSection("EggheadOptions").GetValue<int>("MaxCommentsPerArticle"));
+                article.ViewsCount = await _articlesViewsCountManager.CountArticleViewsCountAsync(articleViewsCount.ArticleId);
+                
+                await _articlesManager.UpdateArticleAsync(article);
+       
+                var articleComments = await _articlesCommentsManager.FindArticleCommentsAsync(articleId, 0, null, SortDefinition.Descending);
    
                 var commentsReplies = new Dictionary<ObjectId, ArticleCommentViewModel>();
 
-                foreach (var comments in articleComments.GroupBy(comment => comment.ReplyTo))
+                foreach (var comments in articleComments.OrderBy(x => x.ReplyTo).GroupBy(comment => comment.ReplyTo))
                 {
                     if (comments.Key == ObjectId.Empty)
                     {
-                        foreach (var comment in comments.OrderBy(x => x.CreatedAt))
+                        foreach (var comment in comments)
                         {
                             commentsReplies.Add(comment.Id, new ArticleCommentViewModel
                             {
@@ -224,6 +226,10 @@ namespace Egghead.Controllers
 
                 //todo: Find articles by engagement rate with category list param
 
+                var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
+
+                var articles = await _articlesManager.FindArticlesAsync(_configuration.GetSection("Egghead").GetValue<int>("ArticlesPerPage"));
+
                 var popularArticles = articles.OrderByDescending(x => EngagementRate.ComputeEngagementRate(x.LikesCount, x.SharesCount, x.CommentsCount, x.ViewsCount));
 
                 return View(new AggregatorViewModel
@@ -260,7 +266,7 @@ namespace Egghead.Controllers
                         Title = popularArticle.Title,
                         CreatedAt = popularArticle.CreatedAt.Humanize(),                      
                     }).ToList(),                  
-                    ArticleComments = commentsReplies.Values.ToList()
+                    ArticleComments = commentsReplies.Values.ToList(),
                 });
             }
             catch (Exception e)
@@ -292,7 +298,7 @@ namespace Egghead.Controllers
 
                 await _articlesManager.CreateArticleAsync(article);
 
-                var url = Url.Action("ArticleContent", "Articles", new {articleId = article.Id});
+                var url = Url.Action("GetArticleContent", "Articles", new {articleId = article.Id});
 
                 return Ok(new
                 {
@@ -444,15 +450,13 @@ namespace Egghead.Controllers
                     VotesCount = 0,
                 };
               
-                var collectionName = viewModel.ArticleId;
-
-                await _articlesCommentsManager.CreateArticleComment(collectionName, articleComment);
-
-                var comment = await _articlesCommentsManager.FindArticleCommentById(collectionName, articleComment.Id);
-
+                await _articlesCommentsManager.CreateArticleComment(viewModel.ArticleId, articleComment);
+                
+                var comment = await _articlesCommentsManager.FindArticleCommentById(viewModel.ArticleId, articleComment.Id);
+                
                 var article = await _articlesManager.FindArticleByIdAsync(comment.ArticleId);
                 
-                article.CommentsCount = await _articlesCommentsManager.CountArticleCommentsByArticleIdAsync(collectionName);
+                article.CommentsCount = await _articlesCommentsManager.EstimatedArticleCommentsByArticleIdAsync(viewModel.ArticleId);
                 
                 await _articlesManager.UpdateArticleAsync(article);
 
@@ -475,7 +479,7 @@ namespace Egghead.Controllers
                 return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
             }
         }
-
+      
         [HttpPost]
         [Authorize]
         [Route("/Articles/CreateArticleCommentVoteAsync")]
@@ -525,8 +529,7 @@ namespace Egghead.Controllers
                 return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
             }
         }
-        
-        
+            
         [HttpGet]
         [Authorize]
         [Route("/Articles/CountArticleCommentsByArticleIdAsync/{articleId}")]
@@ -534,7 +537,7 @@ namespace Egghead.Controllers
         {
             try
             {
-                var commentsCount = await _articlesCommentsManager.CountArticleCommentsByArticleIdAsync(articleId);
+                var commentsCount = await _articlesCommentsManager.EstimatedArticleCommentsByArticleIdAsync(articleId);
                 return Ok(new ArticleCommentsCountModel
                 {
                     ArticleId = articleId,

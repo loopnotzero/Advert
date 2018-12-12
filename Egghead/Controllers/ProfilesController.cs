@@ -145,7 +145,7 @@ namespace Egghead.Controllers
                 await _articlesManager.UpdateArticleAsync(profileArticle);
             }
             
-            return RedirectToAction("Articles", "Articles");
+            return RedirectToAction("GetArticles", "Articles");
         }
     }
 }

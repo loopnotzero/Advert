@@ -1,6 +1,6 @@
 .card {
   box-shadow: $card-shadow;
-  margin-bottom: $card-columns-margin;
+  margin-bottom: 0;
 
   &:not([class*="border-"]) {
     border: 0;

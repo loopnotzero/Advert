@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Egghead.Common;
+using Egghead.Common.Articles;
 using Egghead.MongoDbStorage.Articles;
 using Egghead.MongoDbStorage.Stores;
 using Microsoft.AspNetCore.Identity;
@@ -87,7 +88,7 @@ namespace Egghead.Managers
             ThrowIfDisposed();          
             return await _store.FindArticlesAsync(offset, howManyElements, CancellationToken);
         }
-       
+      
         public async Task<List<T>> FindArticlesByProfileIdAsync(ObjectId profileId)
         {
             ThrowIfDisposed();

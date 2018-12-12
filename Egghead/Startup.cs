@@ -1,5 +1,4 @@
-﻿using System;
-using Egghead.Managers;
+﻿using Egghead.Managers;
 using Egghead.MongoDbStorage.Articles;
 using Egghead.MongoDbStorage.Common;
 using Egghead.MongoDbStorage.Profiles;
@@ -44,13 +43,13 @@ namespace Egghead
 
             app.UseAuthentication();
 
-            app.UseMvc(routes => { routes.MapRoute("default", "{controller=Articles}/{action=Articles}/{id?}"); });
+            app.UseMvc(routes => { routes.MapRoute("default", "{controller=Articles}/{action=GetArticles}/{id?}"); });
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<MongoDbOptions>(Configuration.GetSection("MongoDbOptions"));
+            services.Configure<MongoDbOptions>(Configuration.GetSection("MongoDatabase"));
             
             #region Scoped services
             services.AddScoped<ProfilesManager<MongoDbProfile>, ProfilesManager<MongoDbProfile>>();

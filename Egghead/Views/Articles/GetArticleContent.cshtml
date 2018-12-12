@@ -2,7 +2,7 @@
 @using Humanizer
 @model AggregatorViewModel
 
-@Html.Partial("Header", Model)
+@await Html.PartialAsync("_Header", Model)
 
 <section id="@Model.Articles.First().ArticleId" name="article" class="content">
     <div class="row">
@@ -131,7 +131,7 @@
                                     <div class="listview__content">
                                         <div class="listview__heading">
                                             <p>
-                                                <a class="font-weight-bold" href="/Articles/@popularArticle.ArticleId">@popularArticle.Title</a>
+                                                <a class="font-weight-bold" href="/@popularArticle.ArticleId">@popularArticle.Title</a>
                                             </p>
                                         </div>
                                         <p>
@@ -201,7 +201,7 @@
 
     function createCommentReplyAsync(comment) {
         $.ajax({
-            url: `/Articles/CreateArticleCommentAsync`,
+            url: `/CreateArticleCommentAsync`,
             type: "POST",
             data: JSON.stringify(comment),
             contentType: "application/json",
@@ -247,7 +247,7 @@
 
     function createArticleCommentAsync(comment) {
         $.ajax({
-            url: `/Articles/CreateArticleCommentAsync`,
+            url: `/CreateArticleCommentAsync`,
             type: "POST",
             data: JSON.stringify(comment),
             contentType: "application/json",
@@ -257,7 +257,7 @@
                 console.log("errorThrown: " + errorThrown);
             },
             success: function(response) {
-                $("#article-comments").append(`
+                $("#article-comments").prepend(`
                 <div id="${response.commentId}" class="media p-2">
                     <img src="${response.profileImagePath}" width="48" height="48" alt="profile-image">
                     <div class="media-body media__img content__break">
@@ -283,7 +283,7 @@
                         scrollTop: $(`#${response.commentId}`).offset().top - 250
                     },
                     200);
-                
+
                 updateArticleCommentsCountByArticleId(response.articleId);
             }
         });
@@ -296,7 +296,7 @@
             commentId: commentId
         }
         $.ajax({
-            url: "/Articles/CreateArticleCommentVoteAsync",
+            url: "/CreateArticleCommentVoteAsync",
             type: "POST",
             data: JSON.stringify(vote),
             contentType: "application/json",
@@ -317,10 +317,10 @@
             }
         });
     }
-    
+
     function updateArticleCommentsCountByArticleId(articleId) {
         $.ajax({
-            url: `/Articles/CountArticleCommentsByArticleIdAsync/${articleId}`,
+            url: `/CountArticleCommentsByArticleIdAsync/${articleId}`,
             type: "GET",
             contentType: "application/json",
             error: function(jqXhr, textStatus, errorThrown) {

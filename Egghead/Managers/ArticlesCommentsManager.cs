@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Egghead.Common;
+using Egghead.Common.Articles;
 using Egghead.Models.Articles;
 using Egghead.MongoDbStorage.Articles;
 using Egghead.MongoDbStorage.Stores;
@@ -77,7 +78,7 @@ namespace Egghead.Managers
             return await Store.GetArticleCommentsCollection(collectionName, CancellationToken).FindArticleCommentByIdAsync(commendId, CancellationToken);
         }
         
-        public async Task<long> CountArticleCommentsByArticleIdAsync(string collectionName)
+        public async Task<long> EstimatedArticleCommentsByArticleIdAsync(string collectionName)
         {
             ThrowIfDisposed();
 
@@ -99,6 +100,30 @@ namespace Egghead.Managers
             }
 
             return await Store.GetArticleCommentsCollection(collectionName, CancellationToken).FindArticleCommentsAsync(howManyElements, CancellationToken);
+        }
+        
+        public async Task<List<T>> FindArticleCommentsAsync(string collectionName, int offset, int? howManyElements)
+        {
+            ThrowIfDisposed();
+
+            if (string.IsNullOrEmpty(collectionName))
+            {
+                throw new ArgumentNullException(nameof(collectionName));
+            }
+
+            return await Store.GetArticleCommentsCollection(collectionName, CancellationToken).FindArticleCommentsAsync(offset, howManyElements, CancellationToken);
+        }
+        
+        public async Task<List<T>> FindArticleCommentsAsync(string collectionName, int offset, int? howManyElements, SortDefinition sortDef)
+        {
+            ThrowIfDisposed();
+
+            if (string.IsNullOrEmpty(collectionName))
+            {
+                throw new ArgumentNullException(nameof(collectionName));
+            }
+
+            return await Store.GetArticleCommentsCollection(collectionName, CancellationToken).FindArticleCommentsAsync(offset, howManyElements, sortDef, CancellationToken);
         }
         
         public async Task<List<T>> FindArticleCommentsByProfileIdAsync(string collectionName, ObjectId profileId)

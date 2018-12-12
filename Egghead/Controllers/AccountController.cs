@@ -30,6 +30,7 @@ namespace Egghead.Controllers
 
         [HttpGet]
         [AllowAnonymous]
+        [Route("/Account/LogIn/{returnUrl?}")]
         public IActionResult LogIn(string returnUrl = null)
         {
             ViewData["returnUrl"] = returnUrl;
@@ -38,6 +39,7 @@ namespace Egghead.Controllers
 
         [HttpGet]
         [AllowAnonymous]
+        [Route("/Account/SignUp/{returnUrl?}")]
         public IActionResult SignUp(string returnUrl = null)
         {
             ViewData["returnUrl"] = returnUrl;
@@ -46,12 +48,15 @@ namespace Egghead.Controllers
 
         [HttpGet]
         [AllowAnonymous]
+        [Route("/Account/SignOut/{returnUrl?}")]
         public async Task<IActionResult> SignOut(string returnUrl = null)
         {
             try
             {
                 ViewData["returnUrl"] = returnUrl;
+                
                 await _signInManager.SignOutAsync();
+                
                 return Ok(new
                 {
                     returnUrl
@@ -67,60 +72,66 @@ namespace Egghead.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
+        [Route("/Account/LogIn/{returnUrl?}")]
         public async Task<IActionResult> LogIn(LogInModel model, string returnUrl = null)
         {
-            ViewData["returnUrl"] = returnUrl;
-
-            if (!ModelState.IsValid)
+            try
             {
-                return View(model);
+                ViewData["returnUrl"] = returnUrl;
+
+                if (!ModelState.IsValid)
+                {
+                    return View(model);
+                }
+
+                await _signInManager.PasswordSignInAsync(model.Email, model.Password, false, false);
+
+                return RedirectToLocal(returnUrl);
             }
-
-//            var form = HttpContext.Request.Form["g-recaptcha-response"];
-//
-//            var captchaResult = await GetCaptchaValidationResultAsync(form,
-//                _configuration.GetSection("GoogleReCaptchaOptions").GetValue<string>("SecretKey"), _logger);
-//
-//            if (!captchaResult.Success)
-//            {
-//                _logger.LogError(captchaResult.ErrorCodes[0]);
-//                ModelState.AddModelError(ModelErrorKey.ReCaptchaErrorStringPropertyName, captchaResult.ErrorCodes[0]);
-//                return View(model);
-//            }
-
-            await _signInManager.PasswordSignInAsync(model.Email, model.Password, false, false);
-
-            return RedirectToLocal(returnUrl);
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
+            }           
         }
 
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
+        [Route("/Account/SignUp/{returnUrl?}")]
         public async Task<IActionResult> SignUp([FromBody] SignUpModel model, string returnUrl = null)
         {
-            ViewData["returnUrl"] = returnUrl;
-
-            var user = new MongoDbUser
+            try
             {
-                Email = model.Email,
-                UserName = model.Email,
-            };
+                ViewData["returnUrl"] = returnUrl;
 
-            await _userManager.CreateAsync(user, model.Password);
+                var user = new MongoDbUser
+                {
+                    Email = model.Email,
+                    UserName = model.Email,
+                };
+
+                await _userManager.CreateAsync(user, model.Password);
             
-            await _signInManager.SignInAsync(user, false);
+                await _signInManager.SignInAsync(user, false);
 
-            await _profilesManager.CreateProfileAsync(new MongoDbProfile
-            {
-                Name = model.Name,
-                Email = model.Email,
-                CreatedAt = DateTime.UtcNow
-            });
+                await _profilesManager.CreateProfileAsync(new MongoDbProfile
+                {
+                    Name = model.Name,
+                    Email = model.Email,
+                    CreatedAt = DateTime.UtcNow
+                });
                               
-            return Ok(new
+                return Ok(new
+                {
+                    returnUrl
+                });
+            }
+            catch (Exception e)
             {
-                returnUrl
-            });
+                _logger.LogError(e.Message, e);
+                return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
+            }          
         }
         
         
@@ -131,7 +142,7 @@ namespace Egghead.Controllers
                 return Redirect(returnUrl);
             }
 
-            return RedirectToAction(nameof(ArticlesController.Articles), "Articles");
+            return RedirectToAction(nameof(ArticlesController.GetArticles), "Articles");       
         }
     }
 }
