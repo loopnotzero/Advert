@@ -9,7 +9,9 @@ namespace Egghead.Models.Articles
         public IEnumerable<ArticleViewModel> Articles { get; set; }
         public IEnumerable<PopularArticleViewModel> PopularArticles { get; set; }
         public IEnumerable<ArticleCommentViewModel> ArticleComments { get; set; }
-        public int PageIndex { get; set; }
-        public int PagesCount { get; set; }
+        public long BeginPage { get; set; }
+        public long EndPage { get; set; }
+        public long CurrentPage { get; set; }
+        public long LastPage { get; set; }
     }
 }

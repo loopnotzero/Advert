@@ -69,26 +69,40 @@ namespace Egghead.Controllers
 
         [HttpGet]
         [Authorize]
-        [Route("/{pageIndex?}")]
-        public async Task<IActionResult> GetArticles(int pageIndex = 1)
+        [Route("/{currentPage?}")]
+        public async Task<IActionResult> GetArticles(int currentPage = 1)
         {
             try
             {
-                var maxArticlesPerPage = _configuration.GetSection("Egghead").GetValue<int>("ArticlesPerPage");
+                var articlesPerPage = _configuration.GetSection("Egghead").GetValue<int>("MaxArticlesPerPage");
+                                      
+                var offset = (currentPage - 1) * articlesPerPage;
+
+                var articles = await _articlesManager.FindArticlesAsync(offset, articlesPerPage);
+
+                var shift = (long) Math.Ceiling((double) articlesPerPage / 2);
                 
-                var offset = (pageIndex - 1) * maxArticlesPerPage;
-                   
+                var beginPage = currentPage - articlesPerPage + shift;                    
+                var endPage = currentPage + shift;
+                var lastPage = (long) Math.Ceiling((double) await _articlesManager.EstimatedArticlesCountAsync() / articlesPerPage);
+
+                if (beginPage < 0)
+                {
+                    beginPage = 1;                    
+                    endPage = articlesPerPage + 1;
+                }
+                else
+                {
+                    if (endPage > lastPage)
+                    {
+                        beginPage = lastPage - articlesPerPage + 1;                        
+                        endPage = lastPage + 1;
+                    } 
+                }
+                
+                
                 var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
-
-                var articles = await _articlesManager.FindArticlesAsync(offset, maxArticlesPerPage);
-
-                var articlesCount = await _articlesManager.EstimatedArticlesCountAsync(); 
-
-                var pagesCount = (int)Math.Ceiling(articlesCount / (double)maxArticlesPerPage); 
-
-                //todo: fix popular articles
-                var popularArticles = articles.OrderByDescending(x => EngagementRate.ComputeEngagementRate(x.LikesCount, x.SharesCount, x.CommentsCount, x.ViewsCount));
-
+             
                 return View(new AggregatorViewModel
                 {
                     Profile = new ProfileModel
@@ -99,6 +113,7 @@ namespace Egghead.Controllers
                         ArticlesCount = ((double) await _articlesManager.CountArticlesByProfileIdAsync(profile.Id)).ToMetric(),
                         FollowingCount = ((double) 0).ToMetric()
                     },
+
                     Articles = articles.Select(article => new ArticleViewModel
                     {
                         ArticleId = article.Id.ToString(),
@@ -112,17 +127,22 @@ namespace Egghead.Controllers
                         CommentsCount = ((double) article.CommentsCount).ToMetric(),
                         CreatedAt = article.CreatedAt.Humanize(),
                     }),
-                    PopularArticles = popularArticles.Select(popularArticle => new PopularArticleViewModel
-                    {
-                        ArticleId = popularArticle.Id.ToString(),
-                        ProfileName = popularArticle.ProfileName,
-                        ProfileImagePath = popularArticle.ProfileImagePath,
-                        Title = popularArticle.Title,
-                        CreatedAt = popularArticle.CreatedAt.Humanize(),
-                    }).ToList(),
-                                  
-                    PageIndex = pageIndex,
-                    PagesCount = pagesCount
+
+                    PopularArticles = articles
+                        .OrderByDescending(x => EngagementRate.ComputeEngagementRate(x.LikesCount, x.SharesCount, x.CommentsCount, x.ViewsCount))
+                        .Select(popularArticle => new PopularArticleViewModel
+                        {
+                            ArticleId = popularArticle.Id.ToString(),
+                            ProfileName = popularArticle.ProfileName,
+                            ProfileImagePath = popularArticle.ProfileImagePath,
+                            Title = popularArticle.Title,
+                            CreatedAt = popularArticle.CreatedAt.Humanize(),
+                        }).ToList(),
+
+                    BeginPage = beginPage,
+                    EndPage = endPage,
+                    CurrentPage = currentPage,
+                    LastPage = (long) totalPages
                 });
             }
             catch (Exception e)
@@ -134,7 +154,7 @@ namespace Egghead.Controllers
 
         [HttpGet]
         [Authorize]
-        [Route("/Articles/{articleId}/{pageIndex}")]
+        [Route("/Articles/{articleId}/{currentPage?}")]
         public async Task<IActionResult> GetArticleContent(string articleId, int pageIndex = 1)
         {
             try
@@ -228,7 +248,7 @@ namespace Egghead.Controllers
 
                 var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
 
-                var articles = await _articlesManager.FindArticlesAsync(_configuration.GetSection("Egghead").GetValue<int>("ArticlesPerPage"));
+                var articles = await _articlesManager.FindArticlesAsync(_configuration.GetSection("Egghead").GetValue<int>("MaxArticles"));
 
                 var popularArticles = articles.OrderByDescending(x => EngagementRate.ComputeEngagementRate(x.LikesCount, x.SharesCount, x.CommentsCount, x.ViewsCount));
 

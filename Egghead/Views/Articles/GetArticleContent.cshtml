@@ -201,7 +201,7 @@
 
     function createCommentReplyAsync(comment) {
         $.ajax({
-            url: `/CreateArticleCommentAsync`,
+            url: `/Articles/CreateArticleCommentAsync`,
             type: "POST",
             data: JSON.stringify(comment),
             contentType: "application/json",
@@ -247,7 +247,7 @@
 
     function createArticleCommentAsync(comment) {
         $.ajax({
-            url: `/CreateArticleCommentAsync`,
+            url: `/Articles/CreateArticleCommentAsync`,
             type: "POST",
             data: JSON.stringify(comment),
             contentType: "application/json",
@@ -296,7 +296,7 @@
             commentId: commentId
         }
         $.ajax({
-            url: "/CreateArticleCommentVoteAsync",
+            url: "/Articles/CreateArticleCommentVoteAsync",
             type: "POST",
             data: JSON.stringify(vote),
             contentType: "application/json",
@@ -320,7 +320,7 @@
 
     function updateArticleCommentsCountByArticleId(articleId) {
         $.ajax({
-            url: `/CountArticleCommentsByArticleIdAsync/${articleId}`,
+            url: `/Articles/CountArticleCommentsByArticleIdAsync/${articleId}`,
             type: "GET",
             contentType: "application/json",
             error: function(jqXhr, textStatus, errorThrown) {
