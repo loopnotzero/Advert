@@ -142,7 +142,7 @@ namespace Egghead.Controllers
                     BeginPage = beginPage,
                     EndPage = endPage,
                     CurrentPage = currentPage,
-                    LastPage = (long) totalPages
+                    LastPage = (long) lastPage
                 });
             }
             catch (Exception e)
