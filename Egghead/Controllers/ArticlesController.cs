@@ -74,7 +74,7 @@ namespace Egghead.Controllers
         {
             try
             {
-                var articlesPerPage = _configuration.GetSection("Egghead").GetValue<int>("MaxArticlesPerPage");
+                var articlesPerPage = _configuration.GetSection("Egghead").GetValue<int>("ArticlesPerPage");
                                       
                 var offset = (currentPage - 1) * articlesPerPage;
 
@@ -86,7 +86,7 @@ namespace Egghead.Controllers
                 var endPage = currentPage + shift;
                 var lastPage = (long) Math.Ceiling((double) await _articlesManager.EstimatedArticlesCountAsync() / articlesPerPage);
 
-                if (beginPage < 0)
+                if (currentPage < articlesPerPage - 1)
                 {
                     beginPage = 1;                    
                     endPage = articlesPerPage + 1;
@@ -99,8 +99,7 @@ namespace Egghead.Controllers
                         endPage = lastPage + 1;
                     } 
                 }
-                
-                
+     
                 var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
              
                 return View(new AggregatorViewModel
@@ -142,7 +141,7 @@ namespace Egghead.Controllers
                     BeginPage = beginPage,
                     EndPage = endPage,
                     CurrentPage = currentPage,
-                    LastPage = (long) lastPage
+                    LastPage = lastPage
                 });
             }
             catch (Exception e)
