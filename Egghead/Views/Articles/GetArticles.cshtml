@@ -126,7 +126,7 @@
                     }
 
                     @{
-                        for (var index = Model.BeginPage; index < Model.EndPage; index++)
+                        for (var index = Model.BeginPage; index <= Model.EndPage; index++)
                         {
                             if (Model.CurrentPage == index)
                             {
@@ -143,7 +143,7 @@
                         }
                     }
 
-                    @if (Model.CurrentPage >= Model.EndPage - 1)
+                    @if (Model.CurrentPage >= Model.EndPage)
                     {
                         <li class="page-item pagination-next disabled">
                             <a class="page-link" href="#"></a>
