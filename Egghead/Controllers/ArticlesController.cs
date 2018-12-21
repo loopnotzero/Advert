@@ -74,34 +74,29 @@ namespace Egghead.Controllers
         {
             try
             {
-                var articlesPerPage = _configuration.GetSection("Egghead").GetValue<int>("ArticlesPerPage");
-                           
+                var articlesPerPage = _configuration.GetSection("Egghead").GetValue<int>("ArticlesPerPage");                           
                 var offset = (currentPage - 1) * articlesPerPage;
-
-                var articles = await _articlesManager.FindArticlesAsync(offset,  articlesPerPage);
-              
+                var articles = await _articlesManager.FindArticlesAsync(offset,  articlesPerPage);            
                 var maxPages = (long) Math.Ceiling((double) await _articlesManager.EstimatedArticlesCountAsync() / articlesPerPage);
-
                 var pagination = _configuration.GetSection("Egghead").GetValue<int>("Pagination");
 
                 long beginPage = 1, endPage = pagination > maxPages ? maxPages : pagination;
                 if (currentPage >= pagination - 1)
                 {
                     beginPage = currentPage - (pagination - (pagination - 2));
-                    if (endPage < maxPages)
-                    {
-                        endPage = currentPage + 2;
-                    }                
-                    if (endPage > maxPages)
-                    {
-                        endPage = maxPages;
-                    }
+                    var lastPage = currentPage + 2;                   
+                    endPage = lastPage < maxPages ? lastPage : maxPages;
                 }
 
                 var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
              
                 return View(new AggregatorViewModel
                 {
+                    BeginPage = beginPage,
+                    EndPage = endPage,
+                    CurrentPage = currentPage,
+                    LastPage = maxPages,
+                        
                     Profile = new ProfileModel
                     {
                         Id = profile.Id.ToString(),
@@ -134,12 +129,7 @@ namespace Egghead.Controllers
                             ProfileImagePath = popularArticle.ProfileImagePath,
                             Title = popularArticle.Title,
                             CreatedAt = popularArticle.CreatedAt.Humanize(),
-                        }).ToList(),
-
-                    BeginPage = beginPage,
-                    EndPage = endPage,
-                    CurrentPage = currentPage,
-                    LastPage = maxPages
+                        }).ToList()                   
                 });
             }
             catch (Exception e)
