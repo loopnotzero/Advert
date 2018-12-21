@@ -80,14 +80,27 @@ namespace Egghead.Controllers
                 var maxPages = (long) Math.Ceiling((double) await _articlesManager.EstimatedArticlesCountAsync() / articlesPerPage);
                 var pagination = _configuration.GetSection("Egghead").GetValue<int>("Pagination");
 
-                long beginPage = 1, endPage = pagination > maxPages ? maxPages : pagination;
-                if (currentPage >= pagination - 1)
+                var middlePosition = (long) Math.Ceiling((double) pagination / 2);
+                
+                var beginPage = currentPage - middlePosition;
+
+                if (beginPage <= 0)
                 {
-                    beginPage = currentPage - (pagination - (pagination - 2));
-                    var lastPage = currentPage + 2;                   
-                    endPage = lastPage < maxPages ? lastPage : maxPages;
+                    beginPage = 1;
                 }
 
+                var endPage = currentPage + middlePosition - 1;
+
+                if (endPage > maxPages)
+                {
+                    endPage = maxPages;
+                }
+                
+                if (endPage < pagination)
+                {
+                    endPage = pagination;
+                }
+                
                 var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
              
                 return View(new AggregatorViewModel
