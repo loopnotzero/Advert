@@ -35,3 +35,17 @@
         </li>
     </ul>
 </header>
+
+<script>
+    $(document).ready(function(){
+        $(".search__text").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            
+            //todo: request articles by contains function
+            
+//            $("#articles tr").filter(function() {
+//                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+//            });
+        });
+    });
+</script>

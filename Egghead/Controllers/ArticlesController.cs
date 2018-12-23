@@ -95,12 +95,14 @@ namespace Egghead.Controllers
                 {
                     endPage = maxPages;
                 }
-                
-                if (endPage < pagination)
+                else
                 {
-                    endPage = pagination;
+                    if (endPage < pagination)
+                    {
+                        endPage = maxPages < pagination ? maxPages : pagination;
+                    }
                 }
-                
+                                             
                 var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
              
                 return View(new AggregatorViewModel
