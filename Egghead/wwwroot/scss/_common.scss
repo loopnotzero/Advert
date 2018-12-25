@@ -1,12 +1,10 @@
 body {
-  background: darken($light,1%);
+  background: darken($gray-facebook, 1%);
   margin: 0;
   color: #4c5667;
   overflow-x: auto !important;
   font-family: $font-primary;
   font-size: 0.95rem;
-  padding-bottom: 65px;
-  height: 100%;
 }
 
 html {

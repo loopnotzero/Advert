@@ -56,6 +56,8 @@ namespace Egghead.Controllers
                 ViewData["returnUrl"] = returnUrl;
                 
                 await _signInManager.SignOutAsync();
+
+                returnUrl = Uri.UnescapeDataString(returnUrl);
                 
                 return Ok(new
                 {
@@ -86,6 +88,8 @@ namespace Egghead.Controllers
 
                 await _signInManager.PasswordSignInAsync(model.Email, model.Password, false, false);
 
+                returnUrl = Uri.UnescapeDataString(returnUrl);
+                
                 return RedirectToLocal(returnUrl);
             }
             catch (Exception e)
@@ -112,7 +116,7 @@ namespace Egghead.Controllers
                 };
 
                 await _userManager.CreateAsync(user, model.Password);
-            
+
                 await _signInManager.SignInAsync(user, false);
 
                 await _profilesManager.CreateProfileAsync(new MongoDbProfile
@@ -121,7 +125,9 @@ namespace Egghead.Controllers
                     Email = model.Email,
                     CreatedAt = DateTime.UtcNow
                 });
-                              
+
+                returnUrl = Uri.UnescapeDataString(returnUrl);
+
                 return Ok(new
                 {
                     returnUrl
@@ -131,10 +137,10 @@ namespace Egghead.Controllers
             {
                 _logger.LogError(e.Message, e);
                 return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
-            }          
+            }
         }
-        
-        
+
+
         private IActionResult RedirectToLocal(string returnUrl)
         {
             if (Url.IsLocalUrl(returnUrl))

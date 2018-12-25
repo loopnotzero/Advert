@@ -9,7 +9,7 @@
     </div>
     <form class="search">
         <div class="search__inner">
-            <input type="text" class="search__text" placeholder="Search for articles...">
+            <input type="text" class="search__text" placeholder="Search">
             <i class="zmdi zmdi-search search__helper" data-ma-action="search-close"></i>
         </div>
     </form>
@@ -38,14 +38,10 @@
 
 <script>
     $(document).ready(function(){
-        $(".search__text").on("keyup", function() {
-            var value = $(this).val().toLowerCase();
-            
-            //todo: request articles by contains function
-            
-//            $("#articles tr").filter(function() {
-//                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
-//            });
+        $( ".search" ).submit(function( event ) {
+            event.preventDefault();
+            window.location.replace(window.location.href + "?page=1&keyword=" + $(".search__text").val());
+
         });
     });
 </script>

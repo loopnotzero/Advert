@@ -101,6 +101,18 @@ namespace Egghead.Managers
             return await _store.FindArticlesByProfileIdAsync(profileId, CancellationToken);
         }
 
+        public async Task<List<T>> FindArticlesWhichContainsKeywordAsync(int offset, int? howManyElements, string keyword)
+        {
+            ThrowIfDisposed();
+            
+            if (string.IsNullOrEmpty(keyword))
+            {
+                throw new ArgumentNullException(nameof(keyword));
+            }
+
+            return await _store.FindArticlesWhichContainsKeywordAsync(offset, howManyElements, keyword, CancellationToken);
+        }
+
         public async Task<UpdateResult> UpdateArticleViewsCountByArticleId(ObjectId articleId, long viewsCount)
         {
             ThrowIfDisposed();

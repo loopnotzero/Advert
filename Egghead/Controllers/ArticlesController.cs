@@ -69,37 +69,46 @@ namespace Egghead.Controllers
 
         [HttpGet]
         [Authorize]
-        [Route("/{currentPage?}")]
-        public async Task<IActionResult> GetArticles(int currentPage = 1)
+        public async Task<IActionResult> GetArticles([FromQuery(Name = "page")] int page = 1, [FromQuery(Name = "keyword")] string keyword = null)
         {
             try
             {
-                var articlesPerPage = _configuration.GetSection("Egghead").GetValue<int>("ArticlesPerPage");                           
-                var offset = (currentPage - 1) * articlesPerPage;
-                var articles = await _articlesManager.FindArticlesAsync(offset,  articlesPerPage);            
-                var maxPages = (long) Math.Ceiling((double) await _articlesManager.EstimatedArticlesCountAsync() / articlesPerPage);
-                var pagination = _configuration.GetSection("Egghead").GetValue<int>("Pagination");
+                var howManyPagesPerPage = _configuration.GetSection("Egghead").GetValue<int>("HowManyPagesPerPage");                           
+                var offset = (page - 1) * howManyPagesPerPage;
+                                             
+                List<MongoDbArticle> articles;
 
+                if (string.IsNullOrEmpty(keyword))
+                {
+                    articles = await _articlesManager.FindArticlesAsync(offset, howManyPagesPerPage);
+                }
+                else
+                {
+                    articles = await _articlesManager.FindArticlesWhichContainsKeywordAsync(offset, howManyPagesPerPage, keyword);
+                }
+
+                var lastPage = (long) Math.Ceiling((double) await _articlesManager.EstimatedArticlesCountAsync() / howManyPagesPerPage);               
+                var pagination = _configuration.GetSection("Egghead").GetValue<int>("Pagination");
                 var middlePosition = (long) Math.Ceiling((double) pagination / 2);
                 
-                var beginPage = currentPage - middlePosition;
+                var beginPage = page - middlePosition;
 
                 if (beginPage <= 0)
                 {
                     beginPage = 1;
                 }
 
-                var endPage = currentPage + middlePosition - 1;
+                var endPage = page + middlePosition - 1;
 
-                if (endPage > maxPages)
+                if (endPage > lastPage)
                 {
-                    endPage = maxPages;
+                    endPage = lastPage;
                 }
                 else
                 {
                     if (endPage < pagination)
                     {
-                        endPage = maxPages < pagination ? maxPages : pagination;
+                        endPage = lastPage < pagination ? lastPage : pagination;
                     }
                 }
                                              
@@ -109,8 +118,8 @@ namespace Egghead.Controllers
                 {
                     BeginPage = beginPage,
                     EndPage = endPage,
-                    CurrentPage = currentPage,
-                    LastPage = maxPages,
+                    CurrentPage = page,
+                    LastPage = lastPage,
                         
                     Profile = new ProfileModel
                     {
@@ -156,8 +165,8 @@ namespace Egghead.Controllers
 
         [HttpGet]
         [Authorize]
-        [Route("/Articles/{articleId}/{currentPage?}")]
-        public async Task<IActionResult> GetArticleContent(string articleId, int pageIndex = 1)
+        [Route("/Articles/{articleId}")]
+        public async Task<IActionResult> GetArticleContent(string articleId, [FromQuery(Name = "page")] int page = 1)
         {
             try
             {
@@ -320,11 +329,9 @@ namespace Egghead.Controllers
 
                 await _articlesManager.CreateArticleAsync(article);
 
-                var url = Url.Action("GetArticleContent", "Articles", new {articleId = article.Id});
-
                 return Ok(new
                 {
-                    returnUrl = url
+                    returnUrl = Url.Action("GetArticleContent", "Articles", new {articleId = article.Id})
                 });
             }
             catch (Exception e)
