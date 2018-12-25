@@ -126,6 +126,27 @@ namespace Egghead.MongoDbStorage.Stores
             return await cursor.ToListAsync(cancellationToken);           
         }
 
+        public async Task<List<T>> FindArticlesWhichContainsKeywordAsync(int offset, int? howManyElements, string keyword, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+           
+            var findOptions = new FindOptions<T>
+            {
+                Sort = Builders<T>.Sort.Descending(field => field.CreatedAt),                
+            };
+
+            findOptions.Skip = offset;
+
+            if (howManyElements.HasValue)
+            {
+                findOptions.Limit = howManyElements;
+            }
+            
+            var cursor = await _collection.FindAsync(Builders<T>.Filter.Regex(x => x.Title, new BsonRegularExpression(keyword, "-i")), findOptions, cancellationToken: cancellationToken);
+           
+            return await cursor.ToListAsync(cancellationToken);
+        }
+
         public async Task<DeleteResult> DeleteArticleByIdAsync(ObjectId articleId, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
