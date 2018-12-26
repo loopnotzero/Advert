@@ -25,4 +25,15 @@ $(document).ready(function () {
             }
         });
     }
+
+    if($('#dropzone-upload')[0]) {
+        Dropzone.autoDiscover = false;
+    }
+
+    if($('#dropzone-upload')[0]) {
+        $('#dropzone-upload').dropzone({
+            url: "http://localhost:5000/images/",
+            addRemoveLinks: true
+        });
+    }
 });

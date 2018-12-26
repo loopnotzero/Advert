@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -14,6 +15,8 @@ using Egghead.MongoDbStorage.Profiles;
 using Egghead.MongoDbStorage.Users;
 using Humanizer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -26,6 +29,8 @@ namespace Egghead.Controllers
     {
         private readonly ILogger _logger;
         private readonly IConfiguration _configuration;
+        private readonly IHostingEnvironment _hostingEnvironment;
+        
         private readonly ProfilesManager<MongoDbProfile> _profilesManager;
         private readonly ArticlesManager<MongoDbArticle> _articlesManager;
         private readonly ArticlesLikesManager<MongoDbArticleVote> _articlesVotesManager;
@@ -39,6 +44,7 @@ namespace Egghead.Controllers
         public ArticlesController(ILoggerFactory loggerFactory,
             IConfiguration configuration,
             ILookupNormalizer keyNormalizer,
+            IHostingEnvironment hostingEnvironment,
             UserManager<MongoDbUser> userManager,
             ProfilesManager<MongoDbProfile> profilesManager,
             ArticlesManager<MongoDbArticle> articlesManager,
@@ -50,6 +56,8 @@ namespace Egghead.Controllers
         {
             _logger = loggerFactory.CreateLogger<AccountController>();
             _configuration = configuration;
+            _hostingEnvironment = hostingEnvironment;         
+
             _profilesManager = profilesManager;
             _articlesManager = articlesManager;
             _articlesVotesManager = articlesVotesManager;
@@ -578,6 +586,47 @@ namespace Egghead.Controllers
                 _logger.LogError(e.Message, e);
                 return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
             }
+        }
+        
+        [HttpPost("AddImage")]
+        [Route("/Articles/AddArticlePreviewImages")]
+        public async Task<IActionResult> AddArticlePhotos(string returnUrl, IFormFile file)
+        {
+            ViewData["ReturnUrl"] = returnUrl;
+                 
+            if (file.Length <= 0)
+            {
+                //todo: return View with ModelErrors
+                return BadRequest();
+            }
+            
+            var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
+
+            var profilePhotosDir = $"{_hostingEnvironment.WebRootPath}/images/profiles/{profile.Id.ToString()}/photos";
+
+            if (!Directory.Exists(profilePhotosDir))
+            {
+                Directory.CreateDirectory(profilePhotosDir);
+            }
+            
+
+            var profileArticlePhotoFullPath = Path.Combine(profilePhotosDir, file.FileName);
+
+            using (var stream = new FileStream(profileArticlePhotoFullPath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            //todo: Create profile article photo
+            
+//            await _profilesImagesManager.CreateProfileImageAsync(new MongoDbProfileImage
+//            {
+//                ProfileId = profile.Id,
+//                ImagePath = $"/images/profiles/{profile.Id}/{file.FileName}",
+//                CreatedAt = DateTime.UtcNow
+//            });
+//
+            return Ok();
         }
     }
 }

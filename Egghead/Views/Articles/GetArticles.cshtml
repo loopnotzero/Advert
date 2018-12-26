@@ -22,14 +22,10 @@
                 <h5 id="profile-name" class="mb-3">@Model.Profile.Name</h5>
             </a>
             <div class="row">
-                <div class="col-md-6">
-                    <span class="text-justify">Your articles</span>
+                <div class="col-md-12">
+                    <span class="text-justify">Announcements</span>
                     <h5 id="profile-articles" class="text-center">@Model.Profile.ArticlesCount</h5>
-                </div>
-                <div class="col-md-6">
-                    <span class="text-justify">Following</span>
-                    <h5 id="profile-following" class="text-center">@Model.Profile.FollowingCount</h5>
-                </div>
+                </div>             
             </div>
         </div>
     </div>
@@ -171,7 +167,7 @@
 <div class="col-md-3 p-1">
     <div class="card p-4">
         <div style="border-bottom: 1px solid #d5d5d5; margin-bottom: 20px;">
-            <h4 class="text-muted">Popular on Egghead</h4>
+            <h4 class="text-muted">Recommendations</h4>
         </div>
         @{
             var popularArticles = Model.PopularArticles;
