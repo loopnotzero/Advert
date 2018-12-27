@@ -62,7 +62,7 @@
                         </ul>
                     </div>
                     <div class="card-body card-body__img">
-                        <a href="/Advertisements/@advertisement.AdsId">
+                        <a href="/Ads/@advertisement.AdsId">
                             <h4 class="card-title font-weight-bold cut-long-text mb-2">@advertisement.Title</h4>
                         </a>
                         @Html.Raw(advertisement.Text)
@@ -85,7 +85,7 @@
                             <small id="ads-view-count">@advertisement.ViewsCount</small>
 
                             <small class="text-muted float-right mt-2 mr-4">
-                                <a href="/Advertisements/@advertisement.AdsId">READ MORE...</a>
+                                <a href="/Ads/@advertisement.AdsId">READ MORE...</a>
                             </small>
                         </div>
                     </div>
@@ -191,7 +191,7 @@
                             <div class="listview__content">
                                 <div class="listview__heading">
                                     <p>
-                                        <a class="font-weight-bold" href="/Advertisement/@recommendedAdvertisement.AdsId">@recommendedAdvertisement.Title</a>
+                                        <a class="font-weight-bold" href="/Ads/@recommendedAdvertisement.AdsId">@recommendedAdvertisement.Title</a>
                                     </p>
                                 </div>
                                 <p>
@@ -217,7 +217,7 @@
             voteType: voteType
         }
         $.ajax({
-            url: "/Advertisements/CreateAdvertisementVoteAsync",
+            url: "/Ads/CreateAdvertisementVoteAsync",
             type: "POST",
             data: JSON.stringify(vote),
             contentType: "application/json",
@@ -240,7 +240,7 @@
 
     function onShareAdvertisementClick(adsId) {
         $.ajax({
-            url: "/Advertisements/ShareAdvertisementAsync",
+            url: "/Ads/ShareAdvertisementAsync",
             type: "GET",
             contentType: "application/json",
             error: function(jqXhr, textStatus, errorThrown) {

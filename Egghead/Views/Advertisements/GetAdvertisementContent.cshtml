@@ -131,7 +131,7 @@
                                     <div class="listview__content">
                                         <div class="listview__heading">
                                             <p>
-                                                <a class="font-weight-bold" href="/Advertisements/@recommendedAdvertisement.AdsId">@recommendedAdvertisement.Title</a>
+                                                <a class="font-weight-bold" href="/Ads/@recommendedAdvertisement.AdsId">@recommendedAdvertisement.Title</a>
                                             </p>
                                         </div>
                                         <p>
@@ -201,7 +201,7 @@
 
     function createCommentReplyAsync(comment) {
         $.ajax({
-            url: `/Advertisements/CreateAdvertisementCommentAsync`,
+            url: `/Ads/CreateAdvertisementCommentAsync`,
             type: "POST",
             data: JSON.stringify(comment),
             contentType: "application/json",
@@ -247,7 +247,7 @@
 
     function createAdvertisementCommentAsync(comment) {
         $.ajax({
-            url: `/Advertisements/CreateAdvertisementCommentAsync`,
+            url: `/Ads/CreateAdvertisementCommentAsync`,
             type: "POST",
             data: JSON.stringify(comment),
             contentType: "application/json",
@@ -296,7 +296,7 @@
             commentId: commentId
         }
         $.ajax({
-            url: "/Advertisements/CreateAdvertisementCommentVoteAsync",
+            url: "/Ads/CreateAdvertisementCommentVoteAsync",
             type: "POST",
             data: JSON.stringify(vote),
             contentType: "application/json",
@@ -320,7 +320,7 @@
 
     function updateAdvertisementCommentsCountByAdvertisementId(adsId) {
         $.ajax({
-            url: `/Advertisements/CountAdvertisementCommentsByAdvertisementIdAsync/${adsId}`,
+            url: `/Ads/CountAdvertisementCommentsByAdvertisementIdAsync/${adsId}`,
             type: "GET",
             contentType: "application/json",
             error: function(jqXhr, textStatus, errorThrown) {

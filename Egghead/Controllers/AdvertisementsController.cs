@@ -69,7 +69,7 @@ namespace Egghead.Controllers
 
         [HttpGet]
         [Authorize]
-        [Route("/Advertisements/ComposeAdvertisement")]
+        [Route("/Ads/ComposeAdvertisement")]
         public IActionResult ComposeAdvertisement()
         {
             return View();
@@ -173,7 +173,7 @@ namespace Egghead.Controllers
 
         [HttpGet]
         [Authorize]
-        [Route("/Advertisements/{adsId}")]
+        [Route("/Ads/{adsId}")]
         public async Task<IActionResult> GetAdvertisementContent(string adsId, [FromQuery(Name = "page")] int page = 1)
         {
             try
@@ -314,7 +314,7 @@ namespace Egghead.Controllers
 
         [HttpPost]
         [Authorize]
-        [Route("/Advertisements/PublishAdvertisementAsync")]
+        [Route("/Ads/PublishAdvertisementAsync")]
         public async Task<IActionResult> PublishAdvertisementAsync([FromBody] PublishAdvertisementViewModel viewModel)
         {
             try
@@ -348,7 +348,7 @@ namespace Egghead.Controllers
 
         [HttpGet]
         [Authorize]
-        [Route("/Advertisements/GetAdvertisementByIdAsync/{adsId}")]
+        [Route("/Ads/GetAdvertisementByIdAsync/{adsId}")]
         public async Task<IActionResult> GetAdvertisementByIdAsync(string adsId)
         {
             try
@@ -365,7 +365,7 @@ namespace Egghead.Controllers
 
         [HttpDelete]
         [Authorize]
-        [Route("/Advertisements/DeleteAdvertisementByIdAsync/{adsId}")]
+        [Route("/Ads/DeleteAdvertisementByIdAsync/{adsId}")]
         public async Task<IActionResult> DeleteAdvertisementByIdAsync(string adsId)
         {
             try
@@ -382,7 +382,7 @@ namespace Egghead.Controllers
 
         [HttpPost]
         [Authorize]
-        [Route("/Advertisements/CreateAdvertisementVoteAsync")]
+        [Route("/Ads/CreateAdvertisementVoteAsync")]
         public async Task<IActionResult> CreateAdvertisementVoteAsync([FromBody] AdvertisementVoteViewModel viewModel)
         {
             try
@@ -463,7 +463,7 @@ namespace Egghead.Controllers
 
         [HttpPost]
         [Authorize]
-        [Route("/Advertisements/CreateAdvertisementCommentAsync")]
+        [Route("/Ads/CreateAdvertisementCommentAsync")]
         public async Task<IActionResult> CreateAdvertisementCommentAsync([FromBody] PublicCommentViewModel viewModel)
         {
             try
@@ -516,7 +516,7 @@ namespace Egghead.Controllers
       
         [HttpPost]
         [Authorize]
-        [Route("/Advertisements/CreateAdvertisementCommentVoteAsync")]
+        [Route("/Ads/CreateAdvertisementCommentVoteAsync")]
         public async Task<IActionResult> CreateAdvertisementCommentVoteAsync([FromBody] AdvertisementCommentVoteViewModel viewModel)
         {
             try
@@ -566,7 +566,7 @@ namespace Egghead.Controllers
             
         [HttpGet]
         [Authorize]
-        [Route("/Advertisements/CountAdvertisementCommentsByAdsIdAsync/{adsId}")]
+        [Route("/Ads/CountAdvertisementCommentsByAdsIdAsync/{adsId}")]
         public async Task<IActionResult> CountAdvertisementCommentsByAdsIdAsync(string adsId)
         {
             try
@@ -586,7 +586,7 @@ namespace Egghead.Controllers
         }
         
         [HttpPost("AddImage")]
-        [Route("/Advertisements/AddAdvertisementPreviewImages")]
+        [Route("/Ads/AddAdvertisementPreviewImages")]
         public async Task<IActionResult> AddAdvertisementPhotos(string returnUrl, IFormFile file)
         {
             ViewData["ReturnUrl"] = returnUrl;
