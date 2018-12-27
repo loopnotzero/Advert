@@ -10,18 +10,13 @@ namespace Egghead.Common.Metrics
             return likesCount / viewsCount;
         } 
           
-        public static double ComputeDiscussionRate(double commentsCount, double articlesCount)
+        public static double ComputeDiscussionRate(double commentsCount, double adsCount)
         {
-            return commentsCount / articlesCount;
+            return commentsCount / adsCount;
         }
 
         public static double ComputeEngagementRate(double likesCount, double sharesCount, double commentsCount, double viewsCount)
         {
-            //todo: Decrease likes percent if user was not made a move to article
-            //todo: Increase percent of engagement rate if user shared an article
-            //todo: Decrease percent of engagement rate if user didn't spent time to read article
-            //todo: Estimate approximate time for reading article
-
             if (likesCount > 0)
             {
                 var likesPercent = likesCount / 100;
@@ -44,9 +39,9 @@ namespace Egghead.Common.Metrics
             return shares / viewsCount;
         }
 
-        public static double ComputeAverageViewsCount(double likesCount, double articlesCount)
+        public static double ComputeAverageViewsCount(double likesCount, double adsCount)
         {
-            return likesCount / articlesCount;
+            return likesCount / adsCount;
         }       
     }
 }

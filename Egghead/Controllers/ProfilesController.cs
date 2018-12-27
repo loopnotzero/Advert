@@ -3,7 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Egghead.Managers;
 using Egghead.Models.Profiles;
-using Egghead.MongoDbStorage.Articles;
+using Egghead.MongoDbStorage.Advertisements;
 using Egghead.MongoDbStorage.Profiles;
 using Humanizer;
 using Microsoft.AspNetCore.Hosting;
@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Remotion.Linq.Clauses.ResultOperators;
 
 namespace Egghead.Controllers
 {
@@ -21,17 +20,17 @@ namespace Egghead.Controllers
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly ProfilesManager<MongoDbProfile> _profilesManager;
         private readonly ProfilesImagesManager<MongoDbProfileImage> _profilesImagesManager;
-        private readonly ArticlesManager<MongoDbArticle> _articlesManager;
-        private readonly ArticlesCommentsManager<MongoDbArticleComment> _articlesCommentsManager;
+        private readonly AdvertisementsManager<MongoDbAdvertisement> _advertisementsManager;
+        private readonly AdvertisementsCommentsManager<MongoDbAdvertisementComment> _advertisementsCommentsManager;
 
-        public ProfilesController(ILoggerFactory loggerFactory, ILookupNormalizer keyNormalizer, IHostingEnvironment hostingEnvironment, ProfilesManager<MongoDbProfile> profilesManager, ProfilesImagesManager<MongoDbProfileImage> profilesImagesManager, ArticlesManager<MongoDbArticle> articlesManager, ArticlesCommentsManager<MongoDbArticleComment> articlesCommentsManager)
+        public ProfilesController(ILoggerFactory loggerFactory, ILookupNormalizer keyNormalizer, IHostingEnvironment hostingEnvironment, ProfilesManager<MongoDbProfile> profilesManager, ProfilesImagesManager<MongoDbProfileImage> profilesImagesManager, AdvertisementsManager<MongoDbAdvertisement> advertisementsManager, AdvertisementsCommentsManager<MongoDbAdvertisementComment> advertisementsCommentsManager)
         {
             _logger = loggerFactory.CreateLogger<ProfilesController>();
             _hostingEnvironment = hostingEnvironment;         
             _profilesManager = profilesManager;
             _profilesImagesManager = profilesImagesManager;
-            _articlesManager = articlesManager;
-            _articlesCommentsManager = articlesCommentsManager;
+            _advertisementsManager = advertisementsManager;
+            _advertisementsCommentsManager = advertisementsCommentsManager;
         }
 
         [HttpGet]
@@ -51,8 +50,7 @@ namespace Egghead.Controllers
                 Id = profile.Id.ToString(),
                 Name = profile.Name,
                 ImagePath = profile.ImagePath,
-                ArticlesCount = ((double)0).ToMetric(),
-                FollowingCount = ((double)0).ToMetric()
+                AdvertisementsCount = ((double)0).ToMetric(),
             });
         }
         
@@ -73,8 +71,7 @@ namespace Egghead.Controllers
                 Id = profile.Id.ToString(),
                 Name = profile.Name,
                 ImagePath = profile.ImagePath,
-                ArticlesCount = ((double)0).ToMetric(),
-                FollowingCount = ((double)0).ToMetric()
+                AdvertisementsCount = ((double)0).ToMetric(),
             });
         }
         
@@ -121,31 +118,31 @@ namespace Egghead.Controllers
           
             //todo: Update optimization
             
-            var articles = await _articlesManager.FindArticlesAsync(null);
+            var advertisements = await _advertisementsManager.FindAdvertisementsAsync(null);
 
-            foreach (var article in articles)
+            foreach (var advertisement in advertisements)
             {
-                var articleComments = await _articlesCommentsManager.FindArticleCommentsByProfileIdAsync(article.Id.ToString(), article.ProfileId);
-                foreach (var articleComment in articleComments)
+                var advertisementComments = await _advertisementsCommentsManager.FindAdvertisementCommentsByProfileIdAsync(advertisement.Id.ToString(), advertisement.ProfileId);
+                foreach (var advertisementComment in advertisementComments)
                 {              
                     // ReSharper disable once InvertIf
-                    if (articleComment.ProfileId.Equals(profile.Id) && articleComment.ProfileImagePath != profile.ImagePath && !article.ProfileImagePath.Equals(profile.ImagePath))
+                    if (advertisementComment.ProfileId.Equals(profile.Id) && advertisementComment.ProfileImagePath != profile.ImagePath && !advertisement.ProfileImagePath.Equals(profile.ImagePath))
                     {
-                        articleComment.ProfileImagePath = profile.ImagePath;
-                        await _articlesCommentsManager.UpdateArticleCommentByIdAsync(articleComment.ArticleId.ToString(), articleComment.Id, articleComment);
+                        advertisementComment.ProfileImagePath = profile.ImagePath;
+                        await _advertisementsCommentsManager.UpdateAdvertisementCommentByIdAsync(advertisementComment.AdsId.ToString(), advertisementComment.Id, advertisementComment);
                     }
                 }
             }
 
-            var profileArticles = await _articlesManager.FindArticlesByProfileIdAsync(profile.Id);
+            var dbAdvertisements = await _advertisementsManager.FindAdvertisementsByProfileIdAsync(profile.Id);
       
-            foreach (var profileArticle in profileArticles)
+            foreach (var advertisement in dbAdvertisements)
             {
-                profileArticle.ProfileImagePath = profile.ImagePath;
-                await _articlesManager.UpdateArticleAsync(profileArticle);
+                advertisement.ProfileImagePath = profile.ImagePath;
+                await _advertisementsManager.UpdateAdvertisementAsync(advertisement);
             }
             
-            return RedirectToAction("GetArticles", "Articles");
+            return RedirectToAction("GetAdvertisements", "Advertisements");
         }
     }
 }

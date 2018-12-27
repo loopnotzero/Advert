@@ -5,7 +5,6 @@
         public string Id { get; set; }
         public string Name { get; set; }
         public string ImagePath { get; set; }
-        public string ArticlesCount { get; set; }
-        public string FollowingCount { get; set; }
+        public string AdvertisementsCount { get; set; }
     }
 }

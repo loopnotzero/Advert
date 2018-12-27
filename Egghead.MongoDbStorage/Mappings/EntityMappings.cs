@@ -1,5 +1,5 @@
 ﻿using System.Threading;
-using Egghead.MongoDbStorage.Articles;
+using Egghead.MongoDbStorage.Advertisements;
 using Egghead.MongoDbStorage.Profiles;
 using Egghead.MongoDbStorage.Users;
 using MongoDB.Bson;
@@ -33,11 +33,11 @@ namespace Egghead.MongoDbStorage.Mappings
             });
         }
 
-        public static void EnsureMongoDbArticleConfigured()
+        public static void EnsureMongoDbAdvertisementConfigured()
         {
             LazyInitializer.EnsureInitialized(ref _initializationTarget, ref _initialized, ref _initializationLock, () =>
             {
-                ConfigureMongoDbArticle();
+                ConfigureMongoDbAdvertisement();
                 return null;
             });
         }
@@ -51,47 +51,47 @@ namespace Egghead.MongoDbStorage.Mappings
             });
         }
 
-        public static void EnsureMongoDbArticleVoteConfigured()
+        public static void EnsureMongoDbAdvertismentVoteConfigured()
         {
             LazyInitializer.EnsureInitialized(ref _initializationTarget, ref _initialized, ref _initializationLock, () =>
             {
-                ConfigureMongoDbArticleVote();
+                ConfigureMongoDbAdvertisementVote();
                 return null;
             });
         }
 
-        public static void EnsureMongoDbArticleViewsConfigured()
+        public static void EnsureMongoDbAdvertisementViewsConfigured()
         {
             LazyInitializer.EnsureInitialized(ref _initializationTarget, ref _initialized, ref _initializationLock, () =>
             {
-                ConfigureMongoDbArticleViews();
+                ConfigureMongoDbAdvertisementViews();
                 return null;
             });
         }
 
-        public static void EnsureMongoDbArticleCommentConfigured()
+        public static void EnsureMongoDbAdvertisementCommentConfigured()
         {
             LazyInitializer.EnsureInitialized(ref _initializationTarget, ref _initialized, ref _initializationLock, () =>
             {
-                ConfigureMongoDbArticleComment();
+                ConfigureMongoDbAdvertisementComment();
                 return null;
             });
         }
 
-        public static void EnsureMongoDbArticleCommentVoteConfigured()
+        public static void EnsureMongoDbAdvertisementCommentVoteConfigured()
         {
             LazyInitializer.EnsureInitialized(ref _initializationTarget, ref _initialized, ref _initializationLock, () =>
             {
-                ConfigureMongoDbArticleCommentVote();
+                ConfigureMongoDbAdvertisementCommentVote();
                 return null;
             });
         }
         
-        public static void EnsureMongoDbArticleCommentsVotesAggregationConfigured()
+        public static void EnsureMongoDbAdvertisementCommentsVotesAggregationConfigured()
         {
             LazyInitializer.EnsureInitialized(ref _initializationTarget, ref _initialized, ref _initializationLock, () =>
             {
-                ConfigureMongoDbArticleCommentsVotesAggregation();
+                ConfigureMongoDbAdvertisementCommentsVotesAggregation();
                 return null;
             });
         }
@@ -106,13 +106,13 @@ namespace Egghead.MongoDbStorage.Mappings
             });
         }
        
-        private static void ConfigureMongoDbArticle()
+        private static void ConfigureMongoDbAdvertisement()
         {
-            BsonClassMap.RegisterClassMap<MongoDbArticle>(bsonClassMap =>
+            BsonClassMap.RegisterClassMap<MongoDbAdvertisement>(bsonClassMap =>
             {
                 bsonClassMap.AutoMap();
-                bsonClassMap.MapIdMember(article => article.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
-                bsonClassMap.MapCreator(article => new MongoDbArticle());
+                bsonClassMap.MapIdMember(advertisement => advertisement.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
+                bsonClassMap.MapCreator(advertisement => new MongoDbAdvertisement());
             });
         }
         
@@ -126,13 +126,13 @@ namespace Egghead.MongoDbStorage.Mappings
             });
         }
         
-        private static void ConfigureMongoDbArticleVote()
+        private static void ConfigureMongoDbAdvertisementVote()
         {
-            BsonClassMap.RegisterClassMap<MongoDbArticleVote>(bsonClassMap =>
+            BsonClassMap.RegisterClassMap<MongoDbAdvertisementVote>(bsonClassMap =>
             {
                 bsonClassMap.AutoMap();
-                bsonClassMap.MapIdMember(articleVote => articleVote.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
-                bsonClassMap.MapCreator(articleVote => new MongoDbArticleVote());
+                bsonClassMap.MapIdMember(advertisementVote => advertisementVote.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
+                bsonClassMap.MapCreator(advertisementVote => new MongoDbAdvertisementVote());
             });
         }
 
@@ -146,43 +146,43 @@ namespace Egghead.MongoDbStorage.Mappings
             });
         }
 
-        private static void ConfigureMongoDbArticleViews()
+        private static void ConfigureMongoDbAdvertisementViews()
         {
-            BsonClassMap.RegisterClassMap<MongoDbArticleViewsCount>(bsonClassMap =>
+            BsonClassMap.RegisterClassMap<MongoDbAdvertisementViewsCount>(bsonClassMap =>
             {
                 bsonClassMap.AutoMap();
-                bsonClassMap.MapIdMember(articleViewCount => articleViewCount.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
-                bsonClassMap.MapCreator(articleViewCount => new MongoDbArticleViewsCount());
+                bsonClassMap.MapIdMember(advertisementViewsCount => advertisementViewsCount.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
+                bsonClassMap.MapCreator(advertisementViewsCount => new MongoDbAdvertisementViewsCount());
             });
         }
 
-        private static void ConfigureMongoDbArticleComment()
+        private static void ConfigureMongoDbAdvertisementComment()
         {
-            BsonClassMap.RegisterClassMap<MongoDbArticleComment>(bsonClassMap =>
+            BsonClassMap.RegisterClassMap<MongoDbAdvertisementComment>(bsonClassMap =>
             {
                 bsonClassMap.AutoMap();
-                bsonClassMap.MapIdMember(articleComment => articleComment.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
-                bsonClassMap.MapCreator(articleComment => new MongoDbArticleComment());
+                bsonClassMap.MapIdMember(advertisementComment => advertisementComment.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
+                bsonClassMap.MapCreator(advertisementComment => new MongoDbAdvertisementComment());
             });
         }
 
-        private static void ConfigureMongoDbArticleCommentVote()
+        private static void ConfigureMongoDbAdvertisementCommentVote()
         {
-            BsonClassMap.RegisterClassMap<MongoDbArticleCommentVote>(bsonClassMap =>
+            BsonClassMap.RegisterClassMap<MongoDbAdvertisementCommentVote>(bsonClassMap =>
             {
                 bsonClassMap.AutoMap();
-                bsonClassMap.MapIdMember(articleCommentVote => articleCommentVote.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
-                bsonClassMap.MapCreator(articleCommentVote => new MongoDbArticleCommentVote());
+                bsonClassMap.MapIdMember(advertisementCommentVote => advertisementCommentVote.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
+                bsonClassMap.MapCreator(advertisementCommentVote => new MongoDbAdvertisementCommentVote());
             });
         }
         
-        private static void ConfigureMongoDbArticleCommentsVotesAggregation()
+        private static void ConfigureMongoDbAdvertisementCommentsVotesAggregation()
         {
-            BsonClassMap.RegisterClassMap<MongoDbArticleCommentVoteAggregation>(bsonClassMap =>
+            BsonClassMap.RegisterClassMap<MongoDbAdvertisementCommentVoteAggregation>(bsonClassMap =>
             {
                 bsonClassMap.AutoMap();
-                bsonClassMap.MapIdMember(articleCommentVoteAggregation => articleCommentVoteAggregation.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
-                bsonClassMap.MapCreator(articleCommentVoteAggregation => new MongoDbArticleCommentVoteAggregation());
+                bsonClassMap.MapIdMember(advertisementCommentVoteAggregation => advertisementCommentVoteAggregation.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
+                bsonClassMap.MapCreator(advertisementCommentVoteAggregation => new MongoDbAdvertisementCommentVoteAggregation());
             });
         }
     }
