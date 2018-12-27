@@ -257,7 +257,7 @@
 }
 
 .dropzone .dz-preview:hover {
-    z-index: 1000;
+    z-index: 8;
 }
 
 .dropzone .dz-preview:hover .dz-details {
@@ -303,7 +303,7 @@
 }
 
 .dropzone .dz-preview .dz-details {
-    z-index: 20;
+    z-index: 8;
     position: absolute;
     top: 0;
     left: 0;
@@ -363,7 +363,7 @@
     height: 120px;
     position: relative;
     display: block;
-    z-index: 10;
+    z-index: 8;
 }
 
 .dropzone .dz-preview .dz-image img {
@@ -390,7 +390,7 @@
 .dropzone .dz-preview .dz-success-mark, .dropzone .dz-preview .dz-error-mark {
     pointer-events: none;
     opacity: 0;
-    z-index: 500;
+    z-index: 8;
     position: absolute;
     display: block;
     top: 50%;
@@ -433,7 +433,7 @@
 
 .dropzone .dz-preview .dz-progress {
     opacity: 1;
-    z-index: 1000;
+    z-index: 8;
     pointer-events: none;
     position: absolute;
     height: 16px;
@@ -474,7 +474,7 @@
 
 .dropzone .dz-preview .dz-error-message {
     pointer-events: none;
-    z-index: 1000;
+    z-index: 8;
     position: absolute;
     display: block;
     display: none;
