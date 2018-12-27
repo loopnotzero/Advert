@@ -1,10 +1,10 @@
 body {
   background: darken($gray-facebook, 1%);
   margin: 0;
-  color: #4c5667;
+  color: #2a2c2f;
   overflow-x: auto !important;
   font-family: $font-primary;
-  font-size: 0.95rem;
+  font-size: 0.90rem;
 }
 
 html {
@@ -30,6 +30,11 @@ a {
     outline: 0;
     text-decoration: none;
   }
+}
+
+p {
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
 }
 
 #wrapper {
@@ -131,6 +136,17 @@ blockquote {
 
 .media__img img {
   max-width: 100%;
+}
+
+.media__border {
+  border-radius: 18px;
+  background-color: #eff1f3;
+  display: block;
+  line-height: 16px;
+}
+
+.media__comment {
+  padding: 1px 2px 1px 2px;
 }
 
 .description {

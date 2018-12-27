@@ -81,24 +81,26 @@ namespace Egghead.Controllers
         {
             try
             {
-                var howManyPagesPerPage = _configuration.GetSection("Egghead").GetValue<int>("HowManyPagesPerPage");                           
+                var howManyAdvertisementsPerPage = _configuration.GetSection("Egghead").GetValue<int>("HowManyAdvertisementsPerPage");                           
                 
-                var offset = (page - 1) * howManyPagesPerPage;
+                var offset = (page - 1) * howManyAdvertisementsPerPage;
                                              
                 List<MongoDbAdvertisement> advertisements;
 
                 if (string.IsNullOrEmpty(keyword))
                 {
-                    advertisements = await _advertisementsManager.FindAdvertisementsAsync(offset, howManyPagesPerPage);
+                    advertisements = await _advertisementsManager.FindAdvertisementsAsync(offset, howManyAdvertisementsPerPage);
                 }
                 else
                 {
-                    advertisements = await _advertisementsManager.FindAdvertisementsWhichContainsKeywordAsync(offset, howManyPagesPerPage, keyword);
+                    advertisements = await _advertisementsManager.FindAdvertisementsWhichContainsKeywordAsync(offset, howManyAdvertisementsPerPage, keyword);
                 }
 
-                var lastPage = (long) Math.Ceiling((double) await _advertisementsManager.EstimatedAdvertisementsCountAsync() / howManyPagesPerPage);               
-                var pagination = _configuration.GetSection("Egghead").GetValue<int>("Pagination");
-                var middlePosition = (long) Math.Ceiling((double) pagination / 2);
+                var lastPage = (long) Math.Ceiling((double) await _advertisementsManager.EstimatedAdvertisementsCountAsync() / howManyAdvertisementsPerPage);               
+                
+                var howManyPages = _configuration.GetSection("Egghead").GetValue<int>("HowManyPages");
+                
+                var middlePosition = (long) Math.Ceiling((double) howManyPages / 2);
                 
                 var beginPage = page - middlePosition;
 
@@ -115,9 +117,9 @@ namespace Egghead.Controllers
                 }
                 else
                 {
-                    if (endPage < pagination)
+                    if (endPage < howManyPages)
                     {
-                        endPage = lastPage < pagination ? lastPage : pagination;
+                        endPage = lastPage < howManyPages ? lastPage : howManyPages;
                     }
                 }
                                              

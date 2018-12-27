@@ -51,11 +51,15 @@
                                 }
                                 <div class="media-body media__img content__break">
                                     <div class="col-auto">
-                                        <a href="/Profile/@comment.ProfileName">@comment.ProfileName</a>
+                                        <small class="font-weight-bold">
+                                            <a href="/Profile/@comment.ProfileName">@comment.ProfileName</a>
+                                        </small>                                       
                                         <small class="time"> @comment.CreatedAt</small>
                                     </div>
-                                    <div class="col-auto">
-                                        <h6>@Html.Raw(comment.Text)</h6>
+                                    <div class="col-auto media__border">
+                                        <div class="media__comment">
+                                            <h7>@Html.Raw(comment.Text)</h7>
+                                        </div>
                                     </div>
                                     <div class="col-auto">
                                         <div class="r-btn r-btn-light r-btn--icon" onclick="onCommentVoteClick('@comment.CommentId', 1)">
@@ -80,10 +84,15 @@
                                                 }
                                                 <div class="media-body media__img content__break">
                                                     <div class="col-auto">
-                                                        <a href="/Profile/@reply.ProfileName">@reply.ProfileName</a> <small class="time"> @reply.CreatedAt</small>
+                                                        <small class="font-weight-bold">
+                                                            <a href="/Profile/@reply.ProfileName">@reply.ProfileName</a>                                                             
+                                                        </small>
+                                                        <small class="time"> @reply.CreatedAt</small>
                                                     </div>
-                                                    <div class="col-auto">
-                                                        <h6>@Html.Raw(reply.Text)</h6>
+                                                    <div class="col-auto media__border">
+                                                        <div class="media__comment">
+                                                            <h7>@Html.Raw(reply.Text)</h7>
+                                                        </div>
                                                     </div>
                                                     <div class="col-auto">
                                                         <div class="r-btn r-btn-light r-btn--icon" onclick="onCommentVoteClick('@reply.CommentId', 1)">
@@ -106,43 +115,11 @@
         </div>
         <div class="col-md-4 p-2">
             <div class="card p-4">
-                <div style="border-bottom: 1px solid #d5d5d5; margin-bottom: 20px;">
-                    <h4 class="text-muted">Popular on Egghead</h4>
+                <div style="border-bottom: 1px solid #d5d5d5; margin-bottom: 10px;">
+                    <h4 class="text-muted">Recommendations</h4>
                 </div>
                 @{
-                    var recommendedAdvertisements = Model.RecommendedAdvertisements;
-
-                    if (recommendedAdvertisements != null)
-                    {
-                        <div class="listview">
-                            @foreach (var recommendedAdvertisement in recommendedAdvertisements)
-                            {
-                                <div class="listview__item">
-                                    <div class="mr-2" style="width: 50px; height: 50px">
-                                        @if (!string.IsNullOrEmpty(Model.Profile.ImagePath))
-                                        {
-                                            <img src="@recommendedAdvertisement.ProfileImagePath" class="listview__img" alt="">
-                                        }
-                                        else
-                                        {
-                                            <img src="/images/no_image.png" class="listview__img" alt="">
-                                        }
-                                    </div>
-                                    <div class="listview__content">
-                                        <div class="listview__heading">
-                                            <p>
-                                                <a class="font-weight-bold" href="/Ads/@recommendedAdvertisement.AdsId">@recommendedAdvertisement.Title</a>
-                                            </p>
-                                        </div>
-                                        <p>
-                                            <a href="/Profile/@recommendedAdvertisement.ProfileName" style="font-size: 0.8rem">@recommendedAdvertisement.ProfileName</a>
-                                            <small class="time"> @recommendedAdvertisement.CreatedAt</small>
-                                        </p>
-                                    </div>
-                                </div>
-                            }
-                        </div>
-                    }
+                    @await Html.PartialAsync("RecommendedAdvertisements", Model.RecommendedAdvertisements)
                 }
             </div>
         </div>
@@ -215,11 +192,14 @@
                 <div id="${response.commentId}" class="media p-2">
                     <img src="${response.profileImagePath}" width="48" height="48" alt="profile-image">
                     <div class="media-body media__img content__break">
-                        <div class="col-auto">
-                            ${response.profileName} <small class="time"> ${response.createdAt}</small>
-                        </div>
-                        <div class="col-auto">
-                            <h6>${response.text}</h6>
+                        <small class="font-weight-bold">
+                            <div class="col-auto">
+                                ${response.profileName}
+                            </div>
+                        </small>  
+                        <small class="time"> ${response.createdAt}</small>                     
+                        <div class="col-auto media__border">
+                            <h7>${response.text}</h7>
                         </div>
                         <div class="col-auto">
                             <div class="r-btn r-btn-light r-btn--icon" onclick="onCommentVoteClick('${response
@@ -261,11 +241,14 @@
                 <div id="${response.commentId}" class="media p-2">
                     <img src="${response.profileImagePath}" width="48" height="48" alt="profile-image">
                     <div class="media-body media__img content__break">
-                        <div class="col-auto">
-                            ${response.profileName} <small class="time"> ${response.createdAt}</small>
-                        </div>
-                        <div class="col-auto">
-                            <h6>${response.text}</h6>
+                        <small class="font-weight-bold">
+                            <div class="col-auto">
+                                ${response.profileName}
+                            </div>
+                        </small>  
+                        <small class="time"> ${response.createdAt}</small>
+                        <div class="col-auto media__border">
+                            <h7>${response.text}</h7>
                         </div>
                         <div class="col-auto">
                             <div class="r-btn r-btn-light r-btn--icon" onclick="onCommentVoteClick('${response
