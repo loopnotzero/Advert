@@ -192,12 +192,12 @@
                 <div id="${response.commentId}" class="media p-2">
                     <img src="${response.profileImagePath}" width="48" height="48" alt="profile-image">
                     <div class="media-body media__img content__break">
-                        <small class="font-weight-bold">
-                            <div class="col-auto">
-                                ${response.profileName}
-                            </div>
-                        </small>  
-                        <small class="time"> ${response.createdAt}</small>                     
+                        <div class="col-auto">
+                            <small class="font-weight-bold">
+                                <a href="/Profile/${response.profileName}">${response.profileName}</a>
+                            </small>
+                            <small class="time"> ${response.createdAt}</small>  
+                        </div>                        
                         <div class="col-auto media__border">
                             <h7>${response.text}</h7>
                         </div>
@@ -241,12 +241,12 @@
                 <div id="${response.commentId}" class="media p-2">
                     <img src="${response.profileImagePath}" width="48" height="48" alt="profile-image">
                     <div class="media-body media__img content__break">
-                        <small class="font-weight-bold">
-                            <div class="col-auto">
-                                ${response.profileName}
-                            </div>
-                        </small>  
-                        <small class="time"> ${response.createdAt}</small>
+                        <div class="col-auto">
+                            <small class="font-weight-bold">
+                                <a href="/Profile/${response.profileName}">${response.profileName}</a>
+                            </small>
+                            <small class="time"> ${response.createdAt}</small>         
+                        </div>                        
                         <div class="col-auto media__border">
                             <h7>${response.text}</h7>
                         </div>
@@ -303,7 +303,7 @@
 
     function updateAdvertisementCommentsCountByAdvertisementId(adsId) {
         $.ajax({
-            url: `/Ads/CountAdvertisementCommentsByAdvertisementIdAsync/${adsId}`,
+            url: `/Ads/CountAdvertisementCommentsByAdsIdAsync/${adsId}`,
             type: "GET",
             contentType: "application/json",
             error: function(jqXhr, textStatus, errorThrown) {
@@ -338,6 +338,8 @@
                     adsId: adsId,
                     text: text
                 });
+
+            editor.value("");
         });
     });
 </script>

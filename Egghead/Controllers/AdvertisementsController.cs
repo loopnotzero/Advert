@@ -267,7 +267,7 @@ namespace Egghead.Controllers
 
                 var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
 
-                var advertisements = await _advertisementsManager.FindAdvertisementsAsync(_configuration.GetSection("Egghead").GetValue<int>("MaxAdvertisements"));
+                var advertisements = await _advertisementsManager.FindAdvertisementsAsync(_configuration.GetSection("Egghead").GetValue<int>("HowManyAdvertisementsPerPage"));
 
                 var orderedAdvertisements = advertisements.OrderByDescending(x => EngagementRate.ComputeEngagementRate(x.LikesCount, x.SharesCount, x.CommentsCount, x.ViewsCount));
 
