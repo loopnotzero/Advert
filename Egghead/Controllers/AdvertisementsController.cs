@@ -152,6 +152,7 @@ namespace Egghead.Controllers
                         ViewsCount = ((double) advertisement.ViewsCount).ToMetric(),
                         CommentsCount = ((double) advertisement.CommentsCount).ToMetric(),
                         CreatedAt = advertisement.CreatedAt.Humanize(),
+                        IsTopicOwner = advertisement.ProfileId.Equals(profile.Id)
                     }),
 
                     RecommendedAdvertisements = advertisements

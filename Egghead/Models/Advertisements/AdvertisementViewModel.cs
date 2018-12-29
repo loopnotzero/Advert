@@ -11,6 +11,8 @@
         public string SharesCount { get; set; }
         public string CommentsCount { get; set; }
         public string ProfileName { get; set; }
-        public string ProfileImagePath { get; set; }        
+        public string ProfileImagePath { get; set; }   
+        
+        public bool IsTopicOwner { get; set; }
     }
 }
