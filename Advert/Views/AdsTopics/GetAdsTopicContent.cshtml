@@ -1,0 +1,349 @@
+﻿@using Advert.Models.AdsTopic
+@using Humanizer
+@model AggregatorViewModel
+
+@await Html.PartialAsync("_Header", Model)
+
+<section id="@Model.AdsTopics.First().AdsId" name="ads" class="content">
+    <div class="row">
+        <div class="col-md-8 p-2">
+            <div class="card">
+                <div class="text-muted p-3">
+                    <a href="/Profile/@Model.AdsTopics.First().ProfileName">
+                        <small class="font-weight-bold">@Model.AdsTopics.First().ProfileName</small>
+                    </a>
+                    <small class="time"> @Model.AdsTopics.First().CreatedAt.Humanize()</small>
+                </div>
+
+                <div class="card-body card-body__img">
+                    <h4>@Model.AdsTopics.First().Title</h4>
+                    <p class="card-text">@Html.Raw(Model.AdsTopics.First().Text)</p>
+                </div>
+
+                <div style="border-bottom: 1px solid #e3e3e3; padding-left: 20px; padding-bottom: 20px">
+                    <h4>
+                        <span id="comments-count">@Model.AdsTopics.First().CommentsCount</span> Comments
+                    </h4>
+                </div>
+
+                <div id="comment-form" class="p-4">
+                    <textarea id="comment-editor" style="display: none"></textarea>
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <button id="publish-comment" class="btn btn-light waves-effect waves-light btn-sm">COMMENT</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="ads-comments" class="container-fluid">
+                    @if (Model.AdsTopicComments != null && Model.AdsTopicComments.Any())
+                    {
+                        foreach (var comment in Model.AdsTopicComments)
+                        {
+                            <div id="@comment.CommentId" class="media p-2">
+                                @if (!string.IsNullOrEmpty(comment.ProfileImagePath))
+                                {
+                                    <img src="@comment.ProfileImagePath" width="48" height="48" alt="profile-image">
+                                }
+                                else
+                                {
+                                    <img src="/images/no_image.png" width="48" height="48" alt="profile-image">
+                                }
+                                <div class="media-body media__img content__break">
+                                    <div class="col-auto">
+                                        <small class="font-weight-bold">
+                                            <a href="/Profile/@comment.ProfileName">@comment.ProfileName</a>
+                                        </small>                                       
+                                        <small class="time"> @comment.CreatedAt</small>
+                                    </div>
+                                    <div class="col-auto media__border">
+                                        <div class="media__comment">
+                                            <h7>@Html.Raw(comment.Text)</h7>
+                                        </div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <div class="r-btn r-btn-light r-btn--icon" onclick="onCommentVoteClick('@comment.CommentId', 1)">
+                                            <i class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
+                                        </div>
+                                        <span name="votes-count">@comment.VotesCount</span>
+                                        <span class="reply"></span> <a href="#reply" onclick="showReplyForm(null, '@comment.CommentId')">Reply</a>
+                                    </div>
+                                    <div id="reply-placeholder"></div>
+                                    @if (comment.Comments != null)
+                                    {
+                                        foreach (var reply in comment.Comments)
+                                        {
+                                            <div id="@reply.CommentId" class="media p-2">
+                                                @if (!string.IsNullOrEmpty(reply.ProfileImagePath))
+                                                {
+                                                    <img src="@reply.ProfileImagePath" width="48" height="48" alt="profile-image">
+                                                }
+                                                else
+                                                {
+                                                    <img src="/images/no_image.png" width="48" height="48" alt="profile-image">
+                                                }
+                                                <div class="media-body media__img content__break">
+                                                    <div class="col-auto">
+                                                        <small class="font-weight-bold">
+                                                            <a href="/Profile/@reply.ProfileName">@reply.ProfileName</a>                                                             
+                                                        </small>
+                                                        <small class="time"> @reply.CreatedAt</small>
+                                                    </div>
+                                                    <div class="col-auto media__border">
+                                                        <div class="media__comment">
+                                                            <h7>@Html.Raw(reply.Text)</h7>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-auto">
+                                                        <div class="r-btn r-btn-light r-btn--icon" onclick="onCommentVoteClick('@reply.CommentId', 1)">
+                                                            <i class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
+                                                        </div>
+                                                        <span name="votes-count">@reply.VotesCount</span>
+                                                        <span class="reply"></span> <a href="#reply" onclick="showReplyForm('@reply.ReplyTo', '@reply.CommentId')">Reply</a>
+                                                    </div>
+                                                    <div id="reply-placeholder"></div>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 p-2">
+            <div class="card p-4">
+                <div style="border-bottom: 1px solid #d5d5d5; margin-bottom: 10px;">
+                    <h4 class="text-muted">Recommendations</h4>
+                </div>
+                @{
+                    @await Html.PartialAsync("RecommendedAdsTopics", Model.RecommendedAdsTopics)
+                }
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    function showReplyForm(replyTo, commentId) {
+        removeReplyForm("reply-form");
+
+        $(`#${commentId} #reply-placeholder:first`).append(
+            `<div id="reply-form">   
+                <textarea id="reply-editor" style="display: none"></textarea>    
+                <div class="row mt-3">
+                    <div class="col-12">            
+                        <input id="submit-reply" type="button" class="btn btn-light waves-effect waves-light btn-sm" value="Reply"/>
+                        <input type="button" class="btn btn-light waves-effect waves-light btn-sm mr-2" value="Cancel" onclick="removeReplyForm('reply-form')"/>
+                    </div>    
+                </div>
+            </div>`
+        );
+
+        var editor = new SimpleMDE({
+            status: false,
+            element: $("#reply-editor")[0],
+            placeholder: "Add a public reply...",
+            fullScreen: false,
+            withPreview: false
+        });
+
+        $(".CodeMirror, .CodeMirror-scroll").css('min-height', '150px');
+
+        $("#submit-reply").click(function() {
+            removeReplyForm("reply-form");
+            var text = editor.options.previewRender(editor.value());
+            var adsIs = $(`[name='ads']`).attr("id");
+            createCommentReplyAsync({
+                text: text,
+                replyTo: (replyTo == null ? commentId : replyTo),
+                adsId: adsIs,
+            });
+        });
+    }
+
+    function removeReplyForm(commentId) {
+        var form = $(`#${commentId}`);
+        if (form.length !== 0) {
+            form.remove();
+        }
+    }
+
+    function onCommentVoteClick(commentId, voteType) {
+        var adsId = $(`[name='adsId']`).attr("id");
+        createAdsTopicCommentVoteAsync(adsId, commentId, voteType);
+    }
+
+    function createCommentReplyAsync(comment) {
+        $.ajax({
+            url: `/Topics/CreateAdsTopicCommentAsync`,
+            type: "POST",
+            data: JSON.stringify(comment),
+            contentType: "application/json",
+            error: function(jqXhr, textStatus, errorThrown) {
+                console.log("jqXhr: " + jqXhr);
+                console.log("textStatus: " + textStatus);
+                console.log("errorThrown: " + errorThrown);
+            },
+            success: function(response) {
+                $(`#${comment.replyTo} .media-body:first`).append(`
+                <div id="${response.commentId}" class="media p-2">
+                    <img src="${response.profileImagePath}" width="48" height="48" alt="profile-image">
+                    <div class="media-body media__img content__break">
+                        <div class="col-auto">
+                            <small class="font-weight-bold">
+                                <a href="/Profile/${response.profileName}">${response.profileName}</a>
+                            </small>
+                            <small class="time"> ${response.createdAt}</small>  
+                        </div>                        
+                        <div class="col-auto media__border">
+                            <div class="media__comment">
+                                <h7>${response.text}</h7>
+                            </div>             
+                        </div>
+                        <div class="col-auto">
+                            <div class="r-btn r-btn-light r-btn--icon" onclick="onCommentVoteClick('${response
+                    .commentId}', 1)" >
+                                <i class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
+                            </div>
+                            <span name="votes-count">${response.votesCount}</span>
+                            <a href="#reply" onclick="showReplyForm('${comment.replyTo}', '${response.commentId
+                    }')">Reply</a>
+                        </div>
+                        <div id="reply-placeholder"></div>
+                    </div>
+                </div>
+                `);
+
+                $([document.documentElement, document.body]).animate({
+                        scrollTop: $(`#${response.commentId}`).offset().top - 250
+                    },
+                    200);
+
+                updateAdsTopicCommentsCountByAdsId(response.adsId);
+            }
+        });
+    }
+
+    function createAdsTopicCommentAsync(comment) {
+        $.ajax({
+            url: `/Topics/CreateAdsTopicCommentAsync`,
+            type: "POST",
+            data: JSON.stringify(comment),
+            contentType: "application/json",
+            error: function(jqXhr, textStatus, errorThrown) {
+                console.log("jqXhr: " + jqXhr);
+                console.log("textStatus: " + textStatus);
+                console.log("errorThrown: " + errorThrown);
+            },
+            success: function(response) {
+                $("#ads-comments").prepend(`
+                <div id="${response.commentId}" class="media p-2">
+                    <img src="${response.profileImagePath}" width="48" height="48" alt="profile-image">
+                    <div class="media-body media__img content__break">
+                        <div class="col-auto">
+                            <small class="font-weight-bold">
+                                <a href="/Profile/${response.profileName}">${response.profileName}</a>
+                            </small>
+                            <small class="time"> ${response.createdAt}</small>         
+                        </div>                        
+                        <div class="col-auto media__border">
+                            <div class="media__comment">
+                                <h7>${response.text}</h7>
+                            </div>   
+                        </div>
+                        <div class="col-auto">
+                            <div class="r-btn r-btn-light r-btn--icon" onclick="onCommentVoteClick('${response
+                    .commentId}', 1)">
+                                <i class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
+                            </div>
+                            <span name="votes-count">${response.votesCount}</span>
+                            <a href="#reply" onclick="showReplyForm(null, '${response.commentId}')">Reply</a>
+                        </div>
+                        <div id="reply-placeholder"></div>
+                    </div>
+                </div>`);
+
+                $([document.documentElement, document.body]).animate({
+                        scrollTop: $(`#${response.commentId}`).offset().top - 250
+                    },
+                    200);
+
+                updateAdsTopicCommentsCountByAdsId(response.adsId);
+            }
+        });
+    }
+
+    function createAdsTopicCommentVoteAsync(adsId, commentId, voteType) {
+        var vote = {
+            voteType: voteType,
+            adsId: adsId,
+            commentId: commentId
+        }
+        $.ajax({
+            url: "/Topics/CreateAdsTopicCommentVoteAsync",
+            type: "POST",
+            data: JSON.stringify(vote),
+            contentType: "application/json",
+            error: function(jqXhr, textStatus, errorThrown) {
+                console.log("jqXhr: " + jqXhr);
+                console.log("textStatus: " + textStatus);
+                console.log("errorThrown: " + errorThrown);
+            },
+            success: function(response) {
+                switch (response.voteType) {
+                case 1:
+                    {
+                        $(`#${commentId} span[name=votes-count]:first`).text(response.votesCount);
+                    }
+                    break;
+                }
+
+            }
+        });
+    }
+
+    function updateAdsTopicCommentsCountByAdsId(adsId) {
+        $.ajax({
+            url: `/Topics/CountAdsTopicCommentsByAdsIdAsync/${adsId}`,
+            type: "GET",
+            contentType: "application/json",
+            error: function(jqXhr, textStatus, errorThrown) {
+                console.log("jqXhr: " + jqXhr);
+                console.log("textStatus: " + textStatus);
+                console.log("errorThrown: " + errorThrown);
+            },
+            success: function(response) {
+                $("#comments-count").text(response.commentsCount);
+            }
+        });
+    }
+
+    $(document).ready(function() {
+        var editor = new SimpleMDE({
+            status: false,
+            element: $("#comment-editor")[0],
+            placeholder: "Add a public comment...",
+            fullScreen: false,
+            withPreview: false
+        });
+
+        $(".CodeMirror, .CodeMirror-scroll").css('min-height', '150px');
+
+        $("#publish-comment").click(function() {
+            var text = editor.options.previewRender(editor.value());
+
+            var adsId = $(`[name='ads']`).attr("id");
+
+            createAdsTopicCommentAsync(
+                {
+                    adsId: adsId,
+                    text: text
+                });
+
+            editor.value("");
+        });
+    });
+</script>

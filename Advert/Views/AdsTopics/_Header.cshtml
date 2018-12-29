@@ -1,0 +1,47 @@
+﻿@using Advert.Models.AdsTopic
+@model AggregatorViewModel
+
+<header class="header">
+    <div class="header__logo">
+        <h1>
+            <a href="/" style="text-decoration: none">ADVERT</a>
+        </h1>
+    </div>
+    <form class="search">
+        <div class="search__inner">
+            <input type="text" class="search__text" placeholder="Search">
+            <i class="zmdi zmdi-search search__helper" data-ma-action="search-close"></i>
+        </div>
+    </form>
+    <ul class="top-nav">
+        <li class="hidden-xl-up">
+            <a href="" data-ma-action="search-open">
+                <i class="zmdi zmdi-search"></i>
+            </a>
+        </li>
+        <li class="dropdown">
+            <a id="compose-ads" href="#" class="waves-effect" data-toggle="dropdown" aria-expanded="false">
+                <i class="zmdi zmdi-edit zmdi-hc-lg"></i>
+            </a>
+        </li>
+        <li class="dropdown hidden-xs-down">
+            <a href="" data-toggle="dropdown" class="waves-effect" aria-expanded="false">
+                <i class="zmdi zmdi-more-vert zmdi-hc-lg"></i>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-end" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(-171px, 36px, 0px);">
+                <a id="profile" href="/Profile" class="dropdown-item">Profile</a>
+                <a id="log-out" href="#" class="dropdown-item">Log out</a>
+            </div>
+        </li>
+    </ul>
+</header>
+
+<script>
+    $(document).ready(function(){
+        $( ".search" ).submit(function( event ) {
+            event.preventDefault();
+            window.location.replace(window.location.href + "?page=1&keyword=" + $(".search__text").val());
+
+        });
+    });
+</script>

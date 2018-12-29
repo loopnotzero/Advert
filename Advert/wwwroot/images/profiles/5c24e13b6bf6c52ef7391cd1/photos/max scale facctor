@@ -1,0 +1,13 @@
+ private int findMaxScaleFactorForNode(KActivity node) throws Exception {
+        int maxScaleFactor = ConfigurationManager.getConfMngr().getVarAsInt(ConfigurationManager.ENV_DEFAULT_TOPIC_PARTITIONS);
+        List<KActivity> influxActivities = this.kp.getInfluxActivities(node);
+        for (KActivity influxActivity : influxActivities) {
+            ActivityConfig activityConfig = this.activityHelper.toActivityConfigFromJson(influxActivity.getContent());
+            List<EmittedTopicConfig> emittedTopicsConfig = activityConfig.getEmittedTopicsConfig();
+            int partitions = emittedTopicsConfig.stream().map(x -> x.getPartitions()).max(Integer::compare).get();
+            if (partitions > maxScaleFactor) {
+                maxScaleFactor = partitions;
+            }
+        }
+        return maxScaleFactor;
+    }

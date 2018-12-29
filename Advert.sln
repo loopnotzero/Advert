@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Advert", "Advert\Advert.csproj", "{A5A73F64-BEFE-4D20-BA23-403BE9FDB325}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Advert.MongoDbStorage", "Advert.MongoDbStorage\Advert.MongoDbStorage.csproj", "{3EBA2EDC-2145-4FAC-935F-A10067BE2518}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Advert.Common", "Advert.Common\Advert.Common.csproj", "{132CA30F-D64A-47B4-80C7-74C6FD338396}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A5A73F64-BEFE-4D20-BA23-403BE9FDB325}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5A73F64-BEFE-4D20-BA23-403BE9FDB325}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5A73F64-BEFE-4D20-BA23-403BE9FDB325}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5A73F64-BEFE-4D20-BA23-403BE9FDB325}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3EBA2EDC-2145-4FAC-935F-A10067BE2518}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3EBA2EDC-2145-4FAC-935F-A10067BE2518}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3EBA2EDC-2145-4FAC-935F-A10067BE2518}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3EBA2EDC-2145-4FAC-935F-A10067BE2518}.Release|Any CPU.Build.0 = Release|Any CPU
+		{132CA30F-D64A-47B4-80C7-74C6FD338396}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{132CA30F-D64A-47B4-80C7-74C6FD338396}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{132CA30F-D64A-47B4-80C7-74C6FD338396}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{132CA30F-D64A-47B4-80C7-74C6FD338396}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

@@ -45,3 +45,17 @@ Egghead\.IntegrationTests/obj/
 Egghead/appsettings\.json
 
 Egghead/wwwroot/images/profiles/
+
+Advert\.Common/bin/Debug/netcoreapp2\.1/
+
+Advert\.Common/obj/
+
+Advert\.MongoDbStorage/bin/Debug/netcoreapp2\.1/
+
+Advert/bin/Debug/netcoreapp2\.1/
+
+Advert/obj/Debug/netcoreapp2\.1/
+
+Advert/obj/
+
+Advert\.MongoDbStorage/obj/

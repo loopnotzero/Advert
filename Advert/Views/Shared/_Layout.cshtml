@@ -1,0 +1,132 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Advert.md</title>
+
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description"/>
+    <meta content="Coderthemes" name="author"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+
+    <link rel="shortcut icon" href="~/images/favicon.ico">
+    <link href="~/css/dropzone.css" rel="stylesheet" type="text/css"/>
+    <link href="~/css/font.css" rel="stylesheet" type="text/css"/>
+    <link href="~/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <link href="~/css/style.css" rel="stylesheet" type="text/css"/>
+    <link href="~/css/simplemde.css" rel="stylesheet" type="text/css">
+    <link href="~/css/animate.css" rel="stylesheet" type="text/css">
+</head>
+
+<body id="body" data-ma-theme="advert" style="display: none">
+
+<script src="~/js/jquery.min.js"></script>
+<script src="~/js/popper.js"></script>
+<script src="~/js/bootstrap.min.js"></script>
+<script src="~/js/waves.js"></script>
+<script src="~/js/simplemde.js"></script>
+<script src="~/js/vendors/select2/select2.js"></script>
+<script src="~/js/dropzone.js"></script>
+@RenderBody()
+</body>
+</html>
+
+<script>
+    $(window).on('load',
+        function() {
+            $('#body').fadeIn(200);
+        });
+
+    $(document).ready(function() {
+        $("#log-out").click(function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: "/Account/SignOut?returnUrl=" + window.location.pathname + window.location.search,
+                type: "GET",
+                contentType: "application/json",
+                error: function(jqXhr, textStatus, errorThrown) {
+                    console.log("jqXhr: " + jqXhr);
+                    console.log("textStatus: " + textStatus);
+                    console.log("errorThrown: " + errorThrown);
+                },
+                success: function(response) {
+                    window.location.href = response.returnUrl;
+                }
+            });
+            return false;
+        });
+
+        $("#sign-up").click(function(e) {
+            e.preventDefault();
+
+            var token = $("input[name=__RequestVerificationToken]").val();
+            var additionalHeaders = {};
+
+            if (token) {
+                additionalHeaders["RequestVerificationToken"] = token;
+            }
+
+            $.ajax({
+                url: $("#form").attr("action"),
+                type: "POST",
+                data: JSON.stringify({
+                    email: $("#email").val(),
+                    name: $("#name").val(),
+                    password: $("#password").val()
+                }),
+                headers: additionalHeaders,
+                contentType: "application/json",
+                error: function(jqXhr, textStatus, errorThrown) {
+                    console.log("jqXhr: " + jqXhr);
+                    console.log("textStatus: " + textStatus);
+                    console.log("errorThrown: " + errorThrown);
+                },
+                success: function(response) {
+                    console.log(response);
+                    window.location.replace(response.returnUrl);
+                }
+            });
+
+            return false;
+        });
+
+        $("#compose-ads").click(function(e) {
+            e.preventDefault();
+            window.location.href = "/Topics/ComposeAdsTopic";
+            return false;
+        });
+
+        var body = $('body');
+
+        body.on('focus',
+            '.search__text',
+            function() {
+                $(this).closest('.search').addClass('search--focus');
+            });
+
+        body.on('blur',
+            '.search__text',
+            function() {
+                $(this).val('');
+                $(this).closest('.search').removeClass('search--focus');
+            });
+
+        body.on('click',
+            '[data-ma-action]',
+            function(e) {
+                e.preventDefault();
+                var $this = $(this);
+                var action = $this.data('ma-action');
+                var target = '';
+                switch (action) {
+                case 'search-open':
+                    $('.search').addClass('search--toggled');
+                    break;
+                case 'search-close':
+                    $('.search').removeClass('search--toggled');
+                    break;
+                }
+            });
+    });
+</script>

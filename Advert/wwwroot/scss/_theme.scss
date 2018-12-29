@@ -1,0 +1,51 @@
+// Theming
+@mixin ma-theme($color) {
+  .header,
+  .login__block__header,
+  .login__block__btn,
+  .top-menu {
+    background-color: $color;
+  }
+  
+  a,
+  .navigation__sub--active > a,
+  .navigation__active > a,
+  .navigation__active:before,
+  .zmdi-eye,
+  .zmdi-comments,
+  .zmdi zmdi-more-vert,
+  .zmdi-favorite-outline {
+    color: $color;
+  }
+
+  .widget-profile__img__hover:hover {
+    box-shadow: 0 0 0 .15rem $color;
+  }
+}
+
+$themes: (
+        red: $red,
+        purple: $purple,
+        indigo: $indigo,
+        blue: $blue,
+        cyan: $cyan,
+        teal: $teal,
+        green: $green,
+        brown: $brown,
+        orange: $orange,
+        blue-grey: $blue-grey,
+        advert: $advert
+);
+
+@each $theme, $value in $themes {
+  [data-ma-theme="#{$theme}"] {
+    @include ma-theme($value);
+  }
+}
+
+.theme-switch {
+  .btn-group--colors {
+    display: block;
+    margin-top: 0.75rem;
+  }
+}
