@@ -199,7 +199,9 @@
                             <small class="time"> ${response.createdAt}</small>  
                         </div>                        
                         <div class="col-auto media__border">
-                            <h7>${response.text}</h7>
+                            <div class="media__comment">
+                                <h7>${response.text}</h7>
+                            </div>             
                         </div>
                         <div class="col-auto">
                             <div class="r-btn r-btn-light r-btn--icon" onclick="onCommentVoteClick('${response
@@ -248,7 +250,9 @@
                             <small class="time"> ${response.createdAt}</small>         
                         </div>                        
                         <div class="col-auto media__border">
-                            <h7>${response.text}</h7>
+                            <div class="media__comment">
+                                <h7>${response.text}</h7>
+                            </div>   
                         </div>
                         <div class="col-auto">
                             <div class="r-btn r-btn-light r-btn--icon" onclick="onCommentVoteClick('${response
