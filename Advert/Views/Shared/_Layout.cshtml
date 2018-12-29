@@ -73,7 +73,8 @@
                 data: JSON.stringify({
                     email: $("#email").val(),
                     name: $("#name").val(),
-                    password: $("#password").val()
+                    password: $("#password").val(),
+                    culture: navigator.language
                 }),
                 headers: additionalHeaders,
                 contentType: "application/json",

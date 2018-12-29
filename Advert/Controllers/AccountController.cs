@@ -123,7 +123,8 @@ namespace Advert.Controllers
                 {
                     Name = model.Name,
                     Email = model.Email,
-                    CreatedAt = DateTime.UtcNow
+                    Culture = model.Culture,
+                    CreatedAt = DateTime.UtcNow,
                 });
 
                 returnUrl = Uri.UnescapeDataString(returnUrl);

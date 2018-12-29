@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Advert.Common.Profiles;
 using Advert.MongoDbStorage.Profiles;
 using Advert.MongoDbStorage.Stores;
 using Microsoft.AspNetCore.Identity;
@@ -8,7 +9,7 @@ using MongoDB.Bson;
 
 namespace Advert.Managers
 {
-    public class ProfilesManager<T> : IDisposable where T : class
+    public class ProfilesManager<T> : IDisposable where T : IProfile
     {
         private bool _disposed;
 

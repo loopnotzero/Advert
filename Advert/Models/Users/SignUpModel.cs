@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Advert.Models.Users
 {
@@ -11,6 +12,8 @@ namespace Advert.Models.Users
         [Required]
         [EmailAddress]
         public string Email { get; set; }
+        
+        public string Culture { get; set; }
 
         [Required]
         [DataType(DataType.Password)]

@@ -333,6 +333,8 @@ namespace Advert.Controllers
                 {
                     Text = viewModel.Text,
                     Title = viewModel.Title,
+                    Price = viewModel.Price,
+                    Location = viewModel.Location,
                     ReleaseType = ReleaseType.PreModeration,
                     ProfileId = profile.Id,
                     ProfileName = profile.Name,
