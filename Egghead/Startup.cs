@@ -124,7 +124,7 @@ namespace Egghead
                 return new MongoDbAdsTopicCommentsVotesAggregationStore<MongoDbAdsTopicCommentVote, MongoDbAdsTopicCommentVoteAggregation>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
             });
             
-            services.AddTransient<IUserValidator<MongoDbUser>, EggheadUserValidator<MongoDbUser>>();
+            services.AddTransient<IUserValidator<MongoDbUser>, AdvertUserValidator<MongoDbUser>>();
                
             #endregion
             
@@ -140,7 +140,7 @@ namespace Egghead
                 options.Password.RequireUppercase = false;
                 options.Password.RequiredUniqueChars = 1;
                 options.Password.RequireNonAlphanumeric = false;
-            }).AddDefaultTokenProviders().AddUserValidator<EggheadUserValidator<MongoDbUser>>();
+            }).AddDefaultTokenProviders().AddUserValidator<AdvertUserValidator<MongoDbUser>>();
             
             #endregion
             
