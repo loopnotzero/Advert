@@ -6,7 +6,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Advert.MongoDbStorage.Profiles
 {
-    public class MongoDbProfile
+    public class MongoDbProfile : IProfile
     {
         public MongoDbProfile()
         {
@@ -16,6 +16,7 @@ namespace Advert.MongoDbStorage.Profiles
 
         public string Name { get; set; }    
         public string Email { get; set; }
+        public string Culture { get; set; }
         public string Location { get; set; }
         public string ImagePath { get; set; }
         public string PhoneNumber { get; set; }  

@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Advert.Common.Profiles;
 using MongoDB.Bson;
 
 namespace Advert.MongoDbStorage.Stores
 {
-    public interface IProfilesStore<T> : IDisposable where T : class
+    public interface IProfilesStore<T> : IDisposable where T : IProfile
     {
         Task CreateProfileAsync(T entity, CancellationToken cancellationToken);
         Task UpdateProfileAsync(T entity, CancellationToken cancellationToken);
