@@ -3,23 +3,23 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Egghead.Common;
-using Egghead.Common.Advertisements;
-using Egghead.MongoDbStorage.Advertisements;
+using Egghead.Common.AdsTopics;
+using Egghead.MongoDbStorage.AdsTopics;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace Egghead.MongoDbStorage.Stores
 {
-    public class MongoDbAdvertisementCommentsCollection<T> : IAdvertisementCommentsCollection<T> where T : MongoDbAdvertisementComment
+    public class MongoDbAdsTopicCommentsCollection<T> : IAdsTopicCommentsCollection<T> where T : MongoDbAdsTopicComment
     {
         private readonly IMongoCollection<T> _collection;
         
-        public MongoDbAdvertisementCommentsCollection(IMongoCollection<T> collection)
+        public MongoDbAdsTopicCommentsCollection(IMongoCollection<T> collection)
         {
             _collection = collection;
         }
         
-        public async Task CreateAdvertisementCommentAsync(T entity, CancellationToken cancellationToken)
+        public async Task CreateAdsTopicCommentAsync(T entity, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             await _collection.InsertOneAsync(entity, new InsertOneOptions
@@ -28,20 +28,20 @@ namespace Egghead.MongoDbStorage.Stores
             }, cancellationToken);
         }
 
-        public async Task<T> FindAdvertisementCommentByIdAsync(ObjectId commentId, CancellationToken cancellationToken)
+        public async Task<T> FindAdsTopicCommentByIdAsync(ObjectId commentId, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.Id, commentId), cancellationToken: cancellationToken);
             return await cursor.FirstAsync(cancellationToken);
         }
 
-        public async Task<long> EstimatedAdvertisementCommentsCountAsync(CancellationToken cancellationToken)
+        public async Task<long> EstimatedAdsTopicCommentsCountAsync(CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             return await _collection.EstimatedDocumentCountAsync(cancellationToken: cancellationToken);
         }
 
-        public async Task<List<T>> FindAdvertisementCommentsAsync(int? howManyElements, CancellationToken cancellationToken)
+        public async Task<List<T>> FindAdsTopicCommentsAsync(int? howManyElements, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             
@@ -60,7 +60,7 @@ namespace Egghead.MongoDbStorage.Stores
             return await cursor.ToListAsync(cancellationToken);
         }
 
-        public async Task<List<T>> FindAdvertisementCommentsAsync(int offset, int? howManyElements, CancellationToken cancellationToken)
+        public async Task<List<T>> FindAdsTopicCommentsAsync(int offset, int? howManyElements, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             
@@ -81,7 +81,7 @@ namespace Egghead.MongoDbStorage.Stores
             return await cursor.ToListAsync(cancellationToken);
         }
 
-        public async Task<List<T>> FindAdvertisementCommentsAsync(int offset, int? howManyElements, SortDefinition sortDef, CancellationToken cancellationToken)
+        public async Task<List<T>> FindAdsTopicCommentsAsync(int offset, int? howManyElements, SortDefinition sortDef, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -101,7 +101,7 @@ namespace Egghead.MongoDbStorage.Stores
             return await cursor.ToListAsync(cancellationToken);
         }
 
-        public async Task<List<T>> FindAdvertisementCommentsByProfileIdAsync(ObjectId profileId, CancellationToken cancellationToken)
+        public async Task<List<T>> FindAdsTopicCommentsByProfileIdAsync(ObjectId profileId, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             
@@ -115,13 +115,13 @@ namespace Egghead.MongoDbStorage.Stores
             return await cursor.ToListAsync(cancellationToken);
         }
         
-        public async Task<DeleteResult> DeleteAdvertisementCommentByIdAsync(ObjectId commentId, CancellationToken cancellationToken)
+        public async Task<DeleteResult> DeleteAdsTopicCommentByIdAsync(ObjectId commentId, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             return await _collection.DeleteOneAsync(Builders<T>.Filter.Eq(x => x.Id, commentId), cancellationToken);
         }
 
-        public async Task<ReplaceOneResult> UpdateAdvertisementCommentByIdAsync(ObjectId commentId, T entity, CancellationToken cancellationToken)
+        public async Task<ReplaceOneResult> UpdateAdsTopicCommentByIdAsync(ObjectId commentId, T entity, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             return await _collection.ReplaceOneAsync(Builders<T>.Filter.Eq(x => x.Id, commentId), entity, new UpdateOptions

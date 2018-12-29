@@ -148,7 +148,7 @@ namespace Egghead.Controllers
                 return Redirect(returnUrl);
             }
 
-            return RedirectToAction(nameof(AdvertisementsController.GetAdvertisements), "Advertisements");       
+            return RedirectToAction(nameof(AdsTopicsController.GetAdsTopics), "AdsTopics");       
         }
     }
 }

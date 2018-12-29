@@ -1,5 +1,5 @@
 ﻿using Egghead.Managers;
-using Egghead.MongoDbStorage.Advertisements;
+using Egghead.MongoDbStorage.AdsTopics;
 using Egghead.MongoDbStorage.Common;
 using Egghead.MongoDbStorage.Profiles;
 using Egghead.MongoDbStorage.Roles;
@@ -43,7 +43,7 @@ namespace Egghead
 
             app.UseAuthentication();
 
-            app.UseMvc(routes => { routes.MapRoute("default", "{controller=Advertisements}/{action=GetAdvertisements}/{id?}"); });
+            app.UseMvc(routes => { routes.MapRoute("default", "{controller=AdsTopics}/{action=GetAdsTopics}/{id?}"); });
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -53,13 +53,13 @@ namespace Egghead
             
             #region Scoped services
             services.AddScoped<ProfilesManager<MongoDbProfile>, ProfilesManager<MongoDbProfile>>();
-            services.AddScoped<AdvertisementsManager<MongoDbAdvertisement>, AdvertisementsManager<MongoDbAdvertisement>>();
-            services.AddScoped<AdvertisementsLikesManager<MongoDbAdvertisementVote>, AdvertisementsLikesManager<MongoDbAdvertisementVote>>();
+            services.AddScoped<AdsTopicsManager<MongoDbAdsTopic>, AdsTopicsManager<MongoDbAdsTopic>>();
+            services.AddScoped<AdsTopicsVotesManager<MongoDbAdsTopicVote>, AdsTopicsVotesManager<MongoDbAdsTopicVote>>();
             services.AddScoped<ProfilesImagesManager<MongoDbProfileImage>, ProfilesImagesManager<MongoDbProfileImage>>();
-            services.AddScoped<AdvertisementsCommentsManager<MongoDbAdvertisementComment>, AdvertisementsCommentsManager<MongoDbAdvertisementComment>>();
-            services.AddScoped<AdvertisementsViewCountManager<MongoDbAdvertisementViewsCount>, AdvertisementsViewCountManager<MongoDbAdvertisementViewsCount>>();
-            services.AddScoped<AdvertisementCommentsVotesManager<MongoDbAdvertisementCommentVote>, AdvertisementCommentsVotesManager<MongoDbAdvertisementCommentVote>>(); 
-            services.AddScoped<AdvertisementCommentsVotesAggregationManager<MongoDbAdvertisementCommentVote, MongoDbAdvertisementCommentVoteAggregation>, AdvertisementCommentsVotesAggregationManager<MongoDbAdvertisementCommentVote, MongoDbAdvertisementCommentVoteAggregation>>(); 
+            services.AddScoped<AdsTopicCommentsManager<MongoDbAdsTopicComment>, AdsTopicCommentsManager<MongoDbAdsTopicComment>>();
+            services.AddScoped<AdsTopicsViewsCountManager<MongoDbAdsTopicViewsCount>, AdsTopicsViewsCountManager<MongoDbAdsTopicViewsCount>>();
+            services.AddScoped<AdsTopicCommentsVotesManager<MongoDbAdsTopicCommentVote>, AdsTopicCommentsVotesManager<MongoDbAdsTopicCommentVote>>(); 
+            services.AddScoped<AdsTopicCommentsVotesAggregationManager<MongoDbAdsTopicCommentVote, MongoDbAdsTopicCommentVoteAggregation>, AdsTopicCommentsVotesAggregationManager<MongoDbAdsTopicCommentVote, MongoDbAdsTopicCommentVoteAggregation>>(); 
             #endregion
 
             #region Transient services
@@ -82,16 +82,16 @@ namespace Egghead
                 return new MongoDbProfilesStore<MongoDbProfile>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
             });
 
-            services.AddTransient<IAdvertisementsStore<MongoDbAdvertisement>>(provider =>
+            services.AddTransient<IAdsTopicsStore<MongoDbAdsTopic>>(provider =>
             {
                 var options = provider.GetService<IOptions<MongoDbOptions>>();
-                return new MongoDbAdvertisementsStore<MongoDbAdvertisement>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+                return new MongoDbAdsTopicsStore<MongoDbAdsTopic>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
             });
              
-            services.AddTransient<IAdvertisementsVotesStore<MongoDbAdvertisementVote>>(provider =>
+            services.AddTransient<IAdsTopicsVotesStore<MongoDbAdsTopicVote>>(provider =>
             {
                 var options = provider.GetService<IOptions<MongoDbOptions>>();
-                return new MongoDbAdvertisementsVotesStore<MongoDbAdvertisementVote>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+                return new MongoDbAdsTopicsVotesStore<MongoDbAdsTopicVote>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
             });
             
             services.AddTransient<IProfilesImagesStore<MongoDbProfileImage>>(provider =>
@@ -100,28 +100,28 @@ namespace Egghead
                 return new MongoDbProfilesImagesStore<MongoDbProfileImage>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
             });
             
-            services.AddTransient<IAdvertisementsCommentsStore<MongoDbAdvertisementComment>>(provider =>
+            services.AddTransient<IAdsTopicsCommentsStore<MongoDbAdsTopicComment>>(provider =>
             {
                 var options = provider.GetService<IOptions<MongoDbOptions>>();
-                return new MongoDbAdvertisementsCommentsStore<MongoDbAdvertisementComment>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+                return new MongoDbAdsTopicsCommentsStore<MongoDbAdsTopicComment>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
             });
 
-            services.AddTransient<IAdvertisementsViewCountStore<MongoDbAdvertisementViewsCount>>(provider =>
+            services.AddTransient<IAdsTopicsViewCountStore<MongoDbAdsTopicViewsCount>>(provider =>
             {
                 var options = provider.GetService<IOptions<MongoDbOptions>>();
-                return new MongoDbAdvertisementsViewCountStore<MongoDbAdvertisementViewsCount>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+                return new MongoDbAdsTopicsViewCountStore<MongoDbAdsTopicViewsCount>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
             });
             
-            services.AddTransient<IAdvertisementCommentsVotesStore<MongoDbAdvertisementCommentVote>>(provider =>
+            services.AddTransient<IAdsTopicCommentsVotesStore<MongoDbAdsTopicCommentVote>>(provider =>
             {
                 var options = provider.GetService<IOptions<MongoDbOptions>>();
-                return new MongoDbAdvertisementCommentsVotesStore<MongoDbAdvertisementCommentVote>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+                return new MongoDbAdsTopicCommentsVotesStore<MongoDbAdsTopicCommentVote>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
             });
                           
-            services.AddTransient<IAdvertisementCommentsVotesAggregationStore<MongoDbAdvertisementCommentVote, MongoDbAdvertisementCommentVoteAggregation>>(provider =>
+            services.AddTransient<IAdsTopicCommentsVotesAggregationStore<MongoDbAdsTopicCommentVote, MongoDbAdsTopicCommentVoteAggregation>>(provider =>
             {
                 var options = provider.GetService<IOptions<MongoDbOptions>>();
-                return new MongoDbAdvertisementCommentsVotesAggregationStore<MongoDbAdvertisementCommentVote, MongoDbAdvertisementCommentVoteAggregation>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+                return new MongoDbAdsTopicCommentsVotesAggregationStore<MongoDbAdsTopicCommentVote, MongoDbAdsTopicCommentVoteAggregation>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
             });
             
             services.AddTransient<IUserValidator<MongoDbUser>, EggheadUserValidator<MongoDbUser>>();

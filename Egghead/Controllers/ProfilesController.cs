@@ -3,7 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Egghead.Managers;
 using Egghead.Models.Profiles;
-using Egghead.MongoDbStorage.Advertisements;
+using Egghead.MongoDbStorage.AdsTopics;
 using Egghead.MongoDbStorage.Profiles;
 using Humanizer;
 using Microsoft.AspNetCore.Hosting;
@@ -20,17 +20,17 @@ namespace Egghead.Controllers
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly ProfilesManager<MongoDbProfile> _profilesManager;
         private readonly ProfilesImagesManager<MongoDbProfileImage> _profilesImagesManager;
-        private readonly AdvertisementsManager<MongoDbAdvertisement> _advertisementsManager;
-        private readonly AdvertisementsCommentsManager<MongoDbAdvertisementComment> _advertisementsCommentsManager;
+        private readonly AdsTopicsManager<MongoDbAdsTopic> _adsTopicsManager;
+        private readonly AdsTopicCommentsManager<MongoDbAdsTopicComment> _adsTopicCommentsManager;
 
-        public ProfilesController(ILoggerFactory loggerFactory, ILookupNormalizer keyNormalizer, IHostingEnvironment hostingEnvironment, ProfilesManager<MongoDbProfile> profilesManager, ProfilesImagesManager<MongoDbProfileImage> profilesImagesManager, AdvertisementsManager<MongoDbAdvertisement> advertisementsManager, AdvertisementsCommentsManager<MongoDbAdvertisementComment> advertisementsCommentsManager)
+        public ProfilesController(ILoggerFactory loggerFactory, ILookupNormalizer keyNormalizer, IHostingEnvironment hostingEnvironment, ProfilesManager<MongoDbProfile> profilesManager, ProfilesImagesManager<MongoDbProfileImage> profilesImagesManager, AdsTopicsManager<MongoDbAdsTopic> adsTopicsManager, AdsTopicCommentsManager<MongoDbAdsTopicComment> adsTopicCommentsManager)
         {
             _logger = loggerFactory.CreateLogger<ProfilesController>();
             _hostingEnvironment = hostingEnvironment;         
             _profilesManager = profilesManager;
             _profilesImagesManager = profilesImagesManager;
-            _advertisementsManager = advertisementsManager;
-            _advertisementsCommentsManager = advertisementsCommentsManager;
+            _adsTopicsManager = adsTopicsManager;
+            _adsTopicCommentsManager = adsTopicCommentsManager;
         }
 
         [HttpGet]
@@ -50,7 +50,7 @@ namespace Egghead.Controllers
                 Id = profile.Id.ToString(),
                 Name = profile.Name,
                 ImagePath = profile.ImagePath,
-                AdvertisementsCount = ((double)0).ToMetric(),
+                AdsTopicsCount = ((double)0).ToMetric(),
             });
         }
         
@@ -71,7 +71,7 @@ namespace Egghead.Controllers
                 Id = profile.Id.ToString(),
                 Name = profile.Name,
                 ImagePath = profile.ImagePath,
-                AdvertisementsCount = ((double)0).ToMetric(),
+                AdsTopicsCount = ((double)0).ToMetric(),
             });
         }
         
@@ -118,31 +118,31 @@ namespace Egghead.Controllers
           
             //todo: Update optimization
             
-            var advertisements = await _advertisementsManager.FindAdvertisementsAsync(null);
+            var adsTopics = await _adsTopicsManager.FindAdsTopicsAsync(null);
 
-            foreach (var advertisement in advertisements)
+            foreach (var adsTopic in adsTopics)
             {
-                var advertisementComments = await _advertisementsCommentsManager.FindAdvertisementCommentsByProfileIdAsync(advertisement.Id.ToString(), advertisement.ProfileId);
-                foreach (var advertisementComment in advertisementComments)
+                var adsTopicComments = await _adsTopicCommentsManager.FindAdsTopicCommentsByProfileIdAsync(adsTopic.Id.ToString(), adsTopic.ProfileId);
+                foreach (var adsTopicComment in adsTopicComments)
                 {              
                     // ReSharper disable once InvertIf
-                    if (advertisementComment.ProfileId.Equals(profile.Id) && advertisementComment.ProfileImagePath != profile.ImagePath && !advertisement.ProfileImagePath.Equals(profile.ImagePath))
+                    if (adsTopicComment.ProfileId.Equals(profile.Id) && adsTopicComment.ProfileImagePath != profile.ImagePath && !adsTopic.ProfileImagePath.Equals(profile.ImagePath))
                     {
-                        advertisementComment.ProfileImagePath = profile.ImagePath;
-                        await _advertisementsCommentsManager.UpdateAdvertisementCommentByIdAsync(advertisementComment.AdsId.ToString(), advertisementComment.Id, advertisementComment);
+                        adsTopicComment.ProfileImagePath = profile.ImagePath;
+                        await _adsTopicCommentsManager.UpdateAdsTopicCommentByIdAsync(adsTopicComment.AdsId.ToString(), adsTopicComment.Id, adsTopicComment);
                     }
                 }
             }
 
-            var dbAdvertisements = await _advertisementsManager.FindAdvertisementsByProfileIdAsync(profile.Id);
+            var adsTopicsByProfile = await _adsTopicsManager.FindAdsTopicsByProfileIdAsync(profile.Id);
       
-            foreach (var advertisement in dbAdvertisements)
+            foreach (var adsTopicByProfile in adsTopicsByProfile)
             {
-                advertisement.ProfileImagePath = profile.ImagePath;
-                await _advertisementsManager.UpdateAdvertisementAsync(advertisement);
+                adsTopicByProfile.ProfileImagePath = profile.ImagePath;
+                await _adsTopicsManager.UpdateAdsTopicAsync(adsTopicByProfile);
             }
             
-            return RedirectToAction("GetAdvertisements", "Advertisements");
+            return RedirectToAction("GetAdsTopics", "AdsTopics");
         }
     }
 }
