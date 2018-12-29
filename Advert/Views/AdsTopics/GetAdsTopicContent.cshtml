@@ -142,7 +142,7 @@
             </div>`
         );
 
-        var editor = new SimpleMDE({
+        var replyEditor = new SimpleMDE({
             status: false,
             element: $("#reply-editor")[0],
             placeholder: "Add a public reply...",
@@ -154,7 +154,7 @@
 
         $("#submit-reply").click(function() {
             removeReplyForm("reply-form");
-            var text = editor.options.previewRender(editor.value());
+            var text = replyEditor.options.previewRender(replyEditor.value());
             var adsIs = $(`[name='ads']`).attr("id");
             createCommentReplyAsync({
                 text: text,
@@ -322,7 +322,7 @@
     }
 
     $(document).ready(function() {
-        var editor = new SimpleMDE({
+        var commentEditor = new SimpleMDE({
             status: false,
             element: $("#comment-editor")[0],
             placeholder: "Add a public comment...",
@@ -333,7 +333,7 @@
         $(".CodeMirror, .CodeMirror-scroll").css('min-height', '150px');
 
         $("#publish-comment").click(function() {
-            var text = editor.options.previewRender(editor.value());
+            var text = commentEditor.options.previewRender(commentEditor.value());
 
             var adsId = $(`[name='ads']`).attr("id");
 
@@ -343,7 +343,7 @@
                     text: text
                 });
 
-            editor.value("");
+            commentEditor.value("");
         });
     });
 </script>

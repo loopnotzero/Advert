@@ -35,32 +35,31 @@
                 <div id="ads-topics" class="card">
                     @foreach (var adsTopic in Model.AdsTopics)
                     {
+                        <div class="text-muted p-3">
+                            <a href="/Profile/@adsTopic.ProfileName">
+                                <small class="font-weight-bold">@adsTopic.ProfileName</small>
+                            </a>
+
+                            <small class="time"> @adsTopic.CreatedAt</small>
+
+                            <ul class="list-inline float-md-right">                               
+                                @if (adsTopic.IsTopicOwner)
+                                {
+                                    <li class="list-inline-item" onclick="onEditPostClick('@adsTopic.AdsId')">
+                                        <a href="" title="" data-placement="top" data-target="#modal-backdrop-ignore" data-toggle="modal" data-original-title="Edit">
+                                            <i class="zmdi zmdi-edit zmdi-hc-fw"></i>
+                                        </a>                               
+                                    </li>                                    
+                                    <li class="list-inline-item">
+
+                                        <a title="" data-placement="top" data-toggle="tooltip" href="" data-original-title="Delete">
+                                            <i class="zmdi zmdi-delete zmdi-hc-fw"></i>
+                                        </a>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
                         <article id="@adsTopic.AdsId" class="card-hover">
-                            <div class="text-muted p-3">
-                                <a href="/Profile/@adsTopic.ProfileName">
-                                    <small class="font-weight-bold">@adsTopic.ProfileName</small>
-                                </a>
-
-                                <small class="time"> @adsTopic.CreatedAt</small>
-
-                                <ul class="list-inline float-md-right">
-                                    <li class="list-inline-item">
-                                        <a title="" data-placement="top" data-toggle="tooltip" href="" data-original-title="Facebook">
-                                            <i class="zmdi zmdi-facebook zmdi-hc-fw"></i>
-                                        </a>
-                                    </li>
-                                    <li class="list-inline-item">
-                                        <a title="" data-placement="top" data-toggle="tooltip" href="" data-original-title="Twitter">
-                                            <i class="zmdi zmdi-twitter zmdi-hc-fw"></i>
-                                        </a>
-                                    </li>
-                                    <li class="list-inline-item">
-                                        <a title="" data-placement="top" data-toggle="tooltip" href="" data-original-title="Skype">
-                                            <i class="zmdi zmdi-skype zmdi-hc-fw"></i>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
                             <div class="card-body card-body__img">
                                 <a href="/Topics/@adsTopic.AdsId">
                                     <h4 class="card-title font-weight-bold cut-long-text mb-2">@adsTopic.Title</h4>
@@ -94,7 +93,6 @@
                     }
                 </div>
             }
-
             @if (Model.LastPage > 1)
             {
                 <div class="mt-4">
@@ -174,10 +172,38 @@
                 }
             </div>
         </div>
+        
+        <div id="modal-backdrop-ignore" class="modal fade" data-backdrop="static" tabindex="-1" style="display: none;" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h6 class="pull-left font-weight-bold" style="margin-top: 10px; margin-left: 10px">Edit post</h6>
+                        <button type="button" class="btn btn-link pull-right" data-dismiss="modal">
+                            <span>
+                                <i class="zmdi zmdi-close zmdi-hc-fw"></i>
+                            </span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        @await Html.PartialAsync("EditAdsTopic")
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-link">
+                            Save
+                        </button>                                          
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 
 <script>
+    function onEditPostClick(adsId) {
+        console.log(`ADS ID: ${adsId}`)
+        postEditor.value("adfdasf");
+    }
+            
     function onAdsTopicVoteClick(adsId, voteType) {
         var vote = {
             adsId: adsId,
@@ -220,4 +246,8 @@
             }
         });
     }
+    
+    $('#modal-backdrop-ignore').on('displayChanged', function() {
+        console.log("kjhkjhkjhjkhkjhkj");
+    }); 
 </script>

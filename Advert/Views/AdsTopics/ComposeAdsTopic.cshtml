@@ -37,7 +37,7 @@
                     <input id="price" type="text" class="form-control" placeholder="Price" autocomplete="off">
                 </div>
             </div>
-            
+
             <div class="form-group">
                 <input id="pac-input" type="text" class="form-control" placeholder="Enter a location (optional)" autocomplete="off">
                 <div id="map"></div>
@@ -47,7 +47,7 @@
                 <div id="dropzone">
                     <form asp-controller="AdsTopics" asp-action="AddAdsTopicPhotos" class="dropzone needsclick dz-clickable" id="demo-upload">
                         <div class="dz-message needsclick">
-                            Drop files here or click to upload up to +10 photos
+                            Drop files here or click to upload up to 10 photos
                         </div>
                     </form>
                 </div>
@@ -70,12 +70,13 @@
             });
         }
 
-        var simplemde = new SimpleMDE({
+        var composeEditor = new SimpleMDE({
             status: false,
             element: $("#ads-editor")[0],
             placeholder: "Type here...",
             fullScreen: false,
-            withPreview: false
+            withPreview: false,
+            spellChecker: false
         });
 
         $("#publish-ads").click(function(e) {
@@ -86,10 +87,11 @@
             if (title === null || title === "")
                 return;
 
-            var text = simplemde.options.previewRender(simplemde.value());
+            var text = composeEditor.options.previewRender(composeEditor.value());
 
-            if (text === null || text === "")
+            if (text === null || text === "") {
                 return;
+            }
 
             var ads = JSON.stringify({
                 title: title,
@@ -156,8 +158,11 @@
         autocomplete.addListener('place_changed',
             function() {
                 infowindow.close();
+
                 marker.setVisible(false);
+
                 var place = autocomplete.getPlace();
+
                 if (!place.geometry) {
                     // User entered the name of a Place that was not suggested and
                     // pressed the Enter key, or the Place Details request failed.
@@ -172,10 +177,12 @@
                     map.setCenter(place.geometry.location);
                     map.setZoom(17); // Why 17? Because it looks good.
                 }
+
                 marker.setPosition(place.geometry.location);
                 marker.setVisible(true);
 
                 var address = '';
+
                 if (place.address_components) {
                     address = [
                         (place.address_components[0] && place.address_components[0].short_name || ''),
@@ -187,6 +194,7 @@
                 infowindowContent.children['place-icon'].src = place.icon;
                 infowindowContent.children['place-name'].textContent = place.name;
                 infowindowContent.children['place-address'].textContent = address;
+
                 infowindow.open(map, marker);
             });
     }

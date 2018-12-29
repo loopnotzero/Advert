@@ -2629,8 +2629,7 @@ File: Responsive
   pointer-events: auto;
   background-color: #FFFFFF;
   background-clip: padding-box;
-  border: 0 solid rgba(0, 0, 0, 0.2);
-  border-radius: 2px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
   outline: 0;
 }
 
@@ -2662,14 +2661,12 @@ File: Responsive
   -webkit-box-pack: justify;
   -ms-flex-pack: justify;
   justify-content: space-between;
-  padding: 25px 30px 0;
+  padding: 0.5rem;
   border-bottom: 0 solid #e9ecef;
-  border-top-left-radius: 2px;
-  border-top-right-radius: 2px;
+  background-color: #f5f6f7;
 }
 
 .modal-header .close {
-  padding: 25px 30px 0;
   margin: -25px 30px 0 -25px 30px 0 -25px 30px 0 auto;
 }
 
@@ -2683,7 +2680,6 @@ File: Responsive
   -webkit-box-flex: 1;
   -ms-flex: 1 1 auto;
   flex: 1 1 auto;
-  padding: 25px 30px;
 }
 
 .modal-footer {
@@ -2696,7 +2692,6 @@ File: Responsive
   -webkit-box-pack: end;
   -ms-flex-pack: end;
   justify-content: flex-end;
-  padding: 25px 30px;
   border-top: 0 solid #e9ecef;
 }
 
