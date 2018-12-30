@@ -43,11 +43,11 @@
                             <div id="@comment.CommentId" class="media p-2">
                                 @if (!string.IsNullOrEmpty(comment.ProfileImagePath))
                                 {
-                                    <img src="@comment.ProfileImagePath" width="48" height="48" alt="profile-image">
+                                    <img class="card-user__img" src="@comment.ProfileImagePath" width="48" height="48" alt="profile-image">
                                 }
                                 else
                                 {
-                                    <img src="/images/no_image.png" width="48" height="48" alt="profile-image">
+                                    <img class="card-user__img" src="/images/no_image.png" width="48" height="48" alt="profile-image">
                                 }
                                 <div class="media-body media__img content__break">
                                     <div class="col-auto">
@@ -76,11 +76,11 @@
                                             <div id="@reply.CommentId" class="media p-2">
                                                 @if (!string.IsNullOrEmpty(reply.ProfileImagePath))
                                                 {
-                                                    <img src="@reply.ProfileImagePath" width="48" height="48" alt="profile-image">
+                                                    <img class="card-user__img" src="@reply.ProfileImagePath" width="48" height="48" alt="profile-image">
                                                 }
                                                 else
                                                 {
-                                                    <img src="/images/no_image.png" width="48" height="48" alt="profile-image">
+                                                    <img class="card-user__img" src="/images/no_image.png" width="48" height="48" alt="profile-image">
                                                 }
                                                 <div class="media-body media__img content__break">
                                                     <div class="col-auto">
@@ -190,7 +190,7 @@
             success: function(response) {
                 $(`#${comment.replyTo} .media-body:first`).append(`
                 <div id="${response.commentId}" class="media p-2">
-                    <img src="${response.profileImagePath}" width="48" height="48" alt="profile-image">
+                    <img class="card-user__img" src="${response.profileImagePath}" width="48" height="48" alt="profile-image">
                     <div class="media-body media__img content__break">
                         <div class="col-auto">
                             <small class="font-weight-bold">
@@ -241,7 +241,7 @@
             success: function(response) {
                 $("#ads-comments").prepend(`
                 <div id="${response.commentId}" class="media p-2">
-                    <img src="${response.profileImagePath}" width="48" height="48" alt="profile-image">
+                    <img class="card-user__img" src="${response.profileImagePath}" width="48" height="48" alt="profile-image">
                     <div class="media-body media__img content__break">
                         <div class="col-auto">
                             <small class="font-weight-bold">
