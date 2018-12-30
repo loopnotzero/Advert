@@ -993,6 +993,70 @@ select.form-control {
   display: inline-block;
 }
 
+.dropdown,
+.dropup {
+  position: relative;
+}
+
+.dropdown-item {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  transition: background-color 200ms, color 200ms;
+  color: #2a2c2f !important;
+}
+@media screen and (prefers-reduced-motion: reduce) {
+  .dropdown-item {
+    transition: none;
+  }
+}
+
+.dropdown-item:hover {
+  color: white !important;
+  background-color: #4267b2;
+}
+
+.dropdown-separator {
+  border-bottom: 1px solid #e9ebee;
+  margin: 5px 7px 6px;
+  padding-top: 1px;
+}
+
+.dropdown-menu {
+  -webkit-animation-name: fadeIn;
+  animation-name: fadeIn;
+  -webkit-animation-duration: 200ms;
+  animation-duration: 200ms;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.11);
+}
+
+.dropdown-header {
+  font-size: 1rem;
+  font-weight: normal;
+}
+
+.dropdown-menu--block {
+  width: 320px;
+}
+@media (max-width: 575.98px) {
+  .dropdown-menu--block {
+    width: 100%;
+  }
+}
+
+.dropdown-menu--icon .dropdown-item > i {
+  line-height: 100%;
+  vertical-align: top;
+  font-size: 1.4rem;
+  width: 2rem;
+}
+
+.dropdown-menu--sort > .checkbox {
+  white-space: nowrap;
+  padding: 0.5rem 1.5rem 0.25rem;
+}
+
 @media (min-width: 768px) {
   .profile {
     display: flex;

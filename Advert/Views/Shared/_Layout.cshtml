@@ -21,6 +21,7 @@
 
 <body id="body" data-ma-theme="advert" style="display: none">
 
+<script src="~/js/popper.js"></script>
 <script src="~/js/jquery.min.js"></script>
 <script src="~/js/bootstrap.min.js"></script>
 <script src="~/js/waves.js"></script>
@@ -39,59 +40,6 @@
         });
 
     $(document).ready(function() {
-        $("#log-out").click(function(e) {
-            e.preventDefault();
-            $.ajax({
-                url: "/Account/SignOut?returnUrl=" + window.location.pathname + window.location.search,
-                type: "GET",
-                contentType: "application/json",
-                error: function(jqXhr, textStatus, errorThrown) {
-                    console.log("jqXhr: " + jqXhr);
-                    console.log("textStatus: " + textStatus);
-                    console.log("errorThrown: " + errorThrown);
-                },
-                success: function(response) {
-                    window.location.href = response.returnUrl;
-                }
-            });
-            return false;
-        });
-
-        $("#sign-up").click(function(e) {
-            e.preventDefault();
-
-            var token = $("input[name=__RequestVerificationToken]").val();
-            var additionalHeaders = {};
-
-            if (token) {
-                additionalHeaders["RequestVerificationToken"] = token;
-            }
-
-            $.ajax({
-                url: $("#form").attr("action"),
-                type: "POST",
-                data: JSON.stringify({
-                    email: $("#email").val(),
-                    name: $("#name").val(),
-                    password: $("#password").val(),
-                    culture: navigator.language
-                }),
-                headers: additionalHeaders,
-                contentType: "application/json",
-                error: function(jqXhr, textStatus, errorThrown) {
-                    console.log("jqXhr: " + jqXhr);
-                    console.log("textStatus: " + textStatus);
-                    console.log("errorThrown: " + errorThrown);
-                },
-                success: function(response) {
-                    console.log(response);
-                    window.location.replace(response.returnUrl);
-                }
-            });
-
-            return false;
-        });
-
         $("#compose-ads").click(function(e) {
             e.preventDefault();
             window.location.href = "/Topics/ComposeAdsTopic";

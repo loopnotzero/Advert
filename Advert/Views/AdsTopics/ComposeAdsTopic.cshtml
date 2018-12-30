@@ -59,74 +59,6 @@
 </section>
 
 <script>
-    $(document).ready(function() {
-        if ($('select.select2')[0]) {
-            var select2Parent = $('.select2-parent')[0] ? $('.select2-parent') : $('body');
-
-            $('select.select2').select2({
-                dropdownAutoWidth: true,
-                width: '100%',
-                dropdownParent: select2Parent
-            });
-        }
-
-        var composeEditor = new SimpleMDE({
-            status: false,
-            element: $("#ads-editor")[0],
-            placeholder: "Type here...",
-            fullScreen: false,
-            withPreview: false,
-            spellChecker: false
-        });
-
-        $("#publish-ads").click(function(e) {
-            e.preventDefault();
-
-            var title = $("#title").val();
-
-            if (title === "") {
-                return;
-            }
-  
-            var text = composeEditor.options.previewRender(composeEditor.value());
-                
-            if (text === "") {
-                return;
-            }
-
-            var ads = JSON.stringify({
-                title: title,
-                text: text
-            });
-
-            createAdsTopic(ads);
-
-            return false;
-        });
-
-        function createAdsTopic(ads) {
-            $.ajax({
-                url: "/Topics/CreateAdsTopicAsync",
-                type: "POST",
-                data: ads,
-                contentType: "application/json",
-                error: function() {
-                    console.log("Publish ads error");
-                },
-                success: function(response) {
-                    window.location.href = response.returnUrl;
-                }
-            });
-        }
-    });
-</script>
-
-<script src="https://maps.googleapis.com/maps/api/js?key=@Model.ApiKey&libraries=places&callback=initMap" async defer></script>
-
-<script>
-    // This example requires the Places library. Include the libraries=places
-    // parameter when you first load the API. For example:
-    // <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places">
     function initMap() {
         var map = new google.maps.Map(document.getElementById('map'),
             {
@@ -189,4 +121,77 @@
                 }
             });
     }
+    
+    $(document).ready(function() {
+        if ($('select.select2')[0]) {
+            var select2Parent = $('.select2-parent')[0] ? $('.select2-parent') : $('body');
+
+            $('select.select2').select2({
+                dropdownAutoWidth: true,
+                width: '100%',
+                dropdownParent: select2Parent
+            });
+        }
+
+        var composeEditor = new SimpleMDE({
+            status: false,
+            element: $("#ads-editor")[0],
+            placeholder: "Type here...",
+            fullScreen: false,
+            withPreview: false,
+            spellChecker: false
+        });
+
+        $("#publish-ads").click(function(e) {
+            e.preventDefault();
+
+            var title = $("#title").val();
+
+            if (title === "") {
+                return;
+            }
+  
+            var text = composeEditor.options.previewRender(composeEditor.value());
+                
+            if (text === "") {
+                return;
+            }
+
+            var price = $("#price").val();
+
+            if (price === "") {
+                return;
+            }
+        
+            var location = $("#pac-input").val();
+            
+            var ads = JSON.stringify({
+                text: text,
+                title: title,
+                price: price,
+                location: location
+            });
+
+            createAdsTopic(ads);
+
+            return false;
+        });
+
+        function createAdsTopic(ads) {
+            $.ajax({
+                url: "/Topics/CreateAdsTopicAsync",
+                type: "POST",
+                data: ads,
+                contentType: "application/json",
+                error: function() {
+                    console.log("Publish ads error");
+                },
+                success: function(response) {
+                    window.location.href = response.returnUrl;
+                }
+            });
+        }
+    });
 </script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=@Model.ApiKey&libraries=places&callback=initMap" async defer></script>

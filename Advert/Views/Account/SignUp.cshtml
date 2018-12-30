@@ -26,7 +26,7 @@
                     <label>Password</label>
                     <i class="form-group__bar"></i>
                 </div>
-                <button id="sign-up" class="btn btn--icon login__block__btn">
+                <button id="sign__up" class="btn btn--icon login__block__btn">
                     <i class="zmdi zmdi-long-arrow-right zmdi-hc-fw"></i>
                 </button>
                 <p class="mt-4">Already have an account? <a href="/Account/LogIn?returnUrl=/">Log in</a></p>
@@ -34,3 +34,42 @@
         </form>      
     </div>
 </div>
+
+<script>
+    $(document).ready(function() {
+        $("#sign__up").click(function(e) {
+            e.preventDefault();
+
+            var token = $("input[name=__RequestVerificationToken]").val();
+            var additionalHeaders = {};
+
+            if (token) {
+                additionalHeaders["RequestVerificationToken"] = token;
+            }
+
+            $.ajax({
+                url: $("#form").attr("action"),
+                type: "POST",
+                data: JSON.stringify({
+                    email: $("#email").val(),
+                    name: $("#name").val(),
+                    password: $("#password").val(),
+                    culture: navigator.language
+                }),
+                headers: additionalHeaders,
+                contentType: "application/json",
+                error: function(jqXhr, textStatus, errorThrown) {
+                    console.log("jqXhr: " + jqXhr);
+                    console.log("textStatus: " + textStatus);
+                    console.log("errorThrown: " + errorThrown);
+                },
+                success: function(response) {
+                    console.log(response);
+                    window.location.replace(response.returnUrl);
+                }
+            });
+
+            return false;
+        });
+    });
+</script>

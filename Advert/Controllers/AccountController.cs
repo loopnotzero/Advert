@@ -30,8 +30,8 @@ namespace Advert.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        [Route("/Account/LogIn/{returnUrl?}")]
-        public IActionResult LogIn(string returnUrl = null)
+        [Route("/Account/LogIn")]
+        public IActionResult LogIn([FromQuery(Name = "returnUrl")] string returnUrl = null)
         {
             ViewData["returnUrl"] = returnUrl;
             return View();
@@ -39,8 +39,8 @@ namespace Advert.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        [Route("/Account/SignUp/{returnUrl?}")]
-        public IActionResult SignUp(string returnUrl = null)
+        [Route("/Account/SignUp")]
+        public IActionResult SignUp([FromQuery(Name = "returnUrl")] string returnUrl = null)
         {
             ViewData["returnUrl"] = returnUrl;
             return View();
@@ -48,8 +48,8 @@ namespace Advert.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        [Route("/Account/SignOut/{returnUrl?}")]
-        public async Task<IActionResult> SignOut(string returnUrl = null)
+        [Route("/Account/SignOut")]
+        public async Task<IActionResult> SignOut([FromQuery(Name = "returnUrl")] string returnUrl = null)
         {
             try
             {
@@ -74,8 +74,8 @@ namespace Advert.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        [Route("/Account/LogIn/{returnUrl?}")]
-        public async Task<IActionResult> LogIn(LogInModel model, string returnUrl = null)
+        [Route("/Account/LogIn")]
+        public async Task<IActionResult> LogIn(LogInModel model, [FromQuery(Name = "returnUrl")] string returnUrl = null)
         {
             try
             {
@@ -103,7 +103,7 @@ namespace Advert.Controllers
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
         [Route("/Account/SignUp/{returnUrl?}")]
-        public async Task<IActionResult> SignUp([FromBody] SignUpModel model, string returnUrl = null)
+        public async Task<IActionResult> SignUp([FromBody] SignUpModel model, [FromQuery(Name = "returnUrl")] string returnUrl = null)
         {
             try
             {
