@@ -676,3 +676,9 @@ span.CodeMirror-selectedtext { background: none; }
 .CodeMirror .cm-spell-error:not(.cm-url):not(.cm-comment):not(.cm-tag):not(.cm-word) {
     background: rgba(255, 0, 0, .15);
 }
+
+.simplemde-fullscreen .modal-dialog {
+    height: 75%;
+    width: 75%;
+    max-width: 100%;
+}

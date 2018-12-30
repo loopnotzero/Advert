@@ -95,7 +95,7 @@
                         </div>
                         <div class="row">
                             <div class="col-md-12 p-1">
-                                <div class="r-btn r-btn-light r-btn--icon waves-effect ml-4" onclick="onAdsTopicVoteClick('@adsTopic.AdsId', 1)">
+                                <div class="r-btn r-btn-light r-btn--icon waves-effect ml-4" onclick="onVoteAdsTopicClick('@adsTopic.AdsId', 1)">
                                     <i class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
                                 </div>
                                 <small id="votes-count">@adsTopic.LikesCount</small>
@@ -200,7 +200,6 @@
         </div>
     </div>
 </div>
-
 <div id="modal-backdrop-ignore" class="modal fade" data-backdrop="static" tabindex="-1" style="display: none;" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -250,13 +249,13 @@
     var postEditor = new SimpleMDE({
         status: false,
         element: $("#post-editor")[0],
-        hideIcons: ["side-by-side", "fullscreen"],
+//        hideIcons: ["side-by-side", "fullscreen"],
         placeholder: "Type here...",
         fullScreen: false,
         withPreview: false,
         spellChecker: false
     });
-
+    
     var turndown = new TurndownService();
 
     function initMap() {
@@ -339,6 +338,7 @@
                 $("#pac-input").val(response.location);
                 $('#currency').val(response.currency).trigger('change');
                 postEditor.value(turndown.turndown(response.text));
+               
             }
         });
 
@@ -347,7 +347,7 @@
         });
     }
 
-    function onAdsTopicVoteClick(adsId, voteType) {
+    function onVoteAdsTopicClick(adsId, voteType) {
         var vote = {
             adsId: adsId,
             voteType: voteType
@@ -374,22 +374,6 @@
         });
     }
 
-    function onAdsTopicShareClick(adsId) {
-        $.ajax({
-            url: "/Topics/ShareAdsTopicAsync",
-            type: "GET",
-            contentType: "application/json",
-            error: function(jqXhr, textStatus, errorThrown) {
-                console.log("jqXhr: " + jqXhr);
-                console.log("textStatus: " + textStatus);
-                console.log("errorThrown: " + errorThrown);
-            },
-            success: function(response) {
-                $("#ads-preview").html(response);
-            }
-        });
-    }
-
     function onSavePostChangesClick(adsId) {
         var ads = JSON.stringify({
             text: postEditor.options.previewRender(postEditor.value()),
@@ -398,7 +382,6 @@
             location: $("#pac-input").val(),
             currency: $('#currency :selected').text()
         });
-
         $.ajax({
             url: `/Topics/UpdateAdsTopicByIdAsync/${adsId}`,
             type: "POST",
@@ -418,13 +401,20 @@
     $(document).ready(function() {
         if ($('select.select2')[0]) {
             var select2Parent = $('.select2-parent')[0] ? $('.select2-parent') : $('body');
-
             $('select.select2').select2({
                 dropdownAutoWidth: true,
                 width: '100%',
                 dropdownParent: select2Parent
             });
         }
+        
+        postEditor.codemirror.on('refresh', function() {
+            if (postEditor.isFullscreenActive()) {
+                $('body').addClass('simplemde-fullscreen');
+            } else {
+                $('body').removeClass('simplemde-fullscreen');
+            }
+        });
     });
 </script>
 

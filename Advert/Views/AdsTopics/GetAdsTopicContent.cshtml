@@ -53,7 +53,7 @@
                                     <div class="col-auto">
                                         <small class="font-weight-bold">
                                             <a href="/Profile/@comment.ProfileName">@comment.ProfileName</a>
-                                        </small>                                       
+                                        </small>
                                         <small class="time"> @comment.CreatedAt</small>
                                     </div>
                                     <div class="col-auto media__border">
@@ -85,7 +85,7 @@
                                                 <div class="media-body media__img content__break">
                                                     <div class="col-auto">
                                                         <small class="font-weight-bold">
-                                                            <a href="/Profile/@reply.ProfileName">@reply.ProfileName</a>                                                             
+                                                            <a href="/Profile/@reply.ProfileName">@reply.ProfileName</a>
                                                         </small>
                                                         <small class="time"> @reply.CreatedAt</small>
                                                     </div>
@@ -147,7 +147,7 @@
             element: $("#reply-editor")[0],
             placeholder: "Add a public reply...",
             fullScreen: false,
-            withPreview: false
+            withPreview: false,
         });
 
         $(".CodeMirror, .CodeMirror-scroll").css('min-height', '150px');
@@ -190,7 +190,8 @@
             success: function(response) {
                 $(`#${comment.replyTo} .media-body:first`).append(`
                 <div id="${response.commentId}" class="media p-2">
-                    <img class="card-user__img" src="${response.profileImagePath}" width="48" height="48" alt="profile-image">
+                    <img class="card-user__img" src="${response.profileImagePath
+                    }" width="48" height="48" alt="profile-image">
                     <div class="media-body media__img content__break">
                         <div class="col-auto">
                             <small class="font-weight-bold">
@@ -241,7 +242,8 @@
             success: function(response) {
                 $("#ads-comments").prepend(`
                 <div id="${response.commentId}" class="media p-2">
-                    <img class="card-user__img" src="${response.profileImagePath}" width="48" height="48" alt="profile-image">
+                    <img class="card-user__img" src="${response.profileImagePath
+                    }" width="48" height="48" alt="profile-image">
                     <div class="media-body media__img content__break">
                         <div class="col-auto">
                             <small class="font-weight-bold">
@@ -334,15 +336,12 @@
 
         $("#publish-comment").click(function() {
             var text = commentEditor.options.previewRender(commentEditor.value());
-
             var adsId = $(`[name='ads']`).attr("id");
-
             createAdsTopicCommentAsync(
                 {
                     adsId: adsId,
                     text: text
                 });
-
             commentEditor.value("");
         });
     });

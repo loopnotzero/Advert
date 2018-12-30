@@ -2766,6 +2766,7 @@ File: Responsive
   padding: 0.5rem;
   border-bottom: 0 solid #e9ecef;
   background-color: #f5f6f7;
+  z-index: 999;
 }
 
 .modal-header .close {
