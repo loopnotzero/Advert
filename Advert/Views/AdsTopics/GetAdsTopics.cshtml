@@ -249,7 +249,6 @@
     var postEditor = new SimpleMDE({
         status: false,
         element: $("#post-editor")[0],
-//        hideIcons: ["side-by-side", "fullscreen"],
         placeholder: "Type here...",
         fullScreen: false,
         withPreview: false,
@@ -337,8 +336,9 @@
                 $("#price").val(response.price);
                 $("#pac-input").val(response.location);
                 $('#currency').val(response.currency).trigger('change');
-                postEditor.value(turndown.turndown(response.text));
-               
+//                postEditor.value(turndown.turndown(response.text));
+                var doc = postEditor.codemirror.getDoc();
+                doc.setValue(turndown.turndown(response.text));
             }
         });
 
@@ -408,12 +408,18 @@
             });
         }
         
+        //Fix for side by side & fullscrenn
         postEditor.codemirror.on('refresh', function() {
             if (postEditor.isFullscreenActive()) {
                 $('body').addClass('simplemde-fullscreen');
             } else {
                 $('body').removeClass('simplemde-fullscreen');
             }
+        });
+        
+        //Fix for empty editor until it has no focus
+        $('#modal-backdrop-ignore').on('shown.bs.modal', function () {
+            postEditor.codemirror.refresh();
         });
     });
 </script>
