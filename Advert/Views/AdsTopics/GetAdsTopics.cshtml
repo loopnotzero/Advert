@@ -4,9 +4,7 @@
 @await Html.PartialAsync("_Header", Model)
 
 <style>
-    .pac-container {
-        z-index: 2000 !important;
-    }
+    .pac-container { z-index: 2000 !important; }
 </style>
 
 <section class="content">
@@ -41,65 +39,33 @@
                 <div id="ads-topics" class="card">
                     @foreach (var adsTopic in Model.AdsTopics)
                     {
-                        <div class="p-3">
-                            <a href="/Profile/@adsTopic.ProfileName">
-                                <small class="font-weight-bold">@adsTopic.ProfileName</small>
-                            </a>
+                        <div class="container">
+                            <div class="row pt-3">
+                                <div class="col-9">
+                                    <a href="/Profile/@adsTopic.ProfileName">
+                                        <small class="font-weight-bold">@adsTopic.ProfileName</small>
+                                    </a>
+                                    <small class="time"> @adsTopic.CreatedAt</small>
+                                </div>
 
-                            <small class="time"> @adsTopic.CreatedAt</small>
-
-                            <ul class="list-inline float-md-right">
-                                @if (adsTopic.IsTopicOwner)
-                                {
-                                    <li class="list-inline-item" onclick="onEditPostClick('@adsTopic.AdsId')">
-                                        <a href="" title="" data-placement="top" data-target="#modal-backdrop-ignore" data-toggle="modal" data-original-title="Edit">
-                                            <i class="zmdi zmdi-edit zmdi-hc-fw"></i>
-                                        </a>
-                                    </li>
-                                    <li class="list-inline-item">
-                                        <a href="" title="" data-placement="top" data-toggle="tooltip" data-original-title="Delete">
-                                            <i class="zmdi zmdi-delete zmdi-hc-fw"></i>
-                                        </a>
-                                    </li>
-                                    <div id="modal-backdrop-ignore" class="modal fade" data-backdrop="static" tabindex="-1" style="display: none;" aria-hidden="true">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h6 class="pull-left font-weight-bold" style="margin-top: 10px; margin-left: 10px">Edit post</h6>
-                                                    <button type="button" class="btn btn-link pull-right" data-dismiss="modal">
-                                                        <span>
-                                                            <i class="zmdi zmdi-close zmdi-hc-fw"></i>
-                                                        </span>
-                                                    </button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <div class="row">
-                                                        <div class="form-group col-md-6">
-                                                            <input id="title" type="text" class="form-control" maxlength="100" placeholder="What are you selling?" autocomplete="off">
-                                                        </div>
-
-                                                        <div class="form-group col-md-6">
-                                                            <input id="price" type="text" class="form-control" placeholder="Price" autocomplete="off">
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="form-group">
-                                                        <input id="pac-input" type="text" class="form-control" placeholder="Enter a location (optional)" autocomplete="off">
-                                                        <div id="map"></div>
-                                                    </div>
-                                                    
-                                                    <textarea id="post-editor" style="display: none"></textarea>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-link" onclick="onSavePostClick(this, '@adsTopic.AdsId')">
-                                                        Save
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                }
-                            </ul>
+                                <div class="col-3">
+                                    <ul class="list-inline float-md-right">
+                                        @if (adsTopic.IsTopicOwner)
+                                        {
+                                            <li id="edit__@adsTopic.AdsId" class="list-inline-item" onclick="onEditPostClick('@adsTopic.AdsId')">
+                                                <a href="" title="" data-placement="top" data-target="#modal-backdrop-ignore" data-toggle="modal" data-original-title="Edit">
+                                                    <i class="zmdi zmdi-edit zmdi-hc-fw"></i>
+                                                </a>
+                                            </li>
+                                            <li class="list-inline-item">
+                                                <a href="" title="" data-placement="top" data-toggle="tooltip" data-original-title="Delete">
+                                                    <i class="zmdi zmdi-delete zmdi-hc-fw"></i>
+                                                </a>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>      
                         </div>
                         <article id="@adsTopic.AdsId" class="card-hover">
                             <div class="card-body card-body__img">
@@ -215,6 +181,44 @@
             </div>
         </div>
     </div>
+
+<div id="modal-backdrop-ignore" class="modal fade" data-backdrop="static" tabindex="-1" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="pull-left font-weight-bold" style="margin-top: 10px; margin-left: 10px">Edit post</h6>
+                <button type="button" class="btn btn-link pull-right" data-dismiss="modal">
+                    <span>
+                        <i class="zmdi zmdi-close zmdi-hc-fw"></i>
+                    </span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <input id="title" type="text" class="form-control" maxlength="100" placeholder="What are you selling?" autocomplete="off">
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <input id="price" type="text" class="form-control" placeholder="Price" autocomplete="off">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <input id="pac-input" type="text" class="form-control" placeholder="Enter a location (optional)" autocomplete="off">
+                    <div id="map"></div>
+                </div>
+
+                <textarea id="post-editor" style="display: none"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button id="edit-post__save" type="button" class="btn btn-link">
+                    Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 </section>
 
 <script>
@@ -227,16 +231,16 @@
         withPreview: false,
         spellChecker: false
     });
-    
-    var turndown = new TurndownService()
 
+    var turndown = new TurndownService();
+    
     function initMap() {
         var map = new google.maps.Map(document.getElementById('map'),
             {
                 center: { lat: -33.8688, lng: 151.2195 },
                 zoom: 13
             });
-        
+
         var card = document.getElementById('pac-card');
         var input = document.getElementById('pac-input');
 
@@ -292,48 +296,6 @@
                 }
             });
     }
-    
-    function onSavePostClick(modal, adsId) {
-        var title = $("#title").val();
-
-        if (title === "") {
-            return;
-        }
-            
-        var text = postEditor.options.previewRender(postEditor.value());
-                
-        if (text === "") {
-            return;
-        }
-        
-        var price = $("#price").val();
-
-        if (price === "") {
-            return;
-        }
-        
-        var location = $("#pac-input").val();
-
-        var ads = JSON.stringify({
-            text: text,
-            title: title,
-            price: price,
-            location: location
-        });
-        
-        $.ajax({
-            url: `/Topics/UpdateAdsTopicByIdAsync/${adsId}`,
-            type: "POST",
-            data: ads,
-            contentType: "application/json",
-            error: function() {
-                console.log("Publish ads error");
-            },
-            success: function(response) {
-                $("#modal-backdrop-ignore").modal('toggle');
-            }
-        });
-    }
 
     function onEditPostClick(adsId) {
         $.ajax({
@@ -352,6 +314,10 @@
                 $("#pac-input").val(response.location);
                 postEditor.value(turndown.turndown(response.text));
             }
+        });
+
+        $("#edit-post__save").click(function() {
+            onSaveEditedPostClick(adsId);
         });
     }
 
@@ -397,6 +363,28 @@
             }
         });
     }
+    
+    function onSaveEditedPostClick(adsId) {
+        var ads = JSON.stringify({
+            text: postEditor.options.previewRender(postEditor.value()),
+            title: $("#title").val(),
+            price: $("#price").val(),
+            location: $("#pac-input").val()
+        });
+
+        $.ajax({
+            url: `/Topics/UpdateAdsTopicByIdAsync/${adsId}`,
+            type: "POST",
+            data: ads,
+            contentType: "application/json",
+            error: function() {
+                console.log("Publish ads error");
+            },
+            success: function(response) {
+                $("#modal-backdrop-ignore").modal('toggle');
+            }
+        });
+    }  
 </script>
 
 <script src="https://maps.googleapis.com/maps/api/js?key=@Model.ApiService.ApiKey&libraries=places&callback=initMap" async defer></script>
