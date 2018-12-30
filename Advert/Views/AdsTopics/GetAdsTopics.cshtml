@@ -336,9 +336,7 @@
                 $("#price").val(response.price);
                 $("#pac-input").val(response.location);
                 $('#currency').val(response.currency).trigger('change');
-//                postEditor.value(turndown.turndown(response.text));
-                var doc = postEditor.codemirror.getDoc();
-                doc.setValue(turndown.turndown(response.text));
+                postEditor.value(turndown.turndown(response.text));
             }
         });
 
