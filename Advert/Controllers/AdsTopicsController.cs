@@ -23,6 +23,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
+using MongoDB.Driver.Core.Operations;
 
 namespace Advert.Controllers
 {
@@ -74,7 +75,7 @@ namespace Advert.Controllers
         public IActionResult ComposeAdsTopic()
         {          
             
-            return View(new AdsTopicGoogleModel
+            return View(new ApiServiceModel
             {
                 ApiKey = _configuration.GetSection("GoogleOptions").GetValue<string>("ApiKey")
             });
@@ -159,6 +160,11 @@ namespace Advert.Controllers
                         CreatedAt = adsTopic.CreatedAt.Humanize(),
                         IsTopicOwner = adsTopic.ProfileId.Equals(profile.Id)
                     }),
+                    
+                    ApiService = new ApiServiceModel
+                    {
+                        ApiKey = _configuration.GetSection("GoogleOptions").GetValue<string>("ApiKey")
+                    },
 
                     RecommendedAdsTopics = adsTopics
                         .OrderByDescending(x => EngagementRate.ComputeEngagementRate(x.LikesCount, x.SharesCount, x.CommentsCount, x.ViewsCount))
@@ -286,6 +292,7 @@ namespace Advert.Controllers
                         ImagePath = profile.ImagePath ?? NoProfileImage,
                         AdsTopicsCount = ((double) await _adsTopicsManager.CountAdsTopicsByProfileIdAsync(adsTopic.ProfileId)).ToMetric(),                      
                     },                   
+                    
                     AdsTopics = new List<AdsTopicViewModel>
                     {
                         new AdsTopicViewModel
@@ -301,7 +308,13 @@ namespace Advert.Controllers
                             CommentsCount = ((double) adsTopic.CommentsCount).ToMetric(),
                             CreatedAt = adsTopic.CreatedAt.Humanize()                           
                         }
-                    },                  
+                    }, 
+                    
+                    ApiService = new ApiServiceModel
+                    {
+                        ApiKey = _configuration.GetSection("GoogleOptions").GetValue<string>("ApiKey")
+                    },
+                    
                     RecommendedAdsTopics = orderedAdsTopics.Select(recommendedAdsTopic => new RecommendedAdsTopicViewModel
                     {
                         AdsId = recommendedAdsTopic.Id.ToString(),
@@ -309,7 +322,8 @@ namespace Advert.Controllers
                         ProfileImagePath = recommendedAdsTopic.ProfileImagePath,
                         Title = recommendedAdsTopic.Title,
                         CreatedAt = recommendedAdsTopic.CreatedAt.Humanize(),                      
-                    }).ToList(),                  
+                    }).ToList(),  
+                    
                     AdsTopicComments = commentsReplies.Values.ToList(),
                 });
             }
@@ -322,8 +336,8 @@ namespace Advert.Controllers
 
         [HttpPost]
         [Authorize]
-        [Route("/Topics/PublishAdsTopicAsync")]
-        public async Task<IActionResult> PublishAdsTopicAsync([FromBody] PublishAdsTopicViewModel viewModel)
+        [Route("/Topics/CreateAdsTopicAsync")]
+        public async Task<IActionResult> CreateAdsTopicAsync([FromBody] CreateAdsTopicViewModel viewModel)
         {
             try
             {
@@ -356,6 +370,33 @@ namespace Advert.Controllers
             }
         }
 
+        [HttpPost]
+        [Authorize]
+        [Route("/Topics/UpdateAdsTopicByIdAsync/{adsId}")]
+        public async Task<IActionResult> UpdateAdsTopicByIdAsync(string adsId, [FromBody] CreateAdsTopicViewModel viewModel)
+        {
+            try
+            {
+                var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
+
+                var adsTopic = await _adsTopicsManager.FindAdsTopicByIdAsync(ObjectId.Parse(adsId));
+
+                adsTopic.Text = viewModel.Text;
+                adsTopic.Title = viewModel.Title;
+                adsTopic.Price = viewModel.Price;
+                adsTopic.Location = viewModel.Location;
+
+                await _adsTopicsManager.UpdateAdsTopicAsync(adsTopic);
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
+            }
+        }
+
         [HttpGet]
         [Authorize]
         [Route("/Topics/GetAdsTopicByIdAsync/{adsId}")]
@@ -363,8 +404,26 @@ namespace Advert.Controllers
         {
             try
             {
+                var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
+
                 var adsTopic = await _adsTopicsManager.FindAdsTopicByIdAsync(ObjectId.Parse(adsId));
-                return Ok(adsTopic);
+                
+                return Ok(new AdsTopicViewModel
+                {
+                    AdsId = adsTopic.Id.ToString(),
+                    ProfileName = adsTopic.ProfileName,
+                    ProfileImagePath = adsTopic.ProfileImagePath,
+                    Text = adsTopic.Text,
+                    Title = adsTopic.Title,
+                    Price = adsTopic.Price.ToString(),
+                    Location = adsTopic.Location,
+                    LikesCount = ((double) adsTopic.LikesCount).ToMetric(),
+                    SharesCount = ((double) 0).ToMetric(),
+                    ViewsCount = ((double) adsTopic.ViewsCount).ToMetric(),
+                    CommentsCount = ((double) adsTopic.CommentsCount).ToMetric(),
+                    CreatedAt = adsTopic.CreatedAt.Humanize(),
+                    IsTopicOwner = adsTopic.ProfileId.Equals(profile.Id)
+                });
             }
             catch (Exception e)
             {

@@ -1,5 +1,5 @@
 ﻿@using Advert.Models.AdsTopics
-@model AdsTopicGoogleModel
+@model ApiServiceModel
 
 <header class="header">
     <div class="header__logo">
@@ -84,12 +84,13 @@
 
             var title = $("#title").val();
 
-            if (title === null || title === "")
+            if (title === "") {
                 return;
-
+            }
+  
             var text = composeEditor.options.previewRender(composeEditor.value());
-
-            if (text === null || text === "") {
+                
+            if (text === "") {
                 return;
             }
 
@@ -98,14 +99,14 @@
                 text: text
             });
 
-            publishAdsTopic(ads);
+            createAdsTopic(ads);
 
             return false;
         });
 
-        function publishAdsTopic(ads) {
+        function createAdsTopic(ads) {
             $.ajax({
-                url: "/Topics/PublishAdsTopicAsync",
+                url: "/Topics/CreateAdsTopicAsync",
                 type: "POST",
                 data: ads,
                 contentType: "application/json",

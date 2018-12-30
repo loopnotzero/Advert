@@ -1,6 +1,6 @@
 namespace Advert.Models.AdsTopics
 {
-    public class AdsTopicGoogleModel
+    public class ApiServiceModel
     {
         public string ApiKey { get; set; }
     }
