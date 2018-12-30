@@ -23,12 +23,12 @@
                         }
                     </a>
                     <a href="/Profile">
-                        <h5 id="profile-name" class="mb-3">@Model.Profile.Name</h5>
+                        <h5 class="mb-3">@Model.Profile.Name</h5>
                     </a>
                     <div class="row">
                         <div class="col-md-12">
                             <span class="text-justify">Posts</span>
-                            <h5 id="profile-ads-count" class="text-center">@Model.Profile.AdsTopicsCount</h5>
+                            <h5 class="text-center">@Model.Profile.AdsTopicsCount</h5>
                         </div>
                     </div>
                 </div>
@@ -70,8 +70,14 @@
                         <article id="@adsTopic.AdsId" class="card-hover">
                             <div class="card-body card-body__img">
                                 <a href="/Topics/@adsTopic.AdsId">
-                                    <h4 class="card-title font-weight-bold cut-long-text mb-2">@adsTopic.Title</h4>
+                                    <h4 class="card-title font-weight-bold cut-long-text">@adsTopic.Title</h4>                                
                                 </a>
+                                <p>
+                                    <span style="font-size: 0.9rem; color: #71a830">@adsTopic.Price</span>
+                                </p>
+                                <p>
+                                    <span style="font-size: 0.9rem; color: #90949c">@adsTopic.Location</span>  
+                                </p>
                                 @Html.Raw(adsTopic.Text)
                             </div>
                             <div class="row">
@@ -317,7 +323,7 @@
         });
 
         $("#edit-post__save").click(function() {
-            onSaveEditedPostClick(adsId);
+            onSavePostChangesClick(adsId);
         });
     }
 
@@ -364,7 +370,7 @@
         });
     }
     
-    function onSaveEditedPostClick(adsId) {
+    function onSavePostChangesClick(adsId) {
         var ads = JSON.stringify({
             text: postEditor.options.previewRender(postEditor.value()),
             title: $("#title").val(),
@@ -378,7 +384,9 @@
             data: ads,
             contentType: "application/json",
             error: function() {
-                console.log("Publish ads error");
+                console.log("jqXhr: " + jqXhr);
+                console.log("textStatus: " + textStatus);
+                console.log("errorThrown: " + errorThrown);
             },
             success: function(response) {
                 $("#modal-backdrop-ignore").modal('toggle');
