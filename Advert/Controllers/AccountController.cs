@@ -102,7 +102,7 @@ namespace Advert.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        [Route("/Account/SignUp/{returnUrl?}")]
+        [Route("/Account/SignUp")]
         public async Task<IActionResult> SignUp([FromBody] SignUpModel model, [FromQuery(Name = "returnUrl")] string returnUrl = null)
         {
             try
