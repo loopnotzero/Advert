@@ -1251,6 +1251,12 @@ select.form-control {
   background-color: #f8fafd;
 }
 
+.card-body {
+  -ms-flex: 1 1 auto;
+  flex: 1 1 auto;
+  padding: 1rem;
+}
+
 .card > .actions,
 .card-body > .actions {
   position: absolute;
@@ -1301,6 +1307,35 @@ select.form-control {
 
 .content__break {
   width: 95%;
+}
+
+.card-user {
+  position: relative;
+}
+
+.card-user__info {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  padding: 0.5rem;
+}
+
+.card-user__img {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  margin-right: 0.8rem;
+}
+
+.card-user__name {
+  color: #333;
+  font-weight: 500;
+}
+
+.card-user__time {
+  color: #9c9c9c;
+  margin-top: 0.1rem;
+  line-height: 100%;
 }
 
 body {

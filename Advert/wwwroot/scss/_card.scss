@@ -3,8 +3,13 @@
   background-color: #f8fafd;
 }
 
-.card > .actions,
+.card-body {
+  -ms-flex: 1 1 auto;
+  flex: 1 1 auto;
+  padding: 1rem;
+}
 
+.card > .actions,
 .card-body > .actions {
   position: absolute;
   right: 15px;
@@ -15,7 +20,7 @@
 .card-title:hover {
   text-decoration: underline;
 }
-  
+
 .actions {
   &:not(.actions--inverse) {
     .actions__item {
@@ -65,4 +70,33 @@
 
 .content__break {
   width: 95%;
+}
+
+.card-user {
+  position: relative;
+}
+
+.card-user__info {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  padding: 0.5rem;
+}
+
+.card-user__img {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  margin-right: 0.8rem;
+}
+
+.card-user__name {
+  color: $headings-color;
+  font-weight: $font-weight-bold;
+}
+
+.card-user__time {
+  color: $text-muted;
+  margin-top: 0.1rem;
+  line-height: 100%;
 }

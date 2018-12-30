@@ -150,7 +150,7 @@ namespace Advert.Controllers
                     {
                         AdsId = adsTopic.Id.ToString(),
                         ProfileName = adsTopic.ProfileName,
-                        ProfileImagePath = adsTopic.ProfileImagePath,
+                        ProfileImagePath = adsTopic.ProfileImagePath ?? NoProfileImage,
                         Text = adsTopic.Text.Length > 1000 ? adsTopic.Text.Substring(0, 1000) + "..." : adsTopic.Text,
                         Title = adsTopic.Title,
                         Price = adsTopic.Price.ToString(),
@@ -175,7 +175,7 @@ namespace Advert.Controllers
                         {
                             AdsId = adsTopic.Id.ToString(),
                             ProfileName = adsTopic.ProfileName,
-                            ProfileImagePath = adsTopic.ProfileImagePath,
+                            ProfileImagePath = adsTopic.ProfileImagePath ?? NoProfileImage,
                             Title = adsTopic.Title,
                             CreatedAt = adsTopic.CreatedAt.Humanize(),
                         }).ToList()                   
@@ -302,7 +302,7 @@ namespace Advert.Controllers
                         {
                             AdsId = adsTopic.Id.ToString(),
                             ProfileName = adsTopic.ProfileName,
-                            ProfileImagePath = adsTopic.ProfileImagePath,
+                            ProfileImagePath = adsTopic.ProfileImagePath ?? NoProfileImage,
                             Text = adsTopic.Text,
                             Title = adsTopic.Title,
                             Price = adsTopic.Price.ToString(),
@@ -325,7 +325,7 @@ namespace Advert.Controllers
                     {
                         AdsId = recommendedAdsTopic.Id.ToString(),
                         ProfileName = recommendedAdsTopic.ProfileName,
-                        ProfileImagePath = recommendedAdsTopic.ProfileImagePath,
+                        ProfileImagePath = recommendedAdsTopic.ProfileImagePath ?? NoProfileImage,
                         Title = recommendedAdsTopic.Title,
                         CreatedAt = recommendedAdsTopic.CreatedAt.Humanize(),                      
                     }).ToList(),  
@@ -420,7 +420,7 @@ namespace Advert.Controllers
                 {
                     AdsId = adsTopic.Id.ToString(),
                     ProfileName = adsTopic.ProfileName,
-                    ProfileImagePath = adsTopic.ProfileImagePath,
+                    ProfileImagePath = adsTopic.ProfileImagePath ?? NoProfileImage,
                     Text = adsTopic.Text,
                     Title = adsTopic.Title,
                     Price = adsTopic.Price.ToString(),
