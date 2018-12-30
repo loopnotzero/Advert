@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using MongoDB.Bson;
 
 namespace Advert.Controllers
 {
@@ -40,49 +41,53 @@ namespace Advert.Controllers
 
         [HttpGet]
         [Route("/Profile")]
-        public async Task<IActionResult> Profile()
+        public async Task<IActionResult> GetProfile()
         {
-            var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
-
-            if (profile == null)
+            try
             {
-                //todo: Add user not found page
-                return NotFound();
+                var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
+
+                return View(new ProfileModel
+                {
+                    Id = profile.Id.ToString(),
+                    Name = profile.Name,
+                    ImagePath = profile.ImagePath,
+                    AdsTopicsCount = ((double) 0).ToMetric(),
+                });
             }
-
-            return View(new ProfileModel
+            catch (Exception e)
             {
-                Id = profile.Id.ToString(),
-                Name = profile.Name,
-                ImagePath = profile.ImagePath,
-                AdsTopicsCount = ((double) 0).ToMetric(),
-            });
+                _logger.LogError(e.Message, e);
+                return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
+            }  
         }
-
+        
         [HttpGet]
-        [Route("/Profile/{name}")]
-        public async Task<IActionResult> Profile(string name)
+        [Route("/Profiles/{profileId}")]
+        public async Task<IActionResult> GetProfile(string profileId)
         {
-            var profile = await _profilesManager.FindProfileByNormalizedNameAsync(name);
-
-            if (profile == null)
+            try
             {
-                //todo: Add user not found page
-                return NotFound();
+                var profile = await _profilesManager.FindProfileByIdAsync(ObjectId.Parse(profileId));
+
+                return View(new ProfileModel
+                {
+                    Id = profile.Id.ToString(),
+                    Name = profile.Name,
+                    ImagePath = profile.ImagePath,
+                    AdsTopicsCount = ((double) 0).ToMetric(),
+                });
             }
-
-            return View(new ProfileModel
+            catch (Exception e)
             {
-                Id = profile.Id.ToString(),
-                Name = profile.Name,
-                ImagePath = profile.ImagePath,
-                AdsTopicsCount = ((double) 0).ToMetric(),
-            });
+                _logger.LogError(e.Message, e);
+                return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
+            }  
         }
-
+        
         [HttpPost("AddImage")]
-        [Route("/Profile/AddImage")]
-        public async Task<IActionResult> AddImage(string returnUrl, IFormFile file)
+        [Route("/Profile/AddProfileImage")]
+        public async Task<IActionResult> AddProfileImage(string returnUrl, IFormFile file)
         {
             try
             {
@@ -159,6 +164,6 @@ namespace Advert.Controllers
                 _logger.LogError(e.Message, e);
                 return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
             }
-        }
+        }             
     }
 }

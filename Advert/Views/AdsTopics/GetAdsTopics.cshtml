@@ -23,7 +23,7 @@
                     }
                 </a>
                 <a href="/Profile">
-                    <h5 class="mb-3">@Model.Profile.Name</h5>
+                    <h5>@Model.Profile.Name</h5>
                 </a>
                 <div class="row">
                     <div class="col-md-12">
@@ -43,9 +43,13 @@
                         <div class="col-sm-6">
                             <div class="card-user">
                                 <div class="card-user__info">
-                                    <img src="@adsTopic.ProfileImagePath" class="card-user__img" alt="">
+                                    <a href="/Profiles/@adsTopic.ProfileId">
+                                        <img src="@adsTopic.ProfileImagePath" class="card-user__img" alt=""> 
+                                    </a>
                                     <div>
-                                        <div class="card-user__name">@adsTopic.ProfileName</div>
+                                        <a href="/Profiles/@adsTopic.ProfileId">
+                                            <div class="card-user__name">@adsTopic.ProfileName</div>
+                                        </a>
                                         <div class="card-user__time">@adsTopic.CreatedAt</div>
                                     </div>
                                 </div>

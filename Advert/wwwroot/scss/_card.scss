@@ -91,8 +91,12 @@
 }
 
 .card-user__name {
-  color: $headings-color;
+  //color: $headings-color;
   font-weight: $font-weight-bold;
+}
+
+.card-user__name:hover {
+  text-decoration: underline;
 }
 
 .card-user__time {

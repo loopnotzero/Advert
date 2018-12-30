@@ -149,6 +149,7 @@ namespace Advert.Controllers
                     AdsTopics = adsTopics.Select(adsTopic => new AdsTopicViewModel
                     {
                         AdsId = adsTopic.Id.ToString(),
+                        ProfileId = adsTopic.ProfileId.ToString(),
                         ProfileName = adsTopic.ProfileName,
                         ProfileImagePath = adsTopic.ProfileImagePath ?? NoProfileImage,
                         Text = adsTopic.Text.Length > 1000 ? adsTopic.Text.Substring(0, 1000) + "..." : adsTopic.Text,
@@ -301,6 +302,7 @@ namespace Advert.Controllers
                         new AdsTopicViewModel
                         {
                             AdsId = adsTopic.Id.ToString(),
+                            ProfileId = adsTopic.ProfileId.ToString(),
                             ProfileName = adsTopic.ProfileName,
                             ProfileImagePath = adsTopic.ProfileImagePath ?? NoProfileImage,
                             Text = adsTopic.Text,

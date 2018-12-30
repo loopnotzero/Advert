@@ -13,6 +13,7 @@
         public string LikesCount { get; set; }
         public string SharesCount { get; set; }
         public string CommentsCount { get; set; }
+        public string ProfileId { get; set; }
         public string ProfileName { get; set; }
         public string ProfileImagePath { get; set; }   
         
