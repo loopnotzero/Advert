@@ -76,7 +76,10 @@
                                     <span style="font-size: 0.9rem; color: #71a830">@adsTopic.Price</span>
                                 </p>
                                 <p>
-                                    <span style="font-size: 0.9rem; color: #90949c">@adsTopic.Location</span>  
+                                    <i class="zmdi zmdi-pin zmdi-hc-fw">
+                                    </i> 
+                                    <span style="font-size: 0.9rem; color: #90949c">@adsTopic.Location</span>
+
                                 </p>
                                 @Html.Raw(adsTopic.Text)
                             </div>
@@ -204,10 +207,16 @@
                     <div class="form-group col-md-6">
                         <input id="title" type="text" class="form-control" maxlength="100" placeholder="What are you selling?" autocomplete="off">
                     </div>
-
-                    <div class="form-group col-md-6">
+                    <div class="form-group col-md-3">
                         <input id="price" type="text" class="form-control" placeholder="Price" autocomplete="off">
                     </div>
+                    <div class="form-group col-md-3">
+                        <select class="select2 select2-hidden-accessible" data-minimum-results-for-search="Infinity" tabindex="-1" aria-hidden="true">
+                            <option>€</option>
+                            <option>$</option>
+                            <option>MDL</option>
+                        </select>
+                    </div>  
                 </div>
 
                 <div class="form-group">
@@ -392,7 +401,19 @@
                 $("#modal-backdrop-ignore").modal('toggle');
             }
         });
-    }  
+    }
+
+    $(document).ready(function() {
+        if ($('select.select2')[0]) {
+            var select2Parent = $('.select2-parent')[0] ? $('.select2-parent') : $('body');
+
+            $('select.select2').select2({
+                dropdownAutoWidth: true,
+                width: '100%',
+                dropdownParent: select2Parent
+            });
+        }
+    });
 </script>
 
 <script src="https://maps.googleapis.com/maps/api/js?key=@Model.ApiService.ApiKey&libraries=places&callback=initMap" async defer></script>

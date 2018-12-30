@@ -129,7 +129,7 @@ $header-height-lg: 45px;
 $header-height-xs: 45px;
 
 $header-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.15);
-$header-z-index: 20;
+$header-z-index: 200;
 
 
 // Dropdown
@@ -351,3 +351,5 @@ $width: 100%;
 $height: 100%;
 
 $font-primary: 'Roboto', sans-serif;
+
+$select2-dropdown-zindex: 1500;
