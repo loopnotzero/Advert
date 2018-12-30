@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Advert.Common.Profiles;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace Advert.MongoDbStorage.Stores
 {
     //todo: Move this interface to Common
-    public interface IAdsTopicsStore<T> : IDisposable where T : class
+    public interface IAdsTopicsStore<T> : IDisposable where T : IAdsTopic
     {      
         Task CreateAdsTopicAsync(T entity, CancellationToken cancellationToken);
         Task UpdateAdsTopicAsync(T entity, CancellationToken cancellationToken);

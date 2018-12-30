@@ -7,6 +7,7 @@
         public string Title { get; set; } 
         public string Price { get; set; }
         public string Location { get; set; }
+        public string Currency { get; set; }
         public string CreatedAt { get; set; }
         public string ViewsCount { get; set; }
         public string LikesCount { get; set; }

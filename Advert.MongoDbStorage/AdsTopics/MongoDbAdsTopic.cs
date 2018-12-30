@@ -1,10 +1,11 @@
 ﻿using System;
 using Advert.Common.AdsTopics;
+using Advert.Common.Profiles;
 using MongoDB.Bson;
 
 namespace Advert.MongoDbStorage.AdsTopics
 {
-    public class MongoDbAdsTopic
+    public class MongoDbAdsTopic : IAdsTopic
     {
         public MongoDbAdsTopic()
         {
@@ -20,6 +21,7 @@ namespace Advert.MongoDbStorage.AdsTopics
         public string Text { get; set; }   
         public string Title { get; set; }
         public string Location { get; set; }
+        public string Currency { get; set; }
         public string ProfileName { get; set; }
         public string ProfileImagePath { get; set; }
         public string NormalizedProfileName { get; set; }

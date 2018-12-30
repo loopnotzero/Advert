@@ -9,7 +9,7 @@
     </div>
     <ul class="top-nav">
         <li class="dropdown">
-            <a id="publish-ads" href="#" class="waves-effect" data-toggle="dropdown" aria-expanded="false">
+            <a id="ads-topic__publish" href="#" class="waves-effect" data-toggle="dropdown" aria-expanded="false">
                 <i class="zmdi zmdi-mail-send zmdi-hc-fw"></i>
             </a>
         </li>
@@ -30,20 +30,20 @@
 <section class="content">
     <div class="card">
         <div class="card-body">
+            <div class="form-group">
+                <input id="title" type="text" class="form-control" maxlength="100" placeholder="What are you selling?" autocomplete="off">
+            </div>
             <div class="row">
-                <div class="form-group col-md-10">
-                    <input id="title" type="text" class="form-control" maxlength="100" placeholder="What are you selling?" autocomplete="off">
+                <div class="form-group col-md-2">
+                    <input id="price" type="text" class="form-control" placeholder="Price" autocomplete="off">
                 </div>
-                <div class="form-group col-md-1">
-                    <input id="price" type="text" class="form-control" placeholder="Price" autocomplete="off">                   
-                </div>   
-                <div class="form-group col-md-1">
-                    <select class="select2 select2-hidden-accessible" data-minimum-results-for-search="Infinity" tabindex="-1" aria-hidden="true">
+                <div class="form-group col-md-2">
+                    <select id="currency" class="select2 select2-hidden-accessible" data-minimum-results-for-search="Infinity" tabindex="-1" aria-hidden="true">
                         <option>€</option>
                         <option>$</option>
                         <option>MDL</option>
                     </select>
-                </div>  
+                </div>
             </div>
 
             <div class="form-group">
@@ -73,7 +73,7 @@
                 center: { lat: -33.8688, lng: 151.2195 },
                 zoom: 13
             });
-        
+
         var card = document.getElementById('pac-card');
         var input = document.getElementById('pac-input');
 
@@ -129,7 +129,7 @@
                 }
             });
     }
-    
+
     $(document).ready(function() {
         if ($('select.select2')[0]) {
             var select2Parent = $('.select2-parent')[0] ? $('.select2-parent') : $('body');
@@ -150,34 +150,15 @@
             spellChecker: false
         });
 
-        $("#publish-ads").click(function(e) {
+        $("#ads-topic__publish").click(function(e) {
             e.preventDefault();
 
-            var title = $("#title").val();
-
-            if (title === "") {
-                return;
-            }
-  
-            var text = composeEditor.options.previewRender(composeEditor.value());
-                
-            if (text === "") {
-                return;
-            }
-
-            var price = $("#price").val();
-
-            if (price === "") {
-                return;
-            }
-        
-            var location = $("#pac-input").val();
-            
             var ads = JSON.stringify({
-                text: text,
-                title: title,
-                price: price,
-                location: location
+                text: composeEditor.options.previewRender(composeEditor.value()),
+                title: $("#title").val(),
+                price: $("#price").val(),
+                location: $("#pac-input").val(),
+                currency: $('#currency :selected').text()
             });
 
             createAdsTopic(ads);
@@ -195,7 +176,7 @@
                     console.log("Publish ads error");
                 },
                 success: function(response) {
-                    window.location.href = response.returnUrl;
+                    window.location.replace(response.returnUrl);
                 }
             });
         }

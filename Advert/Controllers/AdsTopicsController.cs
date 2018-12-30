@@ -155,6 +155,7 @@ namespace Advert.Controllers
                         Title = adsTopic.Title,
                         Price = adsTopic.Price.ToString(),
                         Location = adsTopic.Location,
+                        Currency = adsTopic.Currency,
                         LikesCount = ((double) adsTopic.LikesCount).ToMetric(),
                         SharesCount = ((double) 0).ToMetric(),
                         ViewsCount = ((double) adsTopic.ViewsCount).ToMetric(),
@@ -306,6 +307,7 @@ namespace Advert.Controllers
                             Title = adsTopic.Title,
                             Price = adsTopic.Price.ToString(),
                             Location = adsTopic.Location,
+                            Currency = adsTopic.Currency,
                             LikesCount = ((double) adsTopic.LikesCount).ToMetric(),
                             SharesCount = ((double)0).ToMetric(),
                             ViewsCount = ((double) adsTopic.ViewsCount).ToMetric(),
@@ -353,6 +355,7 @@ namespace Advert.Controllers
                     Title = viewModel.Title,
                     Price = viewModel.Price,
                     Location = viewModel.Location,
+                    Currency = viewModel.Currency,
                     ReleaseType = ReleaseType.PreModeration,
                     ProfileId = profile.Id,
                     ProfileName = profile.Name,
@@ -389,6 +392,7 @@ namespace Advert.Controllers
                 adsTopic.Title = viewModel.Title;
                 adsTopic.Price = viewModel.Price;
                 adsTopic.Location = viewModel.Location;
+                adsTopic.Currency = viewModel.Currency;
 
                 await _adsTopicsManager.UpdateAdsTopicAsync(adsTopic);
 
@@ -421,6 +425,7 @@ namespace Advert.Controllers
                     Title = adsTopic.Title,
                     Price = adsTopic.Price.ToString(),
                     Location = adsTopic.Location,
+                    Currency = adsTopic.Currency,
                     LikesCount = ((double) adsTopic.LikesCount).ToMetric(),
                     SharesCount = ((double) 0).ToMetric(),
                     ViewsCount = ((double) adsTopic.ViewsCount).ToMetric(),

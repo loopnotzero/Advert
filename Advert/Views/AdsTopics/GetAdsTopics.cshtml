@@ -73,7 +73,7 @@
                                     <h4 class="card-title font-weight-bold cut-long-text">@adsTopic.Title</h4>                                
                                 </a>
                                 <p>
-                                    <span style="font-size: 0.9rem; color: #71a830">@adsTopic.Price</span>
+                                    <span style="font-size: 0.9rem; color: #71a830">@adsTopic.Price @adsTopic.Currency</span>
                                 </p>
                                 <p>
                                     <i class="zmdi zmdi-pin zmdi-hc-fw">
@@ -211,7 +211,7 @@
                         <input id="price" type="text" class="form-control" placeholder="Price" autocomplete="off">
                     </div>
                     <div class="form-group col-md-3">
-                        <select class="select2 select2-hidden-accessible" data-minimum-results-for-search="Infinity" tabindex="-1" aria-hidden="true">
+                        <select id="currency" class="select2 select2-hidden-accessible" data-minimum-results-for-search="Infinity" tabindex="-1" aria-hidden="true">
                             <option>€</option>
                             <option>$</option>
                             <option>MDL</option>
@@ -327,6 +327,7 @@
                 $("#title").val(response.title);
                 $("#price").val(response.price);
                 $("#pac-input").val(response.location);
+                $('#currency').val(response.currency).trigger('change');  
                 postEditor.value(turndown.turndown(response.text));
             }
         });
@@ -384,7 +385,8 @@
             text: postEditor.options.previewRender(postEditor.value()),
             title: $("#title").val(),
             price: $("#price").val(),
-            location: $("#pac-input").val()
+            location: $("#pac-input").val(),
+            currency: $('#currency :selected').text()
         });
 
         $.ajax({
