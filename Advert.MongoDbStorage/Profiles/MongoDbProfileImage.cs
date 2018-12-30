@@ -1,10 +1,11 @@
 ﻿using System;
+using Advert.Common.Profiles;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace Advert.MongoDbStorage.Profiles
 {
-    public class MongoDbProfileImage
+    public class MongoDbProfileImage : IProfileImage
     {
         public MongoDbProfileImage()
         {

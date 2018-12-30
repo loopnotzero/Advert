@@ -2,12 +2,13 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Advert.Common;
+using Advert.Common.AdsTopic;
 using Advert.MongoDbStorage.Stores;
 using MongoDB.Bson;
 
 namespace Advert.Managers
 {
-    public class AdsTopicsViewsCountManager<T> : IDisposable where T : class
+    public class AdsTopicsViewsCountManager<T> : IDisposable where T : IAdsTopicViewsCount
     {
         private bool _disposed;
 

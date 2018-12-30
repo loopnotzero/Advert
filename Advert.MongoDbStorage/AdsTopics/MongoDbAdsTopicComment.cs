@@ -1,9 +1,10 @@
 ﻿using System;
+using Advert.Common.AdsTopic;
 using MongoDB.Bson;
 
 namespace Advert.MongoDbStorage.AdsTopics
 {
-    public class MongoDbAdsTopicComment
+    public class MongoDbAdsTopicComment : IAdsTopicComment
     {
         public MongoDbAdsTopicComment()
         {

@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Advert.Common;
+using Advert.Common.AdsTopic;
 using Advert.Common.AdsTopics;
 using Advert.MongoDbStorage.Stores;
 using Microsoft.AspNetCore.Identity;
@@ -10,7 +11,7 @@ using MongoDB.Driver;
 
 namespace Advert.Managers
 {
-    public class AdsTopicsVotesManager<T> : IDisposable where T : class
+    public class AdsTopicsVotesManager<T> : IDisposable where T : IAdsTopicVote
     {
         private bool _disposed;
 

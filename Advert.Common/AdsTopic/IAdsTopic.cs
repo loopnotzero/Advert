@@ -6,6 +6,7 @@ namespace Advert.Common.Profiles
 {
     public interface IAdsTopic
     {
+        bool IsDeleted { get; set; }
         long LikesCount { get; set; }
         long ViewsCount { get; set; }
         long SharesCount { get; set; }

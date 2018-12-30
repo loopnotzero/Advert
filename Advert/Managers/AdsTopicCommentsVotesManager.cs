@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Advert.Common;
+using Advert.Common.AdsTopic;
 using Advert.Common.AdsTopics;
 using Advert.MongoDbStorage.Stores;
 using MongoDB.Bson;
@@ -10,7 +11,7 @@ using MongoDB.Driver;
 
 namespace Advert.Managers
 {
-    public class AdsTopicCommentsVotesManager<T> : IDisposable where T : class
+    public class AdsTopicCommentsVotesManager<T> : IDisposable where T : IAdsTopicCommentVote
     {
         private bool _disposed;
 

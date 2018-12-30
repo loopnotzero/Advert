@@ -1,10 +1,11 @@
 using System.Collections.Generic;
+using Advert.Common.AdsTopic;
 using Advert.Common.AdsTopics;
 using MongoDB.Bson;
 
 namespace Advert.MongoDbStorage.AdsTopics
 {
-    public class MongoDbAdsTopicCommentVoteAggregation
+    public class MongoDbAdsTopicCommentVoteAggregation : IAdsTopicCommentVoteAggregation
     {
         public MongoDbAdsTopicCommentVoteAggregation()
         {

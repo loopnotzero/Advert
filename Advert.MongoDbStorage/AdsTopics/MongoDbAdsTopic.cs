@@ -12,7 +12,8 @@ namespace Advert.MongoDbStorage.AdsTopics
             Id = ObjectId.GenerateNewId();
             //Create indeces
         }
-        
+
+        public bool IsDeleted { get; set; }
         public long LikesCount { get; set; }
         public long ViewsCount { get; set; }
         public long SharesCount { get; set; }

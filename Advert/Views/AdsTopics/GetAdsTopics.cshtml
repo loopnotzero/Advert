@@ -60,13 +60,13 @@
                                 <ul class="list-inline">
                                     @if (adsTopic.IsTopicOwner)
                                     {
-                                        <li id="edit__@adsTopic.AdsId" class="list-inline-item" onclick="onEditPostClick('@adsTopic.AdsId')">
-                                            <a href="" title="" data-placement="top" data-target="#modal-backdrop-ignore" data-toggle="modal" data-original-title="Edit">
+                                        <li class="list-inline-item" onclick="onEditPostClick('@adsTopic.AdsId')">
+                                            <a href="" title="" data-placement="top" data-target="#edit-post-modal" data-toggle="modal" data-original-title="Edit">
                                                 <i class="zmdi zmdi-edit zmdi-hc-fw"></i>
                                             </a>
                                         </li>
-                                        <li class="list-inline-item">
-                                            <a href="" title="" data-placement="top" data-toggle="tooltip" data-original-title="Delete">
+                                        <li class="list-inline-item" onclick="onDeletePostClick('@adsTopic.AdsId')">
+                                            <a href="" title="" data-placement="top" data-target="#delete-post-modal" data-toggle="modal" data-original-title="Delete">
                                                 <i class="zmdi zmdi-delete zmdi-hc-fw"></i>
                                             </a>
                                         </li>
@@ -200,7 +200,7 @@
         </div>
     </div>
 </div>
-<div id="modal-backdrop-ignore" class="modal fade" data-backdrop="static" tabindex="-1" style="display: none;" aria-hidden="true">
+<div id="edit-post-modal" class="modal fade" data-backdrop="static" tabindex="-1" style="display: none;" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -238,6 +238,31 @@
             <div class="modal-footer">
                 <button id="edit-post__save" type="button" class="btn btn-link">
                     Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="delete-post-modal" class="modal fade" data-backdrop="static" tabindex="-1" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="pull-left font-weight-bold" style="margin-top: 10px; margin-left: 10px">Edit post</h6>
+                <button type="button" class="btn btn-link pull-right" data-dismiss="modal">
+                    <span>
+                        <i class="zmdi zmdi-close zmdi-hc-fw"></i>
+                    </span>
+                </button>
+            </div>
+            <div class="modal-body">
+                You are about to delete this post.
+            </div>
+            <div class="modal-footer">
+                <button id="edit-post__save" type="button" class="btn btn-link">
+                    Cancel
+                </button>
+                <button id="edit-post__save" type="button" class="btn btn-link">
+                    Delete
                 </button>
             </div>
         </div>
@@ -339,10 +364,13 @@
                 postEditor.value(turndown.turndown(response.text));
             }
         });
-
         $("#edit-post__save").click(function() {
             onSavePostChangesClick(adsId);
         });
+    }
+    
+    function onDeletePostClick(adsId) {
+        
     }
 
     function onVoteAdsTopicClick(adsId, voteType) {
@@ -391,7 +419,7 @@
                 console.log("errorThrown: " + errorThrown);
             },
             success: function(response) {
-                $("#modal-backdrop-ignore").modal('toggle');
+                $("#edit-post-modal").modal('toggle');
             }
         });
     }
@@ -416,7 +444,7 @@
         });
         
         //Fix for empty editor until it has no focus
-        $('#modal-backdrop-ignore').on('shown.bs.modal', function () {
+        $('#edit-post-modal').on('shown.bs.modal', function () {
             postEditor.codemirror.refresh();
         });
     });

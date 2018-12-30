@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Advert.Common.AdsTopic;
 using Advert.Common.AdsTopics;
 using Advert.MongoDbStorage.Stores;
 using MongoDB.Bson;
 
 namespace Advert.Managers
 {
-    public class AdsTopicCommentsManager<T> : IDisposable where T : class
+    public class AdsTopicCommentsManager<T> : IDisposable where T : IAdsTopicComment
     {
         private bool _disposed;
         

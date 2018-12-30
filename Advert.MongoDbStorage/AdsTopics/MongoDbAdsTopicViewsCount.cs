@@ -1,9 +1,10 @@
 ﻿using System;
+using Advert.Common.AdsTopic;
 using MongoDB.Bson;
 
 namespace Advert.MongoDbStorage.AdsTopics
 {
-    public class MongoDbAdsTopicViewsCount
+    public class MongoDbAdsTopicViewsCount : IAdsTopicViewsCount
     {
         public MongoDbAdsTopicViewsCount()
         {
