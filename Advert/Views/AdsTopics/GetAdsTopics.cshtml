@@ -39,44 +39,43 @@
             <div id="ads-topics" class="card">
                 @foreach (var adsTopic in Model.AdsTopics)
                 {
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <div class="card-user">
-                                <div class="card-user__info">
-                                    <a href="/Profiles/@adsTopic.ProfileId">
-                                        <img src="@adsTopic.ProfileImagePath" class="card-user__img" alt=""> 
-                                    </a>
-                                    <div>
+                    <article id="@adsTopic.AdsId" class="card-hover">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="card-user">
+                                    <div class="card-user__info">
                                         <a href="/Profiles/@adsTopic.ProfileId">
-                                            <div class="card-user__name">@adsTopic.ProfileName</div>
+                                            <img src="@adsTopic.ProfileImagePath" class="card-user__img" alt="">
                                         </a>
-                                        <div class="card-user__time">@adsTopic.CreatedAt</div>
+                                        <div>
+                                            <a href="/Profiles/@adsTopic.ProfileId">
+                                                <div class="card-user__name">@adsTopic.ProfileName</div>
+                                            </a>
+                                            <div class="card-user__time">@adsTopic.CreatedAt</div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>      
+                            </div>
+                            <div class="col-sm-6">
+                                <div style="text-align: right; padding-top: 1rem; padding-right: 1rem">
+                                    <ul class="list-inline">
+                                        @if (adsTopic.IsTopicOwner)
+                                        {
+                                            <li class="list-inline-item" onclick="onEditPostClick('@adsTopic.AdsId')">
+                                                <a href="" title="" data-placement="top" data-target="#edit-post-modal" data-toggle="modal">
+                                                    <i class="zmdi zmdi-edit zmdi-hc-fw"></i>
+                                                </a>
+                                            </li>
+                                            <li class="list-inline-item" onclick="onDeletePostClick('@adsTopic.AdsId')">
+                                                <a href="" title="" data-placement="top" data-target="#delete-post-modal" data-toggle="modal">
+                                                    <i class="zmdi zmdi-delete zmdi-hc-fw"></i>
+                                                </a>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-sm-6">
-                            <div style="text-align: right; padding-top: 1rem; padding-right: 1rem">
-                                <ul class="list-inline">
-                                    @if (adsTopic.IsTopicOwner)
-                                    {
-                                        <li class="list-inline-item" onclick="onEditPostClick('@adsTopic.AdsId')">
-                                            <a href="" title="" data-placement="top" data-target="#edit-post-modal" data-toggle="modal" data-original-title="Edit">
-                                                <i class="zmdi zmdi-edit zmdi-hc-fw"></i>
-                                            </a>
-                                        </li>
-                                        <li class="list-inline-item" onclick="onDeletePostClick('@adsTopic.AdsId')">
-                                            <a href="" title="" data-placement="top" data-target="#delete-post-modal" data-toggle="modal" data-original-title="Delete">
-                                                <i class="zmdi zmdi-delete zmdi-hc-fw"></i>
-                                            </a>
-                                        </li>
-                                    }
-                                </ul>  
-                            </div>                           
-                        </div>
-                    </div>                                    
-
-                    <article id="@adsTopic.AdsId" class="card-hover">
                         <div class="card-body card-body__img">
                             <a href="/Topics/@adsTopic.AdsId">
                                 <h4 class="card-title font-weight-bold cut-long-text">@adsTopic.Title</h4>
@@ -115,8 +114,8 @@
                                 </small>
                             </div>
                         </div>
+                        <div style="border-bottom: 1px solid #d5d5d5;"></div>
                     </article>
-                    <div style="border-bottom: 1px solid #d5d5d5;"></div>
                 }
             </div>
         }
@@ -200,7 +199,7 @@
         </div>
     </div>
 </div>
-<div id="edit-post-modal" class="modal fade" data-backdrop="static" tabindex="-1" style="display: none;" aria-hidden="true">
+<div id="edit-post-modal" class="modal fade" data-backdrop="static" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -243,7 +242,7 @@
         </div>
     </div>
 </div>
-<div id="delete-post-modal" class="modal fade" data-backdrop="static" tabindex="-1" style="display: none;" aria-hidden="true">
+<div id="delete-post-modal" class="modal fade" data-backdrop="static" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -258,10 +257,10 @@
                 You are about to delete this post.
             </div>
             <div class="modal-footer">
-                <button id="edit-post__save" type="button" class="btn btn-link">
+                <button id="edit-post__cancel" type="button" class="btn btn-light" data-dismiss="modal">
                     Cancel
                 </button>
-                <button id="edit-post__save" type="button" class="btn btn-link">
+                <button id="edit-post__close" type="button" class="btn btn-primary__advert">
                     Delete
                 </button>
             </div>
@@ -279,7 +278,7 @@
         withPreview: false,
         spellChecker: false
     });
-    
+
     var turndown = new TurndownService();
 
     function initMap() {
@@ -368,9 +367,25 @@
             onSavePostChangesClick(adsId);
         });
     }
-    
+
     function onDeletePostClick(adsId) {
-        
+        $.ajax({
+            url: `/Topics/DeleteAdsTopicByIdAsync/${adsId}`,
+            type: "DELETE",
+            contentType: "application/json",
+            error: function() {
+                console.log("jqXhr: " + jqXhr);
+                console.log("textStatus: " + textStatus);
+                console.log("errorThrown: " + errorThrown);
+            },
+            success: function(response) {
+                $("#edit-post-modal").modal('toggle');
+            }
+        });      
+        $("#edit-post__close").click(function() {        
+            $(`#${adsId}`).remove();
+            $("#delete-post-modal").modal('toggle');
+        }); 
     }
 
     function onVoteAdsTopicClick(adsId, voteType) {
@@ -433,20 +448,22 @@
                 dropdownParent: select2Parent
             });
         }
-        
+
         //Fix for side by side & fullscrenn
-        postEditor.codemirror.on('refresh', function() {
-            if (postEditor.isFullscreenActive()) {
-                $('body').addClass('simplemde-fullscreen');
-            } else {
-                $('body').removeClass('simplemde-fullscreen');
-            }
-        });
-        
+        postEditor.codemirror.on('refresh',
+            function() {
+                if (postEditor.isFullscreenActive()) {
+                    $('body').addClass('simplemde-fullscreen');
+                } else {
+                    $('body').removeClass('simplemde-fullscreen');
+                }
+            });
+
         //Fix for empty editor until it has no focus
-        $('#edit-post-modal').on('shown.bs.modal', function () {
-            postEditor.codemirror.refresh();
-        });
+        $('#edit-post-modal').on('shown.bs.modal',
+            function() {
+                postEditor.codemirror.refresh();
+            });
     });
 </script>
 
