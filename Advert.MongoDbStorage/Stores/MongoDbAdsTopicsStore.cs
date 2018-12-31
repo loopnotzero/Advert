@@ -50,7 +50,7 @@ namespace Advert.MongoDbStorage.Stores
         }
 
         public async Task<T> FindAdsTopicByIdAsync(ObjectId adsId, CancellationToken cancellationToken)
-        {    
+        {
             cancellationToken.ThrowIfCancellationRequested();
             var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.Id, adsId), cancellationToken: cancellationToken);
             return await cursor.FirstAsync(cancellationToken);
@@ -88,8 +88,8 @@ namespace Advert.MongoDbStorage.Stores
             {
                 findOptions.Limit = howManyElements;
             }
-            
-            var cursor = await _collection.FindAsync(Builders<T>.Filter.Empty, findOptions, cancellationToken: cancellationToken);
+                       
+            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.IsDeleted, false), findOptions, cancellationToken: cancellationToken);
            
             return await cursor.ToListAsync(cancellationToken);
         }
@@ -110,7 +110,7 @@ namespace Advert.MongoDbStorage.Stores
                 findOptions.Limit = howManyElements;
             }
             
-            var cursor = await _collection.FindAsync(Builders<T>.Filter.Empty, findOptions, cancellationToken: cancellationToken);
+            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.IsDeleted, false), findOptions, cancellationToken: cancellationToken);
            
             return await cursor.ToListAsync(cancellationToken);
         }
@@ -147,10 +147,13 @@ namespace Advert.MongoDbStorage.Stores
             return await cursor.ToListAsync(cancellationToken);
         }
 
-        public async Task<DeleteResult> DeleteAdsTopicByIdAsync(ObjectId adsId, CancellationToken cancellationToken)
+        public async Task<UpdateResult> DeleteAdsTopicByIdAsync(ObjectId adsId, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            return await _collection.DeleteOneAsync(Builders<T>.Filter.Eq(x => x.Id, adsId), cancellationToken);        
+            return await _collection.UpdateOneAsync(Builders<T>.Filter.Eq(x => x.Id, adsId), Builders<T>.Update.Set(x => x.IsDeleted, true), new UpdateOptions
+            {
+                BypassDocumentValidation = false
+            }, cancellationToken);      
         }
 
         public async Task<UpdateResult> UpdateAdsTopicViewsCountByAdsIdAsync(ObjectId adsId, long count, CancellationToken cancellationToken)

@@ -138,7 +138,7 @@ namespace Advert.Managers
             return await _store.UpdateAdsTopicLikesCountByAdsIdAsync(adsId, votesCount, CancellationToken);
         }
 
-        public async Task<DeleteResult> DeleteAdsTopicByIdAsync(ObjectId adsId)
+        public async Task<UpdateResult> DeleteAdsTopicByIdAsync(ObjectId adsId)
         {
             ThrowIfDisposed();
 
