@@ -345,6 +345,7 @@
     var turndown = new TurndownService();
 
     function onAddPostClick() {
+        exitEditorFullscreen();
         $("#add-post__post").click(function() {
             var ads = JSON.stringify({
                 text: postEditor.options.previewRender(postEditor.value()),
@@ -372,6 +373,7 @@
     }
 
     function onEditPostClick(adsId) {
+        exitEditorFullscreen();
         $.ajax({
             url: `/Topics/GetAdsTopicByIdAsync/${adsId}`,
             type: "GET",
@@ -433,6 +435,7 @@
             },
             success: function(response) {
                 $("#edit-post-modal").modal('toggle');
+                window.location.replace(response.returnUrl);
             }
         });
     }
@@ -464,6 +467,12 @@
         });
     }
 
+    function exitEditorFullscreen() {
+        if (postEditor.isFullscreenActive()) {
+            postEditor.toggleFullScreen();
+        }       
+    }
+    
     function addLocationInputListeners() {
         var inputs = [
             document.getElementById('add-post__pac-input'),

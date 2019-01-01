@@ -386,7 +386,10 @@ namespace Advert.Controllers
 
                 await _adsTopicsManager.UpdateAdsTopicAsync(adsTopic);
 
-                return Ok();
+                return Ok(new
+                {
+                    returnUrl = Url.Action("GetAdsTopicContent", "AdsTopics", new {adsId = adsTopic.Id})
+                });
             }
             catch (Exception e)
             {
