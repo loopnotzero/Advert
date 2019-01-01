@@ -64,17 +64,22 @@
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
+
+  //display:flex;
+  //align-items: center; /* Vertical center alignment */
+  //justify-content: center; /* Horizontal center alignment */
+
   -webkit-box-align: start;
   -ms-flex-align: start;
   align-items: flex-start;
   -webkit-box-pack: justify;
   -ms-flex-pack: justify;
   justify-content: space-between;
-  padding: 0.5rem;
   border-bottom: 0 solid #e9ecef;
   background-color: #f5f6f7;
+  border-bottom: 1px solid #e5e5e5;
   z-index: 999;
-  
+  padding: 0.5rem;
 }
 
 .modal-header .close {
@@ -105,6 +110,10 @@
   -ms-flex-pack: end;
   justify-content: flex-end;
   border-top: 0 solid #e9ecef;
+  background-color: #f5f6f7;
+  border-top: 1px solid #e6e6e6;
+  border-top-color: #ebedf0;
+  padding: 0.4rem;
 }
 
 .modal-footer > :not(:first-child) {

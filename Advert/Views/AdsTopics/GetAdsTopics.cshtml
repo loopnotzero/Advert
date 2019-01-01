@@ -217,8 +217,8 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h6 class="pull-left font-weight-bold" style="margin-top: 10px; margin-left: 10px">Add post</h6>
-                <button type="button" class="btn btn-link pull-right" data-dismiss="modal">
+                <span class="font-weight-bold">Add post</span>
+                <button type="button" class="btn btn-link" data-dismiss="modal">
                     <span>
                         <i class="zmdi zmdi-close zmdi-hc-fw"></i>
                     </span>
@@ -232,13 +232,13 @@
                     <div class="form-group col-md-3">
                         <input id="add-post__price" type="text" class="form-control" placeholder="Price" autocomplete="off">
                     </div>
-                    <div class="form-group col-md-3">
-                        <select id="add-post__currency" class="select2 select2-hidden-accessible" data-minimum-results-for-search="Infinity" tabindex="-1" aria-hidden="true">
-                            <option>€</option>
-                            <option>$</option>
-                            <option>MDL</option>
-                        </select>
-                    </div>
+                    @* <div class="form-group col-md-3"> *@
+                    @*     <select id="add-post__currency" class="select2 select2-hidden-accessible" data-minimum-results-for-search="Infinity" tabindex="-1" aria-hidden="true"> *@
+                    @*         <option>€</option> *@
+                    @*         <option>$</option> *@
+                    @*         <option>MDL</option> *@
+                    @*     </select> *@
+                    @* </div> *@
                 </div>
 
                 <div class="form-group">
@@ -271,8 +271,8 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h6 class="pull-left font-weight-bold" style="margin-top: 10px; margin-left: 10px">Edit post</h6>
-                <button type="button" class="btn btn-link pull-right" data-dismiss="modal">
+                <span class="font-weight-bold">Edit post</span>
+                <button type="button" class="btn btn-link" data-dismiss="modal">
                     <span>
                         <i class="zmdi zmdi-close zmdi-hc-fw"></i>
                     </span>
@@ -286,13 +286,13 @@
                     <div class="form-group col-md-3">
                         <input id="edit-post__price" type="text" class="form-control" placeholder="Price" autocomplete="off">
                     </div>
-                    <div class="form-group col-md-3">
-                        <select id="edit-post__currency" class="select2 select2-hidden-accessible" data-minimum-results-for-search="Infinity" tabindex="-1" aria-hidden="true">
-                            <option>€</option>
-                            <option>$</option>
-                            <option>MDL</option>
-                        </select>
-                    </div>
+                    @* <div class="form-group col-md-3"> *@
+                    @*     <select id="edit-post__currency" class="select2 select2-hidden-accessible" data-minimum-results-for-search="Infinity" tabindex="-1" aria-hidden="true"> *@
+                    @*         <option>€</option> *@
+                    @*         <option>$</option> *@
+                    @*         <option>MDL</option> *@
+                    @*     </select> *@
+                    @* </div> *@
                 </div>
 
                 <div class="form-group">
@@ -313,8 +313,8 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h6 class="pull-left font-weight-bold" style="margin-top: 10px; margin-left: 10px">Edit post</h6>
-                <button type="button" class="btn btn-link pull-right" data-dismiss="modal">
+                <span class="font-weight-bold">Delete post</span>
+                <button type="button" class="btn btn-link" data-dismiss="modal">
                     <span>
                         <i class="zmdi zmdi-close zmdi-hc-fw"></i>
                     </span>
@@ -338,8 +338,8 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h6 class="pull-left font-weight-bold" style="margin-top: 10px; margin-left: 10px">Edit tags for this post</h6>
-                <button type="button" class="btn btn-link pull-right" data-dismiss="modal">
+                <span class="font-weight-bold">Edit tags for this post</span>
+                <button type="button" class="btn btn-link" data-dismiss="modal">
                     <span>
                         <i class="zmdi zmdi-close zmdi-hc-fw"></i>
                     </span>
@@ -347,12 +347,8 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <select class="select2 select2-hidden-accessible" multiple="" data-placeholder="Choose up to 5 tags to describe this post." tabindex="-1" aria-hidden="true">
-                        <option>Subaru</option>
-                        <option>Mitsubishi</option>
-                        <option>Scion</option>
-                        <option>Daihatsu</option>
-                        <option>Hino</option>
+                    <select id="select2-tags" class="form-control" multiple="multiple">
+                        <option></option>
                     </select>
                 </div>
             </div>
@@ -538,15 +534,13 @@
     }
 
     $(document).ready(function() {
-        if ($('select.select2')[0]) {
-            var select2Parent = $('.select2-parent')[0] ? $('.select2-parent') : $('body');
-            $('select.select2').select2({
-                dropdownAutoWidth: true,
-                width: '100%',
-                dropdownParent: select2Parent
-            });
-        }
-
+        $("#select2-tags").select2({
+            tags: true,
+            width: "100%",
+            placeholder: "Choose up to 5 tags to describe this post.",
+            tokenSeparators: [',', ' ']
+        })
+        
         //Fix for side by side & fullscrenn
         postEditor.codemirror.on('refresh',
             function() {
