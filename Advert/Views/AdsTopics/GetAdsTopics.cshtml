@@ -9,199 +9,209 @@
 
 <section class="content">
 <div class="row">
-    <div class="col-md-3 p-1">
-        <div class="card">
-            <div class="card-body text-center">
-                <a href="/Profile">
-                    @if (!string.IsNullOrEmpty(Model.Profile.ImagePath))
-                    {
-                        <img src="@Model.Profile.ImagePath" class="widget-profile__img widget-profile__img__hover" alt="profile-image">
-                    }
-                    else
-                    {
-                        <img src="/images/no_image.png" class="widget-profile__img widget-profile__img__hover" alt="profile-image">
-                    }
-                </a>
-                <a href="/Profile">
-                    <h5>@Model.Profile.Name</h5>
-                </a>
-                <div class="row">
-                    <div class="col-md-12">
-                        <span class="text-justify">Posts</span>
-                        <h5 class="text-center">@Model.Profile.AdsTopicsCount</h5>
-                    </div>
+<div class="col-md-3 p-1">
+    <div class="card">
+        <div class="card-body text-center">
+            <a href="/Profile">
+                @if (!string.IsNullOrEmpty(Model.Profile.ImagePath))
+                {
+                    <img src="@Model.Profile.ImagePath" class="widget-profile__img widget-profile__img__hover" alt="profile-image">
+                }
+                else
+                {
+                    <img src="/images/no_image.png" class="widget-profile__img widget-profile__img__hover" alt="profile-image">
+                }
+            </a>
+            <a href="/Profile">
+                <h5>@Model.Profile.Name</h5>
+            </a>
+            <div class="row">
+                <div class="col-md-12">
+                    <span class="text-justify">Posts</span>
+                    <h5 class="text-center">@Model.Profile.AdsTopicsCount</h5>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-md-6 p-1">
-        @{
-            <div id="ads-topics" class="card">
-                @foreach (var adsTopic in Model.AdsTopics)
-                {
-                    <article id="@adsTopic.AdsId" class="card-hover">
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <div class="card-user">
-                                    <div class="card-user__info">
+</div>
+<div class="col-md-6 p-1">
+    @{
+        <div id="ads-topics" class="card">
+            @foreach (var adsTopic in Model.AdsTopics)
+            {
+                <article id="@adsTopic.AdsId" class="card-hover">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="card-user">
+                                <div class="card-user__info">
+                                    <a href="/Profiles/@adsTopic.ProfileId">
+                                        <img src="@adsTopic.ProfileImagePath" class="card-user__img" alt="">
+                                    </a>
+                                    <div>
                                         <a href="/Profiles/@adsTopic.ProfileId">
-                                            <img src="@adsTopic.ProfileImagePath" class="card-user__img" alt="">
+                                            <div class="card-user__name">@adsTopic.ProfileName</div>
                                         </a>
-                                        <div>
-                                            <a href="/Profiles/@adsTopic.ProfileId">
-                                                <div class="card-user__name">@adsTopic.ProfileName</div>
-                                            </a>
-                                            <div style="display: flex">
-                                                <div class="card-user__time">@adsTopic.CreatedAt</div>
-
-                                                <i class="zmdi zmdi-tag-more zmdi-hc-fw"></i> <span class="card-user__time">Add tags</span>
+                                        <div style="display: flex">
+                                            <div class="post-header__time">@adsTopic.CreatedAt</div>
+                                            <div class="post-header__tags">
+                                                <a href="" title="" data-placement="top" data-target="#add-tags-modal" data-toggle="modal">
+                                                    <i class="zmdi zmdi-tag-more zmdi-hc-fw post-header__icon"></i>Add tags
+                                                </a>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-sm-6">
-                                <div style="text-align: right; padding-top: 1rem; padding-right: 1rem">
-                                    <ul class="list-inline">
-                                        @if (adsTopic.IsTopicOwner)
-                                        {
-                                            <li class="list-inline-item" onclick="onEditPostClick('@adsTopic.AdsId')">
-                                                <a href="" title="" data-placement="top" data-target="#edit-post-modal" data-toggle="modal">
-                                                    <i class="zmdi zmdi-edit zmdi-hc-fw"></i>
-                                                </a>
-                                            </li>
-                                            <li class="list-inline-item" onclick="onDeletePostClick('@adsTopic.AdsId')">
-                                                <a href="" title="" data-placement="top" data-target="#delete-post-modal" data-toggle="modal">
-                                                    <i class="zmdi zmdi-delete zmdi-hc-fw"></i>
-                                                </a>
-                                            </li>
-                                        }
-                                    </ul>
-                                </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div style="text-align: right; padding-top: 1rem; padding-right: 1rem">
+                                <ul class="list-inline">
+                                    @if (adsTopic.IsTopicOwner)
+                                    {
+                                        <li class="list-inline-item" onclick="onEditPostClick('@adsTopic.AdsId')">
+                                            <a href="" title="" data-placement="top" data-target="#edit-post-modal" data-toggle="modal">
+                                                <i class="zmdi zmdi-edit zmdi-hc-fw"></i>
+                                            </a>
+                                        </li>
+                                        <li class="list-inline-item" onclick="onDeletePostClick('@adsTopic.AdsId')">
+                                            <a href="" title="" data-placement="top" data-target="#delete-post-modal" data-toggle="modal">
+                                                <i class="zmdi zmdi-delete zmdi-hc-fw"></i>
+                                            </a>
+                                        </li>
+                                    }
+                                </ul>
                             </div>
                         </div>
-                        <div class="card-body card-body__img">
-                            <a href="/Topics/@adsTopic.AdsId">
-                                <h4 class="card-title font-weight-bold cut-long-text">@adsTopic.Title</h4>
-                            </a>
-                            <p>
-                                <span style="font-size: 0.9rem; color: #71a830">@adsTopic.Price @adsTopic.Currency</span>
-                            </p>
-                            <p>
-                                @if (adsTopic.Location != null)
-                                {
-                                    <i class="zmdi zmdi-pin zmdi-hc-fw"></i>
-                                    <span style="font-size: 0.9rem; color: #90949c">@adsTopic.Location</span>
-                                }
-                            </p>
-                            @Html.Raw(adsTopic.Text)
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12 p-1">
-                                <div class="r-btn r-btn-light r-btn--icon waves-effect ml-4" onclick="onVoteAdsTopicClick('@adsTopic.AdsId', 1)">
-                                    <i class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
-                                </div>
-                                <small id="votes-count">@adsTopic.LikesCount</small>
-
-                                <div class="r-btn r-btn-light-no-hover r-btn--icon-no-hover">
-                                    <i class="zmdi zmdi-comments zmdi-hc-fw"></i>
-                                </div>
-                                <small id="comments-count">@adsTopic.CommentsCount</small>
-
-                                <div class="r-btn r-btn-light-no-hover r-btn--icon-no-hover">
-                                    <i class="zmdi zmdi-eye zmdi-hc-fw"></i>
-                                </div>
-                                <small id="ads-view-count">@adsTopic.ViewsCount</small>
-
-                                <small class="text-muted float-right mt-2 mr-4">
-                                    <a href="/Topics/@adsTopic.AdsId">READ MORE...</a>
-                                </small>
-                            </div>
-                        </div>
-                        <div style="border-bottom: 1px solid #d5d5d5;"></div>
-                    </article>
-                }
-            </div>
-        }
-        @if (Model.LastPage > 1)
-        {
-            <div class="mt-4">
-                <nav>
-                    <ul class="pagination justify-content-center">
-                        @if (Model.CurrentPage > 1)
-                        {
-                            <li class="page-item pagination-first">
-                                <a class="page-link" href="/?page=1"></a>
-                            </li>
-
-                            <li class="page-item pagination-prev">
-                                <a class="page-link" href="/?page=@(Model.CurrentPage - 1)"></a>
-                            </li>
-                        }
-                        else
-                        {
-                            <li class="page-item pagination-first disabled">
-                                <a class="page-link" href="#"></a>
-                            </li>
-
-                            <li class="page-item pagination-prev disabled">
-                                <a class="page-link"></a>
-                            </li>
-                        }
-
-                        @{
-                            for (var index = Model.BeginPage; index <= Model.EndPage; index++)
+                    </div>
+                    <div class="card-body card-body__img">
+                        <a href="/Topics/@adsTopic.AdsId">
+                            <h4 class="card-title font-weight-bold cut-long-text">@adsTopic.Title</h4>
+                        </a>
+                        <p>
+                            @if (@adsTopic.Price > 0)
                             {
-                                if (Model.CurrentPage == index)
-                                {
-                                    <li class="page-item active">
-                                        <a class="page-link" href="/?page=@index">@index</a>
-                                    </li>
-                                }
-                                else
-                                {
-                                    <li class="page-item">
-                                        <a class="page-link" href="/?page=@index">@index</a>
-                                    </li>
-                                }
+                                <span style="font-size: 0.9rem; color: #71a830">@adsTopic.Price@adsTopic.Currency</span>
                             }
-                        }
+                            else
+                            {
+                                <span style="font-size: 0.9rem; color: #71a830">FREE</span>
+                            }
+                        </p>
+                        <p>
+                            @if (adsTopic.Location != null)
+                            {
+                                <i class="zmdi zmdi-pin zmdi-hc-fw"></i>
+                                <span style="font-size: 0.9rem; color: #90949c">@adsTopic.Location</span>
+                            }
+                        </p>
+                        @Html.Raw(adsTopic.Text)
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 p-1">
+                            <div class="r-btn r-btn-light r-btn--icon waves-effect ml-4" onclick="onVoteAdsTopicClick('@adsTopic.AdsId', 1)">
+                                <i class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
+                            </div>
+                            <small id="votes-count">@adsTopic.LikesCount</small>
 
-                        @if (Model.CurrentPage >= Model.EndPage)
-                        {
-                            <li class="page-item pagination-next disabled">
-                                <a class="page-link" href="#"></a>
-                            </li>
+                            <div class="r-btn r-btn-light-no-hover r-btn--icon-no-hover">
+                                <i class="zmdi zmdi-comments zmdi-hc-fw"></i>
+                            </div>
+                            <small id="comments-count">@adsTopic.CommentsCount</small>
 
-                            <li class="page-item pagination-last disabled">
-                                <a class="page-link" href="#"></a>
-                            </li>
-                        }
-                        else
-                        {
-                            <li class="page-item pagination-next">
-                                <a class="page-link" href="/?page=@(Model.CurrentPage + 1)"></a>
-                            </li>
+                            <div class="r-btn r-btn-light-no-hover r-btn--icon-no-hover">
+                                <i class="zmdi zmdi-eye zmdi-hc-fw"></i>
+                            </div>
+                            <small id="ads-view-count">@adsTopic.ViewsCount</small>
 
-                            <li class="page-item pagination-last">
-                                <a class="page-link" href="/?page=@Model.LastPage"></a>
-                            </li>
-                        }
-                    </ul>
-                </nav>
-            </div>
-        }
-    </div>
-    <div class="col-md-3 p-1">
-        <div class="card p-4">
-            <div style="border-bottom: 1px solid #d5d5d5; margin-bottom: 10px;">
-                <h4 class="text-muted">Recommendations</h4>
-            </div>
-            @{
-                @await Html.PartialAsync("RecommendedAdsTopics", Model.RecommendedAdsTopics)
+                            <small class="text-muted float-right mt-2 mr-4">
+                                <a href="/Topics/@adsTopic.AdsId">READ MORE...</a>
+                            </small>
+                        </div>
+                    </div>
+                    <div style="border-bottom: 1px solid #d5d5d5;"></div>
+                </article>
             }
         </div>
+    }
+    @if (Model.LastPage > 1)
+    {
+        <div class="mt-4">
+            <nav>
+                <ul class="pagination justify-content-center">
+                    @if (Model.CurrentPage > 1)
+                    {
+                        <li class="page-item pagination-first">
+                            <a class="page-link" href="/?page=1"></a>
+                        </li>
+
+                        <li class="page-item pagination-prev">
+                            <a class="page-link" href="/?page=@(Model.CurrentPage - 1)"></a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="page-item pagination-first disabled">
+                            <a class="page-link" href="#"></a>
+                        </li>
+
+                        <li class="page-item pagination-prev disabled">
+                            <a class="page-link"></a>
+                        </li>
+                    }
+
+                    @{
+                        for (var index = Model.BeginPage; index <= Model.EndPage; index++)
+                        {
+                            if (Model.CurrentPage == index)
+                            {
+                                <li class="page-item active">
+                                    <a class="page-link" href="/?page=@index">@index</a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" href="/?page=@index">@index</a>
+                                </li>
+                            }
+                        }
+                    }
+
+                    @if (Model.CurrentPage >= Model.EndPage)
+                    {
+                        <li class="page-item pagination-next disabled">
+                            <a class="page-link" href="#"></a>
+                        </li>
+
+                        <li class="page-item pagination-last disabled">
+                            <a class="page-link" href="#"></a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="page-item pagination-next">
+                            <a class="page-link" href="/?page=@(Model.CurrentPage + 1)"></a>
+                        </li>
+
+                        <li class="page-item pagination-last">
+                            <a class="page-link" href="/?page=@Model.LastPage"></a>
+                        </li>
+                    }
+                </ul>
+            </nav>
+        </div>
+    }
+</div>
+<div class="col-md-3 p-1">
+    <div class="card p-4">
+        <div style="border-bottom: 1px solid #d5d5d5; margin-bottom: 10px;">
+            <h4 class="text-muted">Recommendations</h4>
+        </div>
+        @{
+            @await Html.PartialAsync("RecommendedAdsTopics", Model.RecommendedAdsTopics)
+        }
     </div>
+</div>
 </div>
 <div id="add-post-modal" class="modal fade" data-backdrop="static" tabindex="-1">
     <div class="modal-dialog">
@@ -234,11 +244,11 @@
                 <div class="form-group">
                     <input id="add-post__pac-input" type="text" class="form-control" placeholder="Enter a location (optional)" autocomplete="off">
                 </div>
-                       
+
                 <div class="form-group">
                     <textarea id="post-editor__add" style="display: none"></textarea>
                 </div>
-                
+
                 <div class="form-group">
                     <div id="dropzone">
                         <form asp-controller="AdsTopics" asp-action="AddAdsTopicPhotos" class="dropzone needsclick dz-clickable" id="demo-upload">
@@ -253,7 +263,7 @@
                 <button id="add-post__post" type="button" class="btn btn-primary__advert">
                     Save
                 </button>
-            </div>                      
+            </div>
         </div>
     </div>
 </div>
@@ -324,13 +334,46 @@
         </div>
     </div>
 </div>
+<div id="add-tags-modal" class="modal fade" data-backdrop="static" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="pull-left font-weight-bold" style="margin-top: 10px; margin-left: 10px">Edit tags for this post</h6>
+                <button type="button" class="btn btn-link pull-right" data-dismiss="modal">
+                    <span>
+                        <i class="zmdi zmdi-close zmdi-hc-fw"></i>
+                    </span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <select class="select2 select2-hidden-accessible" multiple="" data-placeholder="Choose up to 5 tags to describe this post." tabindex="-1" aria-hidden="true">
+                        <option>Subaru</option>
+                        <option>Mitsubishi</option>
+                        <option>Scion</option>
+                        <option>Daihatsu</option>
+                        <option>Hino</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="add-tags__cancel" type="button" class="btn btn-light" data-dismiss="modal">
+                    Cancel
+                </button>
+                <button id="add-tags__save" type="button" class="btn btn-primary__advert">
+                    Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 </section>
 
 <script>
     var editors = [
-        $("#post-editor__add")[0], $("#post-editor__edit")[0]      
-    ]; 
-    
+        $("#post-editor__add")[0], $("#post-editor__edit")[0]
+    ];
+
     for (var i = 0; i < editors.length; i++) {
         var postEditor = new SimpleMDE({
             status: false,
@@ -470,15 +513,15 @@
     function exitEditorFullscreen() {
         if (postEditor.isFullscreenActive()) {
             postEditor.toggleFullScreen();
-        }       
+        }
     }
-    
+
     function addLocationInputListeners() {
         var inputs = [
             document.getElementById('add-post__pac-input'),
             document.getElementById('edit-post__pac-input')
         ];
-        
+
         for (var i = 0; i < inputs.length; i++) {
             var autocomplete = new google.maps.places.Autocomplete(inputs[i]);
             autocomplete.addListener('place_changed',
@@ -490,8 +533,8 @@
                         window.alert("No details available for input: '" + place.name + "'");
                         return;
                     }
-                }); 
-        }        
+                });
+        }
     }
 
     $(document).ready(function() {
@@ -519,7 +562,7 @@
             function() {
                 postEditor.codemirror.refresh();
             });
-        
+
         $('#edit-post-modal').on('shown.bs.modal',
             function() {
                 postEditor.codemirror.refresh();

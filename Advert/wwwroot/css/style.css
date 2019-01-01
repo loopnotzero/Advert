@@ -1344,7 +1344,6 @@ select.form-control {
 
 .card-user__time {
   color: #9c9c9c;
-  margin-top: 0.1rem;
   line-height: 100%;
 }
 
@@ -1453,6 +1452,26 @@ time {
 
 .time:before {
   content: "·";
+}
+
+.post-header__time {
+  color: #9c9c9c;
+  font-size: 0.9rem;
+}
+
+.post-header__time:after {
+  content: "·";
+  padding-left: 5px;
+}
+
+.post-header__tags {
+  padding-left: 5px;
+  color: #9c9c9c;
+  font-size: 0.9rem;
+}
+
+.post-header__icon {
+  margin-right: 5px;
 }
 
 .reply {

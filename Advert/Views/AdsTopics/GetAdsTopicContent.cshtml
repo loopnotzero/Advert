@@ -51,10 +51,10 @@
                                 }
                                 <div class="media-body media__img content__break">
                                     <div class="col-auto">
-                                        <small class="font-weight-bold">
+                                        <span class="font-weight-bold" style="font-size: 0.8rem">
                                             <a href="/Profile/@comment.ProfileName">@comment.ProfileName</a>
-                                        </small>
-                                        <small class="time"> @comment.CreatedAt</small>
+                                        </span>
+                                        <span class="time" style="font-size: 0.8rem"> @comment.CreatedAt</span>
                                     </div>
                                     <div class="col-auto media__border">
                                         <div class="media__comment">
@@ -84,10 +84,10 @@
                                                 }
                                                 <div class="media-body media__img content__break">
                                                     <div class="col-auto">
-                                                        <small class="font-weight-bold">
+                                                        <span class="font-weight-bold" style="font-size: 0.8rem">
                                                             <a href="/Profile/@reply.ProfileName">@reply.ProfileName</a>
-                                                        </small>
-                                                        <small class="time"> @reply.CreatedAt</small>
+                                                        </span>
+                                                        <span class="time" style="font-size: 0.8rem"> @reply.CreatedAt</span>
                                                     </div>
                                                     <div class="col-auto media__border">
                                                         <div class="media__comment">
@@ -194,10 +194,10 @@
                     }" width="48" height="48" alt="profile-image">
                     <div class="media-body media__img content__break">
                         <div class="col-auto">
-                            <small class="font-weight-bold">
+                            <span class="font-weight-bold" style="font-size: 0.8rem">
                                 <a href="/Profile/${response.profileName}">${response.profileName}</a>
-                            </small>
-                            <small class="time"> ${response.createdAt}</small>  
+                            </span>
+                            <span class="time" style="font-size: 0.8rem"> ${response.createdAt}</span>  
                         </div>                        
                         <div class="col-auto media__border">
                             <div class="media__comment">
@@ -240,14 +240,13 @@
             success: function(response) {
                 $("#ads-comments").prepend(`
                 <div id="${response.commentId}" class="media p-2">
-                    <img class="card-user__img" src="${response.profileImagePath
-                    }" width="48" height="48" alt="profile-image">
+                    <img class="card-user__img" src="${response.profileImagePath}" width="48" height="48" alt="profile-image">
                     <div class="media-body media__img content__break">
                         <div class="col-auto">
-                            <small class="font-weight-bold">
+                            <span class="font-weight-bold" style="font-size: 0.8rem">
                                 <a href="/Profile/${response.profileName}">${response.profileName}</a>
-                            </small>
-                            <small class="time"> ${response.createdAt}</small>         
+                            </span>
+                            <span class="time"> ${response.createdAt}</span>         
                         </div>                        
                         <div class="col-auto media__border">
                             <div class="media__comment">

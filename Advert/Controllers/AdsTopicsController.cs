@@ -41,6 +41,7 @@ namespace Advert.Controllers
         private readonly AdsTopicCommentsVotesManager<MongoDbAdsTopicCommentVote> _adsTopicCommentsVotesManager;
         private readonly AdsTopicCommentsVotesAggregationManager<MongoDbAdsTopicCommentVote, MongoDbAdsTopicCommentVoteAggregation> _adsTopicCommentsVotesAggregationManager;
         
+        private const string FreePrice = "FREE";
         private const string NoProfileImage = "/images/no_image.png";
 
         public AdsTopicsController(ILoggerFactory loggerFactory,
@@ -142,9 +143,9 @@ namespace Advert.Controllers
                         ProfileImagePath = adsTopic.ProfileImagePath ?? NoProfileImage,
                         Text = adsTopic.Text.Length > 1000 ? adsTopic.Text.Substring(0, 1000) + "..." : adsTopic.Text,
                         Title = adsTopic.Title,
-                        Price = adsTopic.Price.ToString(),
-                        Location = adsTopic.Location,
+                        Price = adsTopic.Price,
                         Currency = adsTopic.Currency,
+                        Location = adsTopic.Location,
                         LikesCount = ((double) adsTopic.LikesCount).ToMetric(),
                         SharesCount = ((double) 0).ToMetric(),
                         ViewsCount = ((double) adsTopic.ViewsCount).ToMetric(),
@@ -295,9 +296,8 @@ namespace Advert.Controllers
                             ProfileImagePath = adsTopic.ProfileImagePath ?? NoProfileImage,
                             Text = adsTopic.Text,
                             Title = adsTopic.Title,
-                            Price = adsTopic.Price.ToString(),
+                            Price = adsTopic.Price,
                             Location = adsTopic.Location,
-                            Currency = adsTopic.Currency,
                             LikesCount = ((double) adsTopic.LikesCount).ToMetric(),
                             SharesCount = ((double)0).ToMetric(),
                             ViewsCount = ((double) adsTopic.ViewsCount).ToMetric(),
@@ -408,7 +408,7 @@ namespace Advert.Controllers
                 var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
 
                 var adsTopic = await _adsTopicsManager.FindAdsTopicByIdAsync(ObjectId.Parse(adsId));
-                
+  
                 return Ok(new AdsTopicViewModel
                 {
                     AdsId = adsTopic.Id.ToString(),
@@ -416,9 +416,9 @@ namespace Advert.Controllers
                     ProfileImagePath = adsTopic.ProfileImagePath ?? NoProfileImage,
                     Text = adsTopic.Text,
                     Title = adsTopic.Title,
-                    Price = adsTopic.Price.ToString(),
-                    Location = adsTopic.Location,
+                    Price = adsTopic.Price,
                     Currency = adsTopic.Currency,
+                    Location = adsTopic.Location,
                     LikesCount = ((double) adsTopic.LikesCount).ToMetric(),
                     SharesCount = ((double) 0).ToMetric(),
                     ViewsCount = ((double) adsTopic.ViewsCount).ToMetric(),
