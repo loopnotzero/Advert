@@ -71,18 +71,6 @@ namespace Advert.Controllers
 
         [HttpGet]
         [Authorize]
-        [Route("/Topics/ComposeAdsTopic")]
-        public IActionResult ComposeAdsTopic()
-        {          
-            
-            return View(new ApiServiceModel
-            {
-                ApiKey = _configuration.GetSection("GoogleOptions").GetValue<string>("ApiKey")
-            });
-        }
-
-        [HttpGet]
-        [Authorize]
         public async Task<IActionResult> GetAdsTopics([FromQuery(Name = "page")] int page = 1, [FromQuery(Name = "keyword")] string keyword = null)
         {
             try

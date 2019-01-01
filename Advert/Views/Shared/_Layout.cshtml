@@ -43,12 +43,6 @@
         });
 
     $(document).ready(function() {
-        $("#compose-ads").click(function(e) {
-            e.preventDefault();
-            window.location.href = "/Topics/ComposeAdsTopic";
-            return false;
-        });
-
         var body = $('body');
 
         body.on('focus',
@@ -70,7 +64,6 @@
                 e.preventDefault();
                 var $this = $(this);
                 var action = $this.data('ma-action');
-                var target = '';
                 switch (action) {
                 case 'search-open':
                     $('.search').addClass('search--toggled');

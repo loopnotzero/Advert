@@ -1,29 +1,26 @@
-#dropzone {
-  //margin-bottom: 3rem; 
-}
-
 .dropzone {
-  border: 2px dashed $advert;
+  border: 2px dashed #dddfe2;
   border-radius: 5px;
-  background: white; 
+  background: white;
+  padding: 0;
 }
 
 .dropzone .dz-preview .dz-image {
   border-radius: 20px;
   overflow: hidden;
-  width: 120px;
-  height: 120px;
   position: relative;
   display: block;
   z-index: 0;
 }
 
 .dropzone .dz-message {
-  font-weight: 400; 
+  font-weight: 400;
+  text-align: center;
+  margin: 3.7em 0;
 }
 
 .dropzone .dz-message .note {
-  font-size: 0.8em;
+  font-size: 0.9em;
   font-weight: 200;
   display: block;
   margin-top: 1.4rem; 

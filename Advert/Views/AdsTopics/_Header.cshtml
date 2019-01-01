@@ -19,8 +19,8 @@
                 <i class="zmdi zmdi-search"></i>
             </a>
         </li>
-        <li class="dropdown">
-            <a id="compose-ads" href="#" class="waves-effect" data-toggle="dropdown" aria-expanded="false">
+        <li class="dropdown" onclick="onAddPostClick()">
+            <a href="" title="" aria-expanded="false" data-placement="top" data-target="#add-post-modal" data-toggle="modal">
                 <i class="zmdi zmdi-edit zmdi-hc-lg"></i>
             </a>
         </li>
@@ -34,17 +34,16 @@
                 <a href="#" class="dropdown-item">Settings</a>
                 <a id="sign__out" href="#" class="dropdown-item">Log Out</a>
             </div>
-        </li>            
+        </li>
     </ul>
 </header>
 
-<script>
-    $(document).ready(function(){
-        $( ".search" ).submit(function( event ) {
+<script>    
+    $(document).ready(function() {
+        $(".search").submit(function(event) {
             event.preventDefault();
             window.location.replace(window.location.href + "?page=1&keyword=" + $(".search__text").val());
-
-        });   
+        });
         
         $("#sign__out").click(function(e) {
             e.preventDefault();
@@ -63,5 +62,5 @@
             });
             return false;
         });
-    }); 
+    });
 </script>
