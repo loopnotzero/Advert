@@ -54,9 +54,18 @@
                                         <div style="display: flex">
                                             <div class="post-header__time">@post.CreatedAt</div>
                                             <div class="post-header__tags">
-                                                <a href="" title="" data-placement="top" data-target="#edit-tags__modal" data-toggle="modal" onclick="onEditPostTagsClick()">
-                                                    <i class="zmdi zmdi-tag-more zmdi-hc-fw post-header__icon"></i>Edit tags
-                                                </a>
+                                                @if (post.Tags == null || post.Tags.Count == 0)
+                                                {
+                                                    <a href="" title="" data-placement="top" data-target="#edit-tags__modal--@post.PostId" data-toggle="modal" onclick="onEditPostTagsClick('@post.PostId')">
+                                                        <i class="zmdi zmdi-tag-more zmdi-hc-fw post-header__icon"></i>Edit tags
+                                                    </a>
+                                                }
+                                                else
+                                                {
+                                                    <a href="" title="" data-placement="top" data-target="#edit-tags__modal--@post.PostId" data-toggle="modal" onclick="onEditPostTagsClick('@post.PostId')">
+                                                        <i class="zmdi zmdi-tag-more zmdi-hc-fw post-header__icon"></i>Edit tags
+                                                    </a>
+                                                }
                                             </div>
                                         </div>
                                     </div>
@@ -128,7 +137,8 @@
                             </small>
                         </div>
                     </div>
-                    <div style="border-bottom: 1px solid #d5d5d5;"></div>
+                    <div style="border-bottom: 1px solid #d5d5d5;"></div>                  
+                    @await Html.PartialAsync("EditPostTagsModal", post)
                 </article>
             }
         </div>
@@ -213,23 +223,252 @@
     </div>
 </div>
 </div>
-
 @await Html.PartialAsync("AddPostModal")
 @await Html.PartialAsync("EditPostModal")
 @await Html.PartialAsync("DeletePostModal")
-@await Html.PartialAsync("EditTagsModal")
-
 </section>
 
 <script>
-    var postEditor = new SimpleMDE({
-        status: false,
-        element: "#post-editor__edit--post",
-        placeholder: "Write something...",
-        fullScreen: false,
-        withPreview: false,
-        spellChecker: false
-    });
+    var turndown = new TurndownService();
+
+    var postEditor = [
+        new SimpleMDE({
+            status: false,
+            element: $("#post-editor__add--post")[0],
+            placeholder: "Write something...",
+            fullScreen: false,
+            withPreview: false,
+            spellChecker: false
+        }),
+        new SimpleMDE({
+            status: false,
+            element: $("#post-editor__edit--post")[0],
+            placeholder: "Write something...",
+            fullScreen: false,
+            withPreview: false,
+            spellChecker: false
+        })
+    ];
+    
+    //Fix for empty postEditor until it has no focus
+    $('#add-post__modal').on('shown.bs.modal',
+        function() {
+            postEditor[0].codemirror.refresh();
+        });
+    
+    //Fix for side by side & fullscreen
+    postEditor[0].codemirror.on('refresh',
+        function() {
+            if (postEditor[0].isFullscreenActive()) {
+                $('body').addClass('simplemde-fullscreen');
+            } else {
+                $('body').removeClass('simplemde-fullscreen');
+            }
+        });
+        
+    $('#edit-post__modal').on('shown.bs.modal',
+        function() {
+            postEditor[1].codemirror.refresh();
+        });
+    
+    postEditor[1].codemirror.on('refresh',
+        function() {
+            if (postEditor[1].isFullscreenActive()) {
+                $('body').addClass('simplemde-fullscreen');
+            } else {
+                $('body').removeClass('simplemde-fullscreen');
+            }
+        });
+
+    function exitFullscreen(index) {
+        if (postEditor[index].isFullscreenActive()) {
+            postEditor[index].toggleFullScreen();
+        }
+    }
+
+    function onAddPostClick() {
+        exitFullscreen(1);
+        $("#add-post__post").click(function() {
+            var post = JSON.stringify({
+                text: postEditor[0].options.previewRender(postEditor[0].value()),
+                title: $("#add-post__title").val(),
+                price: $("#add-post__price").val(),
+                location: $("#add-post__pac-input").val(),
+                currency: $('#add-post__currency :selected').text()
+            });
+            $.ajax({
+                url: "/Posts/CreatePostAsync",
+                type: "POST",
+                data: post,
+                contentType: "application/json",
+                error: function() {
+                    console.log("jqXhr: " + jqXhr);
+                    console.log("textStatus: " + textStatus);
+                    console.log("errorThrown: " + errorThrown);
+                },
+                success: function(response) {
+                    $("#add-post__modal").modal('toggle');
+                    window.location.replace(response.returnUrl);
+                }
+            });
+        });
+    }
+
+    function onEditPostClick(postId) {
+        exitFullscreen(0);
+        $.ajax({
+            url: `/Posts/GetPostByIdAsync/${postId}`,
+            type: "GET",
+            contentType: "application/json",
+            error: function(jqXhr, textStatus, errorThrown) {
+                console.log("jqXhr: " + jqXhr);
+                console.log("textStatus: " + textStatus);
+                console.log("errorThrown: " + errorThrown);
+            },
+            success: function(response) {
+                $("#edit-post__title").val(response.title);
+                $("#edit-post__price").val(response.price);
+                $("#edit-post__pac-input").val(response.location);
+                $('#edit-post__currency').val(response.currency).trigger('change');
+                postEditor[1].value(turndown.turndown(response.text));
+            }
+        });
+        $("#edit-post__save").click(function() {
+            onSavePostChangesClick(postId);
+        });
+    }
+
+    function onSavePostChangesClick(postId) {
+        var post = JSON.stringify({
+            text: postEditor[1].options.previewRender(postEditor[1].value()),
+            title: $("#edit-post__title").val(),
+            price: $("#edit-post__price").val(),
+            location: $("#edit-post__pac-input").val(),
+            currency: $('#edit-post__currency :selected').text()
+        });
+        $.ajax({
+            url: `/Posts/UpdatePostByIdAsync/${postId}`,
+            type: "POST",
+            data: post,
+            contentType: "application/json",
+            error: function() {
+                console.log("jqXhr: " + jqXhr);
+                console.log("textStatus: " + textStatus);
+                console.log("errorThrown: " + errorThrown);
+            },
+            success: function(response) {
+                $("#edit-post__modal").modal('toggle');
+                window.location.replace(response.returnUrl);
+            }
+        });
+    }
+
+    function onDeletePostClick(postId) {
+        $("#delete-post__delete").click(function() {
+            $.ajax({
+                url: `/Posts/DeletePostByIdAsync/${postId}`,
+                type: "DELETE",
+                contentType: "application/json",
+                error: function() {
+                    console.log("jqXhr: " + jqXhr);
+                    console.log("textStatus: " + textStatus);
+                    console.log("errorThrown: " + errorThrown);
+                },
+                success: function(response) {
+                    $("#delete-post__modal").modal('toggle');
+                    window.location.replace(response.returnUrl);
+                }
+            });
+        });
+    }
+
+    function onEditPostTagsClick(postId) {
+        exitFullscreen(0);
+        exitFullscreen(1)
+        
+        $(`#edit-tags__select--${postId}`).select2({
+            tags: true,
+            width: "100%",
+            placeholder: "Choose up to 5 tags to describe this post.",
+            tokenSeparators: [',', ' '],
+            maximumSelectionLength: 5,
+        });
+        
+        console.log(`GetPostTagsByPostIdAsync: ${postId}`)
+        
+        $.ajax({
+            url: `/Posts/GetPostTagsByPostIdAsync/${postId}`,
+            type: "GET",
+            contentType: "application/json",
+            error: function(jqXhr, textStatus, errorThrown) {
+                console.log("jqXhr: " + jqXhr);
+                console.log("textStatus: " + textStatus);
+                console.log("errorThrown: " + errorThrown);
+            },
+            success: function(response) {    
+                if (response.tags.length > 0) {
+                    var editTags = $(`#edit-tags__select--${postId}`);
+                    editTags.val([]).trigger("change");                 
+                    for (var i = 0; i < response.tags.length; i++) {
+                        var option = new Option(response.tags[i], i, true, true);
+                        editTags.append(option).trigger('change');
+                    }
+                }
+            }
+        });
+        
+        $(`#edit-tags__save--${postId}`).click(function() {     
+            var tags = $(`#edit-tags__select--${postId}`).val()           
+            
+            var postTags = {
+                tags: tags
+            };
+            
+            console.log(`CreatePostTagsByPostIdAsync: ${postId}`)
+            
+            $.ajax({
+                url: `/Posts/CreatePostTagsByPostIdAsync/${postId}`,
+                type: "POST",
+                data: JSON.stringify(postTags),
+                contentType: "application/json",
+                error: function(jqXhr, textStatus, errorThrown) {
+                    console.log("jqXhr: " + jqXhr);
+                    console.log("textStatus: " + textStatus);
+                    console.log("errorThrown: " + errorThrown);
+                },
+                success: function(response) {                   
+                    $(`#edit-tags__modal--${postId}`).modal('toggle');
+                }
+            });          
+        });
+    }
+
+    function onVotePostClick(postId, voteType) {
+        var vote = {
+            postId: postId,
+            voteType: voteType
+        }
+        $.ajax({
+            url: "/Posts/CreatePostVoteAsync",
+            type: "POST",
+            data: JSON.stringify(vote),
+            contentType: "application/json",
+            error: function(jqXhr, textStatus, errorThrown) {
+                console.log("jqXhr: " + jqXhr);
+                console.log("textStatus: " + textStatus);
+                console.log("errorThrown: " + errorThrown);
+            },
+            success: function(response) {
+                switch (response.voteType) {
+                case 1:
+                    {
+                        $(`#${postId} small[id=votes-count]`).text(response.votesCount);
+                    }
+                    break;
+                }
+            }
+        });
+    }
     
     function addInputListeners() {
         var inputs = [
@@ -252,173 +491,6 @@
     }
 
     $(document).ready(function() {
-        
-
-//        var writeEditor = new SimpleMDE({
-//            status: false,
-//            element: "#post-editor__write--post",
-//            placeholder: "Write something...",
-//            fullScreen: false,
-//            withPreview: false,
-//            spellChecker: false
-//        });
-
-        var turndown = new TurndownService();
-
-        function onAddPostClick() {
-            exitPostEditorFullScreen();
-            $("#add-post__post").click(function() {
-                var post = JSON.stringify({
-//                    text: writeEditor.options.previewRender(writeEditor.value()),
-                    title: $("#add-post__title").val(),
-                    price: $("#add-post__price").val(),
-                    location: $("#add-post__pac-input").val(),
-                    currency: $('#add-post__currency :selected').text()
-                });
-                $.ajax({
-                    url: "/Posts/CreatePostAsync",
-                    type: "POST",
-                    data: post,
-                    contentType: "application/json",
-                    error: function() {
-                        console.log("jqXhr: " + jqXhr);
-                        console.log("textStatus: " + textStatus);
-                        console.log("errorThrown: " + errorThrown);
-                    },
-                    success: function(response) {
-                        $("#add-post__modal").modal('toggle');
-                        window.location.replace(response.returnUrl);
-                    }
-                });
-            });
-        }
-
-        function onEditPostClick(postId) {
-            exitPostEditorFullScreen();
-            $.ajax({
-                url: `/Posts/GetPostByIdAsync/${postId}`,
-                type: "GET",
-                contentType: "application/json",
-                error: function(jqXhr, textStatus, errorThrown) {
-                    console.log("jqXhr: " + jqXhr);
-                    console.log("textStatus: " + textStatus);
-                    console.log("errorThrown: " + errorThrown);
-                },
-                success: function(response) {
-                    $("#edit-post__title").val(response.title);
-                    $("#edit-post__price").val(response.price);
-                    $("#edit-post__pac-input").val(response.location);
-                    $('#edit-post__currency').val(response.currency).trigger('change');
-                    postEditor.value(turndown.turndown(response.text));
-                }
-            });
-            $("#edit-post__save").click(function() {
-                onSavePostChangesClick(postId);
-            });
-        }
-
-        function onDeletePostClick(postId) {
-            $("#delete-post__delete").click(function() {
-                $.ajax({
-                    url: `/Posts/DeletePostByIdAsync/${postId}`,
-                    type: "DELETE",
-                    contentType: "application/json",
-                    error: function() {
-                        console.log("jqXhr: " + jqXhr);
-                        console.log("textStatus: " + textStatus);
-                        console.log("errorThrown: " + errorThrown);
-                    },
-                    success: function(response) {
-                        $("#delete-post__modal").modal('toggle');
-                        window.location.replace(response.returnUrl);
-                    }
-                });
-            });
-        }
-
-        function onSavePostChangesClick(postId) {
-            var post = JSON.stringify({
-                text: postEditor.options.previewRender(postEditor.value()),
-                title: $("#edit-post__title").val(),
-                price: $("#edit-post__price").val(),
-                location: $("#edit-post__pac-input").val(),
-                currency: $('#edit-post__currency :selected').text()
-            });
-            $.ajax({
-                url: `/Posts/UpdatePostByIdAsync/${postId}`,
-                type: "POST",
-                data: post,
-                contentType: "application/json",
-                error: function() {
-                    console.log("jqXhr: " + jqXhr);
-                    console.log("textStatus: " + textStatus);
-                    console.log("errorThrown: " + errorThrown);
-                },
-                success: function(response) {
-                    $("#edit-post__modal").modal('toggle');
-                    window.location.replace(response.returnUrl);
-                }
-            });
-        }
-
-        function onEditPostTagsClick() {
-            exitPostEditorFullScreen();
-            $.ajax({
-                url: `/Posts/GetPostTagsByPostIdAsync/${postId}`,
-                type: "GET",
-                contentType: "application/json",
-                error: function(jqXhr, textStatus, errorThrown) {
-                    console.log("jqXhr: " + jqXhr);
-                    console.log("textStatus: " + textStatus);
-                    console.log("errorThrown: " + errorThrown);
-                },
-                success: function(response) {
-                    //todo: Set tags
-                }
-            });
-        }
-
-        function onVotePostClick(postId, voteType) {
-            var vote = {
-                postId: postId,
-                voteType: voteType
-            }
-            $.ajax({
-                url: "/Posts/CreatePostVoteAsync",
-                type: "POST",
-                data: JSON.stringify(vote),
-                contentType: "application/json",
-                error: function(jqXhr, textStatus, errorThrown) {
-                    console.log("jqXhr: " + jqXhr);
-                    console.log("textStatus: " + textStatus);
-                    console.log("errorThrown: " + errorThrown);
-                },
-                success: function(response) {
-                    switch (response.voteType) {
-                    case 1:
-                        {
-                            $(`#${postId} small[id=votes-count]`).text(response.votesCount);
-                        }
-                        break;
-                    }
-                }
-            });
-        }
-
-        function exitPostEditorFullScreen() {
-            if (postEditor.isFullscreenActive()) {
-                postEditor.exitPostEditorFullScreen();
-            }
-        }
-
-        $("#edit-tags").select2({
-            tags: true,
-            width: "100%",
-            placeholder: "Choose up to 5 tags to describe this post.",
-            tokenSeparators: [',', ' '],
-            maximumSelectionLength: 5,
-        });
-
         $("#add-post__currency").select2({
             tags: ["€", "$", "MDL"],
             width: "100%",
@@ -431,28 +503,7 @@
             width: "100%",
             height: "34px",
             minimumResultsForSearch: -1,
-        });
-
-        //Fix for side by side & fullscrenn
-        postEditor.codemirror.on('refresh',
-            function() {
-                if (postEditor.isFullscreenActive()) {
-                    $('body').addClass('simplemde-fullscreen');
-                } else {
-                    $('body').removeClass('simplemde-fullscreen');
-                }
-            });
-
-        //Fix for empty postEditor until it has no focus
-        $('#add-post__modal').on('shown.bs.modal',
-            function() {
-                postEditor.codemirror.refresh();
-            });
-
-        $('#edit-post__modal').on('shown.bs.modal',
-            function() {
-                postEditor.codemirror.refresh();
-            });
+        });         
     });
 </script>
 

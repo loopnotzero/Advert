@@ -8879,9 +8879,11 @@
                     };
 
                     textarea.style.display = "none";
+                    
                     var cm = CodeMirror(function (node) {
                         textarea.parentNode.insertBefore(node, textarea.nextSibling);
                     }, options);
+                    
                     return cm;
                 };
 

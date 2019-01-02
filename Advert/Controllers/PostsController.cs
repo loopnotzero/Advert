@@ -453,28 +453,39 @@ namespace Advert.Controllers
             }
         }
               
-        [HttpPost]
+        
+        [HttpGet]
         [Authorize]
-        [Route("/Posts/UpsertPostTagsByPostIdAsync/{postId}")]
-        public async Task<IActionResult> UpsertPostTagsByPostIdAsync(string postId, [FromBody] PostTagsViewModel viewModel)
+        [Route("/Posts/GetPostTagsByPostIdAsync/{postId}")]
+        public async Task<IActionResult> GetPostTagsByPostIdAsync(string postId)
         {
             try
             {
                 var post = await _postsManager.FindPostByIdAsync(ObjectId.Parse(postId));
-
-                if (post.Tags == null || !post.Tags.Any())
-                {
-                    post.Tags = new List<string>();
-                    post.Tags.AddRange(viewModel.Tags);
-                }
-                else
-                {
-                    post.Tags.Clear();
-                    post.Tags.AddRange(viewModel.Tags);
-                }
                 
-                await _postsManager.UpdatePostAsync(post);
-                             
+                return Ok(new PostTagsViewModel
+                {
+                    Tags = post.Tags ?? new List<string>()
+                });
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
+            }
+        }
+
+        
+        [HttpPost]
+        [Authorize]
+        [Route("/Posts/CreatePostTagsByPostIdAsync/{postId}")]
+        public async Task<IActionResult> CreatePostTagsByPostIdAsync(string postId, [FromBody] PostTagsViewModel viewModel)
+        {
+            try
+            {
+                var post = await _postsManager.FindPostByIdAsync(ObjectId.Parse(postId));
+                post.Tags = viewModel.Tags;           
+                await _postsManager.UpdatePostAsync(post);                           
                 return Ok(new
                 {
                     returnUrl = Url.Action("GetPostContent", "Posts", new {postId = post.Id})

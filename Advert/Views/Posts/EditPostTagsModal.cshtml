@@ -1,4 +1,7 @@
-<div id="edit-tags__modal" class="modal fade" data-backdrop="static" tabindex="-1">
+@using Advert.Models.Post
+@model PostViewModel
+
+<div id="edit-tags__modal--@Model.PostId" class="modal fade" data-backdrop="static" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -11,16 +14,16 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <select id="edit-tags" class="form-control" multiple="multiple">
+                    <select id="edit-tags__select--@Model.PostId" class="form-control" multiple="multiple">
                         <option></option>
                     </select>
                 </div>
             </div>
             <div class="modal-footer">
-                <button id="add-tags__cancel" type="button" class="btn btn-light" data-dismiss="modal">
+                <button type="button" class="btn btn-light" data-dismiss="modal">
                     Cancel
                 </button>
-                <button id="add-tags__save" type="button" class="btn btn-primary__advert">
+                <button id="edit-tags__save--@Model.PostId" type="button" class="btn btn-primary__advert">
                     Save
                 </button>
             </div>
