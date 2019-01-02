@@ -1,7 +1,7 @@
 using System;
 using MongoDB.Bson;
 
-namespace Advert.Common.Profiles
+namespace Advert.Common.Posts
 {
     public interface IProfile
     {

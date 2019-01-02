@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Advert.Common.Profiles;
+using Advert.Common.Posts;
 using Advert.MongoDbStorage.Profiles;
 using Advert.MongoDbStorage.Stores;
 using Microsoft.AspNetCore.Identity;

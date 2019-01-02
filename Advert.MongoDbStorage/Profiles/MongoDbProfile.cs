@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Advert.Common.Profiles;
+using Advert.Common.Posts;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 

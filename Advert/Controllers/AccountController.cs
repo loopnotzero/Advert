@@ -149,7 +149,7 @@ namespace Advert.Controllers
                 return Redirect(returnUrl);
             }
 
-            return RedirectToAction(nameof(AdsTopicsController.GetAdsTopics), "AdsTopics");       
+            return RedirectToAction(nameof(PostsController.GetPosts), "Posts");       
         }
     }
 }

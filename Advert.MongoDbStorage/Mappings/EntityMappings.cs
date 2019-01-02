@@ -1,5 +1,5 @@
 ﻿using System.Threading;
-using Advert.MongoDbStorage.AdsTopics;
+using Advert.MongoDbStorage.Posts;
 using Advert.MongoDbStorage.Profiles;
 using Advert.MongoDbStorage.Users;
 using MongoDB.Bson;
@@ -33,11 +33,11 @@ namespace Advert.MongoDbStorage.Mappings
             });
         }
 
-        public static void EnsureMongoDbAdsTopicConfigured()
+        public static void EnsureMongoDbPostConfigured()
         {
             LazyInitializer.EnsureInitialized(ref _initializationTarget, ref _initialized, ref _initializationLock, () =>
             {
-                ConfigureMongoDbAdsTopic();
+                ConfigureMongoDbPost();
                 return null;
             });
         }
@@ -51,47 +51,47 @@ namespace Advert.MongoDbStorage.Mappings
             });
         }
 
-        public static void EnsureMongoDbAdsTopicVoteConfigured()
+        public static void EnsureMongoDbPostVoteConfigured()
         {
             LazyInitializer.EnsureInitialized(ref _initializationTarget, ref _initialized, ref _initializationLock, () =>
             {
-                ConfigureMongoDbAdsTopicVote();
+                ConfigureMongoDbPostVote();
                 return null;
             });
         }
 
-        public static void EnsureMongoDbAdsTopicViewsConfigured()
+        public static void EnsureMongoDbPostViewsConfigured()
         {
             LazyInitializer.EnsureInitialized(ref _initializationTarget, ref _initialized, ref _initializationLock, () =>
             {
-                ConfigureMongoDbAdsTopicViews();
+                ConfigureMongoDbPostViews();
                 return null;
             });
         }
 
-        public static void EnsureMongoDbAdsTopicCommentConfigured()
+        public static void EnsureMongoDbPostCommentConfigured()
         {
             LazyInitializer.EnsureInitialized(ref _initializationTarget, ref _initialized, ref _initializationLock, () =>
             {
-                ConfigureMongoDbAdsTopicComment();
+                ConfigureMongoDbPostComment();
                 return null;
             });
         }
 
-        public static void EnsureMongoDbAdsTopicCommentVoteConfigured()
+        public static void EnsureMongoDbPostCommentVoteConfigured()
         {
             LazyInitializer.EnsureInitialized(ref _initializationTarget, ref _initialized, ref _initializationLock, () =>
             {
-                ConfigureMongoDbAdsTopicCommentVote();
+                ConfigureMongoDbPostCommentVote();
                 return null;
             });
         }
         
-        public static void EnsureMongoDbAdsTopicCommentsVotesAggregationConfigured()
+        public static void EnsureMongoDbPostCommentsVotesAggregationConfigured()
         {
             LazyInitializer.EnsureInitialized(ref _initializationTarget, ref _initialized, ref _initializationLock, () =>
             {
-                ConfigureMongoDbAdsTopicCommentsVotesAggregation();
+                ConfigureMongoDbPostCommentsVotesAggregation();
                 return null;
             });
         }
@@ -106,13 +106,13 @@ namespace Advert.MongoDbStorage.Mappings
             });
         }
        
-        private static void ConfigureMongoDbAdsTopic()
+        private static void ConfigureMongoDbPost()
         {
-            BsonClassMap.RegisterClassMap<MongoDbAdsTopic>(bsonClassMap =>
+            BsonClassMap.RegisterClassMap<MongoDbPost>(bsonClassMap =>
             {
                 bsonClassMap.AutoMap();
-                bsonClassMap.MapIdMember(adsTopic => adsTopic.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
-                bsonClassMap.MapCreator(adsTopic => new MongoDbAdsTopic());
+                bsonClassMap.MapIdMember(post => post.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
+                bsonClassMap.MapCreator(post => new MongoDbPost());
             });
         }
         
@@ -126,13 +126,13 @@ namespace Advert.MongoDbStorage.Mappings
             });
         }
         
-        private static void ConfigureMongoDbAdsTopicVote()
+        private static void ConfigureMongoDbPostVote()
         {
-            BsonClassMap.RegisterClassMap<MongoDbAdsTopicVote>(bsonClassMap =>
+            BsonClassMap.RegisterClassMap<MongoDbPostVote>(bsonClassMap =>
             {
                 bsonClassMap.AutoMap();
-                bsonClassMap.MapIdMember(adsTopicVote => adsTopicVote.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
-                bsonClassMap.MapCreator(adsTopicVote => new MongoDbAdsTopicVote());
+                bsonClassMap.MapIdMember(postVote => postVote.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
+                bsonClassMap.MapCreator(postVote => new MongoDbPostVote());
             });
         }
 
@@ -146,43 +146,43 @@ namespace Advert.MongoDbStorage.Mappings
             });
         }
 
-        private static void ConfigureMongoDbAdsTopicViews()
+        private static void ConfigureMongoDbPostViews()
         {
-            BsonClassMap.RegisterClassMap<MongoDbAdsTopicViewsCount>(bsonClassMap =>
+            BsonClassMap.RegisterClassMap<MongoDbPostViewsCount>(bsonClassMap =>
             {
                 bsonClassMap.AutoMap();
-                bsonClassMap.MapIdMember(adsTopicViewsCount => adsTopicViewsCount.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
-                bsonClassMap.MapCreator(adsTopicViewsCount => new MongoDbAdsTopicViewsCount());
+                bsonClassMap.MapIdMember(postViewsCount => postViewsCount.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
+                bsonClassMap.MapCreator(postViewsCount => new MongoDbPostViewsCount());
             });
         }
 
-        private static void ConfigureMongoDbAdsTopicComment()
+        private static void ConfigureMongoDbPostComment()
         {
-            BsonClassMap.RegisterClassMap<MongoDbAdsTopicComment>(bsonClassMap =>
+            BsonClassMap.RegisterClassMap<MongoDbPostComment>(bsonClassMap =>
             {
                 bsonClassMap.AutoMap();
-                bsonClassMap.MapIdMember(adsTopicComment => adsTopicComment.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
-                bsonClassMap.MapCreator(adsTopicComment => new MongoDbAdsTopicComment());
+                bsonClassMap.MapIdMember(postComment => postComment.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
+                bsonClassMap.MapCreator(postComment => new MongoDbPostComment());
             });
         }
 
-        private static void ConfigureMongoDbAdsTopicCommentVote()
+        private static void ConfigureMongoDbPostCommentVote()
         {
-            BsonClassMap.RegisterClassMap<MongoDbAdsTopicCommentVote>(bsonClassMap =>
+            BsonClassMap.RegisterClassMap<MongoDbPostCommentVote>(bsonClassMap =>
             {
                 bsonClassMap.AutoMap();
-                bsonClassMap.MapIdMember(adsTopicCommentVote => adsTopicCommentVote.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
-                bsonClassMap.MapCreator(adsTopicCommentVote => new MongoDbAdsTopicCommentVote());
+                bsonClassMap.MapIdMember(postCommentVote => postCommentVote.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
+                bsonClassMap.MapCreator(postCommentVote => new MongoDbPostCommentVote());
             });
         }
         
-        private static void ConfigureMongoDbAdsTopicCommentsVotesAggregation()
+        private static void ConfigureMongoDbPostCommentsVotesAggregation()
         {
-            BsonClassMap.RegisterClassMap<MongoDbAdsTopicCommentVoteAggregation>(bsonClassMap =>
+            BsonClassMap.RegisterClassMap<MongoDbPostCommentVoteAggregation>(bsonClassMap =>
             {
                 bsonClassMap.AutoMap();
-                bsonClassMap.MapIdMember(adsTopicCommentVoteAggregation => adsTopicCommentVoteAggregation.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
-                bsonClassMap.MapCreator(adsTopicCommentVoteAggregation => new MongoDbAdsTopicCommentVoteAggregation());
+                bsonClassMap.MapIdMember(postCommentVoteAggregation => postCommentVoteAggregation.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
+                bsonClassMap.MapCreator(postCommentVoteAggregation => new MongoDbPostCommentVoteAggregation());
             });
         }
     }

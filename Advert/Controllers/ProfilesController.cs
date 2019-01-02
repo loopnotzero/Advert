@@ -4,7 +4,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Advert.Managers;
 using Advert.Models.Profiles;
-using Advert.MongoDbStorage.AdsTopics;
+using Advert.MongoDbStorage.Posts;
 using Advert.MongoDbStorage.Profiles;
 using Humanizer;
 using Microsoft.AspNetCore.Hosting;
@@ -22,21 +22,21 @@ namespace Advert.Controllers
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly ProfilesManager<MongoDbProfile> _profilesManager;
         private readonly ProfilesImagesManager<MongoDbProfileImage> _profilesImagesManager;
-        private readonly AdsTopicsManager<MongoDbAdsTopic> _adsTopicsManager;
-        private readonly AdsTopicCommentsManager<MongoDbAdsTopicComment> _adsTopicCommentsManager;
+        private readonly PostsManager<MongoDbPost> _postsManager;
+        private readonly PostCommentsManager<MongoDbPostComment> _postCommentsManager;
 
         public ProfilesController(ILoggerFactory loggerFactory, ILookupNormalizer keyNormalizer,
             IHostingEnvironment hostingEnvironment, ProfilesManager<MongoDbProfile> profilesManager,
             ProfilesImagesManager<MongoDbProfileImage> profilesImagesManager,
-            AdsTopicsManager<MongoDbAdsTopic> adsTopicsManager,
-            AdsTopicCommentsManager<MongoDbAdsTopicComment> adsTopicCommentsManager)
+            PostsManager<MongoDbPost> postsManager,
+            PostCommentsManager<MongoDbPostComment> postCommentsManager)
         {
             _logger = loggerFactory.CreateLogger<ProfilesController>();
             _hostingEnvironment = hostingEnvironment;
             _profilesManager = profilesManager;
             _profilesImagesManager = profilesImagesManager;
-            _adsTopicsManager = adsTopicsManager;
-            _adsTopicCommentsManager = adsTopicCommentsManager;
+            _postsManager = postsManager;
+            _postCommentsManager = postCommentsManager;
         }
 
         [HttpGet]
@@ -52,7 +52,7 @@ namespace Advert.Controllers
                     Id = profile.Id.ToString(),
                     Name = profile.Name,
                     ImagePath = profile.ImagePath,
-                    AdsTopicsCount = ((double) 0).ToMetric(),
+                    PostsCount = ((double) 0).ToMetric(),
                 });
             }
             catch (Exception e)
@@ -75,7 +75,7 @@ namespace Advert.Controllers
                     Id = profile.Id.ToString(),
                     Name = profile.Name,
                     ImagePath = profile.ImagePath,
-                    AdsTopicsCount = ((double) 0).ToMetric(),
+                    PostsCount = ((double) 0).ToMetric(),
                 });
             }
             catch (Exception e)
@@ -128,36 +128,36 @@ namespace Advert.Controllers
 
                 await _profilesManager.UpdateProfileAsync(profile);
 
-                foreach (var adsTopic in await _adsTopicsManager.FindAdsTopicsAsync(null))
+                foreach (var post in await _postsManager.FindPostsAsync(null))
                 {
-                    var adsTopicComments =
-                        await _adsTopicCommentsManager.FindAdsTopicCommentsByProfileIdAsync(adsTopic.Id.ToString(),
-                            adsTopic.ProfileId);
+                    var postComments =
+                        await _postCommentsManager.FindPostCommentsByProfileIdAsync(post.Id.ToString(),
+                            post.ProfileId);
 
-                    foreach (var adsTopicComment in adsTopicComments)
+                    foreach (var postComment in postComments)
                     {
                         // ReSharper disable once InvertIf
-                        if (adsTopicComment.ProfileId.Equals(profile.Id))
+                        if (postComment.ProfileId.Equals(profile.Id))
                         {                   
-                            if (adsTopicComment.ProfileImagePath == null || !adsTopicComment.Equals(profile.ImagePath))
+                            if (postComment.ProfileImagePath == null || !postComment.Equals(profile.ImagePath))
                             {
-                                adsTopicComment.ProfileImagePath = profile.ImagePath;
-                                await _adsTopicCommentsManager.UpdateAdsTopicCommentByIdAsync(adsTopicComment.AdsId.ToString(), adsTopicComment.Id, adsTopicComment);
+                                postComment.ProfileImagePath = profile.ImagePath;
+                                await _postCommentsManager.UpdatePostCommentByIdAsync(postComment.PostId.ToString(), postComment.Id, postComment);
                             }
                         }
                     }
                 }
 
-                foreach (var adsTopic in await _adsTopicsManager.FindAdsTopicsByProfileIdAsync(profile.Id))
+                foreach (var post in await _postsManager.FindPostsByProfileIdAsync(profile.Id))
                 {
-                    if (adsTopic.ProfileImagePath == null || !adsTopic.ProfileImagePath.Equals(profile.ImagePath))
+                    if (post.ProfileImagePath == null || !post.ProfileImagePath.Equals(profile.ImagePath))
                     {
-                        adsTopic.ProfileImagePath = profile.ImagePath;
-                        await _adsTopicsManager.UpdateAdsTopicAsync(adsTopic);
+                        post.ProfileImagePath = profile.ImagePath;
+                        await _postsManager.UpdatePostAsync(post);
                     }
                 }
 
-                return RedirectToAction("GetAdsTopics", "AdsTopics");
+                return RedirectToAction("GetPosts", "Posts");
             }
             catch (Exception e)
             {

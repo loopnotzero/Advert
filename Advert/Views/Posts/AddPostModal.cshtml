@@ -1,0 +1,51 @@
+<div id="add-post__modal" class="modal fade" data-backdrop="static" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="font-weight-bold">Add post</span>
+                <button type="button" class="btn btn-link" data-dismiss="modal">
+                    <span>
+                        <i class="zmdi zmdi-close zmdi-hc-fw"></i>
+                    </span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <input id="add-post__title" type="text" class="form-control" maxlength="100" placeholder="What are you selling?" autocomplete="off">
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-3">
+                        <input id="add-post__price" type="text" class="form-control" placeholder="Price" autocomplete="off">
+                    </div>
+                    <div class="form-group col-md-3">
+                        <select id="add-post__currency">
+                        </select>
+                    </div>      
+                </div>
+
+                <div class="form-group">
+                    <input id="add-post__pac-input" type="text" class="form-control" placeholder="Enter a location (optional)" autocomplete="off">
+                </div>
+
+                <div class="form-group">
+                    <textarea id="post-editor__write--post" style="display: none"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <div id="dropzone">
+                        <form asp-controller="Posts" asp-action="AddPostPhotos" class="dropzone needsclick dz-clickable" id="demo-upload">
+                            <div class="dz-message needsclick">
+                                <img src="~/images/add__photos.png"/>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="add-post__post" type="button" class="btn btn-primary__advert">
+                    Post
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

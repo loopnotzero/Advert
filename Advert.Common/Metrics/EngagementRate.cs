@@ -7,9 +7,9 @@
             return likesCount / viewsCount;
         } 
           
-        public static double ComputeDiscussionRate(double commentsCount, double adsCount)
+        public static double ComputeDiscussionRate(double commentsCount, double postsCount)
         {
-            return commentsCount / adsCount;
+            return commentsCount / postsCount;
         }
 
         public static double ComputeEngagementRate(double likesCount, double sharesCount, double commentsCount, double viewsCount)
@@ -36,9 +36,9 @@
             return shares / viewsCount;
         }
 
-        public static double ComputeAverageViewsCount(double likesCount, double adsCount)
+        public static double ComputeAverageViewsCount(double likesCount, double postsCount)
         {
-            return likesCount / adsCount;
+            return likesCount / postsCount;
         }       
     }
 }
