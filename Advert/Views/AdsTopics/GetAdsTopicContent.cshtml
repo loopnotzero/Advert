@@ -9,325 +9,185 @@
 </style>
 
 <section id="@Model.AdsTopics.First().AdsId" name="ads" class="content">
-<div class="row">
-    <div class="col-md-8 p-2">
-        <div class="card">
-            <div class="row">
-                <div class="col-sm-6">
-                    <div class="card-user">
-                        <div class="card-user__info">
-                            <a href="/Profiles/5c27ea98eb64801aec9f3e5b">
-                                <img src="/images/profiles/5c27ea98eb64801aec9f3e5b/0.jpeg" class="card-user__img" alt="">
-                            </a>
-                            <div>
-                                <a href="/Profile/@Model.AdsTopics.First().ProfileId">
-                                    <div class="card-user__name">@Model.AdsTopics.First().ProfileName</div>
+    <div class="row">
+        <div class="col-md-8 p-2">
+            <div class="card">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="card-user">
+                            <div class="card-user__info">
+                                <a href="/Profiles/5c27ea98eb64801aec9f3e5b">
+                                    <img src="/images/profiles/5c27ea98eb64801aec9f3e5b/0.jpeg" class="card-user__img" alt="">
                                 </a>
-                                <div style="display: flex">
-                                    <div class="post-header__time">@Model.AdsTopics.First().CreatedAt.Humanize()</div>
-                                    <div class="post-header__tags">
-                                        <a href="" title="" data-placement="top" data-target="#edit-tags__modal" data-toggle="modal">
-                                            <i class="zmdi zmdi-tag-more zmdi-hc-fw post-header__icon"></i>Edit tags
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-6">
-                    <div style="text-align: right; padding-top: 1rem; padding-right: 1rem">
-                        <ul class="list-inline">
-                            <li class="list-inline-item" onclick="onEditPostClick('@Model.AdsTopics.First().AdsId')">
-                                <a href="" title="" data-placement="top" data-target="#edit-post__modal" data-toggle="modal">
-                                    <i class="zmdi zmdi-edit zmdi-hc-fw"></i>
-                                </a>
-                            </li>
-                            <li class="list-inline-item" onclick="onDeletePostClick('@Model.AdsTopics.First().AdsId')">
-                                <a href="" title="" data-placement="top" data-target="#delete-post__modal" data-toggle="modal">
-                                    <i class="zmdi zmdi-delete zmdi-hc-fw"></i>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card-body card-body__img">
-                <h4>@Model.AdsTopics.First().Title</h4>
-                <p>
-                    @if (@Model.AdsTopics.First().Price > 0)
-                    {
-                        <span style="font-size: 0.9rem; color: #71a830">@Model.AdsTopics.First().Price@Model.AdsTopics.First().Currency</span>
-                    }
-                    else
-                    {
-                        <span style="font-size: 0.9rem; color: #71a830">FREE</span>
-                    }
-                </p>
-                <p>
-                    @if (@Model.AdsTopics.First().Location != null)
-                    {
-                        <i class="zmdi zmdi-pin zmdi-hc-fw"></i>
-                        <span style="font-size: 0.9rem; color: #90949c">@Model.AdsTopics.First().Location</span>
-                    }
-                </p>
-                <p class="card-text">@Html.Raw(Model.AdsTopics.First().Text)</p>
-            </div>
-
-            <div style="border-bottom: 1px solid #e3e3e3; padding-left: 20px; padding-bottom: 20px">
-                <h4>
-                    <span id="comments-count">@Model.AdsTopics.First().CommentsCount</span> Comments
-                </h4>
-            </div>
-
-            <div id="comment-form" class="p-4">
-                <textarea id="comment-editor" style="display: none"></textarea>
-                <div class="row mt-3">
-                    <div class="col-12">
-                        <button id="add-comment" class="btn btn-light waves-effect waves-light btn-sm">COMMENT</button>
-                    </div>
-                </div>
-            </div>
-
-            <div id="ads-comments" class="container-fluid">
-                @if (Model.AdsTopicComments != null && Model.AdsTopicComments.Any())
-                {
-                    foreach (var comment in Model.AdsTopicComments)
-                    {
-                        <div id="@comment.CommentId" class="media p-2">
-                            @if (!string.IsNullOrEmpty(comment.ProfileImagePath))
-                            {
-                                <img class="card-user__img" src="@comment.ProfileImagePath" width="48" height="48" alt="profile-image">
-                            }
-                            else
-                            {
-                                <img class="card-user__img" src="/images/no_image.png" width="48" height="48" alt="profile-image">
-                            }
-                            <div class="media-body media__img content__break">
-                                <div class="col-auto">
-                                    <span class="font-weight-bold" style="font-size: 0.8rem">
-                                        <a href="/Profile/@comment.ProfileName">@comment.ProfileName</a>
-                                    </span>
-                                    <span class="time" style="font-size: 0.8rem"> @comment.CreatedAt</span>
-                                </div>
-                                <div class="col-auto media__border">
-                                    <div class="media__comment">
-                                        <h7>@Html.Raw(comment.Text)</h7>
-                                    </div>
-                                </div>
-                                <div class="col-auto">
-                                    <div class="r-btn r-btn-light r-btn--icon" onclick="onCommentVoteClick('@comment.CommentId', 1)">
-                                        <i class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
-                                    </div>
-                                    <span name="votes-count">@comment.VotesCount</span>
-                                    <span class="reply"></span> <a href="#reply" onclick="showReplyForm(null, '@comment.CommentId')">Reply</a>
-                                </div>
-                                <div id="reply-placeholder"></div>
-                                @if (comment.Comments != null)
-                                {
-                                    foreach (var reply in comment.Comments)
-                                    {
-                                        <div id="@reply.CommentId" class="media p-2">
-                                            @if (!string.IsNullOrEmpty(reply.ProfileImagePath))
-                                            {
-                                                <img class="card-user__img" src="@reply.ProfileImagePath" width="48" height="48" alt="profile-image">
-                                            }
-                                            else
-                                            {
-                                                <img class="card-user__img" src="/images/no_image.png" width="48" height="48" alt="profile-image">
-                                            }
-                                            <div class="media-body media__img content__break">
-                                                <div class="col-auto">
-                                                    <span class="font-weight-bold" style="font-size: 0.8rem">
-                                                        <a href="/Profile/@reply.ProfileName">@reply.ProfileName</a>
-                                                    </span>
-                                                    <span class="time" style="font-size: 0.8rem"> @reply.CreatedAt</span>
-                                                </div>
-                                                <div class="col-auto media__border">
-                                                    <div class="media__comment">
-                                                        <h7>@Html.Raw(reply.Text)</h7>
-                                                    </div>
-                                                </div>
-                                                <div class="col-auto">
-                                                    <div class="r-btn r-btn-light r-btn--icon" onclick="onCommentVoteClick('@reply.CommentId', 1)">
-                                                        <i class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
-                                                    </div>
-                                                    <span name="votes-count">@reply.VotesCount</span>
-                                                    <span class="reply"></span> <a href="#reply" onclick="showReplyForm('@reply.ReplyTo', '@reply.CommentId')">Reply</a>
-                                                </div>
-                                                <div id="reply-placeholder"></div>
-                                            </div>
+                                <div>
+                                    <a href="/Profile/@Model.AdsTopics.First().ProfileId">
+                                        <div class="card-user__name">@Model.AdsTopics.First().ProfileName</div>
+                                    </a>
+                                    <div style="display: flex">
+                                        <div class="post-header__time">@Model.AdsTopics.First().CreatedAt.Humanize()</div>
+                                        <div class="post-header__tags">
+                                            <a href="" title="" data-placement="top" data-target="#edit-tags__modal" data-toggle="modal">
+                                                <i class="zmdi zmdi-tag-more zmdi-hc-fw post-header__icon"></i>Edit tags
+                                            </a>
                                         </div>
-                                    }
-                                }
+                                    </div>
+                                </div>
                             </div>
                         </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div style="text-align: right; padding-top: 1rem; padding-right: 1rem">
+                            <ul class="list-inline">
+                                <li class="list-inline-item" onclick="onEditPostClick('@Model.AdsTopics.First().AdsId')">
+                                    <a href="" title="" data-placement="top" data-target="#edit-post__modal" data-toggle="modal">
+                                        <i class="zmdi zmdi-edit zmdi-hc-fw"></i>
+                                    </a>
+                                </li>
+                                <li class="list-inline-item" onclick="onDeletePostClick('@Model.AdsTopics.First().AdsId')">
+                                    <a href="" title="" data-placement="top" data-target="#delete-post__modal" data-toggle="modal">
+                                        <i class="zmdi zmdi-delete zmdi-hc-fw"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body card-body__img">
+                    <h4>@Model.AdsTopics.First().Title</h4>
+                    <p>
+                        @if (@Model.AdsTopics.First().Price > 0)
+                        {
+                            <span style="font-size: 0.9rem; color: #71a830">@Model.AdsTopics.First().Price@Model.AdsTopics.First().Currency</span>
+                        }
+                        else
+                        {
+                            <span style="font-size: 0.9rem; color: #71a830">FREE</span>
+                        }
+                    </p>
+                    <p>
+                        @if (@Model.AdsTopics.First().Location != null)
+                        {
+                            <i class="zmdi zmdi-pin zmdi-hc-fw"></i>
+                            <span style="font-size: 0.9rem; color: #90949c">@Model.AdsTopics.First().Location</span>
+                        }
+                    </p>
+                    <p class="card-text">@Html.Raw(Model.AdsTopics.First().Text)</p>
+                </div>
+
+                <div style="border-bottom: 1px solid #e3e3e3; padding-left: 20px; padding-bottom: 20px">
+                    <h4>
+                        <span id="comments-count">@Model.AdsTopics.First().CommentsCount</span> Comments
+                    </h4>
+                </div>
+
+                <div id="comment-form" class="p-4">
+                    <textarea id="comment-editor" style="display: none"></textarea>
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <button id="add-comment" class="btn btn-light waves-effect waves-light btn-sm">COMMENT</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="ads-comments" class="container-fluid">
+                    @if (Model.AdsTopicComments != null && Model.AdsTopicComments.Any())
+                    {
+                        foreach (var comment in Model.AdsTopicComments)
+                        {
+                            <div id="@comment.CommentId" class="media p-2">
+                                @if (!string.IsNullOrEmpty(comment.ProfileImagePath))
+                                {
+                                    <img class="card-user__img" src="@comment.ProfileImagePath" width="48" height="48" alt="profile-image">
+                                }
+                                else
+                                {
+                                    <img class="card-user__img" src="/images/no_image.png" width="48" height="48" alt="profile-image">
+                                }
+                                <div class="media-body media__img content__break">
+                                    <div class="col-auto">
+                                        <span class="font-weight-bold" style="font-size: 0.8rem">
+                                            <a href="/Profile/@comment.ProfileName">@comment.ProfileName</a>
+                                        </span>
+                                        <span class="time" style="font-size: 0.8rem"> @comment.CreatedAt</span>
+                                    </div>
+                                    <div class="col-auto media__border">
+                                        <div class="media__comment">
+                                            <h7>@Html.Raw(comment.Text)</h7>
+                                        </div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <div class="r-btn r-btn-light r-btn--icon" onclick="onCommentVoteClick('@comment.CommentId', 1)">
+                                            <i class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
+                                        </div>
+                                        <span name="votes-count">@comment.VotesCount</span>
+                                        <span class="reply"></span> <a href="#reply" onclick="showReplyForm(null, '@comment.CommentId')">Reply</a>
+                                    </div>
+                                    <div id="reply-placeholder"></div>
+                                    @if (comment.Comments != null)
+                                    {
+                                        foreach (var reply in comment.Comments)
+                                        {
+                                            <div id="@reply.CommentId" class="media p-2">
+                                                @if (!string.IsNullOrEmpty(reply.ProfileImagePath))
+                                                {
+                                                    <img class="card-user__img" src="@reply.ProfileImagePath" width="48" height="48" alt="profile-image">
+                                                }
+                                                else
+                                                {
+                                                    <img class="card-user__img" src="/images/no_image.png" width="48" height="48" alt="profile-image">
+                                                }
+                                                <div class="media-body media__img content__break">
+                                                    <div class="col-auto">
+                                                        <span class="font-weight-bold" style="font-size: 0.8rem">
+                                                            <a href="/Profile/@reply.ProfileName">@reply.ProfileName</a>
+                                                        </span>
+                                                        <span class="time" style="font-size: 0.8rem"> @reply.CreatedAt</span>
+                                                    </div>
+                                                    <div class="col-auto media__border">
+                                                        <div class="media__comment">
+                                                            <h7>@Html.Raw(reply.Text)</h7>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-auto">
+                                                        <div class="r-btn r-btn-light r-btn--icon" onclick="onCommentVoteClick('@reply.CommentId', 1)">
+                                                            <i class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
+                                                        </div>
+                                                        <span name="votes-count">@reply.VotesCount</span>
+                                                        <span class="reply"></span> <a href="#reply" onclick="showReplyForm('@reply.ReplyTo', '@reply.CommentId')">Reply</a>
+                                                    </div>
+                                                    <div id="reply-placeholder"></div>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        }
                     }
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 p-2">
+            <div class="card p-4">
+                <div style="border-bottom: 1px solid #d5d5d5; margin-bottom: 10px;">
+                    <h4 class="text-muted">Recommendations</h4>
+                </div>
+                @{
+                    @await Html.PartialAsync("RecommendedAdsTopics", Model.RecommendedAdsTopics)
                 }
             </div>
         </div>
     </div>
-    <div class="col-md-4 p-2">
-        <div class="card p-4">
-            <div style="border-bottom: 1px solid #d5d5d5; margin-bottom: 10px;">
-                <h4 class="text-muted">Recommendations</h4>
-            </div>
-            @{
-                @await Html.PartialAsync("RecommendedAdsTopics", Model.RecommendedAdsTopics)
-            }
-        </div>
-    </div>
-</div>
-<div id="add-post__modal" class="modal fade" data-backdrop="static" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <span class="font-weight-bold">Add post</span>
-                <button type="button" class="btn btn-link" data-dismiss="modal">
-                    <span>
-                        <i class="zmdi zmdi-close zmdi-hc-fw"></i>
-                    </span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <input id="add-post__title" type="text" class="form-control" maxlength="100" placeholder="What are you selling?" autocomplete="off">
-                </div>
-                <div class="row">
-                    <div class="form-group col-md-3">
-                        <input id="add-post__price" type="text" class="form-control" placeholder="Price" autocomplete="off">
-                    </div>
-                    <div class="form-group col-md-3">
-                        <select id="add-post__currency">
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <input id="add-post__pac-input" type="text" class="form-control" placeholder="Enter a location (optional)" autocomplete="off">
-                </div>
-
-                <div class="form-group">
-                    <textarea id="post-editor__add" style="display: none"></textarea>
-                </div>
-
-                <div class="form-group">
-                    <div id="dropzone">
-                        <form asp-controller="AdsTopics" asp-action="AddAdsTopicPhotos" class="dropzone needsclick dz-clickable" id="demo-upload">
-                            <div class="dz-message needsclick">
-                                <img src="~/images/add__photos.png"/>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button id="add-post__post" type="button" class="btn btn-primary__advert">
-                    Save
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-<div id="edit-post__modal" class="modal fade" data-backdrop="static" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <span class="font-weight-bold">Edit post</span>
-                <button type="button" class="btn btn-link" data-dismiss="modal">
-                    <span>
-                        <i class="zmdi zmdi-close zmdi-hc-fw"></i>
-                    </span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <input id="edit-post__title" type="text" class="form-control" maxlength="100" placeholder="What are you selling?" autocomplete="off">
-                </div>
-                <div class="row">
-                    <div class="form-group col-md-3">
-                        <input id="edit-post__price" type="text" class="form-control" placeholder="Price" autocomplete="off">
-                    </div>
-                    <div class="form-group col-md-3">
-                        <select id="edit-post__currency">
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <input id="edit-post__pac-input" type="text" class="form-control" placeholder="Enter a location (optional)" autocomplete="off">
-                </div>
-
-                <textarea id="post-editor__edit" style="display: none"></textarea>
-            </div>
-            <div class="modal-footer">
-                <button id="edit-post__save" type="button" class="btn btn-primary__advert">
-                    Save
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-<div id="delete-post__modal" class="modal fade" data-backdrop="static" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <span class="font-weight-bold">Delete post</span>
-                <button type="button" class="btn btn-link" data-dismiss="modal">
-                    <span>
-                        <i class="zmdi zmdi-close zmdi-hc-fw"></i>
-                    </span>
-                </button>
-            </div>
-            <div class="modal-body">
-                You are about to delete this post.
-            </div>
-            <div class="modal-footer">
-                <button id="delete-post__cancel" type="button" class="btn btn-light" data-dismiss="modal">
-                    Cancel
-                </button>
-                <button id="delete-post__delete" type="button" class="btn btn-primary__advert">
-                    Delete
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-<div id="edit-tags__modal" class="modal fade" data-backdrop="static" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <span class="font-weight-bold">Edit tags for this post</span>
-                <button type="button" class="btn btn-link" data-dismiss="modal">
-                    <span>
-                        <i class="zmdi zmdi-close zmdi-hc-fw"></i>
-                    </span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <select id="edit-tags" class="form-control" multiple="multiple">
-                        <option></option>
-                    </select>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button id="add-tags__cancel" type="button" class="btn btn-light" data-dismiss="modal">
-                    Cancel
-                </button>
-                <button id="add-tags__save" type="button" class="btn btn-primary__advert">
-                    Save
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
+    @await Html.PartialAsync("AddPostModal")
+    @await Html.PartialAsync("EditPostModal")
+    @await Html.PartialAsync("DeletePostModal")
+    @await Html.PartialAsync("EditTagsModal")
 </section>
 
 <script>
     var editors = [
-        $("#post-editor__add")[0], $("#post-editor__edit")[0]
+        $("#post-editor__add--post")[0], $("#post-editor__edit--post")[0]
     ];
 
     for (var i = 0; i < editors.length; i++) {
@@ -355,7 +215,7 @@
     var turndown = new TurndownService();
 
     function onAddPostClick() {
-        exitEditorFullscreen();
+        exitPostEditorFullScreen();
         $("#add-post__post").click(function() {
             var ads = JSON.stringify({
                 text: postEditor.options.previewRender(postEditor.value()),
@@ -383,7 +243,7 @@
     }
 
     function onEditPostClick(adsId) {
-        exitEditorFullscreen();
+        exitPostEditorFullScreen();
         $.ajax({
             url: `/Topics/GetAdsTopicByIdAsync/${adsId}`,
             type: "GET",
@@ -490,9 +350,9 @@
         });
     }
 
-    function exitEditorFullscreen() {
+    function exitPostEditorFullScreen() {
         if (postEditor.isFullscreenActive()) {
-            postEditor.toggleFullScreen();
+            postEditor.exitPostEditorFullScreen();
         }
     }
 

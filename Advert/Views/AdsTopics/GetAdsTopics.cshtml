@@ -213,155 +213,17 @@
     </div>
 </div>
 </div>
-<div id="add-post__modal" class="modal fade" data-backdrop="static" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <span class="font-weight-bold">Add post</span>
-                <button type="button" class="btn btn-link" data-dismiss="modal">
-                    <span>
-                        <i class="zmdi zmdi-close zmdi-hc-fw"></i>
-                    </span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <input id="add-post__title" type="text" class="form-control" maxlength="100" placeholder="What are you selling?" autocomplete="off">
-                </div>
-                <div class="row">
-                    <div class="form-group col-md-3">
-                        <input id="add-post__price" type="text" class="form-control" placeholder="Price" autocomplete="off">
-                    </div>
-                    <div class="form-group col-md-3">
-                        <select id="add-post__currency">
-                        </select>
-                    </div>      
-                </div>
 
-                <div class="form-group">
-                    <input id="add-post__pac-input" type="text" class="form-control" placeholder="Enter a location (optional)" autocomplete="off">
-                </div>
+@await Html.PartialAsync("AddPostModal")
+@await Html.PartialAsync("EditPostModal")
+@await Html.PartialAsync("DeletePostModal")
+@await Html.PartialAsync("EditTagsModal")
 
-                <div class="form-group">
-                    <textarea id="post-editor__add" style="display: none"></textarea>
-                </div>
-
-                <div class="form-group">
-                    <div id="dropzone">
-                        <form asp-controller="AdsTopics" asp-action="AddAdsTopicPhotos" class="dropzone needsclick dz-clickable" id="demo-upload">
-                            <div class="dz-message needsclick">
-                                <img src="~/images/add__photos.png"/>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button id="add-post__post" type="button" class="btn btn-primary__advert">
-                    Save
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-<div id="edit-post__modal" class="modal fade" data-backdrop="static" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <span class="font-weight-bold">Edit post</span>
-                <button type="button" class="btn btn-link" data-dismiss="modal">
-                    <span>
-                        <i class="zmdi zmdi-close zmdi-hc-fw"></i>
-                    </span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <input id="edit-post__title" type="text" class="form-control" maxlength="100" placeholder="What are you selling?" autocomplete="off">
-                </div>
-                <div class="row">
-                    <div class="form-group col-md-3">
-                        <input id="edit-post__price" type="text" class="form-control" placeholder="Price" autocomplete="off">
-                    </div>
-                    <div class="form-group col-md-3">
-                        <select id="edit-post__currency">
-                        </select>
-                    </div>       
-                </div>
-
-                <div class="form-group">
-                    <input id="edit-post__pac-input" type="text" class="form-control" placeholder="Enter a location (optional)" autocomplete="off">
-                </div>
-
-                <textarea id="post-editor__edit" style="display: none"></textarea>
-            </div>
-            <div class="modal-footer">
-                <button id="edit-post__save" type="button" class="btn btn-primary__advert">
-                    Save
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-<div id="delete-post__modal" class="modal fade" data-backdrop="static" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <span class="font-weight-bold">Delete post</span>
-                <button type="button" class="btn btn-link" data-dismiss="modal">
-                    <span>
-                        <i class="zmdi zmdi-close zmdi-hc-fw"></i>
-                    </span>
-                </button>
-            </div>
-            <div class="modal-body">
-                You are about to delete this post.
-            </div>
-            <div class="modal-footer">
-                <button id="delete-post__cancel" type="button" class="btn btn-light" data-dismiss="modal">
-                    Cancel
-                </button>
-                <button id="delete-post__delete" type="button" class="btn btn-primary__advert">
-                    Delete
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-<div id="edit-tags__modal" class="modal fade" data-backdrop="static" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <span class="font-weight-bold">Edit tags for this post</span>
-                <button type="button" class="btn btn-link" data-dismiss="modal">
-                    <span>
-                        <i class="zmdi zmdi-close zmdi-hc-fw"></i>
-                    </span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <select id="edit-tags" class="form-control" multiple="multiple">
-                        <option></option>
-                    </select>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button id="add-tags__cancel" type="button" class="btn btn-light" data-dismiss="modal">
-                    Cancel
-                </button>
-                <button id="add-tags__save" type="button" class="btn btn-primary__advert">
-                    Save
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
 </section>
 
 <script>
     var editors = [
-        $("#post-editor__add")[0], $("#post-editor__edit")[0]
+        $("#post-editor__add--post")[0], $("#post-editor__edit--post")[0]
     ];
 
     for (var i = 0; i < editors.length; i++) {
@@ -378,7 +240,7 @@
     var turndown = new TurndownService();
 
     function onAddPostClick() {
-        exitEditorFullscreen();
+        exitPostEditorFullScreen();
         $("#add-post__post").click(function() {
             var ads = JSON.stringify({
                 text: postEditor.options.previewRender(postEditor.value()),
@@ -406,7 +268,7 @@
     }
 
     function onEditPostClick(adsId) {
-        exitEditorFullscreen();
+        exitPostEditorFullScreen();
         $.ajax({
             url: `/Topics/GetAdsTopicByIdAsync/${adsId}`,
             type: "GET",
@@ -500,9 +362,9 @@
         });
     }
 
-    function exitEditorFullscreen() {
+    function exitPostEditorFullScreen() {
         if (postEditor.isFullscreenActive()) {
-            postEditor.toggleFullScreen();
+            postEditor.exitPostEditorFullScreen();
         }
     }
 
@@ -549,7 +411,7 @@
             height: "34px",
             minimumResultsForSearch: -1,
         });
-                    
+
         //Fix for side by side & fullscrenn
         postEditor.codemirror.on('refresh',
             function() {
