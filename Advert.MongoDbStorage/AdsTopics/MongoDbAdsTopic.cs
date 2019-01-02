@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Advert.Common.AdsTopics;
 using Advert.Common.Profiles;
 using MongoDB.Bson;
@@ -32,5 +33,6 @@ namespace Advert.MongoDbStorage.AdsTopics
         public DateTime ChangedAt { get; set; }
         public DateTime DeletedAt { get; set; }         
         public ReleaseType ReleaseType { get; set; }
+        public List<string> Tags { get; set; }
     }
 }

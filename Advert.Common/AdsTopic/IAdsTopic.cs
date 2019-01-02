@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Advert.Common.AdsTopics;
 using MongoDB.Bson;
 
@@ -23,7 +24,8 @@ namespace Advert.Common.Profiles
         ObjectId ProfileId { get; set; }
         DateTime CreatedAt { get; set; }
         DateTime ChangedAt { get; set; }
-        DateTime DeletedAt { get; set; }         
+        DateTime DeletedAt { get; set; }
         ReleaseType ReleaseType { get; set; }
+        List<String> Tags { get; set; }
     }
 }

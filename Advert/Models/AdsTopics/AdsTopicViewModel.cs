@@ -1,7 +1,10 @@
-﻿namespace Advert.Models.AdsTopics
+﻿using System.Collections.Generic;
+
+namespace Advert.Models.AdsTopics
 {
     public class AdsTopicViewModel
-    {    
+    {           
+        public bool IsTopicOwner { get; set; }
         public long Price { get; set; }
         public string AdsId { get; set; }
         public string Text { get; set; }
@@ -16,7 +19,6 @@
         public string ProfileId { get; set; }
         public string ProfileName { get; set; }
         public string ProfileImagePath { get; set; }   
-        
-        public bool IsTopicOwner { get; set; }
+        public List<string> Tags { get; set; }
     }
 }

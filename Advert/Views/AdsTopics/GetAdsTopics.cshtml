@@ -54,7 +54,7 @@
                                         <div style="display: flex">
                                             <div class="post-header__time">@adsTopic.CreatedAt</div>
                                             <div class="post-header__tags">
-                                                <a href="" title="" data-placement="top" data-target="#edit-tags__modal" data-toggle="modal">
+                                                <a href="" title="" data-placement="top" data-target="#edit-tags__modal" data-toggle="modal" onclick="onEditPostTagsClick()">
                                                     <i class="zmdi zmdi-tag-more zmdi-hc-fw post-header__icon"></i>Edit tags
                                                 </a>
                                             </div>
@@ -88,7 +88,7 @@
                             <h4 class="card-title font-weight-bold cut-long-text">@adsTopic.Title</h4>
                         </a>
                         <p>
-                            @if (@adsTopic.Price > 0)
+                            @if (adsTopic.Price > 0)
                             {
                                 <span style="font-size: 0.9rem; color: #71a830">@adsTopic.Price@adsTopic.Currency</span>
                             }
@@ -332,6 +332,23 @@
             success: function(response) {
                 $("#edit-post__modal").modal('toggle');
                 window.location.replace(response.returnUrl);
+            }
+        });
+    }
+    
+    function onEditPostTagsClick() {
+        exitPostEditorFullScreen();
+        $.ajax({
+            url: `/Topics/GetAdsTopicTagsByAdsIdAsync/${adsId}`,
+            type: "GET",
+            contentType: "application/json",
+            error: function(jqXhr, textStatus, errorThrown) {
+                console.log("jqXhr: " + jqXhr);
+                console.log("textStatus: " + textStatus);
+                console.log("errorThrown: " + errorThrown);
+            },
+            success: function(response) {
+                //todo: Set tags
             }
         });
     }

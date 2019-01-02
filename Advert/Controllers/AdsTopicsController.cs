@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
@@ -146,6 +147,7 @@ namespace Advert.Controllers
                         Price = adsTopic.Price,
                         Currency = adsTopic.Currency,
                         Location = adsTopic.Location,
+                        Tags = adsTopic.Tags,
                         LikesCount = ((double) adsTopic.LikesCount).ToMetric(),
                         SharesCount = ((double) 0).ToMetric(),
                         ViewsCount = ((double) adsTopic.ViewsCount).ToMetric(),
@@ -298,6 +300,7 @@ namespace Advert.Controllers
                             Title = adsTopic.Title,
                             Price = adsTopic.Price,
                             Location = adsTopic.Location,
+                            Tags = adsTopic.Tags,
                             LikesCount = ((double) adsTopic.LikesCount).ToMetric(),
                             SharesCount = ((double)0).ToMetric(),
                             ViewsCount = ((double) adsTopic.ViewsCount).ToMetric(),
@@ -333,7 +336,7 @@ namespace Advert.Controllers
         [HttpPost]
         [Authorize]
         [Route("/Topics/CreateAdsTopicAsync")]
-        public async Task<IActionResult> CreateAdsTopicAsync([FromBody] CreateAdsTopicViewModel viewModel)
+        public async Task<IActionResult> CreateAdsTopicAsync([FromBody] AdsTopicViewModel viewModel)
         {
             try
             {
@@ -366,11 +369,11 @@ namespace Advert.Controllers
                 return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
             }
         }
-
+        
         [HttpPost]
         [Authorize]
         [Route("/Topics/UpdateAdsTopicByIdAsync/{adsId}")]
-        public async Task<IActionResult> UpdateAdsTopicByIdAsync(string adsId, [FromBody] CreateAdsTopicViewModel viewModel)
+        public async Task<IActionResult> UpdateAdsTopicByIdAsync(string adsId, [FromBody] AdsTopicViewModel viewModel)
         {
             try
             {
@@ -419,6 +422,7 @@ namespace Advert.Controllers
                     Price = adsTopic.Price,
                     Currency = adsTopic.Currency,
                     Location = adsTopic.Location,
+                    Tags = adsTopic.Tags,
                     LikesCount = ((double) adsTopic.LikesCount).ToMetric(),
                     SharesCount = ((double) 0).ToMetric(),
                     ViewsCount = ((double) adsTopic.ViewsCount).ToMetric(),
@@ -453,6 +457,41 @@ namespace Advert.Controllers
                 return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
             }
         }
+              
+        [HttpPost]
+        [Authorize]
+        [Route("/Topics/UpsertAdsTopicTagsByAdsIdAsync/{adsId}")]
+        public async Task<IActionResult> UpsertAdsTopicTagsByAdsIdAsync(string adsId, [FromBody] AdsTopicTagsViewModel viewModel)
+        {
+            try
+            {
+                var adsTopic = await _adsTopicsManager.FindAdsTopicByIdAsync(ObjectId.Parse(adsId));
+
+                if (adsTopic.Tags == null || !adsTopic.Tags.Any())
+                {
+                    adsTopic.Tags = new List<string>();
+                    adsTopic.Tags.AddRange(viewModel.Tags);
+                }
+                else
+                {
+                    adsTopic.Tags.Clear();
+                    adsTopic.Tags.AddRange(viewModel.Tags);
+                }
+                
+                await _adsTopicsManager.UpdateAdsTopicAsync(adsTopic);
+                             
+                return Ok(new
+                {
+                    returnUrl = Url.Action("GetAdsTopicContent", "AdsTopics", new {adsId = adsTopic.Id})
+                });
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
+            }
+        }
+
 
         [HttpPost]
         [Authorize]
