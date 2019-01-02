@@ -54,8 +54,8 @@
                                         <div style="display: flex">
                                             <div class="post-header__time">@adsTopic.CreatedAt</div>
                                             <div class="post-header__tags">
-                                                <a href="" title="" data-placement="top" data-target="#add-tags-modal" data-toggle="modal">
-                                                    <i class="zmdi zmdi-tag-more zmdi-hc-fw post-header__icon"></i>Add tags
+                                                <a href="" title="" data-placement="top" data-target="#edit-tags__modal" data-toggle="modal">
+                                                    <i class="zmdi zmdi-tag-more zmdi-hc-fw post-header__icon"></i>Edit tags
                                                 </a>
                                             </div>
                                         </div>
@@ -69,12 +69,12 @@
                                     @if (adsTopic.IsTopicOwner)
                                     {
                                         <li class="list-inline-item" onclick="onEditPostClick('@adsTopic.AdsId')">
-                                            <a href="" title="" data-placement="top" data-target="#edit-post-modal" data-toggle="modal">
+                                            <a href="" title="" data-placement="top" data-target="#edit-post__modal" data-toggle="modal">
                                                 <i class="zmdi zmdi-edit zmdi-hc-fw"></i>
                                             </a>
                                         </li>
                                         <li class="list-inline-item" onclick="onDeletePostClick('@adsTopic.AdsId')">
-                                            <a href="" title="" data-placement="top" data-target="#delete-post-modal" data-toggle="modal">
+                                            <a href="" title="" data-placement="top" data-target="#delete-post__modal" data-toggle="modal">
                                                 <i class="zmdi zmdi-delete zmdi-hc-fw"></i>
                                             </a>
                                         </li>
@@ -213,7 +213,7 @@
     </div>
 </div>
 </div>
-<div id="add-post-modal" class="modal fade" data-backdrop="static" tabindex="-1">
+<div id="add-post__modal" class="modal fade" data-backdrop="static" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -225,20 +225,17 @@
                 </button>
             </div>
             <div class="modal-body">
+                <div class="form-group">
+                    <input id="add-post__title" type="text" class="form-control" maxlength="100" placeholder="What are you selling?" autocomplete="off">
+                </div>
                 <div class="row">
-                    <div class="form-group col-md-6">
-                        <input id="add-post__title" type="text" class="form-control" maxlength="100" placeholder="What are you selling?" autocomplete="off">
-                    </div>
                     <div class="form-group col-md-3">
                         <input id="add-post__price" type="text" class="form-control" placeholder="Price" autocomplete="off">
                     </div>
-                    @* <div class="form-group col-md-3"> *@
-                    @*     <select id="add-post__currency" class="select2 select2-hidden-accessible" data-minimum-results-for-search="Infinity" tabindex="-1" aria-hidden="true"> *@
-                    @*         <option>€</option> *@
-                    @*         <option>$</option> *@
-                    @*         <option>MDL</option> *@
-                    @*     </select> *@
-                    @* </div> *@
+                    <div class="form-group col-md-3">
+                        <select id="add-post__currency">
+                        </select>
+                    </div>      
                 </div>
 
                 <div class="form-group">
@@ -267,7 +264,7 @@
         </div>
     </div>
 </div>
-<div id="edit-post-modal" class="modal fade" data-backdrop="static" tabindex="-1">
+<div id="edit-post__modal" class="modal fade" data-backdrop="static" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -279,20 +276,17 @@
                 </button>
             </div>
             <div class="modal-body">
+                <div class="form-group">
+                    <input id="edit-post__title" type="text" class="form-control" maxlength="100" placeholder="What are you selling?" autocomplete="off">
+                </div>
                 <div class="row">
-                    <div class="form-group col-md-6">
-                        <input id="edit-post__title" type="text" class="form-control" maxlength="100" placeholder="What are you selling?" autocomplete="off">
-                    </div>
                     <div class="form-group col-md-3">
                         <input id="edit-post__price" type="text" class="form-control" placeholder="Price" autocomplete="off">
                     </div>
-                    @* <div class="form-group col-md-3"> *@
-                    @*     <select id="edit-post__currency" class="select2 select2-hidden-accessible" data-minimum-results-for-search="Infinity" tabindex="-1" aria-hidden="true"> *@
-                    @*         <option>€</option> *@
-                    @*         <option>$</option> *@
-                    @*         <option>MDL</option> *@
-                    @*     </select> *@
-                    @* </div> *@
+                    <div class="form-group col-md-3">
+                        <select id="edit-post__currency">
+                        </select>
+                    </div>       
                 </div>
 
                 <div class="form-group">
@@ -309,7 +303,7 @@
         </div>
     </div>
 </div>
-<div id="delete-post-modal" class="modal fade" data-backdrop="static" tabindex="-1">
+<div id="delete-post__modal" class="modal fade" data-backdrop="static" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -334,7 +328,7 @@
         </div>
     </div>
 </div>
-<div id="add-tags-modal" class="modal fade" data-backdrop="static" tabindex="-1">
+<div id="edit-tags__modal" class="modal fade" data-backdrop="static" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -347,7 +341,7 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <select id="select2-tags" class="form-control" multiple="multiple">
+                    <select id="edit-tags" class="form-control" multiple="multiple">
                         <option></option>
                     </select>
                 </div>
@@ -404,7 +398,7 @@
                     console.log("errorThrown: " + errorThrown);
                 },
                 success: function(response) {
-                    $("#add-post-modal").modal('toggle');
+                    $("#add-post__modal").modal('toggle');
                     window.location.replace(response.returnUrl);
                 }
             });
@@ -447,8 +441,8 @@
                     console.log("errorThrown: " + errorThrown);
                 },
                 success: function(response) {
-                    $(`#${adsId}`).remove();
-                    $("#delete-post-modal").modal('toggle');
+                    $("#delete-post__modal").modal('toggle');
+                    window.location.replace(response.returnUrl);
                 }
             });
         });
@@ -473,7 +467,7 @@
                 console.log("errorThrown: " + errorThrown);
             },
             success: function(response) {
-                $("#edit-post-modal").modal('toggle');
+                $("#edit-post__modal").modal('toggle');
                 window.location.replace(response.returnUrl);
             }
         });
@@ -512,7 +506,7 @@
         }
     }
 
-    function addLocationInputListeners() {
+    function addACInputListeners() {
         var inputs = [
             document.getElementById('add-post__pac-input'),
             document.getElementById('edit-post__pac-input')
@@ -534,13 +528,28 @@
     }
 
     $(document).ready(function() {
-        $("#select2-tags").select2({
+        $("#edit-tags").select2({
             tags: true,
             width: "100%",
             placeholder: "Choose up to 5 tags to describe this post.",
-            tokenSeparators: [',', ' ']
-        })
-        
+            tokenSeparators: [',', ' '],
+            maximumSelectionLength: 5,
+        });
+
+        $("#add-post__currency").select2({
+            tags: ["€", "$", "MDL"],
+            width: "100%",
+            height: "34px",
+            minimumResultsForSearch: -1,
+        });
+
+        $("#edit-post__currency").select2({
+            tags: ["€", "$", "MDL"],
+            width: "100%",
+            height: "34px",
+            minimumResultsForSearch: -1,
+        });
+                    
         //Fix for side by side & fullscrenn
         postEditor.codemirror.on('refresh',
             function() {
@@ -552,16 +561,16 @@
             });
 
         //Fix for empty editor until it has no focus
-        $('#add-post-modal').on('shown.bs.modal',
+        $('#add-post__modal').on('shown.bs.modal',
             function() {
                 postEditor.codemirror.refresh();
             });
 
-        $('#edit-post-modal').on('shown.bs.modal',
+        $('#edit-post__modal').on('shown.bs.modal',
             function() {
                 postEditor.codemirror.refresh();
             });
     });
 </script>
 
-<script src="https://maps.googleapis.com/maps/api/js?key=@Model.ApiService.ApiKey&libraries=places&callback=addLocationInputListeners" async defer></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=@Model.ExternalKeys.ACKey&libraries=places&callback=addACInputListeners" async defer></script>

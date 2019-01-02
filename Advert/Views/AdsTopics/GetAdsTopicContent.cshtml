@@ -4,129 +4,518 @@
 
 @await Html.PartialAsync("_Header", Model)
 
+<style>
+    .pac-container { z-index: 2000 !important; }
+</style>
+
 <section id="@Model.AdsTopics.First().AdsId" name="ads" class="content">
-    <div class="row">
-        <div class="col-md-8 p-2">
-            <div class="card">
-                <div class="text-muted p-3">
-                    <a href="/Profile/@Model.AdsTopics.First().ProfileName">
-                        <small class="font-weight-bold">@Model.AdsTopics.First().ProfileName</small>
-                    </a>
-                    <small class="time"> @Model.AdsTopics.First().CreatedAt.Humanize()</small>
-                </div>
-
-                <div class="card-body card-body__img">
-                    <h4>@Model.AdsTopics.First().Title</h4>
-                    <p class="card-text">@Html.Raw(Model.AdsTopics.First().Text)</p>
-                </div>
-
-                <div style="border-bottom: 1px solid #e3e3e3; padding-left: 20px; padding-bottom: 20px">
-                    <h4>
-                        <span id="comments-count">@Model.AdsTopics.First().CommentsCount</span> Comments
-                    </h4>
-                </div>
-
-                <div id="comment-form" class="p-4">
-                    <textarea id="comment-editor" style="display: none"></textarea>
-                    <div class="row mt-3">
-                        <div class="col-12">
-                            <button id="publish-comment" class="btn btn-light waves-effect waves-light btn-sm">COMMENT</button>
+<div class="row">
+    <div class="col-md-8 p-2">
+        <div class="card">
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="card-user">
+                        <div class="card-user__info">
+                            <a href="/Profiles/5c27ea98eb64801aec9f3e5b">
+                                <img src="/images/profiles/5c27ea98eb64801aec9f3e5b/0.jpeg" class="card-user__img" alt="">
+                            </a>
+                            <div>
+                                <a href="/Profile/@Model.AdsTopics.First().ProfileId">
+                                    <div class="card-user__name">@Model.AdsTopics.First().ProfileName</div>
+                                </a>
+                                <div style="display: flex">
+                                    <div class="post-header__time">@Model.AdsTopics.First().CreatedAt.Humanize()</div>
+                                    <div class="post-header__tags">
+                                        <a href="" title="" data-placement="top" data-target="#edit-tags__modal" data-toggle="modal">
+                                            <i class="zmdi zmdi-tag-more zmdi-hc-fw post-header__icon"></i>Edit tags
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-
-                <div id="ads-comments" class="container-fluid">
-                    @if (Model.AdsTopicComments != null && Model.AdsTopicComments.Any())
-                    {
-                        foreach (var comment in Model.AdsTopicComments)
-                        {
-                            <div id="@comment.CommentId" class="media p-2">
-                                @if (!string.IsNullOrEmpty(comment.ProfileImagePath))
-                                {
-                                    <img class="card-user__img" src="@comment.ProfileImagePath" width="48" height="48" alt="profile-image">
-                                }
-                                else
-                                {
-                                    <img class="card-user__img" src="/images/no_image.png" width="48" height="48" alt="profile-image">
-                                }
-                                <div class="media-body media__img content__break">
-                                    <div class="col-auto">
-                                        <span class="font-weight-bold" style="font-size: 0.8rem">
-                                            <a href="/Profile/@comment.ProfileName">@comment.ProfileName</a>
-                                        </span>
-                                        <span class="time" style="font-size: 0.8rem"> @comment.CreatedAt</span>
-                                    </div>
-                                    <div class="col-auto media__border">
-                                        <div class="media__comment">
-                                            <h7>@Html.Raw(comment.Text)</h7>
-                                        </div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <div class="r-btn r-btn-light r-btn--icon" onclick="onCommentVoteClick('@comment.CommentId', 1)">
-                                            <i class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
-                                        </div>
-                                        <span name="votes-count">@comment.VotesCount</span>
-                                        <span class="reply"></span> <a href="#reply" onclick="showReplyForm(null, '@comment.CommentId')">Reply</a>
-                                    </div>
-                                    <div id="reply-placeholder"></div>
-                                    @if (comment.Comments != null)
-                                    {
-                                        foreach (var reply in comment.Comments)
-                                        {
-                                            <div id="@reply.CommentId" class="media p-2">
-                                                @if (!string.IsNullOrEmpty(reply.ProfileImagePath))
-                                                {
-                                                    <img class="card-user__img" src="@reply.ProfileImagePath" width="48" height="48" alt="profile-image">
-                                                }
-                                                else
-                                                {
-                                                    <img class="card-user__img" src="/images/no_image.png" width="48" height="48" alt="profile-image">
-                                                }
-                                                <div class="media-body media__img content__break">
-                                                    <div class="col-auto">
-                                                        <span class="font-weight-bold" style="font-size: 0.8rem">
-                                                            <a href="/Profile/@reply.ProfileName">@reply.ProfileName</a>
-                                                        </span>
-                                                        <span class="time" style="font-size: 0.8rem"> @reply.CreatedAt</span>
-                                                    </div>
-                                                    <div class="col-auto media__border">
-                                                        <div class="media__comment">
-                                                            <h7>@Html.Raw(reply.Text)</h7>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-auto">
-                                                        <div class="r-btn r-btn-light r-btn--icon" onclick="onCommentVoteClick('@reply.CommentId', 1)">
-                                                            <i class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
-                                                        </div>
-                                                        <span name="votes-count">@reply.VotesCount</span>
-                                                        <span class="reply"></span> <a href="#reply" onclick="showReplyForm('@reply.ReplyTo', '@reply.CommentId')">Reply</a>
-                                                    </div>
-                                                    <div id="reply-placeholder"></div>
-                                                </div>
-                                            </div>
-                                        }
-                                    }
-                                </div>
-                            </div>
-                        }
-                    }
+                <div class="col-sm-6">
+                    <div style="text-align: right; padding-top: 1rem; padding-right: 1rem">
+                        <ul class="list-inline">
+                            <li class="list-inline-item" onclick="onEditPostClick('@Model.AdsTopics.First().AdsId')">
+                                <a href="" title="" data-placement="top" data-target="#edit-post__modal" data-toggle="modal">
+                                    <i class="zmdi zmdi-edit zmdi-hc-fw"></i>
+                                </a>
+                            </li>
+                            <li class="list-inline-item" onclick="onDeletePostClick('@Model.AdsTopics.First().AdsId')">
+                                <a href="" title="" data-placement="top" data-target="#delete-post__modal" data-toggle="modal">
+                                    <i class="zmdi zmdi-delete zmdi-hc-fw"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="col-md-4 p-2">
-            <div class="card p-4">
-                <div style="border-bottom: 1px solid #d5d5d5; margin-bottom: 10px;">
-                    <h4 class="text-muted">Recommendations</h4>
+
+            <div class="card-body card-body__img">
+                <h4>@Model.AdsTopics.First().Title</h4>
+                <p>
+                    @if (@Model.AdsTopics.First().Price > 0)
+                    {
+                        <span style="font-size: 0.9rem; color: #71a830">@Model.AdsTopics.First().Price@Model.AdsTopics.First().Currency</span>
+                    }
+                    else
+                    {
+                        <span style="font-size: 0.9rem; color: #71a830">FREE</span>
+                    }
+                </p>
+                <p>
+                    @if (@Model.AdsTopics.First().Location != null)
+                    {
+                        <i class="zmdi zmdi-pin zmdi-hc-fw"></i>
+                        <span style="font-size: 0.9rem; color: #90949c">@Model.AdsTopics.First().Location</span>
+                    }
+                </p>
+                <p class="card-text">@Html.Raw(Model.AdsTopics.First().Text)</p>
+            </div>
+
+            <div style="border-bottom: 1px solid #e3e3e3; padding-left: 20px; padding-bottom: 20px">
+                <h4>
+                    <span id="comments-count">@Model.AdsTopics.First().CommentsCount</span> Comments
+                </h4>
+            </div>
+
+            <div id="comment-form" class="p-4">
+                <textarea id="comment-editor" style="display: none"></textarea>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <button id="add-comment" class="btn btn-light waves-effect waves-light btn-sm">COMMENT</button>
+                    </div>
                 </div>
-                @{
-                    @await Html.PartialAsync("RecommendedAdsTopics", Model.RecommendedAdsTopics)
+            </div>
+
+            <div id="ads-comments" class="container-fluid">
+                @if (Model.AdsTopicComments != null && Model.AdsTopicComments.Any())
+                {
+                    foreach (var comment in Model.AdsTopicComments)
+                    {
+                        <div id="@comment.CommentId" class="media p-2">
+                            @if (!string.IsNullOrEmpty(comment.ProfileImagePath))
+                            {
+                                <img class="card-user__img" src="@comment.ProfileImagePath" width="48" height="48" alt="profile-image">
+                            }
+                            else
+                            {
+                                <img class="card-user__img" src="/images/no_image.png" width="48" height="48" alt="profile-image">
+                            }
+                            <div class="media-body media__img content__break">
+                                <div class="col-auto">
+                                    <span class="font-weight-bold" style="font-size: 0.8rem">
+                                        <a href="/Profile/@comment.ProfileName">@comment.ProfileName</a>
+                                    </span>
+                                    <span class="time" style="font-size: 0.8rem"> @comment.CreatedAt</span>
+                                </div>
+                                <div class="col-auto media__border">
+                                    <div class="media__comment">
+                                        <h7>@Html.Raw(comment.Text)</h7>
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="r-btn r-btn-light r-btn--icon" onclick="onCommentVoteClick('@comment.CommentId', 1)">
+                                        <i class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
+                                    </div>
+                                    <span name="votes-count">@comment.VotesCount</span>
+                                    <span class="reply"></span> <a href="#reply" onclick="showReplyForm(null, '@comment.CommentId')">Reply</a>
+                                </div>
+                                <div id="reply-placeholder"></div>
+                                @if (comment.Comments != null)
+                                {
+                                    foreach (var reply in comment.Comments)
+                                    {
+                                        <div id="@reply.CommentId" class="media p-2">
+                                            @if (!string.IsNullOrEmpty(reply.ProfileImagePath))
+                                            {
+                                                <img class="card-user__img" src="@reply.ProfileImagePath" width="48" height="48" alt="profile-image">
+                                            }
+                                            else
+                                            {
+                                                <img class="card-user__img" src="/images/no_image.png" width="48" height="48" alt="profile-image">
+                                            }
+                                            <div class="media-body media__img content__break">
+                                                <div class="col-auto">
+                                                    <span class="font-weight-bold" style="font-size: 0.8rem">
+                                                        <a href="/Profile/@reply.ProfileName">@reply.ProfileName</a>
+                                                    </span>
+                                                    <span class="time" style="font-size: 0.8rem"> @reply.CreatedAt</span>
+                                                </div>
+                                                <div class="col-auto media__border">
+                                                    <div class="media__comment">
+                                                        <h7>@Html.Raw(reply.Text)</h7>
+                                                    </div>
+                                                </div>
+                                                <div class="col-auto">
+                                                    <div class="r-btn r-btn-light r-btn--icon" onclick="onCommentVoteClick('@reply.CommentId', 1)">
+                                                        <i class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
+                                                    </div>
+                                                    <span name="votes-count">@reply.VotesCount</span>
+                                                    <span class="reply"></span> <a href="#reply" onclick="showReplyForm('@reply.ReplyTo', '@reply.CommentId')">Reply</a>
+                                                </div>
+                                                <div id="reply-placeholder"></div>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    }
                 }
             </div>
         </div>
     </div>
+    <div class="col-md-4 p-2">
+        <div class="card p-4">
+            <div style="border-bottom: 1px solid #d5d5d5; margin-bottom: 10px;">
+                <h4 class="text-muted">Recommendations</h4>
+            </div>
+            @{
+                @await Html.PartialAsync("RecommendedAdsTopics", Model.RecommendedAdsTopics)
+            }
+        </div>
+    </div>
+</div>
+<div id="add-post__modal" class="modal fade" data-backdrop="static" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="font-weight-bold">Add post</span>
+                <button type="button" class="btn btn-link" data-dismiss="modal">
+                    <span>
+                        <i class="zmdi zmdi-close zmdi-hc-fw"></i>
+                    </span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <input id="add-post__title" type="text" class="form-control" maxlength="100" placeholder="What are you selling?" autocomplete="off">
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-3">
+                        <input id="add-post__price" type="text" class="form-control" placeholder="Price" autocomplete="off">
+                    </div>
+                    <div class="form-group col-md-3">
+                        <select id="add-post__currency">
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <input id="add-post__pac-input" type="text" class="form-control" placeholder="Enter a location (optional)" autocomplete="off">
+                </div>
+
+                <div class="form-group">
+                    <textarea id="post-editor__add" style="display: none"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <div id="dropzone">
+                        <form asp-controller="AdsTopics" asp-action="AddAdsTopicPhotos" class="dropzone needsclick dz-clickable" id="demo-upload">
+                            <div class="dz-message needsclick">
+                                <img src="~/images/add__photos.png"/>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="add-post__post" type="button" class="btn btn-primary__advert">
+                    Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="edit-post__modal" class="modal fade" data-backdrop="static" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="font-weight-bold">Edit post</span>
+                <button type="button" class="btn btn-link" data-dismiss="modal">
+                    <span>
+                        <i class="zmdi zmdi-close zmdi-hc-fw"></i>
+                    </span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <input id="edit-post__title" type="text" class="form-control" maxlength="100" placeholder="What are you selling?" autocomplete="off">
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-3">
+                        <input id="edit-post__price" type="text" class="form-control" placeholder="Price" autocomplete="off">
+                    </div>
+                    <div class="form-group col-md-3">
+                        <select id="edit-post__currency">
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <input id="edit-post__pac-input" type="text" class="form-control" placeholder="Enter a location (optional)" autocomplete="off">
+                </div>
+
+                <textarea id="post-editor__edit" style="display: none"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button id="edit-post__save" type="button" class="btn btn-primary__advert">
+                    Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="delete-post__modal" class="modal fade" data-backdrop="static" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="font-weight-bold">Delete post</span>
+                <button type="button" class="btn btn-link" data-dismiss="modal">
+                    <span>
+                        <i class="zmdi zmdi-close zmdi-hc-fw"></i>
+                    </span>
+                </button>
+            </div>
+            <div class="modal-body">
+                You are about to delete this post.
+            </div>
+            <div class="modal-footer">
+                <button id="delete-post__cancel" type="button" class="btn btn-light" data-dismiss="modal">
+                    Cancel
+                </button>
+                <button id="delete-post__delete" type="button" class="btn btn-primary__advert">
+                    Delete
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="edit-tags__modal" class="modal fade" data-backdrop="static" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="font-weight-bold">Edit tags for this post</span>
+                <button type="button" class="btn btn-link" data-dismiss="modal">
+                    <span>
+                        <i class="zmdi zmdi-close zmdi-hc-fw"></i>
+                    </span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <select id="edit-tags" class="form-control" multiple="multiple">
+                        <option></option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="add-tags__cancel" type="button" class="btn btn-light" data-dismiss="modal">
+                    Cancel
+                </button>
+                <button id="add-tags__save" type="button" class="btn btn-primary__advert">
+                    Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 </section>
 
 <script>
+    var editors = [
+        $("#post-editor__add")[0], $("#post-editor__edit")[0]
+    ];
+
+    for (var i = 0; i < editors.length; i++) {
+        var postEditor = new SimpleMDE({
+            status: false,
+            element: editors[i],
+            placeholder: "Type here...",
+            fullScreen: false,
+            withPreview: false,
+            spellChecker: false
+        });
+    }
+
+    var commentEditor = new SimpleMDE({
+        status: false,
+        element: $("#comment-editor")[0],
+        placeholder: "Add a public comment...",
+        fullScreen: false,
+        withPreview: false,
+        spellChecker: false
+    });
+
+    $(".CodeMirror, .CodeMirror-scroll").css('min-height', '150px');
+
+    var turndown = new TurndownService();
+
+    function onAddPostClick() {
+        exitEditorFullscreen();
+        $("#add-post__post").click(function() {
+            var ads = JSON.stringify({
+                text: postEditor.options.previewRender(postEditor.value()),
+                title: $("#add-post__title").val(),
+                price: $("#add-post__price").val(),
+                location: $("#add-post__pac-input").val(),
+                currency: $('#add-post__currency :selected').text()
+            });
+            $.ajax({
+                url: "/Topics/CreateAdsTopicAsync",
+                type: "POST",
+                data: ads,
+                contentType: "application/json",
+                error: function() {
+                    console.log("jqXhr: " + jqXhr);
+                    console.log("textStatus: " + textStatus);
+                    console.log("errorThrown: " + errorThrown);
+                },
+                success: function(response) {
+                    $("#add-post__modal").modal('toggle');
+                    window.location.replace(response.returnUrl);
+                }
+            });
+        });
+    }
+
+    function onEditPostClick(adsId) {
+        exitEditorFullscreen();
+        $.ajax({
+            url: `/Topics/GetAdsTopicByIdAsync/${adsId}`,
+            type: "GET",
+            contentType: "application/json",
+            error: function(jqXhr, textStatus, errorThrown) {
+                console.log("jqXhr: " + jqXhr);
+                console.log("textStatus: " + textStatus);
+                console.log("errorThrown: " + errorThrown);
+            },
+            success: function(response) {
+                $("#edit-post__title").val(response.title);
+                $("#edit-post__price").val(response.price);
+                $("#edit-post__pac-input").val(response.location);
+                $('#edit-post__currency').val(response.currency).trigger('change');
+                postEditor.value(turndown.turndown(response.text));
+            }
+        });
+        $("#edit-post__save").click(function() {
+            onSavePostChangesClick(adsId);
+        });
+    }
+
+    function onDeletePostClick(adsId) {
+        $("#delete-post__delete").click(function() {
+            $.ajax({
+                url: `/Topics/DeleteAdsTopicByIdAsync/${adsId}`,
+                type: "DELETE",
+                contentType: "application/json",
+                error: function() {
+                    console.log("jqXhr: " + jqXhr);
+                    console.log("textStatus: " + textStatus);
+                    console.log("errorThrown: " + errorThrown);
+                },
+                success: function(response) {
+                    $("#delete-post__modal").modal('toggle');
+                    window.location.replace(response.returnUrl);
+                }
+            });
+        });
+    }
+
+    function onSavePostChangesClick(adsId) {
+        var ads = JSON.stringify({
+            text: postEditor.options.previewRender(postEditor.value()),
+            title: $("#edit-post__title").val(),
+            price: $("#edit-post__price").val(),
+            location: $("#edit-post__pac-input").val(),
+            currency: $('#edit-post__currency :selected').text()
+        });
+        $.ajax({
+            url: `/Topics/UpdateAdsTopicByIdAsync/${adsId}`,
+            type: "POST",
+            data: ads,
+            contentType: "application/json",
+            error: function() {
+                console.log("jqXhr: " + jqXhr);
+                console.log("textStatus: " + textStatus);
+                console.log("errorThrown: " + errorThrown);
+            },
+            success: function(response) {
+                $("#edit-post__modal").modal('toggle');
+                window.location.replace(response.returnUrl);
+            }
+        });
+    }
+
+    function onVoteAdsTopicClick(adsId, voteType) {
+        var vote = {
+            adsId: adsId,
+            voteType: voteType
+        }
+        $.ajax({
+            url: "/Topics/CreateAdsTopicVoteAsync",
+            type: "POST",
+            data: JSON.stringify(vote),
+            contentType: "application/json",
+            error: function(jqXhr, textStatus, errorThrown) {
+                console.log("jqXhr: " + jqXhr);
+                console.log("textStatus: " + textStatus);
+                console.log("errorThrown: " + errorThrown);
+            },
+            success: function(response) {
+                switch (response.voteType) {
+                case 1:
+                    {
+                        $(`#${adsId} small[id=votes-count]`).text(response.votesCount);
+                    }
+                    break;
+                }
+            }
+        });
+    }
+
+    function onAddCommentClickEventHandler() {
+        $("#add-comment").click(function() {
+            var text = commentEditor.options.previewRender(commentEditor.value());
+            var adsId = $(`[name='ads']`).attr("id");
+            createAdsTopicCommentAsync(
+                {
+                    adsId: adsId,
+                    text: text
+                });
+            commentEditor.value("");
+        });
+    }
+
+    function exitEditorFullscreen() {
+        if (postEditor.isFullscreenActive()) {
+            postEditor.toggleFullScreen();
+        }
+    }
+
+    function addACInputListeners() {
+        var inputs = [
+            document.getElementById('add-post__pac-input'),
+            document.getElementById('edit-post__pac-input')
+        ];
+        for (var i = 0; i < inputs.length; i++) {
+            var autocomplete = new google.maps.places.Autocomplete(inputs[i]);
+            autocomplete.addListener('place_changed',
+                function() {
+                    var place = autocomplete.getPlace();
+                    if (!place.geometry) {
+                        // User entered the name of a Place that was not suggested and
+                        // pressed the Enter key, or the Place Details request failed.
+                        window.alert("No details available for input: '" + place.name + "'");
+                        return;
+                    }
+                });
+        }
+    }
+
     function showReplyForm(replyTo, commentId) {
         removeReplyForm("reply-form");
 
@@ -205,11 +594,13 @@
                             </div>             
                         </div>
                         <div class="col-auto">
-                            <div class="r-btn r-btn-light r-btn--icon" onclick="onCommentVoteClick('${response.commentId}', 1)" >
+                            <div class="r-btn r-btn-light r-btn--icon" onclick="onCommentVoteClick('${response
+                    .commentId}', 1)" >
                                 <i class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
                             </div>
                             <span name="votes-count">${response.votesCount}</span>
-                            <a href="#reply" onclick="showReplyForm('${comment.replyTo}', '${response.commentId}')">Reply</a>
+                            <a href="#reply" onclick="showReplyForm('${comment.replyTo}', '${response.commentId
+                    }')">Reply</a>
                         </div>
                         <div id="reply-placeholder"></div>
                     </div>
@@ -240,7 +631,8 @@
             success: function(response) {
                 $("#ads-comments").prepend(`
                 <div id="${response.commentId}" class="media p-2">
-                    <img class="card-user__img" src="${response.profileImagePath}" width="48" height="48" alt="profile-image">
+                    <img class="card-user__img" src="${response.profileImagePath
+                    }" width="48" height="48" alt="profile-image">
                     <div class="media-body media__img content__break">
                         <div class="col-auto">
                             <span class="font-weight-bold" style="font-size: 0.8rem">
@@ -254,7 +646,8 @@
                             </div>   
                         </div>
                         <div class="col-auto">
-                            <div class="r-btn r-btn-light r-btn--icon" onclick="onCommentVoteClick('${response.commentId}', 1)">
+                            <div class="r-btn r-btn-light r-btn--icon" onclick="onCommentVoteClick('${response
+                    .commentId}', 1)">
                                 <i class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
                             </div>
                             <span name="votes-count">${response.votesCount}</span>
@@ -320,25 +713,51 @@
     }
 
     $(document).ready(function() {
-        var commentEditor = new SimpleMDE({
-            status: false,
-            element: $("#comment-editor")[0],
-            placeholder: "Add a public comment...",
-            fullScreen: false,
-            withPreview: false,
+        $("#edit-tags").select2({
+            tags: true,
+            width: "100%",
+            placeholder: "Choose up to 5 tags to describe this post.",
+            tokenSeparators: [',', ' '],
+            maximumSelectionLength: 5,
         });
 
-        $(".CodeMirror, .CodeMirror-scroll").css('min-height', '150px');
-
-        $("#publish-comment").click(function() {
-            var text = commentEditor.options.previewRender(commentEditor.value());
-            var adsId = $(`[name='ads']`).attr("id");
-            createAdsTopicCommentAsync(
-                {
-                    adsId: adsId,
-                    text: text
-                });
-            commentEditor.value("");
+        $("#add-post__currency").select2({
+            tags: ["€", "$", "MDL"],
+            width: "100%",
+            height: "34px",
+            minimumResultsForSearch: -1,
         });
+
+        $("#edit-post__currency").select2({
+            tags: ["€", "$", "MDL"],
+            width: "100%",
+            height: "34px",
+            minimumResultsForSearch: -1,
+        });
+
+        //Fix for side by side & fullscrenn
+        postEditor.codemirror.on('refresh',
+            function() {
+                if (postEditor.isFullscreenActive()) {
+                    $('body').addClass('simplemde-fullscreen');
+                } else {
+                    $('body').removeClass('simplemde-fullscreen');
+                }
+            });
+
+        //Fix for empty editor until it has no focus
+        $('#add-post__modal').on('shown.bs.modal',
+            function() {
+                postEditor.codemirror.refresh();
+            });
+
+        $('#edit-post__modal').on('shown.bs.modal',
+            function() {
+                postEditor.codemirror.refresh();
+            });
+
+        onAddCommentClickEventHandler();
     });
 </script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=@Model.ExternalKeys.ACKey&libraries=places&callback=addACInputListeners" async defer></script>

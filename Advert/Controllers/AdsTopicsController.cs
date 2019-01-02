@@ -154,9 +154,9 @@ namespace Advert.Controllers
                         IsTopicOwner = adsTopic.ProfileId.Equals(profile.Id)
                     }),
                     
-                    ApiService = new ApiServiceModel
+                    ExternalKeys = new ExternalKeysModel
                     {
-                        ApiKey = _configuration.GetSection("GoogleOptions").GetValue<string>("ApiKey")
+                        ACKey = _configuration.GetSection("ExternalKeys").GetValue<string>("ACKey")
                     },
 
                     RecommendedAdsTopics = adsTopics
@@ -306,9 +306,9 @@ namespace Advert.Controllers
                         }
                     }, 
                     
-                    ApiService = new ApiServiceModel
+                    ExternalKeys = new ExternalKeysModel
                     {
-                        ApiKey = _configuration.GetSection("GoogleOptions").GetValue<string>("ApiKey")
+                        ACKey = _configuration.GetSection("ExternalKeys").GetValue<string>("ACKey")
                     },
                     
                     RecommendedAdsTopics = orderedAdsTopics.Select(recommendedAdsTopic => new RecommendedAdsTopicViewModel
@@ -442,7 +442,10 @@ namespace Advert.Controllers
             try
             {
                 await _adsTopicsManager.DeleteAdsTopicByIdAsync(ObjectId.Parse(adsId));
-                return Ok();
+                return Ok(new
+                {
+                    returnUrl = Url.Action("GetAdsTopics", "AdsTopics")
+                });
             }
             catch (Exception e)
             {
