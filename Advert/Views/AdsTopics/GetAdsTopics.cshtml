@@ -230,7 +230,7 @@
         var postEditor = new SimpleMDE({
             status: false,
             element: editors[i],
-            placeholder: "Type here...",
+            placeholder: "Write something...",
             fullScreen: false,
             withPreview: false,
             spellChecker: false
@@ -238,6 +238,7 @@
     }
 
     var turndown = new TurndownService();
+    
 
     function onAddPostClick() {
         exitPostEditorFullScreen();
@@ -388,6 +389,7 @@
                 });
         }
     }
+    
 
     $(document).ready(function() {
         $("#edit-tags").select2({
@@ -422,7 +424,7 @@
                 }
             });
 
-        //Fix for empty editor until it has no focus
+        //Fix for empty postEditor until it has no focus
         $('#add-post__modal').on('shown.bs.modal',
             function() {
                 postEditor.codemirror.refresh();

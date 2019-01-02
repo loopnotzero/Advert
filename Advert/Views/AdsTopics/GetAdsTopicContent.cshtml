@@ -82,10 +82,10 @@
                 </div>
 
                 <div id="comment-form" class="p-4">
-                    <textarea id="comment-editor" style="display: none"></textarea>
+                    <textarea id="comment-editor__write--comment" style="display: none"></textarea>
                     <div class="row mt-3">
                         <div class="col-12">
-                            <button id="add-comment" class="btn btn-light waves-effect waves-light btn-sm">COMMENT</button>
+                            <button id="add-comment" class="btn btn-primary__advert waves-effect waves-light btn-sm">COMMENT</button>
                         </div>
                     </div>
                 </div>
@@ -187,14 +187,14 @@
 
 <script>
     var editors = [
-        $("#post-editor__add--post")[0], $("#post-editor__edit--post")[0]
+        $("#post-editor__write--post")[0], $("#post-editor__edit--post")[0]
     ];
 
     for (var i = 0; i < editors.length; i++) {
         var postEditor = new SimpleMDE({
             status: false,
             element: editors[i],
-            placeholder: "Type here...",
+            placeholder: "Write something...",
             fullScreen: false,
             withPreview: false,
             spellChecker: false
@@ -203,8 +203,8 @@
 
     var commentEditor = new SimpleMDE({
         status: false,
-        element: $("#comment-editor")[0],
-        placeholder: "Add a public comment...",
+        element: $("#comment-editor__write--comment")[0],
+        placeholder: "Write a comment...",
         fullScreen: false,
         withPreview: false,
         spellChecker: false
@@ -214,6 +214,7 @@
 
     var turndown = new TurndownService();
 
+    
     function onAddPostClick() {
         exitPostEditorFullScreen();
         $("#add-post__post").click(function() {
@@ -375,13 +376,14 @@
                 });
         }
     }
+    
 
     function showReplyForm(replyTo, commentId) {
         removeReplyForm("reply-form");
 
         $(`#${commentId} #reply-placeholder:first`).append(
             `<div id="reply-form">   
-                <textarea id="reply-editor" style="display: none"></textarea>    
+                <textarea id="reply-editor__write-reply" style="display: none"></textarea>    
                 <div class="row mt-3">
                     <div class="col-12">   
                         <input type="button" class="btn btn-light waves-effect waves-light btn-sm mr-2" value="Cancel" onclick="removeReplyForm('reply-form')"/>     
@@ -393,7 +395,7 @@
 
         var replyEditor = new SimpleMDE({
             status: false,
-            element: $("#reply-editor")[0],
+            element: $("#reply-editor__write-reply")[0],
             placeholder: "Add a public reply...",
             fullScreen: false,
             withPreview: false,
@@ -571,6 +573,7 @@
             }
         });
     }
+    
 
     $(document).ready(function() {
         $("#edit-tags").select2({
