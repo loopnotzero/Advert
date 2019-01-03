@@ -383,18 +383,15 @@
     }
 
     function onEditPostTagsClick(postId) {
-        exitFullscreen(0);
-        exitFullscreen(1)
+        var tags = $(`#edit-tags__select--${postId}`);
         
-        $(`#edit-tags__select--${postId}`).select2({
+        tags.select2({
             tags: true,
             width: "100%",
             placeholder: "Choose up to 5 tags to describe this post.",
             tokenSeparators: [',', ' '],
             maximumSelectionLength: 5,
         });
-        
-        console.log(`GetPostTagsByPostIdAsync: ${postId}`)
         
         $.ajax({
             url: `/Posts/GetPostTagsByPostIdAsync/${postId}`,
@@ -405,26 +402,23 @@
                 console.log("textStatus: " + textStatus);
                 console.log("errorThrown: " + errorThrown);
             },
-            success: function(response) {    
-                if (response.tags.length > 0) {
-                    var editTags = $(`#edit-tags__select--${postId}`);
-                    editTags.val([]).trigger("change");                 
-                    for (var i = 0; i < response.tags.length; i++) {
-                        var option = new Option(response.tags[i], i, true, true);
-                        editTags.append(option).trigger('change');
-                    }
-                }
+            success: function(response) {
+                console.log(`Response tags: ${response.tags}`);
+
+                response.tags.forEach(function(element) {
+                    var option = new Option(element, element, true, true);
+                    tags.append(option).trigger('change');
+                });
             }
         });
         
-        $(`#edit-tags__save--${postId}`).click(function() {     
-            var tags = $(`#edit-tags__select--${postId}`).val()           
+        $(`#edit-tags__save--${postId}`).click(function() {
+            var tags = $(`#edit-tags__select--${postId}`).val();       
+            console.log(`Save tags: ${tags}`)
             
             var postTags = {
                 tags: tags
             };
-            
-            console.log(`CreatePostTagsByPostIdAsync: ${postId}`)
             
             $.ajax({
                 url: `/Posts/CreatePostTagsByPostIdAsync/${postId}`,
@@ -436,10 +430,24 @@
                     console.log("textStatus: " + textStatus);
                     console.log("errorThrown: " + errorThrown);
                 },
-                success: function(response) {                   
-                    $(`#edit-tags__modal--${postId}`).modal('toggle');
+                success: function(response) {
+                    console.log("Clear tags on save")
+                    $(`#edit-tags__select--${postId}`).val([]).trigger("change");
+                    
+                    console.log("Close edit tags modal window")
+                    $(`#edit-tags__modal--${postId}`).modal('toggle');           
                 }
             });          
+        });
+
+        $(`#edit-tags__close--${postId}`).click(function() {
+            console.log("Clear tags on close")
+            $(`#edit-tags__select--${postId}`).val([]).trigger("change");
+        });
+
+        $(`#edit-tags__cancel--${postId}`).click(function() {
+            console.log("Clear tags on cancel")
+            $(`#edit-tags__select--${postId}`).val([]).trigger("change");
         });
     }
 
@@ -507,4 +515,4 @@
     });
 </script>
 
-<script src="https://maps.googleapis.com/maps/api/js?key=@Model.PlacesApi&libraries=places&callback=addInputListeners" async defer></script>
+@* <script src="https://maps.googleapis.com/maps/api/js?key=@Model.PlacesApi&libraries=places&callback=addInputListeners" async defer></script> *@

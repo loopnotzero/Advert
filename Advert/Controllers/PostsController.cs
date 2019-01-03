@@ -39,7 +39,6 @@ namespace Advert.Controllers
         private readonly PostCommentsVotesManager<MongoDbPostCommentVote> _postCommentsVotesManager;
         private readonly PostCommentsVotesAggregationManager<MongoDbPostCommentVote, MongoDbPostCommentVoteAggregation> _postCommentsVotesAggregationManager;
         
-        private const string FreePrice = "FREE";
         private const string NoProfileImage = "/images/no_image.png";
 
         public PostsController(ILoggerFactory loggerFactory,
@@ -484,8 +483,13 @@ namespace Advert.Controllers
             try
             {
                 var post = await _postsManager.FindPostByIdAsync(ObjectId.Parse(postId));
-                post.Tags = viewModel.Tags;           
+
+                post.Tags = new List<string>();
+                
+                post.Tags.AddRange(viewModel.Tags);
+                
                 await _postsManager.UpdatePostAsync(post);                           
+                
                 return Ok(new
                 {
                     returnUrl = Url.Action("GetPostContent", "Posts", new {postId = post.Id})

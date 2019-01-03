@@ -6,7 +6,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <span class="font-weight-bold">Edit tags for this post</span>
-                <button type="button" class="btn btn-link" data-dismiss="modal">
+                <button id="edit-tags__close--@Model.PostId" type="button" class="btn btn-link" data-dismiss="modal">
                     <span>
                         <i class="zmdi zmdi-close zmdi-hc-fw"></i>
                     </span>
@@ -20,7 +20,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-light" data-dismiss="modal">
+                <button id="edit-tags__cancel--@Model.PostId"  type="button" class="btn btn-light" data-dismiss="modal">
                     Cancel
                 </button>
                 <button id="edit-tags__save--@Model.PostId" type="button" class="btn btn-primary__advert">
