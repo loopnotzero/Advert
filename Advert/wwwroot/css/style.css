@@ -579,8 +579,7 @@ select.form-control-lg:not([size]):not([multiple]) {
   overflow: auto;
 }
 
-.card-header,
-.card-footer {
+.card-header, .card-footer {
   padding: 0;
   background-color: #FFFFFF;
 }
@@ -1253,10 +1252,6 @@ select.form-control {
 
 .waves-block {
   display: block;
-}
-
-.card-hover:hover {
-  background-color: #f8fafd;
 }
 
 .card-body {
