@@ -58,7 +58,7 @@ namespace Advert.Managers
             await postCommentsCollection.UpdatePostCommentByIdAsync(commentId, entity, CancellationToken);
         }
 
-        public async Task<T> FindPostCommentById(string collectionName, ObjectId commendId)
+        public async Task<T> FindPostCommentById(string collectionName, ObjectId commentId)
         {
             ThrowIfDisposed();
 
@@ -67,12 +67,12 @@ namespace Advert.Managers
                 throw new ArgumentNullException(nameof(collectionName));
             }
             
-            if (commendId.Equals(ObjectId.Empty))
+            if (commentId.Equals(ObjectId.Empty))
             {
-                throw new ArgumentNullException(nameof(commendId));
+                throw new ArgumentNullException(nameof(commentId));
             }
 
-            return await Store.GetPostCommentsCollection(collectionName, CancellationToken).FindPostCommentByIdAsync(commendId, CancellationToken);
+            return await Store.GetPostCommentsCollection(collectionName, CancellationToken).FindPostCommentByIdAsync(commentId, CancellationToken);
         }
         
         public async Task<long> EstimatedPostCommentsByPostIdAsync(string collectionName)

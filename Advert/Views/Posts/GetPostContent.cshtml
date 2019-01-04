@@ -75,14 +75,14 @@
                 </div>
                 <div style="border-bottom: 1px solid #e3e3e3; padding-left: 20px; padding-bottom: 20px">
                     <h4>
-                        <span id="comments-count">@Model.Posts.First().CommentsCount</span> Comments
+                        <span id="comments-count__@Model.Posts.First().PostId">@Model.Posts.First().CommentsCount</span> Comments
                     </h4>
                 </div>
                 <div id="comment-form" class="p-4">
                     <textarea id="comment-editor__write--comment" style="display: none"></textarea>
                     <div class="row mt-3">
                         <div class="col-12">
-                            <button id="add-comment" class="btn btn-primary__advert waves-effect waves-light btn-sm">COMMENT</button>
+                            <button id="post-comment" class="btn btn-primary__advert waves-effect waves-light btn-sm">COMMENT</button>
                         </div>
                     </div>
                 </div>
@@ -113,11 +113,11 @@
                                         </div>
                                     </div>
                                     <div class="col-auto">
-                                        <div class="r-btn r-btn-light r-btn--icon" onclick="onVoteCommentClick('@comment.CommentId', 1)">
+                                        <div class="r-btn r-btn-light r-btn--icon" onclick="onVotePostCommentClick('@comment.PostId', '@comment.CommentId', 1)">
                                             <i class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
                                         </div>
                                         <span name="votes-count">@comment.VotesCount</span>
-                                        <span class="reply"></span> <a href="#reply" onclick="showReplyForm(null, '@comment.CommentId')">Reply</a>
+                                        <span class="reply"></span> <a href="#reply" onclick="showReplyForm('@comment.PostId', null, '@comment.CommentId')">Reply</a>
                                     </div>
                                     <div id="reply-placeholder"></div>
                                     @if (comment.Comments != null)
@@ -146,11 +146,11 @@
                                                         </div>
                                                     </div>
                                                     <div class="col-auto">
-                                                        <div class="r-btn r-btn-light r-btn--icon" onclick="onCommentVoteClick('@reply.CommentId', 1)">
+                                                        <div class="r-btn r-btn-light r-btn--icon" onclick="onVotePostCommentClick('@reply.PostId', '@reply.CommentId', 1)">
                                                             <i class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
                                                         </div>
                                                         <span name="votes-count">@reply.VotesCount</span>
-                                                        <span class="reply"></span> <a href="#reply" onclick="showReplyForm('@reply.ReplyTo', '@reply.CommentId')">Reply</a>
+                                                        <span class="reply"></span> <a href="#reply" onclick="showReplyForm('@reply.PostId', '@reply.ReplyTo', '@reply.CommentId')">Reply</a>
                                                     </div>
                                                     <div id="reply-placeholder"></div>
                                                 </div>
@@ -174,90 +174,26 @@
                 }
             </div>
         </div>
-    </div> 
-    @await Html.PartialAsync("EditPostTagsModal", @Model.Posts.First())
-    
-    @* @await Html.PartialAsync("AddPostModal") *@
-    @* @await Html.PartialAsync("EditPostModal") *@
-    @* @await Html.PartialAsync("DeletePostModal") *@
+    </div>
+    @await Html.PartialAsync("AddPostModal")
+    @await Html.PartialAsync("EditPostModal")
+    @await Html.PartialAsync("DeletePostModal")
+    @await Html.PartialAsync("EditPostTagsModal", Model.Posts.First())
 </section>
 
 <script>
-    
-    function showReplyForm(replyTo, commentId) {
-        removeReplyForm("reply-form");
+    var commentEditor = new SimpleMDE({
+        status: false,
+        element: $("#comment-editor__write--comment")[0],
+        placeholder: "Write something...",
+        fullScreen: false,
+        withPreview: false,
+        spellChecker: false
+    });
 
-        $(`#${commentId} #reply-placeholder:first`).append(
-            `<div id="reply-form">   
-                <textarea id="reply-editor__write-reply" style="display: none"></textarea>    
-                <div class="row mt-3">
-                    <div class="col-12">   
-                        <input type="button" class="btn btn-light waves-effect waves-light btn-sm mr-2" value="Cancel" onclick="removeReplyForm('reply-form')"/>     
-                        <input id="submit-reply" type="button" class="btn btn-primary__advert waves-effect waves-light btn-sm" value="Reply"/>
-                    </div>    
-                </div>
-            </div>`
-        );
-
-        var replyEditor = new SimpleMDE({
-            status: false,
-            element: $("#reply-editor__write-reply")[0],
-            placeholder: "Add a public reply...",
-            fullScreen: false,
-            withPreview: false,
-        });
-
-        $(".CodeMirror, .CodeMirror-scroll").css('min-height', '150px');
-
-        $("#submit-reply").click(function() {
-            removeReplyForm("reply-form");
-            var text = replyEditor.options.previewRender(replyEditor.value());
-            var postId = $(`[name='post']`).attr("id");
-            createCommentReplyAsync({
-                text: text,
-                replyTo: (replyTo == null ? commentId : replyTo),
-                postId: postId,
-            });
-        });
-    }
-
-    function removeReplyForm(commentId) {
-        var form = $(`#${commentId}`);
-        if (form.length !== 0) {
-            form.remove();
-        }
-    }
-
-    function onAddCommentClick() {
-        $("#add-comment").click(function() {
-            var text = postEditor[2].options.previewRender(postEditor[2].value());
-            var postId = $(`[name='post']`).attr("id");
-            createAdsTopicCommentAsync(
-                {
-                    postId: postId,
-                    text: text
-                });
-            postEditor[2].value("");
-        });
-    }
-
-    function onVoteCommentClick(commentId, voteType) {
-        var postId = $(`[name='postId']`).attr("id");
-        createPostCommentVoteAsync(postId, commentId, voteType);
-    }
-
-    function createCommentReplyAsync(comment) {
-        $.ajax({
-            url: `/Posts/CreatePostCommentAsync`,
-            type: "POST",
-            data: JSON.stringify(comment),
-            contentType: "application/json",
-            error: function(jqXhr, textStatus, errorThrown) {
-                console.log("jqXhr: " + jqXhr);
-                console.log("textStatus: " + textStatus);
-                console.log("errorThrown: " + errorThrown);
-            },
-            success: function(response) {
+    function addCommentReply(comment) {
+        createPostCommentAsync(comment,
+            function(response) {
                 $(`#${comment.replyTo} .media-body:first`).append(`
                 <div id="${response.commentId}" class="media p-2">
                     <img class="card-user__img" src="${response.profileImagePath
@@ -275,13 +211,13 @@
                             </div>             
                         </div>
                         <div class="col-auto">
-                            <div class="r-btn r-btn-light r-btn--icon" onclick="onCommentVoteClick('${response
-                    .commentId}', 1)" >
+                            <div class="r-btn r-btn-light r-btn--icon" onclick="onVotePostCommentClick('${
+                    response.postId}', '${response.commentId}', 1)" >
                                 <i class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
                             </div>
                             <span name="votes-count">${response.votesCount}</span>
-                            <a href="#reply" onclick="showReplyForm('${comment.replyTo}', '${response.commentId
-                    }')">Reply</a>
+                            <a href="#reply" onclick="showReplyForm('${comment.postId}', '${comment.replyTo}', '${
+                    response.commentId}')">Reply</a>
                         </div>
                         <div id="reply-placeholder"></div>
                     </div>
@@ -293,27 +229,87 @@
                     },
                     200);
 
-                updatePostCommentsCountByPostId(response.postId);
-            }
+                countPostCommentsByPostIdAsync(postId,
+                    function(response) {
+                        $(`#comments-count__${postId}`).text(response.commentsCount);
+                    });
+            });
+    }
+
+    function showReplyForm(postId, replyTo, commentId) {
+        removeReplyForm("reply-form");
+
+        $(`#${commentId} #reply-placeholder:first`).append(
+            `<div id="reply-form">   
+                <textarea id="reply-editor__write-reply" style="display: none"></textarea>    
+                <div class="row mt-3">
+                    <div class="col-12">   
+                        <input type="button" class="btn btn-light waves-effect waves-light btn-sm mr-2" value="Cancel" onclick="removeReplyForm('reply-form')"/>     
+                        <input id="submit-reply" type="button" class="btn btn-primary__advert waves-effect waves-light btn-sm" value="Reply"/>
+                    </div>    
+                </div>
+            </div>`
+        );
+
+        var replyEditor = new SimpleMDE({
+            status: false,
+            element: $("#reply-editor__write-reply")[0],
+            placeholder: "Write reply...",
+            fullScreen: false,
+            withPreview: false,
+        });
+
+        $(".CodeMirror, .CodeMirror-scroll").css('min-height', '150px');
+
+        $("#submit-reply").click(function() {
+            removeReplyForm("reply-form");
+            var text = replyEditor.options.previewRender(replyEditor.value());
+            addCommentReply({
+                text: text,
+                postId: postId,
+                replyTo: (replyTo == null ? commentId : replyTo),
+            });
         });
     }
 
-    function createPostCommentAsync(comment) {
-        $.ajax({
-            url: `/Posts/CreatePostCommentAsync`,
-            type: "POST",
-            data: JSON.stringify(comment),
-            contentType: "application/json",
-            error: function(jqXhr, textStatus, errorThrown) {
-                console.log("jqXhr: " + jqXhr);
-                console.log("textStatus: " + textStatus);
-                console.log("errorThrown: " + errorThrown);
-            },
-            success: function(response) {
-                $("#post-comments").prepend(`
+    function removeReplyForm(commentId) {
+        var form = $(`#${commentId}`);
+        if (form.length !== 0) {
+            form.remove();
+        }
+    }
+
+    function onVotePostCommentClick(postId, commentId, voteType) {
+        var vote = {
+            voteType: voteType,
+        }
+        createPostCommentVoteAsync(postId,
+            commentId,
+            vote,
+            function(response) {
+                switch (response.voteType) {
+                case 1:
+                    {
+                        $(`#${commentId} span[name=votes-count]:first`).text(response.votesCount);
+                    }
+                    break;
+                }
+            });
+    }
+
+    $(document).ready(function() {
+        $("#post-comment").click(function() {
+            var text = commentEditor.options.previewRender(commentEditor.value());
+            var comment = {
+                postId: postId,
+                text: text
+            }
+            createPostCommentAsync(comment,
+                function(response) {
+                    $("#post-comments").prepend(`
                 <div id="${response.commentId}" class="media p-2">
                     <img class="card-user__img" src="${response.profileImagePath
-                    }" width="48" height="48" alt="profile-image">
+                        }" width="48" height="48" alt="profile-image">
                     <div class="media-body media__img content__break">
                         <div class="col-auto">
                             <span class="font-weight-bold" style="font-size: 0.8rem">
@@ -327,79 +323,29 @@
                             </div>   
                         </div>
                         <div class="col-auto">
-                            <div class="r-btn r-btn-light r-btn--icon" onclick="onCommentVoteClick('${response
-                    .commentId}', 1)">
+                            <div class="r-btn r-btn-light r-btn--icon" onclick="onVotePostCommentClick('${
+                        response.postId}', '${response.commentId}', 1)">
                                 <i class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
                             </div>
                             <span name="votes-count">${response.votesCount}</span>
-                            <a href="#reply" onclick="showReplyForm(null, '${response.commentId}')">Reply</a>
+                            <a href="#reply" onclick="showReplyForm('${response.postId}', null, '${response.commentId
+                        }')">Reply</a>
                         </div>
                         <div id="reply-placeholder"></div>
                     </div>
                 </div>`);
 
-                $([document.documentElement, document.body]).animate({
-                        scrollTop: $(`#${response.commentId}`).offset().top - 250
-                    },
-                    200);
+                    $([document.documentElement, document.body]).animate({
+                            scrollTop: $(`#${response.commentId}`).offset().top - 250
+                        },
+                        200);
 
-                updatePostCommentsCountByPostId(response.postId);
-            }
-        });
-    }
-
-    function createPostCommentVoteAsync(postId, commentId, voteType) {
-        var vote = {
-            voteType: voteType,
-            postId: postId,
-            commentId: commentId
-        }
-        $.ajax({
-            url: "/Posts/CreatePostCommentVoteAsync",
-            type: "POST",
-            data: JSON.stringify(vote),
-            contentType: "application/json",
-            error: function(jqXhr, textStatus, errorThrown) {
-                console.log("jqXhr: " + jqXhr);
-                console.log("textStatus: " + textStatus);
-                console.log("errorThrown: " + errorThrown);
-            },
-            success: function(response) {
-                switch (response.voteType) {
-                case 1:
-                    {
-                        $(`#${commentId} span[name=votes-count]:first`).text(response.votesCount);
-                    }
-                    break;
-                }
-
-            }
-        });
-    }
-
-    function updatePostCommentsCountByPostId(postId) {
-        $.ajax({
-            url: `/Posts/CountPostCommentsByPostIdAsync/${postId}`,
-            type: "GET",
-            contentType: "application/json",
-            error: function(jqXhr, textStatus, errorThrown) {
-                console.log("jqXhr: " + jqXhr);
-                console.log("textStatus: " + textStatus);
-                console.log("errorThrown: " + errorThrown);
-            },
-            success: function(response) {
-                $("#comments-count").text(response.commentsCount);
-            }
-        });
-    }
- 
-    $(document).ready(function() {
-        $("#edit-tags").select2({
-            tags: true,
-            width: "100%",
-            placeholder: "Choose up to 5 tags to describe this post.",
-            tokenSeparators: [',', ' '],
-            maximumSelectionLength: 5,
+                    countPostCommentsByPostIdAsync(postId,
+                        function(response) {
+                            $(`#comments-count__${postId}`).text(response.commentsCount);
+                        });
+                });
+            commentEditor.value("");
         });
 
         $("#add-post__currency").select2({
@@ -415,9 +361,9 @@
             height: "34px",
             minimumResultsForSearch: -1,
         });
-       
+
         $(".CodeMirror, .CodeMirror-scroll").css('min-height', '150px');
     });
 </script>
 
-<script src="https://maps.googleapis.com/maps/api/js?key=@Model.PlacesApi&libraries=places&callback=addInputListeners" async defer></script>
+@* <script src="https://maps.googleapis.com/maps/api/js?key=@Model.PlacesApi&libraries=places&callback=addInputListeners" async defer></script> *@

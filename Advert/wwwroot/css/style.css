@@ -1474,6 +1474,10 @@ time {
   font-size: 0.9rem;
 }
 
+.post-header__tags:hover {
+  text-decoration: underline;
+}
+
 .post-header__icon {
   margin-right: 5px;
 }

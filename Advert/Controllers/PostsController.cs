@@ -178,8 +178,8 @@ namespace Advert.Controllers
 
         [HttpGet]
         [Authorize]
-        [Route("/Posts/{postId}")]
-        public async Task<IActionResult> GetPostContent(string postId, [FromQuery(Name = "page")] int page = 1)
+        [Route("/Posts")]
+        public async Task<IActionResult> GetPostContent([FromQuery(Name = "postId")] string postId, [FromQuery(Name = "page")] int page = 1)
         {
             try
             {
@@ -366,8 +366,8 @@ namespace Advert.Controllers
         
         [HttpPost]
         [Authorize]
-        [Route("/Posts/UpdatePostByIdAsync/{postId}")]
-        public async Task<IActionResult> UpdatePostByIdAsync(string postId, [FromBody] PostViewModel viewModel)
+        [Route("/Posts/UpdatePostByIdAsync")]
+        public async Task<IActionResult> UpdatePostByIdAsync([FromQuery(Name = "postId")] string postId, [FromBody] PostViewModel viewModel)
         {
             try
             {
@@ -397,8 +397,8 @@ namespace Advert.Controllers
 
         [HttpGet]
         [Authorize]
-        [Route("/Posts/GetPostByIdAsync/{postId}")]
-        public async Task<IActionResult> GetPostByIdAsync(string postId)
+        [Route("/Posts/GetPostByIdAsync")]
+        public async Task<IActionResult> GetPostByIdAsync([FromQuery(Name = "postId")] string postId)
         {
             try
             {
@@ -434,8 +434,8 @@ namespace Advert.Controllers
 
         [HttpDelete]
         [Authorize]
-        [Route("/Posts/DeletePostByIdAsync/{postId}")]
-        public async Task<IActionResult> DeletePostByIdAsync(string postId)
+        [Route("/Posts/DeletePostByIdAsync")]
+        public async Task<IActionResult> DeletePostByIdAsync([FromQuery(Name = "postId")] string postId)
         {
             try
             {
@@ -455,8 +455,8 @@ namespace Advert.Controllers
         
         [HttpGet]
         [Authorize]
-        [Route("/Posts/GetPostTagsByPostIdAsync/{postId}")]
-        public async Task<IActionResult> GetPostTagsByPostIdAsync(string postId)
+        [Route("/Posts/GetPostTagsByPostIdAsync")]
+        public async Task<IActionResult> GetPostTagsByPostIdAsync([FromQuery(Name = "postId")] string postId)
         {
             try
             {
@@ -477,8 +477,8 @@ namespace Advert.Controllers
         
         [HttpPost]
         [Authorize]
-        [Route("/Posts/CreatePostTagsByPostIdAsync/{postId}")]
-        public async Task<IActionResult> CreatePostTagsByPostIdAsync(string postId, [FromBody] PostTagsViewModel viewModel)
+        [Route("/Posts/CreatePostTagsByPostIdAsync")]
+        public async Task<IActionResult> CreatePostTagsByPostIdAsync([FromQuery(Name = "postId")] string postId, [FromBody] PostTagsViewModel viewModel)
         {
             try
             {
@@ -505,14 +505,14 @@ namespace Advert.Controllers
 
         [HttpPost]
         [Authorize]
-        [Route("/Posts/CreatePostVoteAsync")]
-        public async Task<IActionResult> CreatePostVoteAsync([FromBody] PostVoteViewModel viewModel)
+        [Route("/Posts/CreatePostVoteByPostIdAsync")]
+        public async Task<IActionResult> CreatePostVoteByPostIdAsync([FromQuery(Name = "postId")] string postId, [FromBody] PostVoteViewModel viewModel)
         {
             try
             {
-                var postId = ObjectId.Parse(viewModel.PostId);
-
-                var vote = await _postsVotesManager.FindPostVoteByNormalizedEmailAsync(postId, HttpContext.User.Identity.Name);
+                var pId = ObjectId.Parse(postId); 
+                
+                var vote = await _postsVotesManager.FindPostVoteByNormalizedEmailAsync(pId, HttpContext.User.Identity.Name);
 
                 if (vote == null)
                 {
@@ -520,19 +520,19 @@ namespace Advert.Controllers
                     {
                         Email = HttpContext.User.Identity.Name,
                         VoteType = viewModel.VoteType,
-                        PostId = postId,
+                        PostId = pId,
                         CreatedAt = DateTime.UtcNow
                     });
 
-                    var votesCount = await _postsVotesManager.CountPostVotesByVoteTypeAsync(postId, viewModel.VoteType);
+                    var votesCount = await _postsVotesManager.CountPostVotesByVoteTypeAsync(pId, viewModel.VoteType);
 
                     switch (viewModel.VoteType)
                     {
                         case VoteType.None:
-                            var logString = $"Vote type is not valid. Post id: {viewModel.PostId} Email: {HttpContext.User.Identity.Name}";
+                            var logString = $"Vote type is not valid. Post id: {postId} Email: {HttpContext.User.Identity.Name}";
                             throw new PostCommentVoteException(logString);
                         case VoteType.Like:
-                            await _postsManager.UpdatePostLikesCountByPostId(postId, votesCount);
+                            await _postsManager.UpdatePostLikesCountByPostId(pId, votesCount);
                             break;
                         default:
                             throw new ArgumentOutOfRangeException();
@@ -551,15 +551,15 @@ namespace Advert.Controllers
                         await _postsVotesManager.DeletePostVoteByIdAsync(vote.Id);
                     }
 
-                    var votesCount = await _postsVotesManager.CountPostVotesByVoteTypeAsync(postId, viewModel.VoteType);
+                    var votesCount = await _postsVotesManager.CountPostVotesByVoteTypeAsync(pId, viewModel.VoteType);
 
                     switch (viewModel.VoteType)
                     {
                         case VoteType.None:
-                            var logString = $"Vote type is not valid. Post id: {viewModel.PostId} Email: {HttpContext.User.Identity.Name}";
+                            var logString = $"Vote type is not valid. Post id: {postId} Email: {HttpContext.User.Identity.Name}";
                             throw new PostCommentVoteException(logString);
                         case VoteType.Like:
-                            await _postsManager.UpdatePostLikesCountByPostId(postId, votesCount);
+                            await _postsManager.UpdatePostLikesCountByPostId(pId, votesCount);
                             break;
                         default:
                             throw new ArgumentOutOfRangeException();
@@ -636,43 +636,41 @@ namespace Advert.Controllers
                 return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
             }
         }
-      
+
         [HttpPost]
         [Authorize]
         [Route("/Posts/CreatePostCommentVoteAsync")]
-        public async Task<IActionResult> CreatePostCommentVoteAsync([FromBody] PostCommentVoteViewModel viewModel)
+        public async Task<IActionResult> CreatePostCommentVoteAsync([FromQuery(Name = "postId")] string postId, [FromQuery(Name = "commentId")] string commentId, [FromBody] PostCommentVoteViewModel viewModel)
         {
             try
             {
                 var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
 
-                var commentId = ObjectId.Parse(viewModel.CommentId);
-
-                var commentVote = await _postCommentsVotesManager.FindPostCommentVoteOrDefaultAsync(commentId, profile.Id, null);
+                var commentVote = await _postCommentsVotesManager.FindPostCommentVoteOrDefaultAsync(ObjectId.Parse(commentId), profile.Id, null);
 
                 if (commentVote != null)
                 {
-                    await _postCommentsVotesManager.DeletePostCommentVoteByIdAsync(commentVote.Id);   
+                    await _postCommentsVotesManager.DeletePostCommentVoteByIdAsync(commentVote.Id);
                 }
                 else
                 {
                     await _postCommentsVotesManager.CreatePostCommentVoteAsync(new MongoDbPostCommentVote
                     {
-                        PostId = ObjectId.Parse(viewModel.PostId),
+                        PostId = commentVote.PostId,
                         VoteType = viewModel.VoteType,
-                        CommentId = commentId,
+                        CommentId = commentVote.CommentId,
                         ProfileId = profile.Id,
                         CreatedAt = DateTime.UtcNow,
-                    });   
+                    });
                 }
-                
-                var votesCount = await _postCommentsVotesManager.CountPostCommentVotesByCommentIdAsync(commentId);
 
-                var postComment = await _postCommentsManager.FindPostCommentById(viewModel.PostId, commentId);
+                var votesCount = await _postCommentsVotesManager.CountPostCommentVotesByCommentIdAsync(commentVote.CommentId);
+
+                var postComment = await _postCommentsManager.FindPostCommentById(postId, commentVote.CommentId);
 
                 postComment.VotesCount = votesCount;
 
-                await _postCommentsManager.UpdatePostCommentByIdAsync(viewModel.PostId, commentId, postComment);
+                await _postCommentsManager.UpdatePostCommentByIdAsync(postId, commentVote.CommentId, postComment);
 
                 return Ok(new PostCommentVotesModel
                 {
@@ -686,11 +684,11 @@ namespace Advert.Controllers
                 return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
             }
         }
-            
+
         [HttpGet]
         [Authorize]
-        [Route("/Posts/CountPostCommentsByPostIdAsync/{postId}")]
-        public async Task<IActionResult> CountPostCommentsByPostIdAsync(string postId)
+        [Route("/Posts/CountPostCommentsByPostIdAsync")]
+        public async Task<IActionResult> CountPostCommentsByPostIdAsync([FromQuery(Name = "postId")] string postId)
         {
             try
             {
