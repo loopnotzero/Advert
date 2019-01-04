@@ -1,0 +1,24 @@
+@using Advert.Models.Post
+@model PostViewModel
+
+<a href="/Posts?postId=@Model.PostId">
+    <h4 class="card-title font-weight-bold cut-long-text">@Model.Title</h4>
+</a>
+<p>
+    @if (Model.Price > 0)
+    {
+        <span style="font-size: 0.9rem; color: #71a830">@Model.Price@Model.Currency</span>
+    }
+    else
+    {
+        <span style="font-size: 0.9rem; color: #71a830">FREE</span>
+    }
+</p>
+<p>
+    @if (Model.Location != null)
+    {
+        <i class="zmdi zmdi-pin zmdi-hc-fw"></i>
+        <span style="font-size: 0.9rem; color: #90949c">@Model.Location</span>
+    }
+</p>
+@Html.Raw(Model.Text)

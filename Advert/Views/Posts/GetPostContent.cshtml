@@ -14,31 +14,11 @@
                 <div class="card-header">
                     @await Html.PartialAsync("PostHeaderPartial", Model.Posts.First())
                 </div>
-                <div class="card-body card-body__img">
-                    <h4>@Model.Posts.First().Title</h4>
-                    <p>
-                        @if (Model.Posts.First().Price > 0)
-                        {
-                            <span style="font-size: 0.9rem; color: #71a830">@Model.Posts.First().Price@Model.Posts.First().Currency</span>
-                        }
-                        else
-                        {
-                            <span style="font-size: 0.9rem; color: #71a830">FREE</span>
-                        }
-                    </p>
-                    <p>
-                        @if (@Model.Posts.First().Location != null)
-                        {
-                            <i class="zmdi zmdi-pin zmdi-hc-fw"></i>
-                            <span style="font-size: 0.9rem; color: #90949c">@Model.Posts.First().Location</span>
-                        }
-                    </p>
-                    <p class="card-text">@Html.Raw(Model.Posts.First().Text)</p>
+                <div class="card-body">
+                    @await Html.PartialAsync("PostContentPartial", Model.Posts.First())
                 </div>
-                <div style="border-bottom: 1px solid #e3e3e3; padding-left: 20px; padding-bottom: 20px">
-                    <h4>
-                        <span id="comments-count__@Model.Posts.First().PostId">@Model.Posts.First().CommentsCount</span> Comments
-                    </h4>
+                <div class="card-footer">
+                    @await Html.PartialAsync("PostFooterPartial", Model.Posts.First())
                 </div>
                 <div id="comment-form" class="p-4">
                     <textarea id="comment-editor__write--comment" style="display: none"></textarea>

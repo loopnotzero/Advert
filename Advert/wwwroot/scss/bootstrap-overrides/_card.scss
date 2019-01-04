@@ -75,10 +75,6 @@
   }
 }
 
-.card-body__img img {
-  max-width: 100%;
-}
-
 .card-body__title {
   font-size: 1.1rem;
   color: $headings-color;
@@ -109,5 +105,6 @@
 }
 
 .card-footer {
-  margin-top: -0.35rem; 
+  margin-top: -0.35rem;
+  border-top: 0;
 }

@@ -561,10 +561,6 @@ select.form-control-lg:not([size]):not([multiple]) {
   margin-top: -0.9rem;
 }
 
-.card-body__img img {
-  max-width: 100%;
-}
-
 .card-body__title {
   font-size: 1.1rem;
   color: #333;
@@ -595,6 +591,7 @@ select.form-control-lg:not([size]):not([multiple]) {
 
 .card-footer {
   margin-top: -0.35rem;
+  border-top: 0;
 }
 
 .btn {
