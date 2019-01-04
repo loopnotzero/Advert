@@ -26,9 +26,36 @@
                                     <div style="display: flex">
                                         <div class="post-header__time">@Model.Posts.First().CreatedAt.Humanize()</div>
                                         <div class="post-header__tags">
-                                            <a href="" title="" data-placement="top" data-target="#edit-tags__modal--@Model.Posts.First().PostId" data-toggle="modal">
-                                                <i class="zmdi zmdi-tag-more zmdi-hc-fw post-header__icon"></i>Edit tags
-                                            </a>
+                                            @{
+                                                var post = @Model.Posts.First();
+
+                                                if (post.Tags == null || post.Tags.Count == 0)
+                                                {
+                                                    <a href="" title="" data-placement="top" data-target="#edit-tags__modal--@post.PostId" data-toggle="modal" onclick="onEditPostTagsClick('@post.PostId')">
+                                                        <i class="zmdi zmdi-tag-more zmdi-hc-fw post-tag__icon"></i>Add tags
+                                                    </a>
+                                                }
+                                                else
+                                                {
+                                                    <a href="" title="" data-placement="top" data-target="#edit-tags__modal--@post.PostId" data-toggle="modal" onclick="onEditPostTagsClick('@post.PostId')">
+                                                        <i class="zmdi zmdi-tag-more zmdi-hc-fw post-tag__icon"></i>
+                                                    </a>
+
+                                                    var index = 0;
+                                                    
+                                                    foreach (var tag in post.Tags)
+                                                    {
+                                                        if (index++ == post.Tags.Count - 1)
+                                                        {
+                                                            <a class="post-tag__link" href="/Posts/GetPostsByTag?tagName=@tag">@tag</a> 
+                                                        }
+                                                        else
+                                                        {
+                                                            <a class="post-tag__link" href="/Posts/GetPostsByTag?tagName=@tag">@tag</a><span>, </span>
+                                                        }
+                                                    }
+                                                }
+                                            }
                                         </div>
                                     </div>
                                 </div>
@@ -317,41 +344,39 @@
             tokenSeparators: [',', ' '],
             maximumSelectionLength: 5,
         });
-
+        
         getPostTagsByPostIdAsync(postId,
             function(response) {
                 console.log(`Response tags: ${response.tags}`);
                 response.tags.forEach(function(element) {
-                    var option = new Option(element, element, true, true);
-                    tags.append(option).trigger('change');
+                    var option = new Option(element, element, false, true);
+                    tags.append(option);
                 });
+                tags.trigger('change');
             });
 
         $(`#edit-tags__save--${postId}`).off("click").click(function() {
-            var tags = $(`#edit-tags__select--${postId}`).val();
-
             var postTags = {
-                tags: tags
+                tags: $(`#edit-tags__select--${postId}`).val()
             };
-
             createPostTagsByPostIdAsync(postId,
                 postTags,
                 function(response) {
                     console.log("Close edit tags modal window");
                     $(`#edit-tags__modal--${postId}`).modal('toggle');
                     console.log("Clear tags on response");
-                    $(`#edit-tags__select--${postId}`).val([]).trigger("change");
+                    tags.empty();
                 });
         });
 
         $(`#edit-tags__close--${postId}`).off("click").click(function() {
             console.log("Clear tags on close");
-            $(`#edit-tags__select--${postId}`).val([]).trigger("change");
+            tags.empty();
         });
 
         $(`#edit-tags__cancel--${postId}`).off("click").click(function() {
             console.log("Clear tags on cancel");
-            $(`#edit-tags__select--${postId}`).val([]).trigger("change");
+            tags.empty();
         });
     }
 
@@ -392,8 +417,8 @@
                 });
         }
     }
-    
-    
+
+
     var commentEditor = new SimpleMDE({
         status: false,
         element: $("#comment-editor__write--comment")[0],
@@ -509,8 +534,8 @@
             });
     }
 
-    
-    $(document).ready(function() {      
+
+    $(document).ready(function() {
         $("#post-comment").click(function() {
             var text = commentEditor.options.previewRender(commentEditor.value());
             var comment = {

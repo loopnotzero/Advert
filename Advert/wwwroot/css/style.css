@@ -1474,11 +1474,11 @@ time {
   font-size: 0.9rem;
 }
 
-.post-header__tags:hover {
+.post-tag__link:hover {
   text-decoration: underline;
 }
 
-.post-header__icon {
+.post-tag__icon {
   margin-right: 5px;
 }
 
