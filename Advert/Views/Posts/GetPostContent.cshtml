@@ -182,6 +182,218 @@
 </section>
 
 <script>
+    var editors = [
+        new SimpleMDE({
+            status: false,
+            element: $("#post-editor__add--post")[0],
+            placeholder: "Write something...",
+            fullScreen: false,
+            withPreview: false,
+            spellChecker: false
+        }),
+        new SimpleMDE({
+            status: false,
+            element: $("#post-editor__edit--post")[0],
+            placeholder: "Write something...",
+            fullScreen: false,
+            withPreview: false,
+            spellChecker: false
+        })
+    ];
+
+    var turndown = new TurndownService();
+
+    //Fix for empty editors until it has no focus
+    $('#add-post__modal').on('shown.bs.modal',
+        function() {
+            editors[0].codemirror.refresh();
+        });
+
+    //Fix for side by side & fullscreen
+    editors[0].codemirror.on('refresh',
+        function() {
+            if (editors[0].isFullscreenActive()) {
+                $('body').addClass('simplemde-fullscreen');
+            } else {
+                $('body').removeClass('simplemde-fullscreen');
+            }
+        });
+
+    $('#edit-post__modal').on('shown.bs.modal',
+        function() {
+            editors[1].codemirror.refresh();
+        });
+
+    editors[1].codemirror.on('refresh',
+        function() {
+            if (editors[1].isFullscreenActive()) {
+                $('body').addClass('simplemde-fullscreen');
+            } else {
+                $('body').removeClass('simplemde-fullscreen');
+            }
+        });
+
+    function onAddPostClick() {
+        $("#add-post__post").off("click").click(function() {
+            var post = {
+                text: editors[0].options.previewRender(editors[0].value()),
+                title: $("#add-post__title").val(),
+                price: $("#add-post__price").val(),
+                location: $("#add-post__pac-input").val(),
+                currency: $('#add-post__currency :selected').text()
+            };
+            createPostAsync(post,
+                function(response) {
+                    console.log("Close add post modal window");
+                    $("#add-post__modal").modal('toggle');
+                    console.log(`Redirect to URL: ${response.returnUrl}`);
+                    window.location.replace(response.returnUrl);
+                });
+        });
+        $("#add-post__close").off("click").click(function() {
+            if (editors[0].isFullscreenActive()) {
+                editors[0].toggleFullScreen();
+            }
+        });
+    }
+
+    function onEditPostClick(postId) {
+        getPostByIdAsync(postId,
+            function(response) {
+                console.log(`Set post title: ${response.title}`);
+                $("#edit-post__title").val(response.title);
+                console.log(`Set post price: ${response.price}`);
+                $("#edit-post__price").val(response.price);
+                console.log(`Set post location: ${response.location}`);
+                $("#edit-post__pac-input").val(response.location);
+                console.log(`Set post currency: ${response.currency}`);
+                $('#edit-post__currency').val(response.currency).trigger('change');
+                console.log(`Set post text: ${response.text}`);
+                editors[1].value(turndown.turndown(response.text));
+            });
+        $("#edit-post__save").off("click").click(function() {
+            var post = {
+                text: editors[1].options.previewRender(editors[1].value()),
+                title: $("#edit-post__title").val(),
+                price: $("#edit-post__price").val(),
+                location: $("#edit-post__pac-input").val(),
+                currency: $('#edit-post__currency :selected').text()
+            };
+            updatePostByIdAsync(postId,
+                post,
+                function(response) {
+                    console.log("Close edit post modal window");
+                    $("#edit-post__modal").modal('toggle');
+                    console.log(`Redirect to URL: ${response.returnUrl}`);
+                    window.location.replace(response.returnUrl);
+                });
+        });
+        $("#edit-post__close").off("click").click(function() {
+            if (editors[1].isFullscreenActive()) {
+                editors[1].toggleFullScreen();
+            }
+        });
+    }
+
+    function onDeletePostClick(postId) {
+        $("#delete-post__delete").off("click").click(function() {
+            deletePostByIdAsync(postId,
+                function(response) {
+                    console.log("Close delete post modal window");
+                    $("#delete-post__modal").modal('toggle');
+                    console.log(`Redirect to URL: ${response.returnUrl}`);
+                    window.location.replace(response.returnUrl);
+                });
+        });
+    }
+
+    function onEditPostTagsClick(postId) {
+        var tags = $(`#edit-tags__select--${postId}`);
+
+        tags.select2({
+            tags: true,
+            width: "100%",
+            placeholder: "Choose up to 5 tags to describe this post.",
+            tokenSeparators: [',', ' '],
+            maximumSelectionLength: 5,
+        });
+
+        getPostTagsByPostIdAsync(postId,
+            function(response) {
+                console.log(`Response tags: ${response.tags}`);
+                response.tags.forEach(function(element) {
+                    var option = new Option(element, element, true, true);
+                    tags.append(option).trigger('change');
+                });
+            });
+
+        $(`#edit-tags__save--${postId}`).off("click").click(function() {
+            var tags = $(`#edit-tags__select--${postId}`).val();
+
+            var postTags = {
+                tags: tags
+            };
+
+            createPostTagsByPostIdAsync(postId,
+                postTags,
+                function(response) {
+                    console.log("Close edit tags modal window");
+                    $(`#edit-tags__modal--${postId}`).modal('toggle');
+                    console.log("Clear tags on response");
+                    $(`#edit-tags__select--${postId}`).val([]).trigger("change");
+                });
+        });
+
+        $(`#edit-tags__close--${postId}`).off("click").click(function() {
+            console.log("Clear tags on close");
+            $(`#edit-tags__select--${postId}`).val([]).trigger("change");
+        });
+
+        $(`#edit-tags__cancel--${postId}`).off("click").click(function() {
+            console.log("Clear tags on cancel");
+            $(`#edit-tags__select--${postId}`).val([]).trigger("change");
+        });
+    }
+
+    function onVotePostClick(postId, voteType) {
+        var vote = {
+            voteType: voteType
+        };
+        createPostVoteByPostIdAsync(postId,
+            vote,
+            function(response) {
+                switch (response.voteType) {
+                case 1:
+                    {
+                        console.log(`Post id: ${postId} votes count: ${response.votesCount}`)
+                        $(`#votes-count__${postId}`).text(response.votesCount);
+                    }
+                    break;
+                }
+            });
+    }
+
+    function addInputListeners() {
+        var inputs = [
+            document.getElementById('add-post__pac-input'),
+            document.getElementById('edit-post__pac-input')
+        ];
+        for (var i = 0; i < inputs.length; i++) {
+            var autocomplete = new google.maps.places.Autocomplete(inputs[i]);
+            autocomplete.addListener('place_changed',
+                function() {
+                    var place = autocomplete.getPlace();
+//                    if (!place.geometry) {
+//                        // User entered the name of a Place that was not suggested and
+//                        // pressed the Enter key, or the Place Details request failed.
+//                        window.alert("No details available for input: '" + place.name + "'");
+//                        return;
+//                    }
+                });
+        }
+    }
+    
+    
     var commentEditor = new SimpleMDE({
         status: false,
         element: $("#comment-editor__write--comment")[0],
@@ -297,7 +509,8 @@
             });
     }
 
-    $(document).ready(function() {
+    
+    $(document).ready(function() {      
         $("#post-comment").click(function() {
             var text = commentEditor.options.previewRender(commentEditor.value());
             var comment = {
