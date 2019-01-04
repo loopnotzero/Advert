@@ -73,10 +73,10 @@ namespace Advert.Controllers
         {
             try
             {
-                var postsPerPage = _configuration.GetSection("AdvertOptions").GetValue<int>("PostsPerPage");                           
-                
+                var postsPerPage = _configuration.GetSection("AdvertOptions").GetValue<int>("PostsPerPage");
+
                 var offset = (page - 1) * postsPerPage;
-                                             
+
                 List<MongoDbPost> posts;
 
                 if (string.IsNullOrEmpty(keyword))
@@ -88,12 +88,12 @@ namespace Advert.Controllers
                     posts = await _postsManager.FindPostsWhichContainsKeywordAsync(offset, postsPerPage, keyword);
                 }
 
-                var lastPage = (long) Math.Ceiling((double) await _postsManager.EstimatedPostsCountAsync() / postsPerPage);               
-                
+                var lastPage = (long) Math.Ceiling((double) await _postsManager.EstimatedPostsCountAsync() / postsPerPage);
+
                 var maxPages = _configuration.GetSection("AdvertOptions").GetValue<int>("MaxPages");
-                
+
                 var middlePosition = (long) Math.Ceiling((double) maxPages / 2);
-                
+
                 var beginPage = page - middlePosition;
 
                 if (beginPage <= 0)
@@ -114,7 +114,7 @@ namespace Advert.Controllers
                         endPage = lastPage < maxPages ? lastPage : maxPages;
                     }
                 }
-                                             
+
                 var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
 
 
@@ -126,7 +126,7 @@ namespace Advert.Controllers
                     EndPage = endPage,
                     CurrentPage = page,
                     LastPage = lastPage,
-                        
+
                     Profile = new ProfileModel
                     {
                         Id = profile.Id.ToString(),
@@ -154,7 +154,7 @@ namespace Advert.Controllers
                         CreatedAt = post.CreatedAt.Humanize(),
                         IsTopicOwner = post.ProfileId.Equals(profile.Id)
                     }),
-                    
+
                     PlacesApi = ppp,
 
                     RecommendedPosts = posts
@@ -166,7 +166,7 @@ namespace Advert.Controllers
                             ProfileImagePath = post.ProfileImagePath ?? NoProfileImage,
                             Title = post.Title,
                             CreatedAt = post.CreatedAt.Humanize(),
-                        }).ToList()                   
+                        }).ToList()
                 });
             }
             catch (Exception e)

@@ -35,196 +35,213 @@
     </div>
 </div>
 <div class="col-md-6 p-1">
-    @{
-        <div id="posts" class="card">
-            @foreach (var post in Model.Posts)
-            {
-                <article id="@post.PostId" class="card-hover">
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <div class="card-user">
-                                <div class="card-user__info">
-                                    <a href="/Profiles/@post.ProfileId">
-                                        <img src="@post.ProfileImagePath" class="card-user__img" alt="">
-                                    </a>
-                                    <div>
-                                        <a href="/Profiles/@post.ProfileId">
-                                            <div class="card-user__name">@post.ProfileName</div>
-                                        </a>
-                                        <div style="display: flex">
-                                            <div class="post-header__time">@post.CreatedAt</div>
-                                            <div class="post-header__tags">
-                                                @if (post.Tags == null || post.Tags.Count == 0)
+@{
+    <div id="posts" class="card">
+        @foreach (var post in Model.Posts)
+        {
+            <article id="@post.PostId" class="card-hover">
+                @* <div style="text-align: right; padding-top: 1rem; padding-right: 1rem"> *@
+                @*                         <ul class="list-inline"> *@
+                @*                             @if (post.IsTopicOwner) *@
+                @*                             { *@
+                @*                                 <li class="list-inline-item" onclick="onEditPostClick('@post.PostId')"> *@
+                @*                                     <a href="" title="" data-placement="top" data-target="#edit-post__modal" data-toggle="modal"> *@
+                @*                                         <i class="zmdi zmdi-edit zmdi-hc-fw"></i> *@
+                @*                                     </a> *@
+                @*                                 </li> *@
+                @*                                 <li class="list-inline-item" onclick="onDeletePostClick('@post.PostId')"> *@
+                @*                                     <a href="" title="" data-placement="top" data-target="#delete-post__modal" data-toggle="modal"> *@
+                @*                                         <i class="zmdi zmdi-delete zmdi-hc-fw"></i> *@
+                @*                                     </a> *@
+                @*                                 </li> *@
+                @*                             } *@
+                @*                         </ul> *@
+                @*                     </div> *@
+
+                <div class="card-header">
+                    <div class="card-user">
+                        <div class="card-user__info">
+                            <a href="/Profiles/@post.ProfileId">
+                                <img src="@post.ProfileImagePath" class="card-user__img" alt="">
+                            </a>
+                            <div>
+                                <a href="/Profiles/@post.ProfileId">
+                                    <div class="card-user__name">@post.ProfileName</div>
+                                </a>
+                                <div style="display: flex">
+                                    <div class="post-header__time">@post.CreatedAt</div>
+                                    <div class="post-header__tags">
+                                        @if (post.Tags == null || post.Tags.Count == 0)
+                                        {
+                                            <a href="" title="" data-placement="top" data-target="#edit-tags__modal--@post.PostId" data-toggle="modal" onclick="onEditPostTagsClick('@post.PostId')">
+                                                <i class="zmdi zmdi-tag-more zmdi-hc-fw post-tag__icon"></i>Add tags
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <a href="" title="" data-placement="top" data-target="#edit-tags__modal--@post.PostId" data-toggle="modal" onclick="onEditPostTagsClick('@post.PostId')">
+                                                <i class="zmdi zmdi-tag-more zmdi-hc-fw post-tag__icon"></i>
+                                            </a>
+
+                                            var index = 0;
+
+                                            foreach (var tag in post.Tags)
+                                            {
+                                                if (index++ == post.Tags.Count - 1)
                                                 {
-                                                    <a href="" title="" data-placement="top" data-target="#edit-tags__modal--@post.PostId" data-toggle="modal" onclick="onEditPostTagsClick('@post.PostId')">
-                                                        <i class="zmdi zmdi-tag-more zmdi-hc-fw post-tag__icon"></i>Add tags
-                                                    </a>
+                                                    <a class="post-tag__link" href="/Posts/GetPostsByTag?tagName=@tag">@tag</a>
                                                 }
                                                 else
                                                 {
-                                                    <a href="" title="" data-placement="top" data-target="#edit-tags__modal--@post.PostId" data-toggle="modal" onclick="onEditPostTagsClick('@post.PostId')">
-                                                        <i class="zmdi zmdi-tag-more zmdi-hc-fw post-tag__icon"></i>
-                                                    </a>
-
-                                                    var index = 0;
-                                                    
-                                                    foreach (var tag in post.Tags)
-                                                    {
-                                                        if (index++ == post.Tags.Count - 1)
-                                                        {
-                                                            <a class="post-tag__link" href="/Posts/GetPostsByTag?tagName=@tag">@tag</a> 
-                                                        }
-                                                        else
-                                                        {
-                                                            <a class="post-tag__link" href="/Posts/GetPostsByTag?tagName=@tag">@tag</a><span>, </span>
-                                                        }
-                                                    }
+                                                    <a class="post-tag__link" href="/Posts/GetPostsByTag?tagName=@tag">@tag</a><span>, </span>
                                                 }
-                                            </div>
-                                        </div>
+                                            }
+                                        }
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-sm-6">
-                            <div style="text-align: right; padding-top: 1rem; padding-right: 1rem">
-                                <ul class="list-inline">
-                                    @if (post.IsTopicOwner)
-                                    {
-                                        <li class="list-inline-item" onclick="onEditPostClick('@post.PostId')">
-                                            <a href="" title="" data-placement="top" data-target="#edit-post__modal" data-toggle="modal">
-                                                <i class="zmdi zmdi-edit zmdi-hc-fw"></i>
-                                            </a>
-                                        </li>
-                                        <li class="list-inline-item" onclick="onDeletePostClick('@post.PostId')">
-                                            <a href="" title="" data-placement="top" data-target="#delete-post__modal" data-toggle="modal">
-                                                <i class="zmdi zmdi-delete zmdi-hc-fw"></i>
-                                            </a>
-                                        </li>
-                                    }
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-body card-body__img">
-                        <a href="/Posts?postId=@post.PostId">
-                            <h4 class="card-title font-weight-bold cut-long-text">@post.Title</h4>
-                        </a>
-                        <p>
-                            @if (post.Price > 0)
-                            {
-                                <span style="font-size: 0.9rem; color: #71a830">@post.Price@post.Currency</span>
-                            }
-                            else
-                            {
-                                <span style="font-size: 0.9rem; color: #71a830">FREE</span>
-                            }
-                        </p>
-                        <p>
-                            @if (post.Location != null)
-                            {
-                                <i class="zmdi zmdi-pin zmdi-hc-fw"></i>
-                                <span style="font-size: 0.9rem; color: #90949c">@post.Location</span>
-                            }
-                        </p>
-                        @Html.Raw(post.Text)
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12 p-1">
-                            <div class="r-btn r-btn-light r-btn--icon waves-effect ml-4" onclick="onVotePostClick('@post.PostId', 1)">
-                                <i class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
-                            </div>
-                            <small id="votes-count__@post.PostId">@post.LikesCount</small>
-
-                            <div class="r-btn r-btn-light-no-hover r-btn--icon-no-hover">
-                                <i class="zmdi zmdi-comments zmdi-hc-fw"></i>
-                            </div>
-                            <small id="comments-count__@post.PostId">@post.CommentsCount</small>
-
-                            <div class="r-btn r-btn-light-no-hover r-btn--icon-no-hover">
-                                <i class="zmdi zmdi-eye zmdi-hc-fw"></i>
-                            </div>
-                            <small id="post-views__count--@post.PostId">@post.ViewsCount</small>
-
-                            <small class="text-muted float-right mt-2 mr-4">
-                                <a href="/Posts?postId=@post.PostId">READ MORE...</a>
-                            </small>
-                        </div>
-                    </div>
-                    <div style="border-bottom: 1px solid #d5d5d5;"></div>
-                    @await Html.PartialAsync("EditPostTagsModal", post)
-                </article>
-            }
-        </div>
-    }
-    @if (Model.LastPage > 1)
-    {
-        <div class="mt-4">
-            <nav>
-                <ul class="pagination justify-content-center">
-                    @if (Model.CurrentPage > 1)
-                    {
-                        <li class="page-item pagination-first">
-                            <a class="page-link" href="/?page=1"></a>
-                        </li>
-
-                        <li class="page-item pagination-prev">
-                            <a class="page-link" href="/?page=@(Model.CurrentPage - 1)"></a>
-                        </li>
-                    }
-                    else
-                    {
-                        <li class="page-item pagination-first disabled">
-                            <a class="page-link" href="#"></a>
-                        </li>
-
-                        <li class="page-item pagination-prev disabled">
-                            <a class="page-link"></a>
-                        </li>
-                    }
-
-                    @{
-                        for (var index = Model.BeginPage; index <= Model.EndPage; index++)
+                        @if (post.IsTopicOwner)
                         {
-                            if (Model.CurrentPage == index)
-                            {
-                                <li class="page-item active">
-                                    <a class="page-link" href="/?page=@index">@index</a>
-                                </li>
-                            }
-                            else
-                            {
-                                <li class="page-item">
-                                    <a class="page-link" href="/?page=@index">@index</a>
-                                </li>
-                            }
+                            <div class="actions float-right">
+                                <div class="dropdown actions__item">
+                                    <i data-toggle="dropdown" class="zmdi zmdi-chevron-down zmdi-hc-fw" aria-expanded="false"></i>
+                                    <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-end" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(30px, 26px, 0px);">
+                                        <a href="" class="dropdown-item" data-placement="top" data-target="#edit-post__modal" data-toggle="modal" onclick="onEditPostClick('@post.PostId')">
+                                            <i class="zmdi zmdi-edit zmdi-hc-fw"></i> Edit post
+                                        </a>
+                                        <a href="" class="dropdown-item" data-placement="top" data-target="#edit-tags__modal--@post.PostId" data-toggle="modal" onclick="onEditPostTagsClick('@post.PostId')">
+                                            <i class="zmdi zmdi-tag-more zmdi-hc-fw"></i> Edit tags
+                                        </a>
+                                        <a href="" class="dropdown-item" data-placement="top" data-target="#delete-post__modal" data-toggle="modal" onclick="onDeletePostClick('@post.PostId')">
+                                            <i class="zmdi zmdi-delete zmdi-hc-fw"></i> Delete post
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="card-body card-body__img">
+                    <a href="/Posts?postId=@post.PostId">
+                        <h4 class="card-title font-weight-bold cut-long-text">@post.Title</h4>
+                    </a>
+                    <p>
+                        @if (post.Price > 0)
+                        {
+                            <span style="font-size: 0.9rem; color: #71a830">@post.Price@post.Currency</span>
+                        }
+                        else
+                        {
+                            <span style="font-size: 0.9rem; color: #71a830">FREE</span>
+                        }
+                    </p>
+                    <p>
+                        @if (post.Location != null)
+                        {
+                            <i class="zmdi zmdi-pin zmdi-hc-fw"></i>
+                            <span style="font-size: 0.9rem; color: #90949c">@post.Location</span>
+                        }
+                    </p>
+                    @Html.Raw(post.Text)
+                </div>
+                <div class="row">
+                    <div class="col-md-12 p-1">
+                        <div class="r-btn r-btn-light r-btn--icon waves-effect ml-4" onclick="onVotePostClick('@post.PostId', 1)">
+                            <i class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
+                        </div>
+                        <small id="votes-count__@post.PostId">@post.LikesCount</small>
+
+                        <div class="r-btn r-btn-light-no-hover r-btn--icon-no-hover">
+                            <i class="zmdi zmdi-comments zmdi-hc-fw"></i>
+                        </div>
+                        <small id="comments-count__@post.PostId">@post.CommentsCount</small>
+
+                        <div class="r-btn r-btn-light-no-hover r-btn--icon-no-hover">
+                            <i class="zmdi zmdi-eye zmdi-hc-fw"></i>
+                        </div>
+                        <small id="post-views__count--@post.PostId">@post.ViewsCount</small>
+
+                        <small class="text-muted float-right mt-2 mr-4">
+                            <a href="/Posts?postId=@post.PostId">READ MORE...</a>
+                        </small>
+                    </div>
+                </div>
+                <div style="border-bottom: 1px solid #d5d5d5;"></div>
+                @await Html.PartialAsync("EditPostTagsModal", post)
+            </article>
+        }
+    </div>
+}
+@if (Model.LastPage > 1)
+{
+    <div class="mt-4">
+        <nav>
+            <ul class="pagination justify-content-center">
+                @if (Model.CurrentPage > 1)
+                {
+                    <li class="page-item pagination-first">
+                        <a class="page-link" href="/?page=1"></a>
+                    </li>
+
+                    <li class="page-item pagination-prev">
+                        <a class="page-link" href="/?page=@(Model.CurrentPage - 1)"></a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item pagination-first disabled">
+                        <a class="page-link" href="#"></a>
+                    </li>
+
+                    <li class="page-item pagination-prev disabled">
+                        <a class="page-link"></a>
+                    </li>
+                }
+
+                @{
+                    for (var index = Model.BeginPage; index <= Model.EndPage; index++)
+                    {
+                        if (Model.CurrentPage == index)
+                        {
+                            <li class="page-item active">
+                                <a class="page-link" href="/?page=@index">@index</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="/?page=@index">@index</a>
+                            </li>
                         }
                     }
+                }
 
-                    @if (Model.CurrentPage >= Model.EndPage)
-                    {
-                        <li class="page-item pagination-next disabled">
-                            <a class="page-link" href="#"></a>
-                        </li>
+                @if (Model.CurrentPage >= Model.EndPage)
+                {
+                    <li class="page-item pagination-next disabled">
+                        <a class="page-link" href="#"></a>
+                    </li>
 
-                        <li class="page-item pagination-last disabled">
-                            <a class="page-link" href="#"></a>
-                        </li>
-                    }
-                    else
-                    {
-                        <li class="page-item pagination-next">
-                            <a class="page-link" href="/?page=@(Model.CurrentPage + 1)"></a>
-                        </li>
+                    <li class="page-item pagination-last disabled">
+                        <a class="page-link" href="#"></a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item pagination-next">
+                        <a class="page-link" href="/?page=@(Model.CurrentPage + 1)"></a>
+                    </li>
 
-                        <li class="page-item pagination-last">
-                            <a class="page-link" href="/?page=@Model.LastPage"></a>
-                        </li>
-                    }
-                </ul>
-            </nav>
-        </div>
-    }
+                    <li class="page-item pagination-last">
+                        <a class="page-link" href="/?page=@Model.LastPage"></a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    </div>
+}
 </div>
 <div class="col-md-3 p-1">
     <div class="card p-4">
@@ -378,7 +395,7 @@
             tokenSeparators: [',', ' '],
             maximumSelectionLength: 5,
         });
-        
+
         getPostTagsByPostIdAsync(postId,
             function(response) {
                 console.log(`Response tags: ${response.tags}`);

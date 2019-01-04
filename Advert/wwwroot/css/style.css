@@ -585,13 +585,12 @@ select.form-control-lg:not([size]):not([multiple]) {
 
 .card-header,
 .card-footer {
-  padding-top: 1.3rem;
-  padding-bottom: 1.3rem;
-  background-color: #f9f9f9;
+  padding: 0;
+  background-color: #FFFFFF;
 }
 
 .card-header {
-  margin-bottom: -0.35rem;
+  border-bottom: 0;
 }
 
 .card-footer {
@@ -1014,6 +1013,7 @@ select.form-control {
   line-height: 1.5;
   transition: background-color 200ms, color 200ms;
   color: #2a2c2f !important;
+  padding: 0.25rem 1rem;
 }
 @media screen and (prefers-reduced-motion: reduce) {
   .dropdown-item {
@@ -1265,12 +1265,11 @@ select.form-control {
 .card-body {
   -ms-flex: 1 1 auto;
   flex: 1 1 auto;
-  padding: 1rem;
 }
 
 .card > .actions,
 .card-body > .actions {
-  position: absolute;
+  position: relative;
   right: 15px;
   z-index: 2;
   top: 18px;
@@ -1293,13 +1292,12 @@ select.form-control {
 .actions__item {
   display: inline-block;
   vertical-align: top;
-  line-height: 31px;
-  text-align: center;
+  line-height: 70px;
   font-size: 1.5rem;
   cursor: pointer;
   transition: color 300ms;
-  width: 30px;
-  height: 30px;
+  width: 50px;
+  height: 25px;
 }
 .actions__item > i {
   display: inline-block;
@@ -1328,7 +1326,7 @@ select.form-control {
   display: flex;
   align-items: center;
   font-size: 0.9rem;
-  padding: 0.5rem;
+  padding: 1rem;
 }
 
 .card-user__img {

@@ -26,33 +26,29 @@
                                     <div style="display: flex">
                                         <div class="post-header__time">@Model.Posts.First().CreatedAt.Humanize()</div>
                                         <div class="post-header__tags">
-                                            @{
-                                                var post = @Model.Posts.First();
+                                            @if (@Model.Posts.First().Tags == null || @Model.Posts.First().Tags.Count == 0)
+                                            {
+                                                <a href="" title="" data-placement="top" data-target="#edit-tags__modal--@Model.Posts.First().PostId" data-toggle="modal" onclick="onEditPostTagsClick('@Model.Posts.First().PostId')">
+                                                    <i class="zmdi zmdi-tag-more zmdi-hc-fw post-tag__icon"></i>Add tags
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <a href="" title="" data-placement="top" data-target="#edit-tags__modal--@Model.Posts.First().PostId" data-toggle="modal" onclick="onEditPostTagsClick('@Model.Posts.First().PostId')">
+                                                    <i class="zmdi zmdi-tag-more zmdi-hc-fw post-tag__icon"></i>
+                                                </a>
 
-                                                if (post.Tags == null || post.Tags.Count == 0)
-                                                {
-                                                    <a href="" title="" data-placement="top" data-target="#edit-tags__modal--@post.PostId" data-toggle="modal" onclick="onEditPostTagsClick('@post.PostId')">
-                                                        <i class="zmdi zmdi-tag-more zmdi-hc-fw post-tag__icon"></i>Add tags
-                                                    </a>
-                                                }
-                                                else
-                                                {
-                                                    <a href="" title="" data-placement="top" data-target="#edit-tags__modal--@post.PostId" data-toggle="modal" onclick="onEditPostTagsClick('@post.PostId')">
-                                                        <i class="zmdi zmdi-tag-more zmdi-hc-fw post-tag__icon"></i>
-                                                    </a>
-
-                                                    var index = 0;
+                                                var index = 0;
                                                     
-                                                    foreach (var tag in post.Tags)
+                                                foreach (var tag in @Model.Posts.First().Tags)
+                                                {
+                                                    if (index++ == @Model.Posts.First().Tags.Count - 1)
                                                     {
-                                                        if (index++ == post.Tags.Count - 1)
-                                                        {
-                                                            <a class="post-tag__link" href="/Posts/GetPostsByTag?tagName=@tag">@tag</a> 
-                                                        }
-                                                        else
-                                                        {
-                                                            <a class="post-tag__link" href="/Posts/GetPostsByTag?tagName=@tag">@tag</a><span>, </span>
-                                                        }
+                                                        <a class="post-tag__link" href="/Posts/GetPostsByTag?tagName=@tag">@tag</a> 
+                                                    }
+                                                    else
+                                                    {
+                                                        <a class="post-tag__link" href="/Posts/GetPostsByTag?tagName=@tag">@tag</a><span>, </span>
                                                     }
                                                 }
                                             }
