@@ -1,5 +1,4 @@
 ﻿@using Advert.Models.Post
-@using Humanizer
 @model AggregatorViewModel
 
 @await Html.PartialAsync("_Header", Model)
@@ -12,68 +11,8 @@
     <div class="row">
         <div class="col-md-8 p-2">
             <div class="card">
-                <div class="row">
-                    <div class="col-sm-6">
-                        <div class="card-user">
-                            <div class="card-user__info">
-                                <a href="/Profiles/5c27ea98eb64801aec9f3e5b">
-                                    <img src="/images/profiles/5c27ea98eb64801aec9f3e5b/0.jpeg" class="card-user__img" alt="">
-                                </a>
-                                <div>
-                                    <a href="/Profile/@Model.Posts.First().ProfileId">
-                                        <div class="card-user__name">@Model.Posts.First().ProfileName</div>
-                                    </a>
-                                    <div style="display: flex">
-                                        <div class="post-header__time">@Model.Posts.First().CreatedAt.Humanize()</div>
-                                        <div class="post-header__tags">
-                                            @if (@Model.Posts.First().Tags == null || @Model.Posts.First().Tags.Count == 0)
-                                            {
-                                                <a href="" title="" data-placement="top" data-target="#edit-tags__modal--@Model.Posts.First().PostId" data-toggle="modal" onclick="onEditPostTagsClick('@Model.Posts.First().PostId')">
-                                                    <i class="zmdi zmdi-tag-more zmdi-hc-fw post-tag__icon"></i>Add tags
-                                                </a>
-                                            }
-                                            else
-                                            {
-                                                <a href="" title="" data-placement="top" data-target="#edit-tags__modal--@Model.Posts.First().PostId" data-toggle="modal" onclick="onEditPostTagsClick('@Model.Posts.First().PostId')">
-                                                    <i class="zmdi zmdi-tag-more zmdi-hc-fw post-tag__icon"></i>
-                                                </a>
-
-                                                var index = 0;
-                                                    
-                                                foreach (var tag in @Model.Posts.First().Tags)
-                                                {
-                                                    if (index++ == @Model.Posts.First().Tags.Count - 1)
-                                                    {
-                                                        <a class="post-tag__link" href="/Posts/GetPostsByTag?tagName=@tag">@tag</a> 
-                                                    }
-                                                    else
-                                                    {
-                                                        <a class="post-tag__link" href="/Posts/GetPostsByTag?tagName=@tag">@tag</a><span>, </span>
-                                                    }
-                                                }
-                                            }
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-6">
-                        <div style="text-align: right; padding-top: 1rem; padding-right: 1rem">
-                            <ul class="list-inline">
-                                <li class="list-inline-item" onclick="onEditPostClick('@Model.Posts.First().PostId')">
-                                    <a href="" title="" data-placement="top" data-target="#edit-post__modal" data-toggle="modal">
-                                        <i class="zmdi zmdi-edit zmdi-hc-fw"></i>
-                                    </a>
-                                </li>
-                                <li class="list-inline-item" onclick="onDeletePostClick('@Model.Posts.First().PostId')">
-                                    <a href="" title="" data-placement="top" data-target="#delete-post__modal" data-toggle="modal">
-                                        <i class="zmdi zmdi-delete zmdi-hc-fw"></i>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
+                <div class="card-header">
+                    @await Html.PartialAsync("PostHeaderPartial", Model.Posts.First())
                 </div>
                 <div class="card-body card-body__img">
                     <h4>@Model.Posts.First().Title</h4>
@@ -340,7 +279,7 @@
             tokenSeparators: [',', ' '],
             maximumSelectionLength: 5,
         });
-        
+
         getPostTagsByPostIdAsync(postId,
             function(response) {
                 console.log(`Response tags: ${response.tags}`);

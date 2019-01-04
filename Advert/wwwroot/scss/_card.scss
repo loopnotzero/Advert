@@ -1,5 +1,3 @@
-
-
 .card-hover:hover {
   //cursor: pointer;
   background-color: #f8fafd;
@@ -42,13 +40,12 @@
 .actions__item {
   display: inline-block;
   vertical-align: top;
-  line-height: 70px;
-  //text-align: center;
-  font-size: 1.5rem;
+  line-height: 50px;
+  font-size: 1.3rem;
   cursor: pointer;
   transition: color 300ms;
-  //margin: 0 2px;
-  @include size(50px, 25px);
+  float: right;
+  @include size(50px, 0px);
 
   & > i {
     display: inline-block;

@@ -302,7 +302,8 @@ namespace Advert.Controllers
                             SharesCount = ((double)0).ToMetric(),
                             ViewsCount = ((double) post.ViewsCount).ToMetric(),
                             CommentsCount = ((double) post.CommentsCount).ToMetric(),
-                            CreatedAt = post.CreatedAt.Humanize()                           
+                            CreatedAt = post.CreatedAt.Humanize(),
+                            IsTopicOwner = post.ProfileId.Equals(profile.Id)
                         }
                     }, 
                     

@@ -1292,12 +1292,13 @@ select.form-control {
 .actions__item {
   display: inline-block;
   vertical-align: top;
-  line-height: 70px;
-  font-size: 1.5rem;
+  line-height: 50px;
+  font-size: 1.3rem;
   cursor: pointer;
   transition: color 300ms;
+  float: right;
   width: 50px;
-  height: 25px;
+  height: 0px;
 }
 .actions__item > i {
   display: inline-block;

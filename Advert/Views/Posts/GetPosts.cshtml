@@ -40,89 +40,9 @@
         @foreach (var post in Model.Posts)
         {
             <article id="@post.PostId" class="card-hover">
-                @* <div style="text-align: right; padding-top: 1rem; padding-right: 1rem"> *@
-                @*                         <ul class="list-inline"> *@
-                @*                             @if (post.IsTopicOwner) *@
-                @*                             { *@
-                @*                                 <li class="list-inline-item" onclick="onEditPostClick('@post.PostId')"> *@
-                @*                                     <a href="" title="" data-placement="top" data-target="#edit-post__modal" data-toggle="modal"> *@
-                @*                                         <i class="zmdi zmdi-edit zmdi-hc-fw"></i> *@
-                @*                                     </a> *@
-                @*                                 </li> *@
-                @*                                 <li class="list-inline-item" onclick="onDeletePostClick('@post.PostId')"> *@
-                @*                                     <a href="" title="" data-placement="top" data-target="#delete-post__modal" data-toggle="modal"> *@
-                @*                                         <i class="zmdi zmdi-delete zmdi-hc-fw"></i> *@
-                @*                                     </a> *@
-                @*                                 </li> *@
-                @*                             } *@
-                @*                         </ul> *@
-                @*                     </div> *@
-
                 <div class="card-header">
-                    <div class="card-user">
-                        <div class="card-user__info">
-                            <a href="/Profiles/@post.ProfileId">
-                                <img src="@post.ProfileImagePath" class="card-user__img" alt="">
-                            </a>
-                            <div>
-                                <a href="/Profiles/@post.ProfileId">
-                                    <div class="card-user__name">@post.ProfileName</div>
-                                </a>
-                                <div style="display: flex">
-                                    <div class="post-header__time">@post.CreatedAt</div>
-                                    <div class="post-header__tags">
-                                        @if (post.Tags == null || post.Tags.Count == 0)
-                                        {
-                                            <a href="" title="" data-placement="top" data-target="#edit-tags__modal--@post.PostId" data-toggle="modal" onclick="onEditPostTagsClick('@post.PostId')">
-                                                <i class="zmdi zmdi-tag-more zmdi-hc-fw post-tag__icon"></i>Add tags
-                                            </a>
-                                        }
-                                        else
-                                        {
-                                            <a href="" title="" data-placement="top" data-target="#edit-tags__modal--@post.PostId" data-toggle="modal" onclick="onEditPostTagsClick('@post.PostId')">
-                                                <i class="zmdi zmdi-tag-more zmdi-hc-fw post-tag__icon"></i>
-                                            </a>
-
-                                            var index = 0;
-
-                                            foreach (var tag in post.Tags)
-                                            {
-                                                if (index++ == post.Tags.Count - 1)
-                                                {
-                                                    <a class="post-tag__link" href="/Posts/GetPostsByTag?tagName=@tag">@tag</a>
-                                                }
-                                                else
-                                                {
-                                                    <a class="post-tag__link" href="/Posts/GetPostsByTag?tagName=@tag">@tag</a><span>, </span>
-                                                }
-                                            }
-                                        }
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        @if (post.IsTopicOwner)
-                        {
-                            <div class="actions float-right">
-                                <div class="dropdown actions__item">
-                                    <i data-toggle="dropdown" class="zmdi zmdi-chevron-down zmdi-hc-fw" aria-expanded="false"></i>
-                                    <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-end" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(30px, 26px, 0px);">
-                                        <a href="" class="dropdown-item" data-placement="top" data-target="#edit-post__modal" data-toggle="modal" onclick="onEditPostClick('@post.PostId')">
-                                            <i class="zmdi zmdi-edit zmdi-hc-fw"></i> Edit post
-                                        </a>
-                                        <a href="" class="dropdown-item" data-placement="top" data-target="#edit-tags__modal--@post.PostId" data-toggle="modal" onclick="onEditPostTagsClick('@post.PostId')">
-                                            <i class="zmdi zmdi-tag-more zmdi-hc-fw"></i> Edit tags
-                                        </a>
-                                        <a href="" class="dropdown-item" data-placement="top" data-target="#delete-post__modal" data-toggle="modal" onclick="onDeletePostClick('@post.PostId')">
-                                            <i class="zmdi zmdi-delete zmdi-hc-fw"></i> Delete post
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        }
-                    </div>
+                    @await Html.PartialAsync("PostHeaderPartial", post)
                 </div>
-
                 <div class="card-body card-body__img">
                     <a href="/Posts?postId=@post.PostId">
                         <h4 class="card-title font-weight-bold cut-long-text">@post.Title</h4>
