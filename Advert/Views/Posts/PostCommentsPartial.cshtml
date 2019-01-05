@@ -45,11 +45,11 @@
                                 Reply
                             </a>
                             <span class="dot-separator"></span>
-                            <a href="#edit" onclick="onEditCommentClick()" style="font-size: 0.8rem">
+                            <a href="#edit" data-placement="top" data-target="#edit-comment__modal--@comment.CommentId" data-toggle="modal" onclick="onEditCommentClick('@comment.CommentId')" style="font-size: 0.8rem">
                                 Edit
                             </a>
                             <span class="dot-separator"></span>
-                            <a href="#delete" onclick="onDeleteCommentClick()" style="font-size: 0.8rem">
+                            <a href="#delete" data-placement="top" data-target="#delete-comment__modal--@comment.CommentId" data-toggle="modal" onclick="onDeleteCommentClick('@comment.CommentId')" style="font-size: 0.8rem">
                                 Delete
                             </a>
                         </div>
@@ -100,11 +100,11 @@
                                                 Reply
                                             </a>
                                             <span class="dot-separator"></span>
-                                            <a href="#edit" onclick="onEditCommentClick()" style="font-size: 0.8rem">
+                                            <a href="#edit" onclick="onEditCommentClick('@reply.CommentId')" style="font-size: 0.8rem">
                                                 Edit
                                             </a>
                                             <span class="dot-separator"></span>
-                                            <a href="#delete" onclick="onDeleteCommentClick()" style="font-size: 0.8rem">
+                                            <a href="#delete" onclick="onDeleteCommentClick('@reply.CommentId')" style="font-size: 0.8rem">
                                                 Delete
                                             </a>
                                         </div>
@@ -117,11 +117,14 @@
                 }
             </div>
         </div>
+        @await Html.PartialAsync("EditCommentModal", comment)
+        @await Html.PartialAsync("DeleteCommentModal", comment)
     }
 }
 
 <script>
-    function onEditCommentClick() {
+    function onEditCommentClick(commentId) {
+        console.log("onEditCommentClick");
     }
 
     function onReplyCommentClick(postId, replyTo, commentId) {
@@ -191,11 +194,11 @@
                                 Reply
                             </a>
                             <span class="dot-separator"></span>
-                            <a href="#edit" onclick="onEditCommentClick()" style="font-size: 0.8rem">
+                            <a href="#edit" onclick="onEditCommentClick('${comment.commentId}')" style="font-size: 0.8rem">
                                 Edit
                             </a>
                             <span class="dot-separator"></span>
-                            <a href="#delete" onclick="onDeleteCommentClick()" style="font-size: 0.8rem">
+                            <a href="#delete" onclick="onDeleteCommentClick('${comment.commentId}')" style="font-size: 0.8rem">
                                 Delete
                             </a>
                         </div>
