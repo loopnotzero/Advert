@@ -7,7 +7,7 @@
     .pac-container { z-index: 2000 !important; }
 </style>
 
-<section id="@Model.Posts.First().PostId" name="post" class="content">
+<section id="@Model.Posts.First().PostId" class="content">
     <div class="row">
         <div class="col-md-8 p-2">
             <div class="card">
@@ -434,6 +434,7 @@
 
     $(document).ready(function() {
         $("#post-comment").click(function() {
+            var postId = $("section").attr('id')
             var text = commentEditor.options.previewRender(commentEditor.value());
             var comment = {
                 postId: postId,
