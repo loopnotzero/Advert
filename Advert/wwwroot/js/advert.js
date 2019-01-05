@@ -101,10 +101,10 @@ function countPostCommentsByPostIdAsync(postId, callback) {
     });
 }
 
-function createPostVoteByPostIdAsync(postId, vote, callback) {
+function createPostVoteIdAsync(postId, vote, callback) {
     console.log(`Create post vote byte post id: ${postId} vote type: ${vote.voteType}`);
     $.ajax({
-        url: `/Posts/CreatePostVoteByPostIdAsync?postId=${postId}`,
+        url: `/Posts/CreatePostVoteAsync?postId=${postId}`,
         type: "POST",
         data: JSON.stringify(vote),
         contentType: "application/json",

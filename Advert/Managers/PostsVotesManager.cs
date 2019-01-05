@@ -63,7 +63,7 @@ namespace Advert.Managers
             return await Store.FindPostVoteAsync(postId, profileId, CancellationToken);
         }
         
-        public async Task<List<T>> FindPostVotesAsync(ObjectId profileId)
+        public async Task<List<T>> FindPostsVotesAsync(ObjectId profileId)
         {
             ThrowIfDisposed();
 
@@ -72,7 +72,7 @@ namespace Advert.Managers
                 throw new ArgumentNullException(nameof(profileId));
             }
 
-            return await Store.FindPostVotesAsync(profileId, CancellationToken);
+            return await Store.FindPostsVotesAsync(profileId, CancellationToken);
         }
 
         public async Task<long> CountPostVotesAsync(ObjectId postId, VoteType voteType)

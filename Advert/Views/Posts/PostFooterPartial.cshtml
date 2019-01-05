@@ -34,7 +34,7 @@
             voteType: voteType,
             votesCount: votesCount.text()
         };
-        createPostVoteByPostIdAsync(postId,
+        createPostVoteIdAsync(postId,
             vote,
             function(response) {
                 switch (response.voteType) {

@@ -40,19 +40,7 @@ namespace Advert.Managers
             
             await _store.CreatePostAsync(entity, CancellationToken);
         }
-        
-        public async Task UpdatePostAsync(T entity)
-        {
-            ThrowIfDisposed();
-
-            if (entity == null)
-            {
-                throw new ArgumentNullException(nameof(entity));
-            }
-            
-            await _store.UpdatePostAsync(entity, CancellationToken);
-        }
-
+             
         public async Task<T> FindPostByIdAsync(ObjectId postId)
         {
             ThrowIfDisposed();
@@ -149,7 +137,7 @@ namespace Advert.Managers
             return await _store.DeletePostByIdAsync(postId, CancellationToken);
         }
 
-        public async Task<ReplaceOneResult> ReplacePostAsync(T entity)
+        public async Task<ReplaceOneResult> UpdatePostAsync(T entity)
         {
             ThrowIfDisposed();
 
@@ -157,10 +145,9 @@ namespace Advert.Managers
             {
                 throw new ArgumentNullException(nameof(entity));
             }
-
-            return await _store.ReplacePostAsync(entity, CancellationToken);
+            
+            return await _store.UpdatePostAsync(entity, CancellationToken);
         }
-
         public void Dispose()
         {
             Dispose(true);

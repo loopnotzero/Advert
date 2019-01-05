@@ -41,8 +41,31 @@ namespace Advert.Managers
        
         public async Task<T> FindPostCommentVoteOrDefaultAsync(ObjectId commentId, ObjectId profileId, T defaultValue)
         {
-            ThrowIfDisposed();           
+            ThrowIfDisposed();
+
+            if (commentId.Equals(ObjectId.Empty))
+            {
+                throw new ArgumentException(nameof(commentId));
+            }
+
+            if (profileId.Equals(ObjectId.Empty))
+            {
+                throw new ArgumentException(nameof(profileId));
+            }
+            
             return await Store.FindPostCommentVoteOrDefaultAsync(commentId, profileId, defaultValue, CancellationToken);
+        }
+        
+        public async Task<List<T>> FindPostsCommentsVotesAsync(ObjectId profileId)
+        {
+            ThrowIfDisposed();
+
+            if (profileId.Equals(ObjectId.Empty))
+            {
+                throw new ArgumentException(nameof(profileId));
+            }
+            
+            return await Store.FindPostsCommentsVotesAsync(profileId, CancellationToken);
         }
         
         public async Task<long> CountPostCommentVotesByCommentIdAsync(ObjectId commentId)
@@ -55,7 +78,7 @@ namespace Advert.Managers
         {
             ThrowIfDisposed();
 
-            if (voteId == null)
+            if (voteId.Equals(ObjectId.Empty))
             {
                 throw new ArgumentNullException(nameof(voteId));
             }
@@ -85,6 +108,6 @@ namespace Advert.Managers
             {
                 throw new ObjectDisposedException(GetType().Name);
             }
-        }
+        }  
     }
 }

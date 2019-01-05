@@ -28,6 +28,20 @@
       }
     }
   }
+
+  &:not(.actions--inverse) {
+    .comments__item {
+      color: lighten($body-color, 20%);
+
+      &:hover {
+        color: $body-color;
+      }
+
+      &.comments__item--active {
+        color: darken($body-color, 10%);
+      }
+    }
+  }
 }
 
 .actions__item {
@@ -46,6 +60,22 @@
   }
 }
 
+.comments__item {
+  display: inline-block;
+  vertical-align: top;
+  line-height: 84px;
+  font-size: 1.3rem;
+  cursor: pointer;
+  transition: color 300ms;
+  float: right;
+  @include size(30px, 0px);
+
+  & > i {
+    display: inline-block;
+    width: 100%;
+  }
+}
+
 .actions--inverse {
   .actions__item {
     color: rgba($white, 0.7);
@@ -54,8 +84,20 @@
       color: $white;
     }
   }
+  
+  .comments__item {
+    color: rgba($white, 0.7);
 
+    &:hover {
+      color: $white;
+    }
+  }
+  
   .actions__item--active {
+    color: $white;
+  }
+
+  .comments__item--active {
     color: $white;
   }
 }

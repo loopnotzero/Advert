@@ -137,11 +137,11 @@ time {
   margin-right: 5px;
 }
 
-.reply {
+.dot-separator {
   color: #657786
 }
 
-.reply:before {
+.dot-separator:before {
   content: "\00b7"
 }
 
@@ -175,7 +175,7 @@ blockquote {
 }
 
 .media__comment {
-  padding: 1px 2px 1px 2px;
+  padding: 1px 1px 1px 1px;
 }
 
 .description {

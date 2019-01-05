@@ -1280,6 +1280,15 @@ select.form-control {
 .actions:not(.actions--inverse) .actions__item.actions__item--active {
   color: #5c6165;
 }
+.actions:not(.actions--inverse) .comments__item {
+  color: #a9adb1;
+}
+.actions:not(.actions--inverse) .comments__item:hover {
+  color: #747a80;
+}
+.actions:not(.actions--inverse) .comments__item.comments__item--active {
+  color: #5c6165;
+}
 
 .actions__item {
   display: inline-block;
@@ -1297,13 +1306,38 @@ select.form-control {
   width: 100%;
 }
 
+.comments__item {
+  display: inline-block;
+  vertical-align: top;
+  line-height: 84px;
+  font-size: 1.3rem;
+  cursor: pointer;
+  transition: color 300ms;
+  float: right;
+  width: 30px;
+  height: 0px;
+}
+.comments__item > i {
+  display: inline-block;
+  width: 100%;
+}
+
 .actions--inverse .actions__item {
   color: rgba(255, 255, 255, 0.7);
 }
 .actions--inverse .actions__item:hover {
   color: #FFFFFF;
 }
+.actions--inverse .comments__item {
+  color: rgba(255, 255, 255, 0.7);
+}
+.actions--inverse .comments__item:hover {
+  color: #FFFFFF;
+}
 .actions--inverse .actions__item--active {
+  color: #FFFFFF;
+}
+.actions--inverse .comments__item--active {
   color: #FFFFFF;
 }
 
@@ -1478,11 +1512,11 @@ time {
   margin-right: 5px;
 }
 
-.reply {
+.dot-separator {
   color: #657786;
 }
 
-.reply:before {
+.dot-separator:before {
   content: "·";
 }
 
@@ -1516,7 +1550,7 @@ blockquote {
 }
 
 .media__comment {
-  padding: 1px 2px 1px 2px;
+  padding: 1px 1px 1px 1px;
 }
 
 .description {

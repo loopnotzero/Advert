@@ -44,7 +44,7 @@ namespace Advert.Managers
             await postComments.CreatePostCommentAsync(entity, CancellationToken);
         }
         
-        public async Task UpdatePostCommentByIdAsync(string collectionName, ObjectId commentId, T entity)
+        public async Task UpdatePostCommentAsync(string collectionName, ObjectId commentId, T entity)
         {
             ThrowIfDisposed();
 
@@ -58,6 +58,25 @@ namespace Advert.Managers
             await postCommentsCollection.UpdatePostCommentByIdAsync(commentId, entity, CancellationToken);
         }
 
+        public async Task DeletePostCommentAsync(string collectionName, ObjectId commentId)
+        {
+            ThrowIfDisposed();
+
+            if (string.IsNullOrEmpty(collectionName))
+            {
+                throw new ArgumentNullException(nameof(collectionName));
+            }
+
+            if (commentId.Equals(ObjectId.Empty))
+            {
+                throw new ArgumentNullException(nameof(commentId));
+            }
+
+            var postCommentsCollection = Store.GetPostCommentsCollection(collectionName, CancellationToken);
+
+            await postCommentsCollection.DeletePostCommentByIdAsync(commentId, CancellationToken);
+        }
+        
         public async Task<T> FindPostCommentById(string collectionName, ObjectId commentId)
         {
             ThrowIfDisposed();

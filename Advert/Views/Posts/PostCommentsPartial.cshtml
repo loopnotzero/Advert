@@ -1,0 +1,244 @@
+@using Advert.Models.Post
+@model IEnumerable<PostCommentViewModel>
+
+@if (Model != null)
+{
+    foreach (var comment in Model)
+    {
+        <div id="@comment.CommentId" class="media p-2">
+            @if (!string.IsNullOrEmpty(comment.ProfileImagePath))
+            {
+                <img class="card-user__img" src="@comment.ProfileImagePath" width="48" height="48" alt="profile-image">
+            }
+            else
+            {
+                <img class="card-user__img" src="/images/no_image.png" width="48" height="48" alt="profile-image">
+            }
+            <div class="media-body media__img content__break">
+                <div class="col-auto">
+                    <span class="font-weight-bold" style="font-size: 0.8rem">
+                        <a href="/Profile/@comment.ProfileName">@comment.ProfileName</a>
+                    </span>
+                    <span class="time" style="font-size: 0.8rem"> @comment.CreatedAt</span>
+                </div>
+                <div class="col-auto media__border">
+                    <div class="media__comment">
+                        @Html.Raw(comment.Text)
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <div class="row">
+                        <div class="col-md-12 p-1">
+                            <div class="r-btn r-btn-light r-btn--icon waves-effect ml-4" onclick="onPostCommentVoteClick('@comment.PostId', '@comment.CommentId', 1)">
+                                @if (comment.IsCommentVoted)
+                                {
+                                    <i id="vote-icon__@comment.CommentId" class="zmdi zmdi-favorite zmdi-hc-fw"></i>
+                                }
+                                else
+                                {
+                                    <i id="vote-icon__@comment.CommentId" class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
+                                }
+                            </div>
+                            <small id="votes-count__@comment.CommentId">@comment.VotesCount</small>
+                            <span class="dot-separator"></span>
+                            <a href="#reply" onclick="onReplyCommentClick('@comment.PostId', null, '@comment.CommentId')" style="font-size: 0.8rem">
+                                Reply
+                            </a>
+                            <span class="dot-separator"></span>
+                            <a href="#edit" onclick="onEditCommentClick()" style="font-size: 0.8rem">
+                                Edit
+                            </a>
+                            <span class="dot-separator"></span>
+                            <a href="#delete" onclick="onDeleteCommentClick()" style="font-size: 0.8rem">
+                                Delete
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div id="reply-placeholder"></div>
+                @if (comment.Comments != null)
+                {
+                    foreach (var reply in comment.Comments)
+                    {
+                        <div id="@reply.CommentId" class="media p-2">
+                            @if (!string.IsNullOrEmpty(reply.ProfileImagePath))
+                            {
+                                <img class="card-user__img" src="@reply.ProfileImagePath" width="48" height="48" alt="profile-image">
+                            }
+                            else
+                            {
+                                <img class="card-user__img" src="/images/no_image.png" width="48" height="48" alt="profile-image">
+                            }
+                            <div class="media-body media__img content__break">
+                                <div class="col-auto">
+                                    <span class="font-weight-bold" style="font-size: 0.8rem">
+                                        <a href="/Profile/@reply.ProfileName">@reply.ProfileName</a>
+                                    </span>
+                                    <span class="time" style="font-size: 0.8rem"> @reply.CreatedAt</span>
+                                </div>
+                                <div class="col-auto media__border">
+                                    <div class="media__comment">
+                                        @Html.Raw(reply.Text)
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="row">
+                                        <div class="col-md-12 p-1">
+                                            <div class="r-btn r-btn-light r-btn--icon waves-effect ml-4" onclick="onPostCommentVoteClick('@reply.PostId', '@reply.CommentId', 1)">
+                                                @if (reply.IsCommentVoted)
+                                                {
+                                                    <i id="vote-icon__@reply.CommentId" class="zmdi zmdi-favorite zmdi-hc-fw"></i>
+                                                }
+                                                else
+                                                {
+                                                    <i id="vote-icon__@reply.CommentId" class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
+                                                }
+                                            </div>
+                                            <small id="votes-count__@reply.CommentId">@reply.VotesCount</small>
+                                            <span class="dot-separator"></span>
+                                            <a href="#reply" onclick="onReplyCommentClick('@reply.PostId', '@reply.ReplyTo', '@reply.CommentId')" style="font-size: 0.8rem">
+                                                Reply
+                                            </a>
+                                            <span class="dot-separator"></span>
+                                            <a href="#edit" onclick="onEditCommentClick()" style="font-size: 0.8rem">
+                                                Edit
+                                            </a>
+                                            <span class="dot-separator"></span>
+                                            <a href="#delete" onclick="onDeleteCommentClick()" style="font-size: 0.8rem">
+                                                Delete
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="reply-placeholder"></div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    }
+}
+
+<script>
+    function onEditCommentClick() {
+    }
+
+    function onReplyCommentClick(postId, replyTo, commentId) {
+        removeReplyForm("reply-form");
+
+        $(`#${commentId} #reply-placeholder:first`).append(
+            `<div id="reply-form">   
+                <textarea id="reply-editor__write-reply" style="display: none"></textarea>    
+                <div class="row mt-3">
+                    <div class="col-12">   
+                        <input type="button" class="btn btn-light waves-effect waves-light btn-sm mr-2" value="Cancel" onclick="removeReplyForm('reply-form')"/>     
+                        <input id="submit-reply" type="button" class="btn btn-primary__advert waves-effect waves-light btn-sm" value="Reply"/>
+                    </div>    
+                </div>
+            </div>`
+        );
+
+        var replyEditor = new SimpleMDE({
+            status: false,
+            element: $("#reply-editor__write-reply")[0],
+            placeholder: "Write reply...",
+            fullScreen: false,
+            withPreview: false,
+        });
+
+        $(".CodeMirror, .CodeMirror-scroll").css('min-height', '150px');
+
+        $("#submit-reply").off("click").click(function() {
+            removeReplyForm("reply-form");
+            var text = replyEditor.options.previewRender(replyEditor.value());
+            addCommentReply({
+                text: text,
+                postId: postId,
+                replyTo: (replyTo == null ? commentId : replyTo),
+            });
+        });
+    }
+
+    function onDeleteCommentClick() {
+    }
+
+    function addCommentReply(comment) {
+        createPostCommentAsync(comment,
+            function(response) {
+                $(`#${comment.replyTo} .media-body:first`).append(`
+                <div id="${response.commentId}" class="media p-2">
+                    <img class="card-user__img" src="${response.profileImagePath}" width="48" height="48" alt="profile-image">
+                    <div class="media-body media__img content__break">
+                        <div class="col-auto">
+                            <span class="font-weight-bold" style="font-size: 0.8rem">
+                                <a href="/Profile/${response.profileName}">${response.profileName}</a>
+                            </span>
+                            <span class="time" style="font-size: 0.8rem"> ${response.createdAt}</span>  
+                        </div>                        
+                        <div class="col-auto media__border">
+                            <div class="media__comment">
+                                ${response.text}
+                            </div>             
+                        </div>
+                        <div class="col-auto">
+                            <div class="r-btn r-btn-light r-btn--icon" onclick="onPostCommentVoteClick('${response.postId}', '${response.commentId}', 1)" >
+                                <i class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
+                            </div>
+                            <span id='votes-count__${response.commentId}'>${response.votesCount}</span>
+                            <span class="dot-separator"></span>
+                            <a href="#reply" onclick="onReplyCommentClick('${comment.postId}', '${comment.replyTo}', '${response.commentId}')" style="font-size: 0.8rem">
+                                Reply
+                            </a>
+                            <span class="dot-separator"></span>
+                            <a href="#edit" onclick="onEditCommentClick()" style="font-size: 0.8rem">
+                                Edit
+                            </a>
+                            <span class="dot-separator"></span>
+                            <a href="#delete" onclick="onDeleteCommentClick()" style="font-size: 0.8rem">
+                                Delete
+                            </a>
+                        </div>
+                        <div id="reply-placeholder"></div>
+                    </div>
+                </div>
+                `);
+
+                $([document.documentElement, document.body]).animate({
+                        scrollTop: $(`#${response.commentId}`).offset().top - 250
+                    },
+                    200);
+            });
+    }
+
+    function removeReplyForm(commentId) {
+        var form = $(`#${commentId}`);
+        if (form.length !== 0) {
+            form.remove();
+        }
+    }
+
+    function onPostCommentVoteClick(postId, commentId, voteType) {
+        var votesCount = $(`#votes-count__${commentId}`);
+        var vote = {
+            voteType: voteType,
+            votesCount: votesCount.text()
+        }
+        createPostCommentVoteAsync(postId,
+            commentId,
+            vote,
+            function(response) {
+                switch (response.voteType) {
+                case 1:
+                    {
+                        console.log(`Post id: ${postId} votes count: ${response.votesCount}`)
+                        var voteIcon = $(`#vote-icon__${commentId}`);
+                        voteIcon.toggleClass('zmdi-favorite');
+                        voteIcon.toggleClass('zmdi-favorite-outline');
+                        votesCount.text(response.votesCount);
+                    }
+                    break;
+                }
+            });
+    }
+</script>
