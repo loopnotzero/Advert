@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Advert.Common;
 using Advert.Common.Posts;
@@ -33,19 +34,16 @@ namespace Advert.MongoDbStorage.Stores
         public async Task CreatePostVoteAsync(T entity, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-
-            entity.NormalizedEmail = entity.NormalizedEmail ?? entity.Email.ToUpper();
-            
             await _collection.InsertOneAsync(entity, new InsertOneOptions
             {
                 BypassDocumentValidation = false
             }, cancellationToken);
         }
 
-        public async Task<T> FindPostVoteByNormalizedEmailAsync(ObjectId postId, string email, CancellationToken cancellationToken)
+        public async Task<T> FindPostVoteAsync(ObjectId postId, ObjectId profileId, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var filter = Builders<T>.Filter.And(Builders<T>.Filter.Eq(x => x.PostId, postId), Builders<T>.Filter.Eq(x => x.NormalizedEmail, email));
+            var filter = Builders<T>.Filter.And(Builders<T>.Filter.Eq(x => x.PostId, postId), Builders<T>.Filter.Eq(x => x.ProfileId, profileId));
             var cursor = await _collection.FindAsync(filter, new FindOptions<T>
             {
                 
@@ -53,7 +51,18 @@ namespace Advert.MongoDbStorage.Stores
             return await cursor.FirstOrDefaultAsync(cancellationToken);
         }
 
-        public async Task<long> CountPostVotesByVoteTypeAsync(ObjectId postId, VoteType voteType, CancellationToken cancellationToken)
+        public async Task<List<T>> FindPostVotesAsync(ObjectId profileId, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var filter = Builders<T>.Filter.Eq(x => x.ProfileId, profileId);
+            var cursor = await _collection.FindAsync(filter, new FindOptions<T>
+            {
+                
+            }, cancellationToken);
+            return await cursor.ToListAsync(cancellationToken);
+        }
+
+        public async Task<long> CountPostVotesAsync(ObjectId postId, VoteType voteType, CancellationToken cancellationToken)
         {      
             cancellationToken.ThrowIfCancellationRequested();
             var filter = Builders<T>.Filter.And(

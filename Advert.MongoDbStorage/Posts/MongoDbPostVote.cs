@@ -11,11 +11,9 @@ namespace Advert.MongoDbStorage.Posts
             Id = ObjectId.GenerateNewId();
             //Create indeces
         }
-        
-        public string Email { get; set; }
-        public string NormalizedEmail { get; set; }
         public ObjectId Id { get; set; }  
-        public ObjectId PostId { get; set; }     
+        public ObjectId PostId { get; set; }
+        public ObjectId ProfileId { get; set; }
         public VoteType VoteType { get; set; }   
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
