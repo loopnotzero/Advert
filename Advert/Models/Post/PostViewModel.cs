@@ -4,6 +4,7 @@ namespace Advert.Models.Post
 {
     public class PostViewModel
     {           
+        public bool IsPostVoted { get; set; }
         public bool IsTopicOwner { get; set; }
         public long Price { get; set; }
         public string PostId { get; set; }

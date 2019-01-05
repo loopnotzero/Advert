@@ -4,7 +4,14 @@
 <div class="row">
     <div class="col-md-12 p-1">
         <div class="r-btn r-btn-light r-btn--icon waves-effect ml-4" onclick="onVotePostClick('@Model.PostId', 1)">
-            <i class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
+            @if (Model.IsPostVoted)
+            {
+                <i id="vote-icon__@Model.PostId" class="zmdi zmdi-favorite zmdi-hc-fw"></i>
+            }
+            else
+            {
+                <i id="vote-icon__@Model.PostId" class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
+            }
         </div>
         <small id="votes-count__@Model.PostId">@Model.LikesCount</small>
 
@@ -17,9 +24,37 @@
             <i class="zmdi zmdi-eye zmdi-hc-fw"></i>
         </div>
         <small id="post-views__count--@Model.PostId">@Model.ViewsCount</small>
-
-        @* <small class="text-muted float-right mt-2 mr-4"> *@
-        @*     <a href="/Posts?postId=@Model.PostId">READ MORE...</a> *@
-        @* </small> *@
     </div>
 </div>
+
+<script>
+    function onVotePostClick(postId, voteType) {
+        var votesCount = $(`#votes-count__${postId}`);
+        var vote = {
+            voteType: voteType,
+            votesCount: votesCount.text()
+        };
+        createPostVoteByPostIdAsync(postId,
+            vote,
+            function(response) {
+                switch (response.voteType) {
+                case 1:
+                    {
+                        var voteIcon = $(`#vote-icon__${postId}`);
+                        
+                        if (voteIcon.hasClass('zmdi-favorite')) {
+                            voteIcon.addClass("zmdi-favorite-outline")
+                            voteIcon.removeClass("zmdi-favorite")
+                        } else {
+                            voteIcon.addClass("zmdi-favorite")
+                            voteIcon.removeClass("zmdi-favorite-outline")
+                        }
+                        
+                        console.log(`Post id: ${postId} votes count: ${response.votesCount}`)
+                        votesCount.text(response.votesCount);
+                    }
+                    break;
+                }
+            });
+    }
+</script>

@@ -117,8 +117,9 @@ namespace Advert.Controllers
 
                 var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
 
+                var placesApi = _configuration.GetSection("GoogleApiServices").GetValue<string>("PlacesApi");
 
-                var ppp = _configuration.GetSection("GoogleApiServices").GetValue<string>("PlacesApi");
+                var postsVotes = await _postsVotesManager.FindPostVotesAsync(profile.Id);
 
                 return View(new AggregatorViewModel
                 {
@@ -152,10 +153,11 @@ namespace Advert.Controllers
                         ViewsCount = ((double) post.ViewsCount).ToMetric(),
                         CommentsCount = ((double) post.CommentsCount).ToMetric(),
                         CreatedAt = post.CreatedAt.Humanize(),
+                        IsPostVoted = postsVotes.Any(x => x.PostId.Equals(post.Id) && x.ProfileId.Equals(profile.Id)),
                         IsTopicOwner = post.ProfileId.Equals(profile.Id)
                     }),
 
-                    PlacesApi = ppp,
+                    PlacesApi = placesApi,
 
                     RecommendedPosts = posts
                         .OrderByDescending(x => EngagementRate.ComputeEngagementRate(x.LikesCount, x.SharesCount, x.CommentsCount, x.ViewsCount))
@@ -511,38 +513,28 @@ namespace Advert.Controllers
         {
             try
             {
-                var pId = ObjectId.Parse(postId); 
-                
-                var vote = await _postsVotesManager.FindPostVoteByNormalizedEmailAsync(pId, HttpContext.User.Identity.Name);
+                var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
+                  
+                var vote = await _postsVotesManager.FindPostVoteAsync(ObjectId.Parse(postId), profile.Id);
 
                 if (vote == null)
                 {
                     await _postsVotesManager.CreatePostVoteAsync(new MongoDbPostVote
                     {
-                        Email = HttpContext.User.Identity.Name,
+                        PostId = ObjectId.Parse(postId),
+                        ProfileId = profile.Id,
                         VoteType = viewModel.VoteType,
-                        PostId = pId,
                         CreatedAt = DateTime.UtcNow
                     });
 
-                    var votesCount = await _postsVotesManager.CountPostVotesByVoteTypeAsync(pId, viewModel.VoteType);
+                    var votesCount = await _postsVotesManager.CountPostVotesAsync(ObjectId.Parse(postId), VoteType.Like);
 
-                    switch (viewModel.VoteType)
-                    {
-                        case VoteType.None:
-                            var logString = $"Vote type is not valid. Post id: {postId} Email: {HttpContext.User.Identity.Name}";
-                            throw new PostCommentVoteException(logString);
-                        case VoteType.Like:
-                            await _postsManager.UpdatePostLikesCountByPostId(pId, votesCount);
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
+                    await _postsManager.UpdatePostLikesCountByPostId(ObjectId.Parse(postId), votesCount);
 
-                    return Ok(new PostVotesViewModel
+                    return Ok(new PostVoteViewModel
                     {
                         VoteType = viewModel.VoteType,
-                        VotesCount = ((double) votesCount).ToMetric()
+                        VotesCount = ((double) long.Parse(viewModel.VotesCount) + 1).ToMetric()
                     });
                 }
                 else
@@ -552,24 +544,14 @@ namespace Advert.Controllers
                         await _postsVotesManager.DeletePostVoteByIdAsync(vote.Id);
                     }
 
-                    var votesCount = await _postsVotesManager.CountPostVotesByVoteTypeAsync(pId, viewModel.VoteType);
+                    var votesCount = await _postsVotesManager.CountPostVotesAsync(ObjectId.Parse(postId), VoteType.Like);
 
-                    switch (viewModel.VoteType)
-                    {
-                        case VoteType.None:
-                            var logString = $"Vote type is not valid. Post id: {postId} Email: {HttpContext.User.Identity.Name}";
-                            throw new PostCommentVoteException(logString);
-                        case VoteType.Like:
-                            await _postsManager.UpdatePostLikesCountByPostId(pId, votesCount);
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
-
-                    return Ok(new PostVotesViewModel
+                    await _postsManager.UpdatePostLikesCountByPostId(ObjectId.Parse(postId), votesCount);
+         
+                    return Ok(new PostVoteViewModel
                     {
                         VoteType = viewModel.VoteType,
-                        VotesCount = ((double) votesCount).ToMetric()
+                        VotesCount = ((double)  long.Parse(viewModel.VotesCount) - 1).ToMetric()
                     });
                 }
             }

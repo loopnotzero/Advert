@@ -295,24 +295,6 @@
         });
     }
 
-    function onVotePostClick(postId, voteType) {
-        var vote = {
-            voteType: voteType
-        };
-        createPostVoteByPostIdAsync(postId,
-            vote,
-            function(response) {
-                switch (response.voteType) {
-                case 1:
-                    {
-                        console.log(`Post id: ${postId} votes count: ${response.votesCount}`)
-                        $(`#votes-count__${postId}`).text(response.votesCount);
-                    }
-                    break;
-                }
-            });
-    }
-
     function addInputListeners() {
         var inputs = [
             document.getElementById('add-post__pac-input'),

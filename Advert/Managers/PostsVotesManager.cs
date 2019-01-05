@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Advert.Common;
@@ -45,7 +46,7 @@ namespace Advert.Managers
             await Store.CreatePostVoteAsync(entity, CancellationToken);
         }
 
-        public async Task<T> FindPostVoteByNormalizedEmailAsync(ObjectId postId, string email)
+        public async Task<T> FindPostVoteAsync(ObjectId postId, ObjectId profileId)
         {
             ThrowIfDisposed();
 
@@ -54,15 +55,27 @@ namespace Advert.Managers
                 throw new ArgumentNullException(nameof(postId));
             }
 
-            if (string.IsNullOrEmpty(email))
+            if (profileId == ObjectId.Empty)
             {
-                throw new ArgumentNullException(nameof(email));
+                throw new ArgumentNullException(nameof(profileId));
             }
 
-            return await Store.FindPostVoteByNormalizedEmailAsync(postId, NormalizeKey(email), CancellationToken);
+            return await Store.FindPostVoteAsync(postId, profileId, CancellationToken);
+        }
+        
+        public async Task<List<T>> FindPostVotesAsync(ObjectId profileId)
+        {
+            ThrowIfDisposed();
+
+            if (profileId == ObjectId.Empty)
+            {
+                throw new ArgumentNullException(nameof(profileId));
+            }
+
+            return await Store.FindPostVotesAsync(profileId, CancellationToken);
         }
 
-        public async Task<long> CountPostVotesByVoteTypeAsync(ObjectId postId, VoteType voteType)
+        public async Task<long> CountPostVotesAsync(ObjectId postId, VoteType voteType)
         {
             ThrowIfDisposed();
 
@@ -71,7 +84,7 @@ namespace Advert.Managers
                 throw new ArgumentNullException(nameof(postId));
             }
 
-            return await Store.CountPostVotesByVoteTypeAsync(postId, voteType, CancellationToken);
+            return await Store.CountPostVotesAsync(postId, voteType, CancellationToken);
         }
 
         public async Task<DeleteResult> DeletePostVoteByIdAsync(ObjectId voteId)
