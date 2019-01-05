@@ -100,11 +100,11 @@
                                                 Reply
                                             </a>
                                             <span class="dot-separator"></span>
-                                            <a href="#edit" onclick="onEditCommentClick('@reply.CommentId')" style="font-size: 0.8rem">
+                                            <a href="#edit" data-placement="top" data-target="#edit-comment__modal--@comment.CommentId" data-toggle="modal" onclick="onEditCommentClick('@reply.CommentId')" style="font-size: 0.8rem">
                                                 Edit
                                             </a>
                                             <span class="dot-separator"></span>
-                                            <a href="#delete" onclick="onDeleteCommentClick('@reply.CommentId')" style="font-size: 0.8rem">
+                                            <a href="#delete" data-placement="top" data-target="#delete-comment__modal--@comment.CommentId" data-toggle="modal" onclick="onDeleteCommentClick('@reply.CommentId')" style="font-size: 0.8rem">
                                                 Delete
                                             </a>
                                         </div>
@@ -194,11 +194,11 @@
                                 Reply
                             </a>
                             <span class="dot-separator"></span>
-                            <a href="#edit" onclick="onEditCommentClick('${comment.commentId}')" style="font-size: 0.8rem">
+                            <a href="#edit" data-placement="top" data-target="#edit-comment__modal--${comment.CommentId}" data-toggle="modal" onclick="onEditCommentClick('${comment.commentId}')" style="font-size: 0.8rem">
                                 Edit
                             </a>
                             <span class="dot-separator"></span>
-                            <a href="#delete" onclick="onDeleteCommentClick('${comment.commentId}')" style="font-size: 0.8rem">
+                            <a href="#delete" data-placement="top" data-target="#delete-comment__modal--${comment.CommentId}" data-toggle="modal" onclick="onDeleteCommentClick('${comment.commentId}')" style="font-size: 0.8rem">
                                 Delete
                             </a>
                         </div>
