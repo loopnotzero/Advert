@@ -276,6 +276,8 @@ namespace Advert.Controllers
 
                 var orderedPosts = posts.OrderByDescending(x => EngagementRate.ComputeEngagementRate(x.LikesCount, x.SharesCount, x.CommentsCount, x.ViewsCount));
 
+                var postsVotes = await _postsVotesManager.FindPostVotesAsync(profile.Id);
+
                 return View(new AggregatorViewModel
                 {
                     Profile = new ProfileModel
@@ -305,6 +307,7 @@ namespace Advert.Controllers
                             ViewsCount = ((double) post.ViewsCount).ToMetric(),
                             CommentsCount = ((double) post.CommentsCount).ToMetric(),
                             CreatedAt = post.CreatedAt.Humanize(),
+                            IsPostVoted = postsVotes.Any(x => x.PostId.Equals(post.Id) && x.ProfileId.Equals(profile.Id)),
                             IsTopicOwner = post.ProfileId.Equals(profile.Id)
                         }
                     }, 

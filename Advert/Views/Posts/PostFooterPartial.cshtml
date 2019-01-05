@@ -40,17 +40,10 @@
                 switch (response.voteType) {
                 case 1:
                     {
-                        var voteIcon = $(`#vote-icon__${postId}`);
-                        
-                        if (voteIcon.hasClass('zmdi-favorite')) {
-                            voteIcon.addClass("zmdi-favorite-outline")
-                            voteIcon.removeClass("zmdi-favorite")
-                        } else {
-                            voteIcon.addClass("zmdi-favorite")
-                            voteIcon.removeClass("zmdi-favorite-outline")
-                        }
-                        
                         console.log(`Post id: ${postId} votes count: ${response.votesCount}`)
+                        var voteIcon = $(`#vote-icon__${postId}`);
+                        voteIcon.toggleClass('zmdi-favorite');
+                        voteIcon.toggleClass('zmdi-favorite-outline');
                         votesCount.text(response.votesCount);
                     }
                     break;
