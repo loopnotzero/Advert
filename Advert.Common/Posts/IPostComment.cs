@@ -5,6 +5,7 @@ namespace Advert.Common.Posts
 {
     public interface IPostComment
     {
+        bool IsDeleted { get; set; }
         long VotesCount { get; set; }
         string Text { get; set; }  
         string ProfileName { get; set; }
