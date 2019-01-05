@@ -12,7 +12,6 @@ namespace Advert.MongoDbStorage.Stores
     public interface IPostsStore<T> : IDisposable where T : IPost
     {      
         Task CreatePostAsync(T entity, CancellationToken cancellationToken);
-        Task UpdatePostAsync(T entity, CancellationToken cancellationToken);
         Task<T> FindPostByIdAsync(ObjectId postId, CancellationToken cancellationToken);
         Task<T> FindPostByIdOrDefaultAsync(ObjectId postId, T defaultValue, CancellationToken cancellationToken);    
         Task<long> EstimatedPostsCountAsync(CancellationToken cancellationToken);
@@ -24,6 +23,6 @@ namespace Advert.MongoDbStorage.Stores
         Task<UpdateResult> DeletePostByIdAsync(ObjectId postId, CancellationToken cancellationToken);      
         Task<UpdateResult> UpdatePostViewsCountByPostIdAsync(ObjectId postId, long count, CancellationToken cancellationToken);
         Task<UpdateResult> UpdatePostLikesCountByPostIdAsync(ObjectId postId, long count, CancellationToken cancellationToken);
-        Task<ReplaceOneResult> ReplacePostAsync(T entity, CancellationToken cancellationToken);
+        Task<ReplaceOneResult> UpdatePostAsync(T entity, CancellationToken cancellationToken);
     }
 }

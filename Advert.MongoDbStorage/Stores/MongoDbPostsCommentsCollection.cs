@@ -115,15 +115,25 @@ namespace Advert.MongoDbStorage.Stores
             return await cursor.ToListAsync(cancellationToken);
         }
         
-        public async Task<DeleteResult> DeletePostCommentByIdAsync(ObjectId commentId, CancellationToken cancellationToken)
+        public async Task<UpdateResult> DeletePostCommentByIdAsync(ObjectId commentId, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            return await _collection.DeleteOneAsync(Builders<T>.Filter.Eq(x => x.Id, commentId), cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
+            return await _collection.UpdateOneAsync(
+                Builders<T>.Filter.Eq(x => x.Id, commentId), 
+                Builders<T>.Update.Set(x => x.IsDeleted, true).Set(x => x.DeletedAt, DateTime.UtcNow), 
+                new UpdateOptions
+                {
+                    BypassDocumentValidation = false
+                }, cancellationToken);   
         }
 
         public async Task<ReplaceOneResult> UpdatePostCommentByIdAsync(ObjectId commentId, T entity, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
+
+            entity.ChangedAt = DateTime.UtcNow;
+          
             return await _collection.ReplaceOneAsync(Builders<T>.Filter.Eq(x => x.Id, commentId), entity, new UpdateOptions
             {
                 BypassDocumentValidation = false

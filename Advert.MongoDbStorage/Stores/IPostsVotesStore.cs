@@ -12,7 +12,7 @@ namespace Advert.MongoDbStorage.Stores
     {
         Task CreatePostVoteAsync(T entity, CancellationToken cancellationToken);
         Task<T> FindPostVoteAsync(ObjectId postId, ObjectId profileId, CancellationToken cancellationToken);
-        Task<List<T>> FindPostVotesAsync(ObjectId profileId, CancellationToken cancellationToken);
+        Task<List<T>> FindPostsVotesAsync(ObjectId profileId, CancellationToken cancellationToken);
         Task<long> CountPostVotesAsync(ObjectId postId, VoteType voteType, CancellationToken cancellationToken);
         Task<DeleteResult> DeletePostVoteByIdAsync(ObjectId voteId, CancellationToken cancellationToken);
     }

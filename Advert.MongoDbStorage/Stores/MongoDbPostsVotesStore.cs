@@ -51,7 +51,7 @@ namespace Advert.MongoDbStorage.Stores
             return await cursor.FirstOrDefaultAsync(cancellationToken);
         }
 
-        public async Task<List<T>> FindPostVotesAsync(ObjectId profileId, CancellationToken cancellationToken)
+        public async Task<List<T>> FindPostsVotesAsync(ObjectId profileId, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             var filter = Builders<T>.Filter.Eq(x => x.ProfileId, profileId);

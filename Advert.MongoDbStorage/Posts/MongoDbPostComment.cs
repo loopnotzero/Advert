@@ -11,7 +11,8 @@ namespace Advert.MongoDbStorage.Posts
             Id = ObjectId.GenerateNewId();
             //Create indeces
         }
-        
+
+        public bool IsDeleted { get; set; }
         public long VotesCount { get; set; }
         public string Text { get; set; }  
         public string ProfileName { get; set; }

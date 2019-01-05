@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Advert.MongoDbStorage.Posts;
@@ -35,15 +36,6 @@ namespace Advert.MongoDbStorage.Stores
             entity.NormalizedProfileName = entity.NormalizedProfileName ?? entity.ProfileName.ToUpper();
             
             await _collection.InsertOneAsync(entity, new InsertOneOptions
-            {
-                BypassDocumentValidation = false
-            }, cancellationToken);
-        }
-
-        public async Task UpdatePostAsync(T entity, CancellationToken cancellationToken)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            await _collection.ReplaceOneAsync(Builders<T>.Filter.Eq(x => x.Id, entity.Id), entity, new UpdateOptions
             {
                 BypassDocumentValidation = false
             }, cancellationToken);
@@ -150,7 +142,10 @@ namespace Advert.MongoDbStorage.Stores
         public async Task<UpdateResult> DeletePostByIdAsync(ObjectId postId, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            return await _collection.UpdateOneAsync(Builders<T>.Filter.Eq(x => x.Id, postId), Builders<T>.Update.Set(x => x.IsDeleted, true), new UpdateOptions
+            return await _collection.UpdateOneAsync(
+                Builders<T>.Filter.Eq(x => x.Id, postId), 
+                Builders<T>.Update.Set(x => x.IsDeleted, true).Set(x => x.DeletedAt, DateTime.UtcNow), 
+                new UpdateOptions
             {
                 BypassDocumentValidation = false
             }, cancellationToken);      
@@ -174,9 +169,12 @@ namespace Advert.MongoDbStorage.Stores
             }, cancellationToken);
         } 
 
-        public async Task<ReplaceOneResult> ReplacePostAsync(T entity, CancellationToken cancellationToken)
+        public async Task<ReplaceOneResult> UpdatePostAsync(T entity, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
+
+            entity.ChangedAt = DateTime.UtcNow;
+            
             return await _collection.ReplaceOneAsync(Builders<T>.Filter.Eq(x => x.Id, entity.Id), entity, new UpdateOptions
             {
                 BypassDocumentValidation = false

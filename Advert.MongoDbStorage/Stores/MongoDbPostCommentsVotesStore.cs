@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Advert.MongoDbStorage.Posts;
 using Advert.MongoDbStorage.Common;
@@ -39,18 +40,22 @@ namespace Advert.MongoDbStorage.Stores
 
         public async Task<T> FindPostCommentVoteOrDefaultAsync(ObjectId commentId, ObjectId profileId, T defaultValue, CancellationToken cancellationToken)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            
+            cancellationToken.ThrowIfCancellationRequested();          
             var filter = Builders<T>.Filter.And(
                 Builders<T>.Filter.Eq(x => x.CommentId, commentId),
                 Builders<T>.Filter.Eq(x => x.ProfileId, profileId)
-            );
-            
+            );         
             var cursor = await _collection.FindAsync(filter, cancellationToken: cancellationToken);
-
             var commentVote = await cursor.FirstOrDefaultAsync(cancellationToken);
-
             return commentVote ?? defaultValue;
+        }
+
+        public async Task<List<T>> FindPostsCommentsVotesAsync(ObjectId profileId, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var filter = Builders<T>.Filter.Eq(x => x.ProfileId, profileId);          
+            var cursor = await _collection.FindAsync(filter, cancellationToken: cancellationToken);
+            return await cursor.ToListAsync(cancellationToken);
         }
 
         public async Task<long> CountPostCommentVotesByCommentIdAsync(ObjectId commentId, CancellationToken cancellationToken)
