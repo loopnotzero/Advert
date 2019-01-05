@@ -30,19 +30,39 @@
                 <div class="card-user__name">@Model.ProfileName</div>
             </a>
             <div style="display: flex">
-                <div class="post-header__time">@Model.CreatedAt</div>
-                <div class="post-header__tags">
-                    @if (Model.Tags == null || Model.Tags.Count == 0)
+                @if (Model.IsTopicOwner)
+                {
+                    <div class="post-header__time">@Model.CreatedAt</div>
+                }
+                else
+                {
+                    if (Model.Tags != null && Model.Tags.Count > 0)
                     {
-                        <a href="" title="" data-placement="top" data-target="#edit-tags__modal--@Model.PostId" data-toggle="modal" onclick="onEditPostTagsClick('@Model.PostId')">
-                            <i class="zmdi zmdi-tag-more zmdi-hc-fw post-tag__icon"></i>Add tags
-                        </a>
+                        <div class="post-header__time">@Model.CreatedAt</div>
                     }
                     else
                     {
-                        <a href="" title="" data-placement="top" data-target="#edit-tags__modal--@Model.PostId" data-toggle="modal" onclick="onEditPostTagsClick('@Model.PostId')">
-                            <i class="zmdi zmdi-tag-more zmdi-hc-fw post-tag__icon"></i>
-                        </a>
+                        <div class="post-header__time--notags">@Model.CreatedAt</div>
+                    }
+                }
+                <div class="post-header__tags">
+                    @if (Model.Tags == null || Model.Tags.Count == 0)
+                    {
+                        if (Model.IsTopicOwner)
+                        {
+                            <a href="" title="" data-placement="top" data-target="#edit-tags__modal--@Model.PostId" data-toggle="modal" onclick="onEditPostTagsClick('@Model.PostId')">
+                                <i class="zmdi zmdi-tag-more zmdi-hc-fw post-tag__icon"></i>Add tags
+                            </a>
+                        }
+                    }
+                    else
+                    {
+                        if (Model.IsTopicOwner)
+                        {
+                            <a href="" title="" data-placement="top" data-target="#edit-tags__modal--@Model.PostId" data-toggle="modal" onclick="onEditPostTagsClick('@Model.PostId')">
+                                <i class="zmdi zmdi-tag-more zmdi-hc-fw post-tag__icon"></i>
+                            </a>
+                        }
 
                         var index = 0;
 

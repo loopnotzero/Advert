@@ -1459,6 +1459,11 @@ time {
   padding-left: 5px;
 }
 
+.post-header__time--notags {
+  color: #9c9c9c;
+  font-size: 0.9rem;
+}
+
 .post-header__tags {
   padding-left: 5px;
   color: #9c9c9c;
