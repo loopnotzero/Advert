@@ -45,7 +45,7 @@
                         <div class="post-header__time--notags">@Model.CreatedAt</div>
                     }
                 }
-                <div class="post-header__tags">
+                <div id="post-header__tags--@Model.PostId" class="post-header__tags">
                     @if (Model.Tags == null || Model.Tags.Count == 0)
                     {
                         if (Model.IsTopicOwner)
