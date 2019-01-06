@@ -142,7 +142,7 @@ namespace Advert.Controllers
                             if (postComment.ProfileImagePath == null || !postComment.Equals(profile.ImagePath))
                             {
                                 postComment.ProfileImagePath = profile.ImagePath;
-                                await _postCommentsManager.UpdatePostCommentAsync(postComment.PostId.ToString(), postComment.Id, postComment);
+                                await _postCommentsManager.ReplacePostCommentAsync(postComment.PostId.ToString(), postComment.Id, postComment);
                             }
                         }
                     }

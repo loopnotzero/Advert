@@ -68,6 +68,23 @@ function deletePostByIdAsync(postId, callback) {
     });
 }
 
+function deletePostCommentAsync(postId, commentId, callback) {
+    console.log(`Delete post comment by post id: ${postId} comment id: ${commentId}`);
+    $.ajax({
+        url: `/Posts/DeletePostCommentAsync?postId=${postId}&commentId=${commentId}`,
+        type: "DELETE",
+        contentType: "application/json",
+        error: function() {
+            console.log("jqXhr: " + jqXhr);
+            console.log("textStatus: " + textStatus);
+            console.log("errorThrown: " + errorThrown);
+        },
+        success: function(response) {
+            callback(response);
+        }
+    }); 
+}
+
 function createPostCommentAsync(comment, callback) {
     $.ajax({
         url: `/Posts/CreatePostCommentAsync`,

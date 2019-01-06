@@ -472,17 +472,24 @@ namespace Advert.Controllers
         {
             try
             {
-                await _postCommentsManager.DeletePostCommentAsync(postId, ObjectId.Parse(commentId));
-                return Ok();
+                var updateResult = await _postCommentsManager.DeletePostCommentAsync(postId, ObjectId.Parse(commentId));
+
+                return Ok(new UpdateResultModel
+                {
+                    MatchedCount = updateResult.MatchedCount,
+                    ModifiedCount = updateResult.ModifiedCount,
+                    IsAcknowledged = updateResult.IsAcknowledged,
+                    IsModifiedCountAvailable = updateResult.IsModifiedCountAvailable
+                });
             }
             catch (Exception e)
             {
                 _logger.LogError(e.Message, e);
                 return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
-            } 
+            }
         }
-              
-        
+
+
         [HttpGet]
         [Authorize]
         [Route("/Posts/GetPostTagsByPostIdAsync")]
@@ -623,7 +630,7 @@ namespace Advert.Controllers
                 
                 var post = await _postsManager.FindPostByIdAsync(comment.PostId);
                 
-                post.CommentsCount = await _postCommentsManager.EstimatedPostCommentsByPostIdAsync(viewModel.PostId);
+                post.CommentsCount = await _postCommentsManager.CountPostCommentsAsync(viewModel.PostId);
                 
                 await _postsManager.UpdatePostAsync(post);
 
@@ -677,7 +684,7 @@ namespace Advert.Controllers
                     
                     postComment.VotesCount = votesCount;
                     
-                    await _postCommentsManager.UpdatePostCommentAsync(postId, postCommentVote.CommentId, postComment);
+                    await _postCommentsManager.ReplacePostCommentAsync(postId, postCommentVote.CommentId, postComment);
                     
                     return Ok(new PostCommentVoteViewModel
                     {
@@ -695,7 +702,7 @@ namespace Advert.Controllers
                     
                     postComment.VotesCount = votesCount;
                     
-                    await _postCommentsManager.UpdatePostCommentAsync(postId, commentVote.CommentId, postComment);
+                    await _postCommentsManager.ReplacePostCommentAsync(postId, postComment.Id, postComment);
                     
                     return Ok(new PostCommentVoteViewModel
                     {
@@ -718,7 +725,7 @@ namespace Advert.Controllers
         {
             try
             {
-                var commentsCount = await _postCommentsManager.EstimatedPostCommentsByPostIdAsync(postId);
+                var commentsCount = await _postCommentsManager.CountPostCommentsAsync(postId);
                 return Ok(new PostCommentsCountModel
                 {
                     PostId = postId,

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Advert.Common.Posts;
 using Advert.MongoDbStorage.Stores;
 using MongoDB.Bson;
+using MongoDB.Driver;
 
 namespace Advert.Managers
 {
@@ -43,22 +44,15 @@ namespace Advert.Managers
 
             await postComments.CreatePostCommentAsync(entity, CancellationToken);
         }
-        
-        public async Task UpdatePostCommentAsync(string collectionName, ObjectId commentId, T entity)
+
+        public async Task<ReplaceOneResult> ReplacePostCommentAsync(string collectionName, ObjectId commentId, T entity)
         {
-            ThrowIfDisposed();
-
-            if (entity == null)
-            {
-                throw new ArgumentNullException(nameof(entity));
-            }
-
+            ThrowIfDisposed();          
             var postCommentsCollection = Store.GetPostCommentsCollection(collectionName, CancellationToken);
-
-            await postCommentsCollection.UpdatePostCommentByIdAsync(commentId, entity, CancellationToken);
+            return await postCommentsCollection.ReplacePostCommentAsync(commentId, entity, CancellationToken);
         }
 
-        public async Task DeletePostCommentAsync(string collectionName, ObjectId commentId)
+        public async Task<UpdateResult> DeletePostCommentAsync(string collectionName, ObjectId commentId)
         {
             ThrowIfDisposed();
 
@@ -74,7 +68,7 @@ namespace Advert.Managers
 
             var postCommentsCollection = Store.GetPostCommentsCollection(collectionName, CancellationToken);
 
-            await postCommentsCollection.DeletePostCommentByIdAsync(commentId, CancellationToken);
+            return await postCommentsCollection.DeletePostCommentByIdAsync(commentId, CancellationToken);
         }
         
         public async Task<T> FindPostCommentById(string collectionName, ObjectId commentId)
@@ -93,8 +87,8 @@ namespace Advert.Managers
 
             return await Store.GetPostCommentsCollection(collectionName, CancellationToken).FindPostCommentByIdAsync(commentId, CancellationToken);
         }
-        
-        public async Task<long> EstimatedPostCommentsByPostIdAsync(string collectionName)
+       
+        public async Task<long> CountPostCommentsAsync(string collectionName)
         {
             ThrowIfDisposed();
 
@@ -103,9 +97,9 @@ namespace Advert.Managers
                 throw new ArgumentNullException(nameof(collectionName));
             }
 
-            return await Store.GetPostCommentsCollection(collectionName, CancellationToken).EstimatedPostCommentsCountAsync(CancellationToken);
+            return await Store.GetPostCommentsCollection(collectionName, CancellationToken).CountPostCommentsCountAsync(CancellationToken);
         }
-        
+
         public async Task<List<T>> FindPostCommentsAsync(string collectionName, int? howManyElements)
         {
             ThrowIfDisposed();
@@ -181,6 +175,6 @@ namespace Advert.Managers
             {
                 throw new ObjectDisposedException(GetType().Name);
             }
-        }   
+        } 
     }
 }

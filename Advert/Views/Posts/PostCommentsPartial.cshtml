@@ -44,14 +44,21 @@
                             <a href="#reply" onclick="onReplyCommentClick('@comment.PostId', null, '@comment.CommentId')" style="font-size: 0.8rem">
                                 Reply
                             </a>
-                            <span class="dot-separator"></span>
-                            <a href="#edit" data-placement="top" data-target="#edit-comment__modal--@comment.CommentId" data-toggle="modal" onclick="onEditCommentClick('@comment.CommentId')" style="font-size: 0.8rem">
-                                Edit
-                            </a>
-                            <span class="dot-separator"></span>
-                            <a href="#delete" data-placement="top" data-target="#delete-comment__modal--@comment.CommentId" data-toggle="modal" onclick="onDeleteCommentClick('@comment.CommentId')" style="font-size: 0.8rem">
-                                Delete
-                            </a>
+                            @if (comment.IsCommentOwner)
+                            {
+                                <span class="dot-separator"></span>
+                                <div class="dropdown comments__item">
+                                    <i data-toggle="dropdown" class="zmdi zmdi-chevron-down zmdi-hc-fw" aria-expanded="false"></i>
+                                    <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-end" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(30px, 26px, 0px);">
+                                        <a href="" class="dropdown-item" data-placement="top" data-target="#edit-comment__modal--@comment.CommentId" data-toggle="modal" onclick="onEditCommentClick('@comment.CommentId')">
+                                            <i class="zmdi zmdi-edit zmdi-hc-fw"></i> Edit...
+                                        </a> 
+                                        <a href="" class="dropdown-item" data-placement="top" data-target="#delete-comment__modal--@comment.CommentId" data-toggle="modal" onclick="onDeleteCommentClick('@comment.PostId', '@comment.CommentId')">
+                                            <i class="zmdi zmdi-delete zmdi-hc-fw"></i> Delete...
+                                        </a>
+                                    </div>
+                                </div>
+                            } 
                         </div>
                     </div>
                 </div>
@@ -99,20 +106,29 @@
                                             <a href="#reply" onclick="onReplyCommentClick('@reply.PostId', '@reply.ReplyTo', '@reply.CommentId')" style="font-size: 0.8rem">
                                                 Reply
                                             </a>
-                                            <span class="dot-separator"></span>
-                                            <a href="#edit" data-placement="top" data-target="#edit-comment__modal--@comment.CommentId" data-toggle="modal" onclick="onEditCommentClick('@reply.CommentId')" style="font-size: 0.8rem">
-                                                Edit
-                                            </a>
-                                            <span class="dot-separator"></span>
-                                            <a href="#delete" data-placement="top" data-target="#delete-comment__modal--@comment.CommentId" data-toggle="modal" onclick="onDeleteCommentClick('@reply.CommentId')" style="font-size: 0.8rem">
-                                                Delete
-                                            </a>
+                                            @if (reply.IsCommentOwner)
+                                            {
+                                                <span class="dot-separator"></span>
+                                                <div class="dropdown comments__item">
+                                                    <i data-toggle="dropdown" class="zmdi zmdi-chevron-down zmdi-hc-fw" aria-expanded="false"></i>
+                                                    <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-end" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(30px, 26px, 0px);">
+                                                        <a href="" class="dropdown-item" data-placement="top" data-target="#edit-comment__modal--@reply.CommentId" data-toggle="modal" onclick="onEditCommentClick('@reply.CommentId')">
+                                                            <i class="zmdi zmdi-edit zmdi-hc-fw"></i> Edit...
+                                                        </a> 
+                                                        <a href="" class="dropdown-item" data-placement="top" data-target="#delete-comment__modal--@reply.CommentId" data-toggle="modal" onclick="onDeleteCommentClick('@reply.PostId', '@reply.CommentId')">
+                                                            <i class="zmdi zmdi-delete zmdi-hc-fw"></i> Delete...
+                                                        </a>
+                                                    </div>
+                                                </div>   
+                                            }                                          
                                         </div>
                                     </div>
                                 </div>
                                 <div id="reply-placeholder"></div>
                             </div>
                         </div>
+                        @await Html.PartialAsync("EditCommentModal", reply)
+                        @await Html.PartialAsync("DeleteCommentModal", reply)
                     }
                 }
             </div>
@@ -163,7 +179,19 @@
         });
     }
 
-    function onDeleteCommentClick() {
+    function onDeleteCommentClick(postId, commentId) {
+        $(`#delete-comment__delete--${commentId}`).off("click").click(function() {
+            deletePostCommentAsync(postId,
+                commentId,
+                function(response) {
+                    console.log(`Matched count: ${response.matchedCount}`);
+                    console.log(`Modified count: ${response.modifiedCount}`);
+                    console.log(`Is acknowledged: ${response.isAcknowledged}`);
+                    console.log(`Is modified count available: ${response.isModifiedCountAvailable}`);
+                    $(`#${commentId}`).empty();
+                });
+            $(`#delete-comment__modal--${commentId}`).modal('toggle');
+        });  
     }
 
     function addCommentReply(comment) {
@@ -185,22 +213,30 @@
                             </div>             
                         </div>
                         <div class="col-auto">
-                            <div class="r-btn r-btn-light r-btn--icon" onclick="onPostCommentVoteClick('${response.postId}', '${response.commentId}', 1)" >
-                                <i class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
+                            <div class="row">
+                                <div class="col-md-12 p-1">
+                                    <div class="r-btn r-btn-light r-btn--icon waves-effect ml-4" onclick="onPostCommentVoteClick('${response.postId}', '${response.commentId}', 1)" >
+                                        <i id="vote-icon__${response.commentId}" class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
+                                    </div>
+                                    <small id='votes-count__${response.commentId}'>${response.votesCount}</small>
+                                    <span class="dot-separator"></span>
+                                    <a href="#reply" onclick="onReplyCommentClick('${response.postId}', '${response.replyTo}', '${response.commentId}')" style="font-size: 0.8rem">
+                                        Reply
+                                    </a>
+                                    <span class="dot-separator"></span>
+                                    <div class="dropdown comments__item">
+                                        <i data-toggle="dropdown" class="zmdi zmdi-chevron-down zmdi-hc-fw" aria-expanded="false"></i>
+                                        <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-end" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(30px, 26px, 0px);">
+                                            <a href="" class="dropdown-item" data-placement="top" data-target="#edit-comment__modal--${response.commentId}" data-toggle="modal" onclick="onEditCommentClick('${response.commentId}')">
+                                                <i class="zmdi zmdi-edit zmdi-hc-fw"></i> Edit...
+                                            </a> 
+                                            <a href="" class="dropdown-item" data-placement="top" data-target="#delete-comment__modal--${response.commentId}" data-toggle="modal" onclick="onDeleteCommentClick('${response.postId}', '${response.commentId}')">
+                                                <i class="zmdi zmdi-delete zmdi-hc-fw"></i> Delete...
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <span id='votes-count__${response.commentId}'>${response.votesCount}</span>
-                            <span class="dot-separator"></span>
-                            <a href="#reply" onclick="onReplyCommentClick('${comment.postId}', '${comment.replyTo}', '${response.commentId}')" style="font-size: 0.8rem">
-                                Reply
-                            </a>
-                            <span class="dot-separator"></span>
-                            <a href="#edit" data-placement="top" data-target="#edit-comment__modal--${comment.CommentId}" data-toggle="modal" onclick="onEditCommentClick('${comment.commentId}')" style="font-size: 0.8rem">
-                                Edit
-                            </a>
-                            <span class="dot-separator"></span>
-                            <a href="#delete" data-placement="top" data-target="#delete-comment__modal--${comment.CommentId}" data-toggle="modal" onclick="onDeleteCommentClick('${comment.commentId}')" style="font-size: 0.8rem">
-                                Delete
-                            </a>
                         </div>
                         <div id="reply-placeholder"></div>
                     </div>

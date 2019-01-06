@@ -277,22 +277,30 @@
                             </div>   
                         </div>
                         <div class="col-auto">
-                            <div class="r-btn r-btn-light r-btn--icon" onclick="onPostCommentVoteClick('${response.postId}', '${response.commentId}', 1)">
-                                <i class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
-                            </div>
-                            <span name="votes-count">${response.votesCount}</span>
-                            <span class="dot-separator"></span>
-                            <a href="#reply" onclick="onReplyCommentClick('${response.postId}', null, '${response.commentId}')" style="font-size: 0.8rem">
-                                Reply
-                            </a>
-                            <span class="dot-separator"></span>
-                            <a href="#edit" onclick="onEditCommentClick()" style="font-size: 0.8rem">
-                                Edit
-                            </a>
-                            <span class="dot-separator"></span>
-                            <a href="#delete" onclick="onDeleteCommentClick()" style="font-size: 0.8rem">
-                                Delete
-                            </a>
+                            <div class="row">
+                                <div class="col-md-12 p-1">
+                                    <div class="r-btn r-btn-light r-btn--icon waves-effect ml-4" onclick="onPostCommentVoteClick('${response.postId}', '${response.commentId}', 1)" >
+                                        <i id="vote-icon__${response.commentId}" class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
+                                    </div>
+                                    <small id='votes-count__${response.commentId}'>${response.votesCount}</small>
+                                    <span class="dot-separator"></span>
+                                    <a href="#reply" onclick="onReplyCommentClick('${response.postId}', '${response.replyTo}', '${response.commentId}')" style="font-size: 0.8rem">
+                                        Reply
+                                    </a>
+                                    <span class="dot-separator"></span>
+                                    <div class="dropdown comments__item">
+                                        <i data-toggle="dropdown" class="zmdi zmdi-chevron-down zmdi-hc-fw" aria-expanded="false"></i>
+                                        <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-end" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(30px, 26px, 0px);">
+                                            <a href="" class="dropdown-item" data-placement="top" data-target="#edit-comment__modal--${response.commentId}" data-toggle="modal" onclick="onEditCommentClick('${response.commentId}')">
+                                                <i class="zmdi zmdi-edit zmdi-hc-fw"></i> Edit...
+                                            </a> 
+                                            <a href="" class="dropdown-item" data-placement="top" data-target="#delete-comment__modal--${response.commentId}" data-toggle="modal" onclick="onDeleteCommentClick('${response.postId}', '${response.commentId}')">
+                                                <i class="zmdi zmdi-delete zmdi-hc-fw"></i> Delete...
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>                          
                         </div>
                         <div id="reply-placeholder"></div>
                     </div>
