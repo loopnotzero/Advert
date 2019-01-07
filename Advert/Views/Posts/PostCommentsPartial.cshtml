@@ -12,7 +12,7 @@
             }
             else
             {
-                <img class="card-user__img" src="/images/no_image.png" width="48" height="48" alt="profile-image">
+                <img class="card-user__img" src="/images/no-image.png" width="48" height="48" alt="profile-image">
             }
             <div class="media-body media__img content__break">
                 <div class="col-auto">
@@ -74,7 +74,7 @@
                             }
                             else
                             {
-                                <img class="card-user__img" src="/images/no_image.png" width="48" height="48" alt="profile-image">
+                                <img class="card-user__img" src="/images/no-image.png" width="48" height="48" alt="profile-image">
                             }
                             <div class="media-body media__img content__break">
                                 <div class="col-auto">
@@ -201,7 +201,7 @@
 
         $(`#${commentId} #reply-placeholder:first`).append(
             `<div id="reply-form">   
-                <textarea id="reply-commentEditor__write-reply" style="display: none"></textarea>    
+                <textarea id="write-reply__editor" style="display: none"></textarea>    
                 <div class="row mt-3">
                     <div class="col-12">   
                         <input type="button" class="btn btn-light waves-effect waves-light btn-sm mr-2" value="Cancel" onclick="removeReplyForm('reply-form')"/>     
@@ -211,9 +211,9 @@
             </div>`
         );
 
-        var replyEditor = new SimpleMDE({
+        var writeReplyEditor = new SimpleMDE({
             status: false,
-            element: $("#reply-commentEditor__write-reply")[0],
+            element: $("#write-reply__editor")[0],
             placeholder: "Write reply...",
             fullScreen: false,
             withPreview: false,
@@ -223,14 +223,18 @@
 
         $("#submit-reply").off("click").click(function() {
             removeReplyForm("reply-form");
-            var text = replyEditor.options.previewRender(replyEditor.value());
+            var text = writeReplyEditor.options.previewRender(writeReplyEditor.value());
+            var parentId = null;         
+            if (replyTo !== null) {
+                parentId = commentId;
+            }          
             addCommentReply({
                 text: text,
                 postId: postId,
-                replyTo: (replyTo == null ? commentId : replyTo),
+                replyTo: parentId,
             });
-            replyEditor.toTextArea();
-            replyEditor = null;
+            writeReplyEditor.toTextArea();
+            writeReplyEditor = null;
         });
     }
 
@@ -254,8 +258,7 @@
             function(response) {
                 $(`#${comment.replyTo} .media-body:first`).append(`
                 <div id="${response.commentId}" class="media p-2">
-                    <img class="card-user__img" src="${response.profileImagePath
-                    }" width="48" height="48" alt="profile-image">
+                    <img class="card-user__img" src="${response.profileImagePath}" width="48" height="48" alt="profile-image">
                     <div class="media-body media__img content__break">
                         <div class="col-auto">
                             <span class="font-weight-bold" style="font-size: 0.8rem">
@@ -264,34 +267,29 @@
                             <span class="time" style="font-size: 0.8rem"> ${response.createdAt}</span>  
                         </div>                        
                         <div class="col-auto media__border">
-                            <div id="media-comment_${response.commentId}" class="media__comment">
+                            <div id="media-comment__${response.commentId}" class="media__comment">
                                 ${response.text}
                             </div>             
                         </div>
                         <div class="col-auto">
                             <div class="row">
                                 <div class="col-md-12 p-1">
-                                    <div class="r-btn r-btn-light r-btn--icon waves-effect ml-4" onclick="onPostCommentVoteClick('${
-                    response.postId}', '${response.commentId}', 1)" >
-                                        <i id="vote-icon__${response.commentId
-                    }" class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
+                                    <div class="r-btn r-btn-light r-btn--icon waves-effect ml-4" onclick="onPostCommentVoteClick('${response.postId}', '${response.commentId}', 1)" >
+                                        <i id="vote-icon__${response.commentId}" class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
                                     </div>
                                     <small id='votes-count__${response.commentId}'>${response.votesCount}</small>
                                     <span class="dot-separator"></span>
-                                    <a href="#reply" onclick="onReplyCommentClick('${response.postId}', '${
-                    response.replyTo}', '${response.commentId}')" style="font-size: 0.8rem">
+                                    <a href="#reply" onclick="onReplyCommentClick('${comment.postId}', '${comment.replyTo}', '${response.commentId}')" style="font-size: 0.8rem">
                                         Reply
                                     </a>
                                     <span class="dot-separator"></span>
                                     <div class="dropdown comments__item">
                                         <i data-toggle="dropdown" class="zmdi zmdi-chevron-down zmdi-hc-fw" aria-expanded="false"></i>
                                         <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-end" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(30px, 26px, 0px);">
-                                            <a href="" class="dropdown-item" data-placement="top" data-target="#edit-comment__modal" data-toggle="modal" onclick="onEditCommentClick('${response.postId}', '${
-                    response.commentId}')">
+                                            <a href="" class="dropdown-item" data-placement="top" data-target="#edit-comment__modal" data-toggle="modal" onclick="onEditCommentClick('${response.postId}', '${response.commentId}')">
                                                 <i class="zmdi zmdi-edit zmdi-hc-fw"></i> Edit...
                                             </a> 
-                                            <a href="" class="dropdown-item" data-placement="top" data-target="#delete-comment__modal" data-toggle="modal" onclick="onDeleteCommentClick('${response.postId}', '${
-                    response.commentId}')">
+                                            <a href="" class="dropdown-item" data-placement="top" data-target="#delete-comment__modal" data-toggle="modal" onclick="onDeleteCommentClick('${response.postId}', '${response.commentId}')">
                                                 <i class="zmdi zmdi-delete zmdi-hc-fw"></i> Delete...
                                             </a>
                                         </div>

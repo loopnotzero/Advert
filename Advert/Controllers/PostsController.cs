@@ -41,7 +41,7 @@ namespace Advert.Controllers
         private readonly PostCommentsVotesManager<MongoDbPostCommentVote> _postCommentsVotesManager;
         private readonly PostCommentsVotesAggregationManager<MongoDbPostCommentVote, MongoDbPostCommentVoteAggregation> _postCommentsVotesAggregationManager;
         
-        private const string NoProfileImage = "/images/no_image.png";
+        private const string NoProfileImage = "/images/no-image.png";
 
         public PostsController(ILoggerFactory loggerFactory,
             IConfiguration configuration,

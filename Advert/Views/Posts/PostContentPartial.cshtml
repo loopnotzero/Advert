@@ -11,6 +11,7 @@
         <span style="font-size: 0.9rem; color: #71a830">FREE</span>
     }
 </p>
+
 <p>
     @if (Model.Location != null)
     {
@@ -18,6 +19,7 @@
         <span style="font-size: 0.9rem; color: #90949c">@Model.Location</span>
     }
 </p>
+
 <div id="post-content__@Model.PostId">
     @Html.Raw(Model.Text) 
 </div>

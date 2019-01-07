@@ -1570,6 +1570,25 @@
     <_ContentIncludedByDefault Remove="wwwroot\scss\vendors\material-design-iconic-font\less\spinned.less" />
     <_ContentIncludedByDefault Remove="wwwroot\scss\vendors\material-design-iconic-font\less\stacked.less" />
     <_ContentIncludedByDefault Remove="wwwroot\scss\vendors\material-design-iconic-font\less\variables.less" />
+    <_ContentIncludedByDefault Remove="wwwroot\images\profiles\5c2499378e09b92902a638d6\kisspng-nerd-geek-machine-learning-computer-nerd-5abfc408b2c7c8.3714361615225170007323.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\images\profiles\5c2499378e09b92902a638d6\photos\photo_2018-10-08_10-13-56.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\images\profiles\5c2499378e09b92902a638d6\photos\photo_2018-10-08_10-45-07.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\images\profiles\5c2499378e09b92902a638d6\photos\photo_2018-10-15_10-00-26.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\images\profiles\5c25d497899b220730ab0fe2\photos\photo_2018-10-08_10-13-56.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\images\profiles\5c25d497899b220730ab0fe2\photos\photo_2018-10-08_10-45-07.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\images\profiles\5c25d497899b220730ab0fe2\photos\photo_2018-10-15_10-00-26.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\images\profiles\5c26f95389ec8023a6500ba3\photos\0.jpeg" />
+    <_ContentIncludedByDefault Remove="wwwroot\images\profiles\5c26f95389ec8023a6500ba3\photos\photo_2018-10-08_10-13-56.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\images\profiles\5c26f95389ec8023a6500ba3\photos\photo_2018-10-08_10-45-07.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\images\profiles\5c26f95389ec8023a6500ba3\photos\photo_2018-10-15_10-00-26.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\images\profiles\5c27ea98eb64801aec9f3e5b\0.jpeg" />
+    <_ContentIncludedByDefault Remove="wwwroot\images\profiles\5c27ea98eb64801aec9f3e5b\photos\0.jpeg" />
+    <_ContentIncludedByDefault Remove="wwwroot\images\profiles\5c27ea98eb64801aec9f3e5b\photos\favicon.ico" />
+    <_ContentIncludedByDefault Remove="wwwroot\images\profiles\5c27ea98eb64801aec9f3e5b\photos\logo-icon.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\images\profiles\5c27ea98eb64801aec9f3e5b\photos\no_image.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\images\profiles\5c27ea98eb64801aec9f3e5b\photos\photo_2018-10-08_10-13-56.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\images\profiles\5c27ea98eb64801aec9f3e5b\photos\photo_2018-10-08_10-45-07.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\images\profiles\5c27ea98eb64801aec9f3e5b\photos\photo_2018-10-15_10-00-26.jpg" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="wwwroot\images\profiles" />
