@@ -152,7 +152,7 @@
         withPreview: false,
         spellChecker: false
     });
-    
+
     var editPostEditor = new SimpleMDE({
         status: false,
         element: $("#edit-post__editor")[0],
@@ -161,7 +161,7 @@
         withPreview: false,
         spellChecker: false
     });
-    
+
     var turndown = new TurndownService();
 
     //Fix for empty editors until it has no focus
@@ -169,7 +169,7 @@
         function() {
             addPostEditor.codemirror.refresh();
         });
-    
+
     //Fix for side by side & fullscreen
     addPostEditor.codemirror.on('refresh',
         function() {
@@ -179,13 +179,13 @@
                 $('body').removeClass('simplemde-fullscreen');
             }
         });
-    
+
     //Fix for empty editors until it has no focus
     $('#edit-post__modal').on('shown.bs.modal',
         function() {
             editPostEditor.codemirror.refresh();
         });
-    
+
     //Fix for side by side & fullscreen
     editPostEditor.codemirror.on('refresh',
         function() {
@@ -228,11 +228,6 @@
                 $("#edit-post__pac-input").val(response.location);
                 $('#edit-post__currency').val(response.currency).trigger('change');
                 editPostEditor.value(turndown.turndown(response.text));
-                console.log(`Set post title: ${response.title}`);
-                console.log(`Set post price: ${response.price}`);
-                console.log(`Set post location: ${response.location}`);
-                console.log(`Set post currency: ${response.currency}`);
-                console.log(`Set post text: ${response.text}`);
             });
         $("#edit-post__save").off("click").click(function() {
             var post = {
@@ -247,8 +242,13 @@
                 function(response) {
                     console.log("Close edit post modal window");
                     $("#edit-post__modal").modal('toggle');
-                    console.log(`Redirect to URL: ${response.returnUrl}`);
-                    window.location.replace(response.returnUrl);
+
+                    console.log(
+                        `MatchedCount: ${response.matchedCount} ModifiedCount: ${response.matchedCount
+                        } IsAcknowledged: ${response.isAcknowledged} IsModifiedCountAvailable: ${response
+                        .isModifiedCountAvailable}`);
+                    
+                    $(`#post-content__${postId}`).html(post.text);
                 });
         });
         $("#edit-post__close").off("click").click(function() {
@@ -304,7 +304,7 @@
                     var tagsElement = $(`#post-header__tags--${postId}`);
 
                     tagsElement.empty();
-                    
+
                     if (postTags.tags === null || postTags.tags.length == 0) {
                         tagsElement.append(`
                         <a href="" title="" data-placement="top" data-target="#edit-tags__modal--${postId
@@ -324,11 +324,13 @@
                             if (index++ == postTags.tags.length - 1) {
                                 tagsElement
                                     .append(
-                                        `<a class="post-tag__link" href="/Posts/GetPostsByTag?tagName=${tag}">${tag}</a>`);
+                                        `<a class="post-tag__link" href="/Posts/GetPostsByTag?tagName=${tag}">${tag
+                                        }</a>`);
                             } else {
                                 tagsElement
                                     .append(
-                                        `<a class="post-tag__link" href="/Posts/GetPostsByTag?tagName=${tag}">${tag}</a><span>, </span>`);
+                                        `<a class="post-tag__link" href="/Posts/GetPostsByTag?tagName=${tag}">${tag
+                                        }</a><span>, </span>`);
                             }
                         });
                     }

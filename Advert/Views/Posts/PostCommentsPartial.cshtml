@@ -178,7 +178,12 @@
                 function(response) {
                     console.log("Close edit post comment modal window");
                     $(`#edit-post__modal--${commentId}`).modal('toggle');                    
-                    console.log(`Update post comment result: ${response}`);
+                    
+                    console.log(
+                        `MatchedCount: ${response.matchedCount} ModifiedCount: ${response.matchedCount
+                        } IsAcknowledged: ${response.isAcknowledged} IsModifiedCountAvailable: ${response
+                        .isModifiedCountAvailable}`);
+                    
                     var comment = $(`#media-comment__${commentId}`);
                     comment.empty();
                     comment.append(postComment.text);

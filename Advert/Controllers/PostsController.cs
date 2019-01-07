@@ -397,11 +397,14 @@ namespace Advert.Controllers
                 post.Currency = viewModel.Currency;
                 post.ChangedAt = DateTime.UtcNow;
 
-                await _postsManager.UpdatePostAsync(post);
+                var result = await _postsManager.UpdatePostAsync(post);
 
-                return Ok(new
+                return Ok(new UpdateResultModel
                 {
-                    returnUrl = Url.Action("GetPostContent", "Posts", new {postId = post.Id})
+                    MatchedCount = result.MatchedCount,
+                    ModifiedCount = result.ModifiedCount,
+                    IsAcknowledged = result.IsAcknowledged,
+                    IsModifiedCountAvailable = result.IsModifiedCountAvailable
                 });
             }
             catch (Exception e)

@@ -18,4 +18,6 @@
         <span style="font-size: 0.9rem; color: #90949c">@Model.Location</span>
     }
 </p>
-@Html.Raw(Model.Text)
+<div id="post-content__@Model.PostId">
+    @Html.Raw(Model.Text) 
+</div>
