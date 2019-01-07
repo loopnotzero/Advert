@@ -69,7 +69,7 @@
         withPreview: false,
         spellChecker: false
     });
-
+    
     var turndown = new TurndownService();
 
     //Fix for empty editors until it has no focus
@@ -278,6 +278,15 @@
                 });
         }
     }
+    
+    var writeCommentEditor = new SimpleMDE({
+        status: false,
+        element: $("#write-post__editor")[0],
+        placeholder: "Write something...",
+        fullScreen: false,
+        withPreview: false,
+        spellChecker: false
+    });
 
     $(document).ready(function() {
         $("#post-comment").click(function() {
