@@ -28,7 +28,7 @@
                 </div>
 
                 <div class="form-group">
-                    <textarea id="post-editor__add--post" style="display: none"></textarea>
+                    <textarea id="add-post__editor" style="display: none"></textarea>
                 </div>
 
                 <div class="form-group">
@@ -49,3 +49,12 @@
         </div>
     </div>
 </div>
+
+<script>
+    $("#add-post__currency").select2({
+        tags: ["€", "$", "MDL"],
+        width: "100%",
+        height: "34px",
+        minimumResultsForSearch: -1,
+    });
+</script>

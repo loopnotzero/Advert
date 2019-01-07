@@ -27,7 +27,7 @@
                     <input id="edit-post__pac-input" type="text" class="form-control" placeholder="Enter a location (optional)" autocomplete="off">
                 </div>
 
-                <textarea id="post-editor__edit--post" style="display: none"></textarea>
+                <textarea id="edit-post__editor" style="display: none"></textarea>
             </div>
             <div class="modal-footer">
                 <button id="edit-post__save" type="button" class="btn btn-primary__advert">
@@ -37,3 +37,12 @@
         </div>
     </div>
 </div>
+
+<script>
+    $("#edit-post__currency").select2({
+        tags: ["€", "$", "MDL"],
+        width: "100%",
+        height: "34px",
+        minimumResultsForSearch: -1,
+    });
+</script>

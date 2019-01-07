@@ -50,10 +50,10 @@
                                 <div class="dropdown comments__item">
                                     <i data-toggle="dropdown" class="zmdi zmdi-chevron-down zmdi-hc-fw" aria-expanded="false"></i>
                                     <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-end" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(30px, 26px, 0px);">
-                                        <a href="" class="dropdown-item" data-placement="top" data-target="#edit-comment__modal--@comment.CommentId" data-toggle="modal" onclick="onEditCommentClick('@comment.PostId', '@comment.CommentId')">
+                                        <a href="" class="dropdown-item" data-placement="top" data-target="#edit-comment__modal" data-toggle="modal" onclick="onEditCommentClick('@comment.PostId', '@comment.CommentId')">
                                             <i class="zmdi zmdi-edit zmdi-hc-fw"></i> Edit...
                                         </a>
-                                        <a href="" class="dropdown-item" data-placement="top" data-target="#delete-comment__modal--@comment.CommentId" data-toggle="modal" onclick="onDeleteCommentClick('@comment.PostId', '@comment.CommentId')">
+                                        <a href="" class="dropdown-item" data-placement="top" data-target="#delete-comment__modal" data-toggle="modal" onclick="onDeleteCommentClick('@comment.PostId', '@comment.CommentId')">
                                             <i class="zmdi zmdi-delete zmdi-hc-fw"></i> Delete...
                                         </a>
                                     </div>
@@ -112,10 +112,10 @@
                                                 <div class="dropdown comments__item">
                                                     <i data-toggle="dropdown" class="zmdi zmdi-chevron-down zmdi-hc-fw" aria-expanded="false"></i>
                                                     <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-end" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(30px, 26px, 0px);">
-                                                        <a href="" class="dropdown-item" data-placement="top" data-target="#edit-comment__modal--@reply.CommentId" data-toggle="modal" onclick="onEditCommentClick('@reply.PostId', '@reply.CommentId')">
+                                                        <a href="" class="dropdown-item" data-placement="top" data-target="#edit-comment__modal" data-toggle="modal" onclick="onEditCommentClick('@reply.PostId', '@reply.CommentId')">
                                                             <i class="zmdi zmdi-edit zmdi-hc-fw"></i> Edit...
                                                         </a>
-                                                        <a href="" class="dropdown-item" data-placement="top" data-target="#delete-comment__modal--@reply.CommentId" data-toggle="modal" onclick="onDeleteCommentClick('@reply.PostId', '@reply.CommentId')">
+                                                        <a href="" class="dropdown-item" data-placement="top" data-target="#delete-comment__modal" data-toggle="modal" onclick="onDeleteCommentClick('@reply.PostId', '@reply.CommentId')">
                                                             <i class="zmdi zmdi-delete zmdi-hc-fw"></i> Delete...
                                                         </a>
                                                     </div>
@@ -127,36 +127,34 @@
                                 <div id="reply-placeholder"></div>
                             </div>
                         </div>
-                        @await Html.PartialAsync("EditCommentModal", reply)
-                        @await Html.PartialAsync("DeleteCommentModal", reply)
                     }
                 }
             </div>
         </div>
-        @await Html.PartialAsync("EditCommentModal", comment)
-        @await Html.PartialAsync("DeleteCommentModal", comment)
     }
+    @await Html.PartialAsync("EditCommentModal")
+    @await Html.PartialAsync("DeleteCommentModal")
 }
 
 <script>
+    var commentEditor = new SimpleMDE({
+        status: false,
+        element: $("#edit-comment__editor")[0],
+        placeholder: "Write something...",
+        fullScreen: false,
+        withPreview: false,
+        spellChecker: false
+    });
+    
     function onEditCommentClick(postId, commentId) {
-        var editCommentEditor = new SimpleMDE({
-            status: false,
-            element: $(`#edit-comment__editor--${commentId}`)[0],
-            placeholder: "Write something...",
-            fullScreen: false,
-            withPreview: false,
-            spellChecker: false
-        });
-
-        $(`#edit-comment__modal--${commentId}`).on('shown.bs.modal',
+        $("#edit-comment__modal").on('shown.bs.modal',
             function() {
-                editCommentEditor.codemirror.refresh();
+                commentEditor.codemirror.refresh();
             });
 
-        editCommentEditor.codemirror.on('refresh',
+        commentEditor.codemirror.on('refresh',
             function() {
-                if (editCommentEditor.isFullscreenActive()) {
+                if (commentEditor.isFullscreenActive()) {
                     $('body').addClass('simplemde-fullscreen');
                 } else {
                     $('body').removeClass('simplemde-fullscreen');
@@ -167,12 +165,12 @@
             commentId,
             function(response) {
                 console.log(`Set comment text: ${response.text}`);
-                editCommentEditor.value(turndown.turndown(response.text));
+                commentEditor.value(turndown.turndown(response.text));
             });
 
-        $(`#edit-comment__save--${commentId}`).off("click").click(function() {
+        $(`#edit-comment__save`).off("click").click(function() {
             var postComment = {
-                text: editCommentEditor.options.previewRender(editCommentEditor.value()),
+                text: commentEditor.options.previewRender(commentEditor.value()),
             };
             updatePostCommentAsync(postId,
                 commentId,
@@ -185,14 +183,11 @@
                     comment.empty();
                     comment.append(postComment.text);
                 });
-            editCommentEditor.toTextArea();
-            editCommentEditor = null;
-            $(`#edit-comment__modal--${commentId}`).modal('toggle');            
+            $("#edit-comment__modal").modal('toggle');
         });
-        $(`#edit-comment__close--${commentId}`).off("click").click(function() {
-            if (editCommentEditor.isFullscreenActive()) {
-                editCommentEditor.toggleFullScreen();
-            }
+        $("#edit-comment__close").off("click").click(function() {
+            if (commentEditor.isFullscreenActive())
+                commentEditor.toggleFullScreen();     
         });
     }
 
@@ -201,7 +196,7 @@
 
         $(`#${commentId} #reply-placeholder:first`).append(
             `<div id="reply-form">   
-                <textarea id="reply-editor__write-reply" style="display: none"></textarea>    
+                <textarea id="reply-commentEditor__write-reply" style="display: none"></textarea>    
                 <div class="row mt-3">
                     <div class="col-12">   
                         <input type="button" class="btn btn-light waves-effect waves-light btn-sm mr-2" value="Cancel" onclick="removeReplyForm('reply-form')"/>     
@@ -213,7 +208,7 @@
 
         var replyEditor = new SimpleMDE({
             status: false,
-            element: $("#reply-editor__write-reply")[0],
+            element: $("#reply-commentEditor__write-reply")[0],
             placeholder: "Write reply...",
             fullScreen: false,
             withPreview: false,
@@ -229,11 +224,13 @@
                 postId: postId,
                 replyTo: (replyTo == null ? commentId : replyTo),
             });
+            replyEditor.toTextArea();
+            replyEditor = null;
         });
     }
 
     function onDeleteCommentClick(postId, commentId) {
-        $(`#delete-comment__delete--${commentId}`).off("click").click(function() {
+        $("#delete-comment__delete").off("click").click(function() {
             deletePostCommentAsync(postId,
                 commentId,
                 function(response) {
@@ -243,7 +240,7 @@
                     console.log(`Is modified count available: ${response.isModifiedCountAvailable}`);
                     $(`#${commentId}`).empty();
                 });
-            $(`#delete-comment__modal--${commentId}`).modal('toggle');
+            $("#delete-comment__modal").modal('toggle');
         });
     }
 
@@ -284,13 +281,11 @@
                                     <div class="dropdown comments__item">
                                         <i data-toggle="dropdown" class="zmdi zmdi-chevron-down zmdi-hc-fw" aria-expanded="false"></i>
                                         <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-end" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(30px, 26px, 0px);">
-                                            <a href="" class="dropdown-item" data-placement="top" data-target="#edit-comment__modal--${
-                    response.commentId}" data-toggle="modal" onclick="onEditCommentClick('${response.postId}', '${
+                                            <a href="" class="dropdown-item" data-placement="top" data-target="#edit-comment__modal" data-toggle="modal" onclick="onEditCommentClick('${response.postId}', '${
                     response.commentId}')">
                                                 <i class="zmdi zmdi-edit zmdi-hc-fw"></i> Edit...
                                             </a> 
-                                            <a href="" class="dropdown-item" data-placement="top" data-target="#delete-comment__modal--${
-                    response.commentId}" data-toggle="modal" onclick="onDeleteCommentClick('${response.postId}', '${
+                                            <a href="" class="dropdown-item" data-placement="top" data-target="#delete-comment__modal" data-toggle="modal" onclick="onDeleteCommentClick('${response.postId}', '${
                     response.commentId}')">
                                                 <i class="zmdi zmdi-delete zmdi-hc-fw"></i> Delete...
                                             </a>

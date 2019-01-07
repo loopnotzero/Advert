@@ -1,22 +1,19 @@
-@using Advert.Models.Post
-@model PostCommentViewModel
-
-<div id="edit-comment__modal--@Model.CommentId" class="modal fade" data-backdrop="static" tabindex="-1">
+<div id="edit-comment__modal" class="modal fade" data-backdrop="static" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <span class="font-weight-bold">Edit comment</span>
-                <button id="edit-comment__close--@Model.CommentId" type="button" class="btn btn-link" data-dismiss="modal">
+                <button id="edit-comment__close" type="button" class="btn btn-link" data-dismiss="modal">
                     <span>
                         <i class="zmdi zmdi-close zmdi-hc-fw"></i>
                     </span>
                 </button>
             </div>
             <div class="modal-body">          
-                <textarea id="edit-comment__editor--@Model.CommentId" style="display: none"></textarea>
+                <textarea id="edit-comment__editor" style="display: none"></textarea>
             </div>
             <div class="modal-footer">
-                <button id="edit-comment__save--@Model.CommentId" type="button" class="btn btn-primary__advert">
+                <button id="edit-comment__save" type="button" class="btn btn-primary__advert">
                     Save
                 </button>
             </div>

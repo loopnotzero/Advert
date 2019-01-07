@@ -144,51 +144,52 @@
 </section>
 
 <script>
-    var editors = [
-        new SimpleMDE({
-            status: false,
-            element: $("#post-editor__add--post")[0],
-            placeholder: "Write something...",
-            fullScreen: false,
-            withPreview: false,
-            spellChecker: false
-        }),
-        new SimpleMDE({
-            status: false,
-            element: $("#post-editor__edit--post")[0],
-            placeholder: "Write something...",
-            fullScreen: false,
-            withPreview: false,
-            spellChecker: false
-        })
-    ];
-
+    var addPostEditor = new SimpleMDE({
+        status: false,
+        element: $("#add-post__editor")[0],
+        placeholder: "Write something...",
+        fullScreen: false,
+        withPreview: false,
+        spellChecker: false
+    });
+    
+    var editPostEditor = new SimpleMDE({
+        status: false,
+        element: $("#edit-post__editor")[0],
+        placeholder: "Write something...",
+        fullScreen: false,
+        withPreview: false,
+        spellChecker: false
+    });
+    
     var turndown = new TurndownService();
 
     //Fix for empty editors until it has no focus
     $('#add-post__modal').on('shown.bs.modal',
         function() {
-            editors[0].codemirror.refresh();
+            addPostEditor.codemirror.refresh();
         });
-
+    
     //Fix for side by side & fullscreen
-    editors[0].codemirror.on('refresh',
+    addPostEditor.codemirror.on('refresh',
         function() {
-            if (editors[0].isFullscreenActive()) {
+            if (addPostEditor.isFullscreenActive()) {
                 $('body').addClass('simplemde-fullscreen');
             } else {
                 $('body').removeClass('simplemde-fullscreen');
             }
         });
-
+    
+    //Fix for empty editors until it has no focus
     $('#edit-post__modal').on('shown.bs.modal',
         function() {
-            editors[1].codemirror.refresh();
+            editPostEditor.codemirror.refresh();
         });
-
-    editors[1].codemirror.on('refresh',
+    
+    //Fix for side by side & fullscreen
+    editPostEditor.codemirror.on('refresh',
         function() {
-            if (editors[1].isFullscreenActive()) {
+            if (editPostEditor.isFullscreenActive()) {
                 $('body').addClass('simplemde-fullscreen');
             } else {
                 $('body').removeClass('simplemde-fullscreen');
@@ -198,7 +199,7 @@
     function onAddPostClick() {
         $("#add-post__post").off("click").click(function() {
             var post = {
-                text: editors[0].options.previewRender(editors[0].value()),
+                text: addPostEditor.options.previewRender(addPostEditor.value()),
                 title: $("#add-post__title").val(),
                 price: $("#add-post__price").val(),
                 location: $("#add-post__pac-input").val(),
@@ -213,8 +214,8 @@
                 });
         });
         $("#add-post__close").off("click").click(function() {
-            if (editors[0].isFullscreenActive()) {
-                editors[0].toggleFullScreen();
+            if (addPostEditor.isFullscreenActive()) {
+                addPostEditor.toggleFullScreen();
             }
         });
     }
@@ -226,7 +227,7 @@
                 $("#edit-post__price").val(response.price);
                 $("#edit-post__pac-input").val(response.location);
                 $('#edit-post__currency').val(response.currency).trigger('change');
-                editors[1].value(turndown.turndown(response.text));
+                editPostEditor.value(turndown.turndown(response.text));
                 console.log(`Set post title: ${response.title}`);
                 console.log(`Set post price: ${response.price}`);
                 console.log(`Set post location: ${response.location}`);
@@ -235,7 +236,7 @@
             });
         $("#edit-post__save").off("click").click(function() {
             var post = {
-                text: editors[1].options.previewRender(editors[1].value()),
+                text: editPostEditor.options.previewRender(editPostEditor.value()),
                 title: $("#edit-post__title").val(),
                 price: $("#edit-post__price").val(),
                 location: $("#edit-post__pac-input").val(),
@@ -251,8 +252,8 @@
                 });
         });
         $("#edit-post__close").off("click").click(function() {
-            if (editors[1].isFullscreenActive()) {
-                editors[1].toggleFullScreen();
+            if (editPostEditor.isFullscreenActive()) {
+                editPostEditor.toggleFullScreen();
             }
         });
     }
@@ -357,7 +358,7 @@
             var autocomplete = new google.maps.places.Autocomplete(inputs[i]);
             autocomplete.addListener('place_changed',
                 function() {
-                    var place = autocomplete.getPlace();
+//                    var place = autocomplete.getPlace();
 //                    if (!place.geometry) {
 //                        // User entered the name of a Place that was not suggested and
 //                        // pressed the Enter key, or the Place Details request failed.
@@ -367,22 +368,6 @@
                 });
         }
     }
-
-    $(document).ready(function() {
-        $("#add-post__currency").select2({
-            tags: ["€", "$", "MDL"],
-            width: "100%",
-            height: "34px",
-            minimumResultsForSearch: -1,
-        });
-
-        $("#edit-post__currency").select2({
-            tags: ["€", "$", "MDL"],
-            width: "100%",
-            height: "34px",
-            minimumResultsForSearch: -1,
-        });
-    });
 </script>
 
 @* <script src="https://maps.googleapis.com/maps/api/js?key=@Model.PlacesApi&libraries=places&callback=addInputListeners" async defer></script> *@
