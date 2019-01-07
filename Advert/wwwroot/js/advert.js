@@ -33,12 +33,47 @@ function getPostByIdAsync(postId, callback) {
     });
 }
 
+function getPostCommentAsync(postId, commentId, callback) {
+    console.log(`Get post comment by post id: ${postId} comment id: ${commentId}`);
+    $.ajax({
+        url: `/Posts/getPostCommentAsync?postId=${postId}&commentId=${commentId}`,
+        type: "GET",
+        contentType: "application/json",
+        error: function(jqXhr, textStatus, errorThrown) {
+            console.log("jqXhr: " + jqXhr);
+            console.log("textStatus: " + textStatus);
+            console.log("errorThrown: " + errorThrown);
+        },
+        success: function(response) {
+            callback(response);
+        }
+    });
+}
+
 function updatePostByIdAsync(postId, post, callback) {
-    console.log(`Update post title: ${post.title} text: ${post.text} price: ${post.price}${post.currency} location: ${post.location} by id: ${postId}`);
+    console.log(`Update post by id: ${postId}`);
     $.ajax({
         url: `/Posts/UpdatePostByIdAsync?postId=${postId}`,
         type: "POST",
         data: JSON.stringify(post),
+        contentType: "application/json",
+        error: function() {
+            console.log("jqXhr: " + jqXhr);
+            console.log("textStatus: " + textStatus);
+            console.log("errorThrown: " + errorThrown);
+        },
+        success: function(response) {
+            callback(response);
+        }
+    });
+}
+
+function updatePostCommentAsync(postId, commentId, postComment, callback) {
+    console.log(`Update post comment by post id: ${postId} comment id: ${commentId}`);
+    $.ajax({
+        url: `/Posts/UpdatePostCommentAsync?postId=${postId}&commentId=${commentId}`,
+        type: "POST",
+        data: JSON.stringify(postComment),
         contentType: "application/json",
         error: function() {
             console.log("jqXhr: " + jqXhr);

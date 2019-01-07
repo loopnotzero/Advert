@@ -137,18 +137,15 @@ namespace Advert.MongoDbStorage.Stores
                 new UpdateOptions
                 {
                     BypassDocumentValidation = false
-                }, cancellationToken);
-            
-//            return await _collection.UpdateOneAsync(filter, Builders<T>.Update.Set(x => x.IsDeleted, true).Set(x => x.DeletedAt, DateTime.UtcNow),
-//                new UpdateOptions
-//                {
-//                    BypassDocumentValidation = false
-//                }, cancellationToken);
+                }, cancellationToken);         
         }
 
         public async Task<ReplaceOneResult> ReplacePostCommentAsync(ObjectId commentId, T entity, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
+            
+            entity.ChangedAt = DateTime.UtcNow;
+            
             return await _collection.ReplaceOneAsync(Builders<T>.Filter.Eq(x => x.Id, commentId), entity, new UpdateOptions
             {
                 BypassDocumentValidation = false

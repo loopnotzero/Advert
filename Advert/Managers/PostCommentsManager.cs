@@ -45,33 +45,7 @@ namespace Advert.Managers
             await postComments.CreatePostCommentAsync(entity, CancellationToken);
         }
 
-        public async Task<ReplaceOneResult> ReplacePostCommentAsync(string collectionName, ObjectId commentId, T entity)
-        {
-            ThrowIfDisposed();          
-            var postCommentsCollection = Store.GetPostCommentsCollection(collectionName, CancellationToken);
-            return await postCommentsCollection.ReplacePostCommentAsync(commentId, entity, CancellationToken);
-        }
-
-        public async Task<UpdateResult> DeletePostCommentAsync(string collectionName, ObjectId commentId)
-        {
-            ThrowIfDisposed();
-
-            if (string.IsNullOrEmpty(collectionName))
-            {
-                throw new ArgumentNullException(nameof(collectionName));
-            }
-
-            if (commentId.Equals(ObjectId.Empty))
-            {
-                throw new ArgumentNullException(nameof(commentId));
-            }
-
-            var postCommentsCollection = Store.GetPostCommentsCollection(collectionName, CancellationToken);
-
-            return await postCommentsCollection.DeletePostCommentByIdAsync(commentId, CancellationToken);
-        }
-        
-        public async Task<T> FindPostCommentById(string collectionName, ObjectId commentId)
+        public async Task<T> FindPostComment(string collectionName, ObjectId commentId)
         {
             ThrowIfDisposed();
 
@@ -151,6 +125,32 @@ namespace Advert.Managers
             }
 
             return await Store.GetPostCommentsCollection(collectionName, CancellationToken).FindPostCommentsByProfileIdAsync(profileId, CancellationToken);
+        }
+        
+        public async Task<UpdateResult> DeletePostCommentAsync(string collectionName, ObjectId commentId)
+        {
+            ThrowIfDisposed();
+
+            if (string.IsNullOrEmpty(collectionName))
+            {
+                throw new ArgumentNullException(nameof(collectionName));
+            }
+
+            if (commentId.Equals(ObjectId.Empty))
+            {
+                throw new ArgumentNullException(nameof(commentId));
+            }
+
+            var postCommentsCollection = Store.GetPostCommentsCollection(collectionName, CancellationToken);
+
+            return await postCommentsCollection.DeletePostCommentByIdAsync(commentId, CancellationToken);
+        }
+        
+        public async Task<ReplaceOneResult> ReplacePostCommentAsync(string collectionName, ObjectId commentId, T entity)
+        {
+            ThrowIfDisposed();          
+            var postCommentsCollection = Store.GetPostCommentsCollection(collectionName, CancellationToken);
+            return await postCommentsCollection.ReplacePostCommentAsync(commentId, entity, CancellationToken);
         }
         
         public void Dispose()

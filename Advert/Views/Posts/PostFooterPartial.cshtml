@@ -40,7 +40,7 @@
                 switch (response.voteType) {
                 case 1:
                     {
-                        console.log(`Post id: ${postId} votes count: ${response.votesCount}`)
+                        console.log(`Votes count: ${response.votesCount}`)
                         var voteIcon = $(`#vote-icon__${postId}`);
                         voteIcon.toggleClass('zmdi-favorite');
                         voteIcon.toggleClass('zmdi-favorite-outline');

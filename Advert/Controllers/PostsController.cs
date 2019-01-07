@@ -23,6 +23,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
+using MongoDB.Driver;
 
 namespace Advert.Controllers
 {
@@ -217,16 +218,17 @@ namespace Advert.Controllers
                         {
                             commentsReplies.Add(comment.Id, new PostCommentViewModel
                             {
-                                Text = comment.Text,
-                                ReplyTo = comment.ReplyTo.ToString(),
-                                CommentId = comment.Id.ToString(),
-                                PostId = comment.PostId.ToString(),
-                                CreatedAt = comment.CreatedAt.Humanize(),
-                                ProfileName = comment.ProfileName,
-                                ProfileImagePath = comment.ProfileImagePath ?? NoProfileImage,
-                                VotesCount = ((double) comment.VotesCount).ToMetric(),
                                 IsCommentOwner = comment.ProfileId.Equals(profile.Id),
                                 IsCommentVoted = postsCommentsVotes.Any(x => x.CommentId.Equals(comment.Id) && x.ProfileId.Equals(profile.Id)),
+                                PostId = comment.PostId.ToString(),
+                                Text = comment.Text,
+                                ReplyTo = comment.ReplyTo.ToString(),
+                                CreatedAt = comment.CreatedAt.Humanize(),
+                                CommentId = comment.Id.ToString(),
+                                VotesCount = ((double) comment.VotesCount).ToMetric(),
+                                ProfileId = comment.ProfileId.ToString(),
+                                ProfileName = comment.ProfileName,
+                                ProfileImagePath = comment.ProfileImagePath ?? NoProfileImage,
                             });
                         }
                     }
@@ -240,41 +242,41 @@ namespace Advert.Controllers
                                 {
                                     postComment.Comments = comments.OrderBy(x => x.CreatedAt).Select(comment =>
                                     {
-                                        var model = new PostCommentViewModel
+                                        return new PostCommentViewModel
                                         {
-                                            Text = comment.Text,
-                                            ReplyTo = comment.ReplyTo.ToString(),
-                                            CommentId = comment.Id.ToString(),
-                                            PostId = comment.PostId.ToString(),
-                                            CreatedAt = comment.CreatedAt.Humanize(),
-                                            ProfileName = comment.ProfileName,
-                                            ProfileImagePath = comment.ProfileImagePath ?? NoProfileImage,
-                                            VotesCount = ((double) comment.VotesCount).ToMetric(),
                                             IsCommentOwner = comment.ProfileId.Equals(profile.Id),
                                             IsCommentVoted = postsCommentsVotes.Any(x => x.CommentId.Equals(comment.Id) && x.ProfileId.Equals(profile.Id)),
-                                        };
-                                        return model;
+                                            PostId = comment.PostId.ToString(),
+                                            Text = comment.Text,
+                                            ReplyTo = comment.ReplyTo.ToString(),
+                                            CreatedAt = comment.CreatedAt.Humanize(),
+                                            CommentId = comment.Id.ToString(),
+                                            VotesCount = ((double) comment.VotesCount).ToMetric(),
+                                            ProfileId = comment.ProfileId.ToString(),
+                                            ProfileName = comment.ProfileName,
+                                            ProfileImagePath = comment.ProfileImagePath ?? NoProfileImage,
+                                        };       
                                     }).ToList();
                                 }
                             }
                             else
                             {
                                 postComment.Comments.AddRange(comments.OrderBy(x => x.CreatedAt).Select(comment =>
-                                {
-                                    var model = new PostCommentViewModel
+                                {                             
+                                    return new PostCommentViewModel
                                     {
-                                        Text = comment.Text,
-                                        ReplyTo = comment.ReplyTo.ToString(),
-                                        CommentId = comment.Id.ToString(),
-                                        PostId = comment.PostId.ToString(),
-                                        CreatedAt = comment.CreatedAt.Humanize(),
-                                        ProfileName = comment.ProfileName,
-                                        ProfileImagePath = comment.ProfileImagePath ?? NoProfileImage,
-                                        VotesCount = ((double) comment.VotesCount).ToMetric(),
                                         IsCommentOwner = comment.ProfileId.Equals(profile.Id),
                                         IsCommentVoted = postsCommentsVotes.Any(x => x.CommentId.Equals(comment.Id) && x.ProfileId.Equals(profile.Id)),
+                                        PostId = comment.PostId.ToString(),
+                                        Text = comment.Text,
+                                        ReplyTo = comment.ReplyTo.ToString(),
+                                        CreatedAt = comment.CreatedAt.Humanize(),
+                                        CommentId = comment.Id.ToString(),
+                                        VotesCount = ((double) comment.VotesCount).ToMetric(),
+                                        ProfileId = comment.ProfileId.ToString(),
+                                        ProfileName = comment.ProfileName,
+                                        ProfileImagePath = comment.ProfileImagePath ?? NoProfileImage,
                                     };
-                                    return model;
                                 }));
                             }
                         }
@@ -393,6 +395,7 @@ namespace Advert.Controllers
                 post.Price = viewModel.Price;
                 post.Location = viewModel.Location;
                 post.Currency = viewModel.Currency;
+                post.ChangedAt = DateTime.UtcNow;
 
                 await _postsManager.UpdatePostAsync(post);
 
@@ -408,6 +411,34 @@ namespace Advert.Controllers
             }
         }
 
+        [HttpPost]
+        [Authorize]
+        [Route("/Posts/UpdatePostCommentAsync")]
+        public async Task<IActionResult> UpdatePostCommentAsync([FromQuery(Name = "postId")] string postId, [FromQuery(Name = "commentId")] string commentId, [FromBody] PostCommentViewModel viewModel)
+        {
+            try
+            {
+                var postComment = await _postCommentsManager.FindPostComment(postId, ObjectId.Parse(commentId));
+
+                postComment.Text = viewModel.Text;
+     
+                var result = await _postCommentsManager.ReplacePostCommentAsync(postId, postComment.Id, postComment);
+               
+                return Ok(new ReplaceResultModel
+                {
+                    MatchedCount = result.MatchedCount,
+                    ModifiedCount = result.ModifiedCount,
+                    IsAcknowledged = result.IsAcknowledged,
+                    IsModifiedCountAvailable = result.IsModifiedCountAvailable
+                });
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
+            }
+        }
+        
         [HttpGet]
         [Authorize]
         [Route("/Posts/GetPostByIdAsync")]
@@ -436,6 +467,41 @@ namespace Advert.Controllers
                     CommentsCount = ((double) post.CommentsCount).ToMetric(),
                     CreatedAt = post.CreatedAt.Humanize(),
                     IsTopicOwner = post.ProfileId.Equals(profile.Id)
+                });
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpGet]
+        [Authorize]
+        [Route("/Posts/GetPostCommentAsync")]
+        public async Task<IActionResult> GetPostCommentAsync([FromQuery(Name = "postId")] string postId, [FromQuery(Name = "commentId")] string commentId)
+        {
+            try
+            {
+                var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
+
+                var postComment = await _postCommentsManager.FindPostComment(postId, ObjectId.Parse(commentId));
+  
+                var postsCommentsVotes = await _postCommentsVotesManager.FindPostsCommentsVotesAsync(profile.Id);
+
+                return Ok(new PostCommentViewModel
+                {
+                    IsCommentOwner = postComment.ProfileId.Equals(profile.Id),
+                    IsCommentVoted = postsCommentsVotes.Any(x => x.CommentId.Equals(postComment.Id) && x.ProfileId.Equals(profile.Id)),
+                    PostId = postComment.PostId.ToString(),
+                    Text = postComment.Text,
+                    ReplyTo = postComment.ReplyTo.ToString(),
+                    CreatedAt = postComment.CreatedAt.Humanize(),
+                    CommentId = postComment.Id.ToString(),
+                    VotesCount = ((double) postComment.VotesCount).ToMetric(),
+                    ProfileId = postComment.ProfileId.ToString(),
+                    ProfileName = postComment.ProfileName,
+                    ProfileImagePath = postComment.ProfileImagePath ?? NoProfileImage,
                 });
             }
             catch (Exception e)
@@ -489,7 +555,6 @@ namespace Advert.Controllers
             }
         }
 
-
         [HttpGet]
         [Authorize]
         [Route("/Posts/GetPostTagsByPostIdAsync")]
@@ -510,8 +575,7 @@ namespace Advert.Controllers
                 return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
             }
         }
-
-        
+   
         [HttpPost]
         [Authorize]
         [Route("/Posts/CreatePostTagsByPostIdAsync")]
@@ -538,7 +602,6 @@ namespace Advert.Controllers
                 return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
             }
         }
-
 
         [HttpPost]
         [Authorize]
@@ -626,7 +689,7 @@ namespace Advert.Controllers
               
                 await _postCommentsManager.CreatePostComment(viewModel.PostId, postComment);
                 
-                var comment = await _postCommentsManager.FindPostCommentById(viewModel.PostId, postComment.Id);
+                var comment = await _postCommentsManager.FindPostComment(viewModel.PostId, postComment.Id);
                 
                 var post = await _postsManager.FindPostByIdAsync(comment.PostId);
                 
@@ -680,7 +743,7 @@ namespace Advert.Controllers
                     
                     var votesCount = await _postCommentsVotesManager.CountPostCommentVotesByCommentIdAsync(postCommentVote.CommentId);
                    
-                    var postComment = await _postCommentsManager.FindPostCommentById(postId, postCommentVote.CommentId);
+                    var postComment = await _postCommentsManager.FindPostComment(postId, postCommentVote.CommentId);
                     
                     postComment.VotesCount = votesCount;
                     
@@ -698,7 +761,7 @@ namespace Advert.Controllers
 
                     var votesCount = await _postCommentsVotesManager.CountPostCommentVotesByCommentIdAsync(commentVote.CommentId);
                    
-                    var postComment = await _postCommentsManager.FindPostCommentById(postId, commentVote.CommentId);
+                    var postComment = await _postCommentsManager.FindPostComment(postId, commentVote.CommentId);
                     
                     postComment.VotesCount = votesCount;
                     
