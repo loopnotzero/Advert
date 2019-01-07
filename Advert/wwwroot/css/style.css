@@ -504,13 +504,13 @@ select.form-control-lg:not([size]):not([multiple]) {
   color: rgba(255, 255, 255, 0.75);
 }
 
-.card-title {
+.card-text__title {
   font-size: 1.25rem;
   font-weight: normal;
   line-height: 140%;
   margin-top: -0.35rem;
 }
-.card-title:last-child {
+.card-text__title:last-child {
   margin-bottom: 0;
 }
 
@@ -1265,10 +1265,6 @@ select.form-control {
   right: 15px;
   z-index: 2;
   top: 18px;
-}
-
-.card-title:hover {
-  text-decoration: underline;
 }
 
 .actions:not(.actions--inverse) .actions__item {

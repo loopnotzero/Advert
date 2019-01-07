@@ -1,9 +1,6 @@
 @using Advert.Models.Post
 @model PostViewModel
 
-<a href="/Posts?postId=@Model.PostId">
-    <h4 class="card-title font-weight-bold cut-long-text">@Model.Title</h4>
-</a>
 <p>
     @if (Model.Price > 0)
     {

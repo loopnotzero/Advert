@@ -15,6 +15,7 @@
                     @await Html.PartialAsync("PostHeaderPartial", Model.Posts.First())
                 </div>
                 <div class="card-body">
+                    <h4 class="card-text__title font-weight-bold cut-long-text">@Model.Posts.First().Title</h4>
                     @await Html.PartialAsync("PostContentPartial", Model.Posts.First())
                 </div>
                 <div class="card-footer">
@@ -176,7 +177,7 @@
         });
     }
 
-    function onEditPostTagsClick(postId) {
+        function onEditPostTagsClick(postId) {
         var tags = $(`#edit-tags__select--${postId}`);
 
         tags.select2({
@@ -206,6 +207,39 @@
                 function(response) {
                     console.log("Close edit tags modal window");
                     $(`#edit-tags__modal--${postId}`).modal('toggle');
+
+                    var tagsElement = $(`#post-header__tags--${postId}`);
+
+                    tagsElement.empty();
+                    
+                    if (postTags.tags === null || postTags.tags.length == 0) {
+                        tagsElement.append(`
+                        <a href="" title="" data-placement="top" data-target="#edit-tags__modal--${postId
+                            }" data-toggle="modal" onclick="onEditPostTagsClick('${postId}')">
+                            <i class="zmdi zmdi-tag-more zmdi-hc-fw post-tag__icon"></i>Add tags
+                        </a>
+                        `);
+                    } else {
+                        tagsElement.append(`
+                            <a href="" title="" data-placement="top" data-target="#edit-tags__modal--${postId
+                            }" data-toggle="modal" onclick="onEditPostTagsClick('${postId}')">
+                                <i class="zmdi zmdi-tag-more zmdi-hc-fw post-tag__icon"></i>
+                            </a>
+                        `);
+                        var index = 0;
+                        postTags.tags.forEach(function(tag) {
+                            if (index++ == postTags.tags.length - 1) {
+                                tagsElement
+                                    .append(
+                                        `<a class="post-tag__link" href="/Posts/GetPostsByTag?tagName=${tag}">${tag}</a>`);
+                            } else {
+                                tagsElement
+                                    .append(
+                                        `<a class="post-tag__link" href="/Posts/GetPostsByTag?tagName=${tag}">${tag}</a><span>, </span>`);
+                            }
+                        });
+                    }
+
                     console.log("Clear tags on response");
                     tags.empty();
                 });

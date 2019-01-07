@@ -44,6 +44,9 @@
                                 @await Html.PartialAsync("PostHeaderPartial", post)
                             </div>
                             <div class="card-body">
+                                <a href="/Posts?postId=@post.PostId">
+                                    <h4 class="card-text__title font-weight-bold cut-long-text">@post.Title</h4>
+                                </a>
                                 @await Html.PartialAsync("PostContentPartial", post)
                             </div>
                             <div class="card-footer">
@@ -315,11 +318,17 @@
                                 <i class="zmdi zmdi-tag-more zmdi-hc-fw post-tag__icon"></i>
                             </a>
                         `);
-                        console.log("Add tags");
+                        var index = 0;
                         postTags.tags.forEach(function(tag) {
-                            tagsElement
-                                .append(
-                                    `<a class="post-tag__link" href="/Posts/GetPostsByTag?tagName=${tag}">${tag}</a>`);
+                            if (index++ == postTags.tags.length - 1) {
+                                tagsElement
+                                    .append(
+                                        `<a class="post-tag__link" href="/Posts/GetPostsByTag?tagName=${tag}">${tag}</a>`);
+                            } else {
+                                tagsElement
+                                    .append(
+                                        `<a class="post-tag__link" href="/Posts/GetPostsByTag?tagName=${tag}">${tag}</a><span>, </span>`);
+                            }
                         });
                     }
 
