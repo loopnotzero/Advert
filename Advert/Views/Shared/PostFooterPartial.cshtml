@@ -1,0 +1,47 @@
+@using Advert.Models.Post
+@model PostViewModel
+
+<div class="r-btn r-btn-light r-btn--icon waves-effect" onclick="onVotePostClick('@Model.PostId', 1)">
+    @if (Model.IsPostVoted)
+    {
+        <i id="vote-icon__@Model.PostId" class="zmdi zmdi-favorite zmdi-hc-fw"></i>
+    }
+    else
+    {
+        <i id="vote-icon__@Model.PostId" class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
+    }
+</div>
+<span id="votes-count__@Model.PostId">@Model.LikesCount</span>
+    
+<div class="r-btn r-btn-light-no-hover r-btn--icon-no-hover">
+    <i class="zmdi zmdi-comments zmdi-hc-fw"></i>
+</div>
+<span id="comments-count__@Model.PostId">@Model.CommentsCount</span>
+    
+<div class="r-btn r-btn-light-no-hover r-btn--icon-no-hover">
+    <i class="zmdi zmdi-eye zmdi-hc-fw"></i>
+</div>
+<span id="post-views__count--@Model.PostId">@Model.ViewsCount</span>
+
+<script>
+    function onVotePostClick(postId, voteType) {
+        var votesCount = $(`#votes-count__${postId}`);
+        var vote = {
+            voteType: voteType,
+            votesCount: votesCount.text()
+        };
+        createPostVoteIdAsync(postId,
+            vote,
+            function(response) {
+                switch (response.voteType) {
+                case 1:
+                    {
+                        console.log(`Votes count: ${response.votesCount}`)
+                        $(`#vote-icon__${postId}`).toggleClass('zmdi-favorite').toggleClass('zmdi-favorite-outline');
+                        votesCount.text(response.votesCount);
+                    }
+                    break;
+                }
+            });
+    }
+</script>

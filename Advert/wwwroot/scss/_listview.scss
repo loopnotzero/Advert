@@ -17,7 +17,8 @@
 }
 
 .listview__item {
-  padding: 1.25rem $card-spacer-x;
+  //padding: 1.25rem $card-spacer-x;
+  padding: 1.25rem 1.25rem;
   transition: background-color 300ms;
 
   & > .avatar-char {
@@ -51,7 +52,7 @@
 
 .listview__heading {
   font-size: 1rem;
-  color: $headings-color;
+  color: $black !important;
   position: relative;
 
   & > small {
@@ -128,4 +129,16 @@
   margin-left: auto;
   align-self: flex-start;
   margin-right: -1rem;
+}
+
+.listview-item__tag {
+  padding: .3rem .75rem .4rem;
+  line-height: 100%;
+  font-size: .95rem;
+  border-radius: 2px;
+  color: #FFF;
+}
+
+.listview-item__tag--red {
+  background-color: #ff6b68 !important
 }

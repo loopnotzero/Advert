@@ -1,7 +1,8 @@
-﻿@using Advert.Models.Post
+@using Advert.Models.Post
 @model PostsAggregatorViewModel
 
 @await Html.PartialAsync("_Header", Model.Profile)
+
 
 <section class="content">
     <div class="row">
@@ -33,22 +34,32 @@
                 <div class="card">
                     <ul class="nav nav-tabs">
                         <li class="nav-item">
-                            <a class="nav-link active" href="/@Model.Profile.ProfileName">Profile</a>
+                            <a class="nav-link" href="/@Model.Profile.ProfileName">Profile</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="/@Model.Profile.ProfileName/Posts">Posts</a>
+                            <a class="nav-link active" href="/@Model.Profile.ProfileName/Posts">Posts</a>
                         </li>
                     </ul>
-
-                    <div class="row p-4">
-                        <div class="col-md-6">
-                            <ul class="icon-list">
-                                <li><i class="zmdi zmdi-phone"></i> 308-360-8938</li>
-                                <li><i class="zmdi zmdi-email"></i> malinda@inbound.plus</li>
-                                <li><i class="zmdi zmdi-twitter"></i>mallinda-hollaway</li>
-                            </ul>
-                        </div>
-                    </div>
+                    
+                    @foreach (var post in Model.Posts)
+                    {
+                        <article id="@post.PostId">
+                            <div class="card-header">
+                                @await Html.PartialAsync("PostHeaderPartial", post)
+                            </div>
+                            <div class="card-body">
+                                <a href="/Posts?postId=@post.PostId">
+                                    <h4 class="card-text__title font-weight-bold cut-long-text">@post.Title</h4>
+                                </a>
+                                @await Html.PartialAsync("PostContentPartial", post)
+                            </div>
+                            <div class="card-footer">
+                                @await Html.PartialAsync("PostFooterPartial", post)
+                            </div>
+                            <div style="border-bottom: 1px solid #d5d5d5;"></div>
+                            @await Html.PartialAsync("EditPostTagsModal", post)
+                        </article>
+                    }
                 </div>
             }
         </div>

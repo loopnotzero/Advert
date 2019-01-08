@@ -47,6 +47,33 @@ namespace Advert.Controllers
             {
                 var profile = await _profilesManager.FindProfileByNormalizedNameAsync(profileName);
 
+                return View(new PostsAggregatorViewModel
+                {
+                    Profile = new ProfileModel
+                    {
+                        Id = profile.Id.ToString(),
+                        ProfileName = profile.Name,
+                        ProfileDescription = profile.Description,
+                        ImagePath = profile.ImagePath,
+                        PostsCount = ((double) 0).ToMetric(),
+                    }
+                });
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpGet]
+        [Route("/{profileName}/Posts")]
+        public async Task<IActionResult> GetProfilePosts(string profileName)
+        {
+            try
+            {
+                var profile = await _profilesManager.FindProfileByNormalizedNameAsync(profileName);
+
                 var posts = await _postsManager.FindPostsByProfileIdAsync(profile.Id);
 
                 return View(new PostsAggregatorViewModel
@@ -86,7 +113,7 @@ namespace Advert.Controllers
             {
                 _logger.LogError(e.Message, e);
                 return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
-            }  
-        }           
+            }
+        }
     }
 }
