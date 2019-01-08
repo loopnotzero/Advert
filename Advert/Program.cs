@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 
@@ -13,7 +14,13 @@ namespace Advert
 
         private static IWebHost BuildWebHost(string[] args)
         {
-            var builder = WebHost.CreateDefaultBuilder(args).UseStartup<Startup>().Build();
+            var builder = WebHost.CreateDefaultBuilder(args)
+                .UseStartup<Startup>()
+//                .UseKestrel(options =>
+//                {
+//                    options.Listen(IPAddress.Parse("192.168.42.154"), 5000);
+//                })
+                .Build();
             return builder;
         }
     }

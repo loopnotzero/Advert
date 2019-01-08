@@ -9,19 +9,12 @@
         {
             <div class="listview__item">
                 <div class="mr-2" style="width: 50px; height: 50px">
-                    @if (!string.IsNullOrEmpty(advert.ProfileImagePath))
-                    {
-                        <img src="@advert.ProfileImagePath" class="listview__img" alt="">
-                    }
-                    else
-                    {
-                        <img src="/images/no-image.png" class="listview__img" alt="">
-                    }
+                    <img src="@advert.ProfileImagePath" class="listview__img" alt="">
                 </div>
                 <div class="listview__content">
                     <div class="listview__heading">
                         <p>
-                            <a class="font-weight-bold" href="/Posts/@advert.PostId">@advert.Title</a>
+                            <a class="font-weight-bold" href="/Posts?postId=@advert.PostId">@advert.Title</a>
                         </p>
                     </div>
                     <p>
