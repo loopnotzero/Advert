@@ -1,5 +1,5 @@
-﻿@using Advert.Models.Post
-@model AggregatorViewModel
+﻿@using Advert.Models.Profiles
+@model ProfileModel
 
 <header class="header">
     <div class="header__logo">
@@ -29,7 +29,7 @@
                 <i class="zmdi zmdi-more-vert zmdi-hc-lg"></i>
             </a>
             <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-end" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(-171px, 36px, 0px);">
-                <a href="/Profile" class="dropdown-item">Profile</a>
+                <a href="/@Model.ProfileName" class="dropdown-item">Profile</a>
                 <div class="dropdown-separator"></div>
                 <a href="#" class="dropdown-item">Settings</a>
                 <a id="sign__out" href="#" class="dropdown-item">Log Out</a>

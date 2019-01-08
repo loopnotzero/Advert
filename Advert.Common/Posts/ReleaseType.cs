@@ -2,9 +2,8 @@
 {
     public enum ReleaseType
     {
-        PreModeration,
-        PostModeration,
-        PreRelease,
-        PostRelease
+        Moderating,
+        Approved,
+        Rejected
     }
 }

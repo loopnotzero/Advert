@@ -123,7 +123,7 @@ namespace Advert.Controllers
 
                 var postsVotes = await _postsVotesManager.FindPostsVotesAsync(profile.Id);
 
-                return View(new AggregatorViewModel
+                return View(new PostsAggregatorViewModel
                 {
                     BeginPage = beginPage,
                     EndPage = endPage,
@@ -290,7 +290,7 @@ namespace Advert.Controllers
 
                 var postsVotes = await _postsVotesManager.FindPostsVotesAsync(profile.Id);
 
-                return View(new AggregatorViewModel
+                return View(new PostsAggregatorViewModel
                 {
                     Profile = new ProfileModel
                     {
@@ -362,7 +362,7 @@ namespace Advert.Controllers
                     Price = viewModel.Price,
                     Location = viewModel.Location,
                     Currency = viewModel.Currency,
-                    ReleaseType = ReleaseType.PreModeration,
+                    ReleaseType = ReleaseType.Moderating,
                     ProfileId = profile.Id,
                     ProfileName = profile.Name,
                     ProfileImagePath = profile.ImagePath,

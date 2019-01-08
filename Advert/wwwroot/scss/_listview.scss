@@ -1,15 +1,15 @@
 .listview__header {
-  color: #333;
+  color: $headings-color;
   text-transform: uppercase;
   padding: 1.2rem 1rem 1rem;
-  border-bottom: 1px solid #f6f6f6;
+  border-bottom: 1px solid $gray-100;
   text-align: center;
-}
 
-.listview__header .actions {
-  position: absolute;
-  top: 0.8rem;
-  right: 1rem;
+  .actions {
+    position: absolute;
+    top: 0.8rem;
+    right: 1rem;
+  }
 }
 
 .listview__scroll {
@@ -17,18 +17,18 @@
 }
 
 .listview__item {
-  //padding: 0.50rem 0.2rem;
-  //transition: background-color 100ms;
+  padding: 1.25rem $card-spacer-x;
+  transition: background-color 300ms;
+
+  & > .avatar-char {
+    margin-right: 1.2rem;
+  }
 }
 
-.listview__item > .avatar-char {
-  margin-right: 1.2rem;
-}
-
-.listview:not(.listview--block) .listview__item {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
+.listview:not(.listview--block) {
+  .listview__item {
+    display: flex;
+  }
 }
 
 .listview__img {
@@ -39,97 +39,93 @@
 }
 
 .listview__content {
-  -webkit-box-flex: 1;
-  -ms-flex: 1;
   flex: 1;
   min-width: 0;
-}
 
-.listview__heading > p {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  color: #8e9499;
-  margin-bottom: 0;
+  & > p {
+    @include text-truncate();
+    color: lighten($body-color, 10%);
+    margin-bottom: 0;
+  }
 }
 
 .listview__heading {
-  font-size: 0.8rem;
-  color: #333;
+  font-size: 1rem;
+  color: $headings-color;
   position: relative;
-}
 
-.listview__heading > div {
-  float: right;
-  color: #9c9c9c;
-  font-weight: 500;
-  font-size: 0.85rem;
-  margin-top: 0.1rem;
-}
+  & > small {
+    float: right;
+    color: $text-muted;
+    font-weight: $font-weight-bold;
+    font-size: 0.85rem;
+    margin-top: 0.1rem;
+  }
 
-.listview__heading__hover:hover {
-  text-decoration: underline;
-}
-
-.listview__heading + p {
-  margin: 0.2rem 0 0;
-  font-size: 0.95rem;
+  & + p {
+    margin: 0.2rem 0 0;
+    font-size: 0.95rem;
+  }
 }
 
 .listview__attrs {
-  -webkit-box-flex: 1;
-  -ms-flex: 1 100%;
   flex: 1 100%;
   margin-top: 0.5rem;
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-}
 
-.listview__attrs > span {
-  padding: 0.55rem 0.7rem;
-  border: 1px solid #e9ecef;
-  display: inline-block;
-  line-height: 100%;
-  font-size: 0.9rem;
-  margin: 0.2rem 0.25rem 0.055rem 0;
-  background-color: #FFFFFF;
+  & > span {
+    padding: 0.55rem 0.7rem;
+    border: 1px solid $gray-200;
+    display: inline-block;
+    line-height: 100%;
+    font-size: 0.9rem;
+    margin: 0.2rem 0.25rem 0.055rem 0;
+    background-color: $white;
+  }
 }
 
 .listview__checkbox {
   margin-right: 0.5rem;
 }
 
-.listview:not(.listview--inverse).listview--hover .listview__item:hover {
-  cursor: pointer;
-  background-color: #f8fafd;
+// Listview modifier classes
+.listview {
+  &:not(.listview--inverse) {
+
+    &.listview--hover {
+      .listview__item:hover {
+        background-color: $listview-item-hover-bg;
+      }
+    }
+
+    &.listview--striped {
+      .listview__item:nth-child(even) {
+        background-color: $listview-item-striped-bg;
+      }
+    }
+
+    .listview__item--active {
+      background-color: $listview-item-active-bg;
+    }
+
+    &.listview--bordered {
+      .listview__item + .listview__item {
+        border-top: 1px solid $listview-border-color;
+      }
+    }
+  }
 }
 
-.listview:not(.listview--inverse).listview--striped .listview__item:nth-child(even) {
-  background-color: #f9f9f9;
-}
-
-.listview:not(.listview--inverse) .listview__item--active {
-  background-color: #f9f9f9;
-}
-
-.listview:not(.listview--inverse).listview--bordered .listview__item + .listview__item {
-  border-top: 1px solid #f6f6f6;
-}
-
-.listview--inverse.listview--striped .listview__item:nth-child(even) {
-  background-color: rgba(255, 255, 255, 0.1);
+.listview--inverse {
+  &.listview--striped {
+    .listview__item:nth-child(even) {
+      background-color: $listview-invert-item-striped-bg;
+    }
+  }
 }
 
 .listview__actions {
   margin-left: auto;
-  -ms-flex-item-align: start;
   align-self: flex-start;
   margin-right: -1rem;
-}
-
-.listview__dropdown__divider {
-  padding-top: 1px;
-  margin: 5px 1px 6px;
-  border-bottom: 1px solid #e6ecf0;
 }

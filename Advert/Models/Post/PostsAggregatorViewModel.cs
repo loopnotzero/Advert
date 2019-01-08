@@ -3,7 +3,7 @@ using Advert.Models.Profiles;
 
 namespace Advert.Models.Post
 {
-    public class AggregatorViewModel
+    public class PostsAggregatorViewModel
     {
         public long BeginPage { get; set; }
         public long EndPage { get; set; }

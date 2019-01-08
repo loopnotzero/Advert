@@ -83,6 +83,10 @@
   position: relative;
 }
 
+.recommended-post {
+  position: relative;
+}
+
 .card-user__info {
   display: flex;
   align-items: center;
@@ -90,11 +94,25 @@
   padding: 1rem;
 }
 
+.recommended-post__info {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  padding: 0.2rem;
+}
+
 .card-user__img {
   width: 3rem;
   height: 3rem;
   border-radius: 50%;
-  margin-right: 0.8rem;
+  margin-right: 0.5rem;
+}
+
+.recommended-post__profile--img {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  margin-right: 0.5rem;
 }
 
 .card-user__name {
@@ -103,6 +121,15 @@
 }
 
 .card-user__name:hover {
+  text-decoration: underline;
+}
+
+.recommended-post__title {
+  //color: $headings-color;
+  font-weight: $font-weight-bold;
+}
+
+.recommended-post__title:hover {
   text-decoration: underline;
 }
 
