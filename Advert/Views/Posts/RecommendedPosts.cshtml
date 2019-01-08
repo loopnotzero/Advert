@@ -13,10 +13,16 @@
                         <img src="@post.ProfileImagePath" class="recommended-post__profile--img" alt="">
                     </a>
                     <div style="width: 80%">
-                        <a href="/@post.ProfileName">
-                            <div class=".recommended-post__title cut-long-text">@post.Title</div>
+                        <a href="/Posts?postId=@post.PostId">
+                            <div class="recommended-post__title font-weight-bold cut-long-text">@post.Title</div>
                         </a>
-                        <div class="post-header__time--notags">@post.CreatedAt</div>
+                        <div style="display: flex">
+                            <a href="/@post.ProfileName">
+                                @post.ProfileName
+                            </a>
+                            <span class="dot-separator"></span>
+                            <div class="post-header__time--notags">@post.CreatedAt</div>
+                        </div>
                     </div>
                 </div>
             </div>

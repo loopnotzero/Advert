@@ -1518,6 +1518,8 @@ time {
 
 .dot-separator {
   color: #657786;
+  margin-left: 5px;
+  margin-right: 5px;
 }
 
 .dot-separator:before {
