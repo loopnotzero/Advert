@@ -11,44 +11,31 @@
     <div class="row">
         <div class="col-md-3 p-1">
             <div class="card team__item">
-                <img src="~/images/no-image.png" class="team__img" alt="">
-
+                @if (string.IsNullOrEmpty(Model.Profile.ImagePath))
+                {
+                    <img src="~/images/no-image.png" class="team__img" alt="">
+                }
+                else
+                {
+                    <img src="@Model.Profile.ImagePath" class="team__img" alt="">
+                }
                 <div class="card-body">
-                    <h4 class="card-title">Jermaine S. Wilson</h4>
-                    <h6 class="card-subtitle">Chairman / Chief Executive Officer</h6>
-
-                    <p class="card-text">Integer posuere erat a ante venenatis dapibus posuere velit aliquet. Aenean eu leoquam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Donec id elit non mi porta gravida at eget metus.</p>
-
-                    <div class="team__social">
-                        <a href="" class="zmdi zmdi-facebook bg-indigo"></a>
-                        <a href="" class="zmdi zmdi-twitter bg-cyan"></a>
-                        <a href="" class="zmdi zmdi-google bg-red"></a>
+                    <a href="/@Model.Profile.ProfileName">
+                        <h4 class="card-title">@@@Model.Profile.ProfileName</h4> 
+                    </a>     
+                    <p class="card-text">
+                        @Model.Profile.ProfileDescription
+                    </p>
+                    <div style="border-bottom: 1px solid #d5d5d5; margin-bottom: 10px;">
                     </div>
+                    <div class="zmdi zmdi-facebook bg-indigo"></div>
+                    @* <div class="team__social"> *@
+                    @*     <a href="" class="zmdi zmdi-facebook bg-indigo"></a> *@
+                    @*     <a href="" class="zmdi zmdi-twitter bg-cyan"></a> *@
+                    @*     <a href="" class="zmdi zmdi-google bg-red"></a> *@
+                    @* </div> *@
                 </div>
             </div>
-            @*             <div class="card"> *@
-            @*                 <div class="card-body text-center"> *@
-            @*                     <a href="/Profile"> *@
-            @*                         @if (!string.IsNullOrEmpty(Model.Profile.ImagePath)) *@
-            @*                         { *@
-            @*                             <img src="@Model.Profile.ImagePath" class="widget-profile__img widget-profile__img__hover" alt="profile-image"> *@
-            @*                         } *@
-            @*                         else *@
-            @*                         { *@
-            @*                             <img src="/images/no-image.png" class="widget-profile__img widget-profile__img__hover" alt="profile-image"> *@
-            @*                         } *@
-            @*                     </a> *@
-            @*                     <a href="/Profile"> *@
-            @*                         <h5>@Model.Profile.Name</h5> *@
-            @*                     </a> *@
-            @*                     <div class="row"> *@
-            @*                         <div class="col-md-12"> *@
-            @*                             <span class="text-justify">Posts</span> *@
-            @*                             <h5 class="text-center">@Model.Profile.PostsCount</h5> *@
-            @*                         </div> *@
-            @*                     </div> *@
-            @*                 </div> *@
-            @*             </div> *@
         </div>
         <div class="col-md-6 p-1">
             @{

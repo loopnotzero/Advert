@@ -7,8 +7,8 @@
   margin-bottom: 7rem;
 
   @include media-breakpoint-down(sm) {
-    max-width: 365px;
-    margin: 0 auto 80px;
+    //max-width: 365px;
+    margin: 0 auto 0;
   }
 
   .card-subtitle {

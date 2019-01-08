@@ -50,7 +50,7 @@ namespace Advert.Controllers
                 return View(new ProfileModel
                 {
                     Id = profile.Id.ToString(),
-                    Name = profile.Name,
+                    ProfileName = profile.Name,
                     ImagePath = profile.ImagePath,
                     PostsCount = ((double) 0).ToMetric(),
                 });
@@ -73,7 +73,7 @@ namespace Advert.Controllers
                 return View(new ProfileModel
                 {
                     Id = profile.Id.ToString(),
-                    Name = profile.Name,
+                    ProfileName = profile.Name,
                     ImagePath = profile.ImagePath,
                     PostsCount = ((double) 0).ToMetric(),
                 });

@@ -133,7 +133,8 @@ namespace Advert.Controllers
                     Profile = new ProfileModel
                     {
                         Id = profile.Id.ToString(),
-                        Name = profile.Name,
+                        ProfileName = profile.Name,
+                        ProfileDescription = profile.Description,
                         ImagePath = profile.ImagePath ?? NoProfileImage,
                         PostsCount = ((double) await _postsManager.CountPostsByProfileIdAsync(profile.Id)).ToMetric(),
                     },
@@ -293,8 +294,9 @@ namespace Advert.Controllers
                 {
                     Profile = new ProfileModel
                     {
-                        Name = profile.Name,
                         Id = profile.Id.ToString(),
+                        ProfileName = profile.Name,
+                        ProfileDescription = profile.Description,
                         ImagePath = profile.ImagePath ?? NoProfileImage,
                         PostsCount = ((double) await _postsManager.CountPostsByProfileIdAsync(post.ProfileId)).ToMetric(),                      
                     },                
