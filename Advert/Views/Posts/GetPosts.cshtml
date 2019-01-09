@@ -16,9 +16,9 @@
                 <div class="card team__item">
                     @await Html.PartialAsync("ProfilePartial", Model.Profile)
                 </div>
-            }        
-        </div>  
-        <div class="@(Model.Profile != null ? "col-md-6" : "col-md-6") p-1">
+            }
+        </div>
+        <div class="col-md-6 p-1">
             <div class="card">
                 @foreach (var post in Model.Posts)
                 {
@@ -109,16 +109,16 @@
                 </div>
             }
         </div>
-@*         <div class="col-md-3 p-1"> *@
-@*             <div class="card p-3"> *@
-@*                 <div style="border-bottom: 1px solid #d5d5d5; margin-bottom: 10px;"> *@
-@*                     <h4 class="text-muted">Recommendations</h4> *@
-@*                 </div> *@
-@*                 @{ *@
-@*                     @await Html.PartialAsync("RecommendedPosts", Model.RecommendedPosts) *@
-@*                 } *@
-@*             </div> *@
-@*         </div> *@
+        @*         <div class="col-md-3 p-1"> *@
+        @*             <div class="card p-3"> *@
+        @*                 <div style="border-bottom: 1px solid #d5d5d5; margin-bottom: 10px;"> *@
+        @*                     <h4 class="text-muted">Recommendations</h4> *@
+        @*                 </div> *@
+        @*                 @{ *@
+        @*                     @await Html.PartialAsync("RecommendedPosts", Model.RecommendedPosts) *@
+        @*                 } *@
+        @*             </div> *@
+        @*         </div> *@
     </div>
     @await Html.PartialAsync("LogInModal")
     @await Html.PartialAsync("SignUpModal")
@@ -128,65 +128,62 @@
 </section>
 
 <script>
-    var addPostEditor = new SimpleMDE({
-        status: false,
-        element: $("#add-post__editor")[0],
-        placeholder: "Write something...",
-        fullScreen: false,
-        withPreview: false,
-        spellChecker: false
-    });
-
-    var editPostEditor = new SimpleMDE({
-        status: false,
-        element: $("#edit-post__editor")[0],
-        placeholder: "Write something...",
-        fullScreen: false,
-        withPreview: false,
-        spellChecker: false
-    });
-
     var turndown = new TurndownService();
-
-    //Fix for empty editors until it has no focus
-    $('#add-post__modal').on('shown.bs.modal',
-        function() {
-            addPostEditor.codemirror.refresh();
+    
+    $('.post-editor').each(function() {
+        editor = new SimpleMDE({
+            status: false,
+            element: this,
+            placeholder: "Write something...",
+            fullScreen: false,
+            withPreview: false,
+            spellChecker: false
         });
 
-    //Fix for side by side & fullscreen
-    addPostEditor.codemirror.on('refresh',
-        function() {
-            if (addPostEditor.isFullscreenActive()) {
-                $('body').addClass('simplemde-fullscreen');
-            } else {
-                $('body').removeClass('simplemde-fullscreen');
-            }
-        });
+        //Fix for empty editors until it has no focus
+        $('#add-post__modal').on('shown.bs.modal',
+            function() {
+                console.log("shown.bs.modal");
+                editor.codemirror.refresh();
+            });
+        
+        $('#edit-post__modal').on('shown.bs.modal',
+            function() {
+                console.log("shown.bs.modal");
+                editor.codemirror.refresh();
+            });
 
-    //Fix for empty editors until it has no focus
-    $('#edit-post__modal').on('shown.bs.modal',
-        function() {
-            editPostEditor.codemirror.refresh();
-        });
+        //Fix for side by side & fullscreen
+        editor.codemirror.on('refresh',
+            function() {
+                if (editor.isFullscreenActive()) {
+                    $('body').addClass('simplemde-fullscreen');
+                } else {
+                    $('body').removeClass('simplemde-fullscreen');
+                }
+            });
+    });
 
-    //Fix for side by side & fullscreen
-    editPostEditor.codemirror.on('refresh',
-        function() {
-            if (editPostEditor.isFullscreenActive()) {
-                $('body').addClass('simplemde-fullscreen');
-            } else {
-                $('body').removeClass('simplemde-fullscreen');
-            }
-        });
+    function initMap() {
+        new google.maps.places.Autocomplete(document.getElementById('add-post__location'))
+            .addListener('place_changed',
+                function() {
+
+                });
+        new google.maps.places.Autocomplete(document.getElementById('edit-post__location'))
+            .addListener('place_changed',
+                function() {
+
+                });
+    }
 
     function onAddPostClick() {
         $("#add-post__post").off("click").click(function() {
             var post = {
-                text: addPostEditor.options.previewRender(addPostEditor.value()),
+                text: editor.options.previewRender(editor.value()),
                 title: $("#add-post__title").val(),
                 price: $("#add-post__price").val(),
-                location: $("#add-post__pac-input").val(),
+                location: $("#add-post__location]").val(),
                 currency: $('#add-post__currency :selected').text()
             };
             createPostAsync(post,
@@ -198,8 +195,8 @@
                 });
         });
         $("#add-post__close").off("click").click(function() {
-            if (addPostEditor.isFullscreenActive()) {
-                addPostEditor.toggleFullScreen();
+            if (editor.isFullscreenActive()) {
+                editor.toggleFullScreen();
             }
         });
     }
@@ -209,16 +206,16 @@
             function(response) {
                 $("#edit-post__title").val(response.title);
                 $("#edit-post__price").val(response.price);
-                $("#edit-post__pac-input").val(response.location);
+                $("#edit-post__location").val(response.location);
                 $('#edit-post__currency').val(response.currency).trigger('change');
-                editPostEditor.value(turndown.turndown(response.text));
+                editor.value(turndown.turndown(response.text));
             });
         $("#edit-post__save").off("click").click(function() {
             var post = {
-                text: editPostEditor.options.previewRender(editPostEditor.value()),
+                text: editor.options.previewRender(editor.value()),
                 title: $("#edit-post__title").val(),
                 price: $("#edit-post__price").val(),
-                location: $("#edit-post__pac-input").val(),
+                location: $("#edit-post__location").val(),
                 currency: $('#edit-post__currency :selected').text()
             };
             updatePostByIdAsync(postId,
@@ -226,18 +223,17 @@
                 function(response) {
                     console.log("Close edit post modal window");
                     $("#edit-post__modal").modal('toggle');
-
+                    $(`#post-content__${postId}`).html(post.text);
+                    $(`#post-location__${postId}`).text(post.location);
                     console.log(
                         `MatchedCount: ${response.matchedCount} ModifiedCount: ${response.matchedCount
                         } IsAcknowledged: ${response.isAcknowledged} IsModifiedCountAvailable: ${response
                         .isModifiedCountAvailable}`);
-                    
-                    $(`#post-content__${postId}`).html(post.text);
                 });
         });
         $("#edit-post__close").off("click").click(function() {
-            if (editPostEditor.isFullscreenActive()) {
-                editPostEditor.toggleFullScreen();
+            if (editor.isFullscreenActive()) {
+                editor.toggleFullScreen();
             }
         });
     }
@@ -256,19 +252,11 @@
 
     function onEditPostTagsClick(postId) {
         var $input = $(`#edit-tags__input--${postId}`).tagify({
-                maxTags: 5,
-                whitelist: [
-                    { "id": 1, "value": "some string" }
-                ],
-            })
-            .on('add',
-                function(e, tagName) {
-                    console.log('JQEURY EVENT: ', 'added', tagName)
-                })
-            .on("invalid",
-                function(e, tagName) {
-                    console.log('JQEURY EVENT: ', "invalid", e, ' ', tagName);
-                });
+            maxTags: 5,
+            whitelist: [
+                { "id": 1, "value": "some string" }
+            ],
+        });
 
         var tagify = $input.data('tagify');
 
@@ -280,13 +268,13 @@
 
         $(`#edit-tags__save--${postId}`).off("click").click(function() {
             var tags = tagify.value;
-           
+
             var postTags = {
                 tags: tags.map(function(element) {
                     return element.value;
                 })
             };
-            
+
             console.log(`Tags: ${postTags.tags}`);
 
             createPostTagsByPostIdAsync(postId,
@@ -345,25 +333,14 @@
         });
     }
 
-    function addInputListeners() {
-        var inputs = [
-            document.getElementById('add-post__pac-input'),
-            document.getElementById('edit-post__pac-input')
-        ];
-        for (var i = 0; i < inputs.length; i++) {
-            var autocomplete = new google.maps.places.Autocomplete(inputs[i]);
-            autocomplete.addListener('place_changed',
-                function() {
-//                    var place = autocomplete.getPlace();
-//                    if (!place.geometry) {
-//                        // User entered the name of a Place that was not suggested and
-//                        // pressed the Enter key, or the Place Details request failed.
-//                        window.alert("No details available for input: '" + place.name + "'");
-//                        return;
-//                    }
-                });
-        }   
-    } 
+    $(document).ready(function() {
+        $("#add-post__modal").modal({
+            show: false
+        }).on("shown",
+            function() {
+                console.log("Shown");
+            });
+    });
 </script>
 
-@* <script src="https://maps.googleapis.com/maps/api/js?key=@Model.PlacesApi&libraries=places&callback=addInputListeners" async defer></script> *@
+@* <script src="https://maps.googleapis.com/maps/api/js?key=@Model.PlacesApi&libraries=places&callback=initMap" async defer></script> *@

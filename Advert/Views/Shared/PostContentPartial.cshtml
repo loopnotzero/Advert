@@ -12,13 +12,13 @@
     }
 </p>
 
-<p>
-    @if (Model.Location != null)
-    {
+@if (Model.Location != null)
+{
+    <p>
         <i class="zmdi zmdi-pin zmdi-hc-fw"></i>
-        <span style="font-size: 0.9rem; color: #90949c">@Model.Location</span>
-    }
-</p>
+        <span id="post-location__@Model.PostId" style="font-size: 0.9rem; color: #90949c">@Model.Location</span>
+    </p>    
+}
 
 <div id="post-content__@Model.PostId">
     @Html.Raw(Model.Text) 

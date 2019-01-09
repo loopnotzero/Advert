@@ -50,7 +50,7 @@
     bottom: 0;
     @include transition(all 350ms);
     transition-timing-function: ease;
-    background-color: $light-blue;
+    background-color: $advert;
   }
 
   &:before {
@@ -101,7 +101,7 @@ select.form-control {
     
     &:focus {
       & ~ label {
-        color: $light-blue;
+        color: $advert;
       }
     }
   }

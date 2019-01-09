@@ -12,23 +12,29 @@
             <div class="modal-body">
                 <div class="form-group">
                     <input id="add-post__title" type="text" class="form-control" maxlength="100" placeholder="What are you selling?" autocomplete="off">
+                    <i class="form-group__bar"></i>
                 </div>
+                
+                <div class="form-group">
+                    <input id="add-post__location" type="text" class="form-control" placeholder="Enter a location (optional)">
+                    <i class="form-group__bar"></i>
+                </div>
+                
                 <div class="row">
-                    <div class="form-group col-md-3">
-                        <input id="add-post__price" type="text" class="form-control" placeholder="Price" autocomplete="off">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <input id="add-post__price" type="number" class="form-control" placeholder="Price" autocomplete="off">
+                            <i class="form-group__bar"></i>
+                        </div>     
                     </div>
-                    <div class="form-group col-md-3">
+                    <div class="col-md-6">
                         <select id="add-post__currency">
                         </select>
-                    </div>      
+                    </div>
                 </div>
-
-                <div class="form-group">
-                    <input id="add-post__pac-input" type="text" class="form-control" placeholder="Enter a location (optional)" autocomplete="off">
-                </div>
-
-                <div class="form-group">
-                    <textarea id="add-post__editor" style="display: none"></textarea>
+                
+                <div class="mt-4">
+                    <textarea class="post-editor" style="display: none"></textarea>
                 </div>
 
                 <div class="form-group">

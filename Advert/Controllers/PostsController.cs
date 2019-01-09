@@ -64,7 +64,6 @@ namespace Advert.Controllers
         }
 
         [HttpGet]
-//        [Authorize]
         public async Task<IActionResult> GetPosts([FromQuery(Name = "page")] int page = 1, [FromQuery(Name = "keyword")] string keyword = null)
         {
             try
@@ -182,7 +181,6 @@ namespace Advert.Controllers
         }
 
         [HttpGet]
-//        [Authorize]
         [Route("/Posts")]
         public async Task<IActionResult> GetPostContent([FromQuery(Name = "postId")] string postId, [FromQuery(Name = "page")] int page = 1)
         {
