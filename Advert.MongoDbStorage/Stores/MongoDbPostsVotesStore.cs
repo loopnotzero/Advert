@@ -1,25 +1,21 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Advert.Common;
 using Advert.Common.Posts;
 using Advert.MongoDbStorage.Posts;
 using Advert.MongoDbStorage.Common;
-using Advert.MongoDbStorage.Mappings;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.IdGenerators;
+using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 
 namespace Advert.MongoDbStorage.Stores
 {
-    public class MongoDbPostsVotesStore<T> : IPostsVotesStore<T> where T : MongoDbPostVote
+    public class MongoDbPostsVotesStore<T> : IPostsVotesStore<T> where T : IPostVote
     {
         private readonly IMongoCollection<T> _collection;
-        
-        public void Dispose()
-        {
-            
-        }
-
+       
         public MongoDbPostsVotesStore(IMongoDatabase mongoDatabase) : this()
         {
             _collection = mongoDatabase.GetCollection<T>(MongoDbCollections.PostsVotes);          
@@ -28,7 +24,11 @@ namespace Advert.MongoDbStorage.Stores
 
         private MongoDbPostsVotesStore()
         {
-            EntityMappings.EnsureMongoDbPostVoteConfigured();
+//            BsonClassMap.RegisterClassMap<MongoDbPostVote>(bsonClassMap =>
+//            {
+//                bsonClassMap.AutoMap();
+//                bsonClassMap.MapIdMember(x => x.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
+//            });
         }
 
         public async Task CreatePostVoteAsync(T entity, CancellationToken cancellationToken)
@@ -74,7 +74,11 @@ namespace Advert.MongoDbStorage.Stores
         public async Task<DeleteResult> DeletePostVoteByIdAsync(ObjectId voteId, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            return await _collection.DeleteOneAsync(Builders<T>.Filter.Eq(x => x.Id, voteId), cancellationToken);            
+            return await _collection.DeleteOneAsync(Builders<T>.Filter.Eq(x => x._id, voteId), cancellationToken);            
+        }
+
+        public void Dispose()
+        {
         }
     }
 }

@@ -9,7 +9,7 @@ using MongoDB.Driver;
 
 namespace Advert.MongoDbStorage.Stores
 {
-    public class MongoDbPostsCommentsCollection<T> : IPostCommentsCollection<T> where T : MongoDbPostComment
+    public class MongoDbPostsCommentsCollection<T> : IPostCommentsCollection<T> where T : IPostComment
     {
         private readonly IMongoCollection<T> _collection;
         
@@ -30,7 +30,7 @@ namespace Advert.MongoDbStorage.Stores
         public async Task<T> FindPostCommentByIdAsync(ObjectId commentId, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();        
-            var filter = Builders<T>.Filter.And(Builders<T>.Filter.Eq(x => x.Id, commentId), Builders<T>.Filter.Eq(x => x.IsDeleted, false));         
+            var filter = Builders<T>.Filter.And(Builders<T>.Filter.Eq(x => x._id, commentId), Builders<T>.Filter.Eq(x => x.IsDeleted, false));         
             var cursor = await _collection.FindAsync(filter, cancellationToken: cancellationToken);
             return await cursor.FirstAsync(cancellationToken);
         }
@@ -130,7 +130,7 @@ namespace Advert.MongoDbStorage.Stores
             cancellationToken.ThrowIfCancellationRequested();
 
             var filter = Builders<T>.Filter.Or(
-                Builders<T>.Filter.Eq(x => x.Id, commentId), Builders<T>.Filter.Eq(x => x.ReplyTo, commentId)
+                Builders<T>.Filter.Eq(x => x._id, commentId), Builders<T>.Filter.Eq(x => x.ReplyTo, commentId)
             );
 
             return await _collection.UpdateManyAsync(filter, Builders<T>.Update.Set(x => x.IsDeleted, true).Set(x => x.DeletedAt, DateTime.UtcNow),
@@ -146,7 +146,7 @@ namespace Advert.MongoDbStorage.Stores
             
             entity.ChangedAt = DateTime.UtcNow;
             
-            return await _collection.ReplaceOneAsync(Builders<T>.Filter.Eq(x => x.Id, commentId), entity, new UpdateOptions
+            return await _collection.ReplaceOneAsync(Builders<T>.Filter.Eq(x => x._id, commentId), entity, new UpdateOptions
             {
                 BypassDocumentValidation = false
             }, cancellationToken);

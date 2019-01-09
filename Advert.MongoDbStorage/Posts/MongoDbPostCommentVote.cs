@@ -1,6 +1,7 @@
 ﻿using System;
 using Advert.Common.Posts;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace Advert.MongoDbStorage.Posts
 {
@@ -8,11 +9,13 @@ namespace Advert.MongoDbStorage.Posts
     {
         public MongoDbPostCommentVote()
         {
-            Id = ObjectId.GenerateNewId();
+            _id = ObjectId.GenerateNewId();
             //Create indeces
         }
         
-        public ObjectId Id { get; set; }
+        [BsonId]
+        public ObjectId _id { get; set; }
+        
         public ObjectId PostId { get; set; }      
         public ObjectId CommentId { get; set; }  
         public ObjectId ProfileId { get; set; }

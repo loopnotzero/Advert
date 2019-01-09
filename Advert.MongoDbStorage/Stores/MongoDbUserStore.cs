@@ -1,9 +1,12 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Advert.MongoDbStorage.Common;
-using Advert.MongoDbStorage.Mappings;
 using Advert.MongoDbStorage.Users;
 using Microsoft.AspNetCore.Identity;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.IdGenerators;
+using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 
 namespace Advert.MongoDbStorage.Stores
@@ -12,34 +15,33 @@ namespace Advert.MongoDbStorage.Stores
     {
         private readonly IMongoCollection<T> _collection;
 
-        private MongoDbUserStore()
-        {
-            EntityMappings.EnsureMongoDbUserConfigured();
-        }
-
         public MongoDbUserStore(IMongoDatabase mongoDatabase) : this()
         {
             _collection = mongoDatabase.GetCollection<T>(MongoDbCollections.Users);
             //todo: Create indices
         }
-
-        public void Dispose()
+        
+        private MongoDbUserStore()
         {
-            //throw new NotImplementedException();
+//            BsonClassMap.RegisterClassMap<MongoDbUser>(bsonClassMap =>
+//            {
+//                bsonClassMap.AutoMap();
+//                bsonClassMap.MapIdMember(x => x.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);              
+//            });
         }
-
+       
         public async Task<string> GetUserIdAsync(T user, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.Id, user.Id), cancellationToken: cancellationToken);
+            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x._id, user._id), cancellationToken: cancellationToken);
             var entity = await cursor.FirstOrDefaultAsync(cancellationToken);
-            return entity?.Id;
+            return entity?._id.ToString();
         }
 
         public async Task<string> GetUserNameAsync(T user, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.Id, user.Id), cancellationToken: cancellationToken);
+            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x._id, user._id), cancellationToken: cancellationToken);
             var entity = await cursor.FirstOrDefaultAsync(cancellationToken);
             return entity?.UserName;
         }
@@ -54,7 +56,7 @@ namespace Advert.MongoDbStorage.Stores
         public async Task<string> GetNormalizedUserNameAsync(T user, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.Id, user.Id), cancellationToken: cancellationToken);
+            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x._id, user._id), cancellationToken: cancellationToken);
             var entity = await cursor.FirstOrDefaultAsync(cancellationToken);
             return entity?.NormalizedUserName;
         }
@@ -83,7 +85,7 @@ namespace Advert.MongoDbStorage.Stores
         public async Task<IdentityResult> UpdateAsync(T user, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            await _collection.ReplaceOneAsync(Builders<T>.Filter.Eq(x => x.Id, user.Id), user, new UpdateOptions
+            await _collection.ReplaceOneAsync(Builders<T>.Filter.Eq(x => x._id, user._id), user, new UpdateOptions
             {
                 BypassDocumentValidation = false
             }, cancellationToken);
@@ -93,14 +95,14 @@ namespace Advert.MongoDbStorage.Stores
         public async Task<IdentityResult> DeleteAsync(T user, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            await _collection.DeleteOneAsync(Builders<T>.Filter.Eq(x => x.Id, user.Id), cancellationToken);           
+            await _collection.DeleteOneAsync(Builders<T>.Filter.Eq(x => x._id, user._id), cancellationToken);           
             return IdentityResult.Success;
         }
 
         public async Task<T> FindByIdAsync(string userId, CancellationToken cancellationToken)
         {      
             cancellationToken.ThrowIfCancellationRequested();
-            var asyncCursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.Id, userId), cancellationToken: cancellationToken);
+            var asyncCursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x._id.ToString(), userId), cancellationToken: cancellationToken);
             return await asyncCursor.FirstOrDefaultAsync(cancellationToken);
         }
 
@@ -120,7 +122,7 @@ namespace Advert.MongoDbStorage.Stores
         public async Task<string> GetEmailAsync(T user, CancellationToken cancellationToken)
         {     
             cancellationToken.ThrowIfCancellationRequested();
-            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.Id, user.Id), cancellationToken: cancellationToken);
+            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x._id, user._id), cancellationToken: cancellationToken);
             var entity = await cursor.FirstOrDefaultAsync(cancellationToken);
             return entity?.Email;
         }
@@ -128,7 +130,7 @@ namespace Advert.MongoDbStorage.Stores
         public async Task<bool> GetEmailConfirmedAsync(T user, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.Id, user.Id), cancellationToken: cancellationToken);
+            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x._id, user._id), cancellationToken: cancellationToken);
             var entity = await cursor.FirstOrDefaultAsync(cancellationToken);
             return entity?.EmailConfirmed == true;
         }
@@ -149,7 +151,7 @@ namespace Advert.MongoDbStorage.Stores
         public async Task<string> GetNormalizedEmailAsync(T user, CancellationToken cancellationToken)
         {  
             cancellationToken.ThrowIfCancellationRequested();
-            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.Id, user.Id), cancellationToken: cancellationToken);
+            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x._id, user._id), cancellationToken: cancellationToken);
             var entity = await cursor.FirstOrDefaultAsync(cancellationToken);
             return entity?.NormalizedEmail;
         }
@@ -169,7 +171,7 @@ namespace Advert.MongoDbStorage.Stores
         public async Task<string> GetPasswordHashAsync(T user, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();         
-            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.Id, user.Id), cancellationToken: cancellationToken);
+            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x._id, user._id), cancellationToken: cancellationToken);
             var entity = await cursor.FirstOrDefaultAsync(cancellationToken);
             return entity?.PasswordHash;
         }
@@ -178,9 +180,13 @@ namespace Advert.MongoDbStorage.Stores
         {
 
             cancellationToken.ThrowIfCancellationRequested();         
-            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.Id, user.Id), cancellationToken: cancellationToken);
+            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x._id, user._id), cancellationToken: cancellationToken);
             var entity = await cursor.FirstOrDefaultAsync(cancellationToken);       
             return entity?.PasswordHash != null;
+        }
+
+        public void Dispose()
+        {
         }
     }
 }

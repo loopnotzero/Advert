@@ -1,32 +1,34 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Advert.MongoDbStorage.Posts;
+using Advert.Common.Posts;
 using Advert.MongoDbStorage.Common;
-using Advert.MongoDbStorage.Mappings;
+using Advert.MongoDbStorage.Posts;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.IdGenerators;
+using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 
 namespace Advert.MongoDbStorage.Stores
 {
-    public class MongoDbPostCommentsVotesStore<T> : IPostCommentsVotesStore<T> where T : MongoDbPostCommentVote
+    public class MongoDbPostCommentsVotesStore<T> : IPostCommentsVotesStore<T> where T : IPostCommentVote
     {
         private readonly IMongoCollection<T> _collection;
-
-        public void Dispose()
-        {
-
-        }
 
         public MongoDbPostCommentsVotesStore(IMongoDatabase mongoDatabase) : this()
         {
             _collection = mongoDatabase.GetCollection<T>(MongoDbCollections.PostCommentsVotes);
             //todo: Create indices
         }
-
+        
         private MongoDbPostCommentsVotesStore()
         {
-            EntityMappings.EnsureMongoDbPostCommentVoteConfigured();
+//            BsonClassMap.RegisterClassMap<MongoDbPostCommentVote>(bsonClassMap =>
+//            {
+//                bsonClassMap.AutoMap();
+//                bsonClassMap.MapIdMember(x => x.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
+//            });
         }
 
         public async Task CreatePostCommentVoteAsync(T entity, CancellationToken cancellationToken)
@@ -47,7 +49,9 @@ namespace Advert.MongoDbStorage.Stores
             );         
             var cursor = await _collection.FindAsync(filter, cancellationToken: cancellationToken);
             var commentVote = await cursor.FirstOrDefaultAsync(cancellationToken);
-            return commentVote ?? defaultValue;
+            if (commentVote == null)
+                return defaultValue;
+            return commentVote;
         }
 
         public async Task<List<T>> FindPostsCommentsVotesAsync(ObjectId profileId, CancellationToken cancellationToken)
@@ -70,8 +74,12 @@ namespace Advert.MongoDbStorage.Stores
         public async Task<DeleteResult> DeletePostCommentVoteByIdAsync(ObjectId voteId, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var filter = Builders<T>.Filter.Eq(x => x.Id, voteId);
+            var filter = Builders<T>.Filter.Eq(x => x._id, voteId);
             return await _collection.DeleteOneAsync(filter, cancellationToken);
+        }
+
+        public void Dispose()
+        {
         }
     }
 }

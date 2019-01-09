@@ -1,26 +1,33 @@
 ﻿using System.Linq;
 using System.Threading;
+using Advert.Common.Posts;
 using Advert.MongoDbStorage.Posts;
-using Advert.MongoDbStorage.Mappings;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.IdGenerators;
+using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 
 namespace Advert.MongoDbStorage.Stores
 {
-    public class MongoDbPostsCommentsStore<T> : IPostsCommentsStore<T> where T : MongoDbPostComment
+    public class MongoDbPostsCommentsStore<T> : IPostsCommentsStore<T> where T : IPostComment
     {
         private readonly IMongoDatabase _mongoDatabase;
-
+   
         public MongoDbPostsCommentsStore(IMongoDatabase mongoDatabase) : this()
         {
             _mongoDatabase = mongoDatabase;
         }
-
+        
         private MongoDbPostsCommentsStore()
         {
-            EntityMappings.EnsureMongoDbPostCommentConfigured();
+//            BsonClassMap.RegisterClassMap<MongoDbPostComment>(bsonClassMap =>
+//            {
+//                bsonClassMap.AutoMap();
+//                bsonClassMap.MapIdMember(x => x.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
+//            });
         }
-
+        
         public bool PostCommentsCollectionExists(string collectionName, CancellationToken cancellationToken)
         {
             //todo: Improve filter 

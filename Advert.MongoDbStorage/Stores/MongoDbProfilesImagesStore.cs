@@ -1,21 +1,27 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Advert.Common;
+using Advert.Common.Posts;
 using Advert.MongoDbStorage.Common;
-using Advert.MongoDbStorage.Mappings;
 using Advert.MongoDbStorage.Profiles;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.IdGenerators;
+using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 
 namespace Advert.MongoDbStorage.Stores
 {
-    public class MongoDbProfilesImagesStore<T> : IProfilesImagesStore<T> where T : MongoDbProfileImage
+    public class MongoDbProfilesImagesStore<T> : IProfilesImagesStore<T> where T : IProfileImage
     {
         private readonly IMongoCollection<T> _collection;
       
         public MongoDbProfilesImagesStore()
         {
-            EntityMappings.EnsureMongoDbProfileImageConfigured();
+//            BsonClassMap.RegisterClassMap<MongoDbProfileImage>(bsonClassMap =>
+//            {
+//                bsonClassMap.AutoMap();
+//                bsonClassMap.MapIdMember(x => x.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
+//            });
         }
         
         public MongoDbProfilesImagesStore(IMongoDatabase mongoDatabase) : this()
