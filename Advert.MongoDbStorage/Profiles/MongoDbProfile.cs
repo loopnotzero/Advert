@@ -20,12 +20,13 @@ namespace Advert.MongoDbStorage.Profiles
         public bool IsDeleted { get; set; }
         public string Name { get; set; }    
         public string Email { get; set; }      
+        
         public string Culture { get; set; }
         
         public string Location { get; set; }
         public string ImagePath { get; set; }   
         
-        public string PrimaryPhoneNumber { get; set; }        
+        public string PhoneNumber { get; set; }        
         public string NormalizedName { get; set; }
         public string NormalizedEmail { get; set; }
         public DateTime CreatedAt { get; set; }
@@ -33,7 +34,5 @@ namespace Advert.MongoDbStorage.Profiles
         public DateTime ChangedAt { get; set; }  
         
         public DateTime DeletedAt { get; set; }
-        
-        public List<string> SecondaryPhoneNumbers { get; set; }
     }
 }

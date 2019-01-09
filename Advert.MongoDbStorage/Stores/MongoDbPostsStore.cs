@@ -108,18 +108,7 @@ namespace Advert.MongoDbStorage.Stores
             return await cursor.ToListAsync(cancellationToken);
         }
 
-        public async Task<List<T>> FindPostsByProfileIdAsync(ObjectId profileId, CancellationToken cancellationToken)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            var findOptions = new FindOptions<T>
-            {
-                Sort = Builders<T>.Sort.Descending(field => field.CreatedAt),
-            };
-            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.ProfileId, profileId), findOptions, cancellationToken: cancellationToken);
-            return await cursor.ToListAsync(cancellationToken);           
-        }
-
-        public async Task<List<T>> FindPostsWhichContainsKeywordAsync(int offset, int? howManyElements, string keyword, CancellationToken cancellationToken)
+        public async Task<List<T>> FindPostsByKeywordAsync(int offset, int? howManyElements, string keyword, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
            
@@ -138,6 +127,17 @@ namespace Advert.MongoDbStorage.Stores
             var cursor = await _collection.FindAsync(Builders<T>.Filter.Regex(x => x.Title, new BsonRegularExpression(keyword, "-i")), findOptions, cancellationToken: cancellationToken);
            
             return await cursor.ToListAsync(cancellationToken);
+        }
+
+        public async Task<List<T>> FindPostsByProfileIdAsync(ObjectId profileId, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var findOptions = new FindOptions<T>
+            {
+                Sort = Builders<T>.Sort.Descending(field => field.CreatedAt),
+            };
+            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.ProfileId, profileId), findOptions, cancellationToken: cancellationToken);
+            return await cursor.ToListAsync(cancellationToken);           
         }
 
         public async Task<UpdateResult> DeletePostByIdAsync(ObjectId postId, CancellationToken cancellationToken)

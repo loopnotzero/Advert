@@ -15,21 +15,12 @@ namespace Advert.MongoDbStorage.Stores
     {
         private readonly IMongoCollection<T> _collection;
 
-        public MongoDbUserStore(IMongoDatabase mongoDatabase) : this()
+        public MongoDbUserStore(IMongoDatabase mongoDatabase)
         {
             _collection = mongoDatabase.GetCollection<T>(MongoDbCollections.Users);
             //todo: Create indices
         }
         
-        private MongoDbUserStore()
-        {
-//            BsonClassMap.RegisterClassMap<MongoDbUser>(bsonClassMap =>
-//            {
-//                bsonClassMap.AutoMap();
-//                bsonClassMap.MapIdMember(x => x.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);              
-//            });
-        }
-       
         public async Task<string> GetUserIdAsync(T user, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -102,7 +93,7 @@ namespace Advert.MongoDbStorage.Stores
         public async Task<T> FindByIdAsync(string userId, CancellationToken cancellationToken)
         {      
             cancellationToken.ThrowIfCancellationRequested();
-            var asyncCursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x._id.ToString(), userId), cancellationToken: cancellationToken);
+            var asyncCursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x._id, userId), cancellationToken: cancellationToken);
             return await asyncCursor.FirstOrDefaultAsync(cancellationToken);
         }
 

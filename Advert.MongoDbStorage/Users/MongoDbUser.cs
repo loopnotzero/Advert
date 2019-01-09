@@ -9,11 +9,11 @@ namespace Advert.MongoDbStorage.Users
     {
         public MongoDbUser()
         {
-            _id = ObjectId.GenerateNewId();
+            _id = ObjectId.GenerateNewId().ToString();
         }
             
         [BsonId]
-        public ObjectId _id { get; set; }   
+        public string _id { get; set; }   
 
         public int AccessFailedCount { get; set; }
         public bool LockoutEnabled { get; set; }      
