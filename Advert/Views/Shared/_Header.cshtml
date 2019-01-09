@@ -13,32 +13,50 @@
             <i class="zmdi zmdi-search search__helper" data-ma-action="search-close"></i>
         </div>
     </form>
-    <ul class="top-nav">
-        <li class="hidden-xl-up">
-            <a href="" data-ma-action="search-open">
-                <i class="zmdi zmdi-search" style="-webkit-transform: scaleX(-1); transform: scaleX(-1);"></i>
-            </a>
-        </li>
-        <li class="dropdown" onclick="onAddPostClick()">
-            <a href="" title="" aria-expanded="false" data-placement="top" data-target="#add-post__modal" data-toggle="modal">
-                <i class="zmdi zmdi-edit zmdi-hc-lg"></i>
-            </a>
-        </li>
-        <li class="dropdown hidden-xs-down">
-            <a href="" data-toggle="dropdown" class="waves-effect" aria-expanded="false">
-                <i class="zmdi zmdi-more-vert zmdi-hc-lg"></i>
-            </a>
-            <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-end" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(-171px, 36px, 0px);">
-                <a href="/@Model.ProfileName" class="dropdown-item">Profile</a>
-                <div class="dropdown-separator"></div>
-                <a href="#" class="dropdown-item">Settings</a>
-                <a id="sign__out" href="#" class="dropdown-item">Log Out</a>
-            </div>
-        </li>
-    </ul>
+    @if (Model != null)
+    {
+        <ul class="top-nav">
+            <li class="hidden-xl-up">
+                <a href="" data-ma-action="search-open">
+                    <i class="zmdi zmdi-search" style="-webkit-transform: scaleX(-1); transform: scaleX(-1);"></i>
+                </a>
+            </li>
+            <li class="dropdown" onclick="onAddPostClick()">
+                <a href="" title="" aria-expanded="false" data-placement="top" data-target="#add-post__modal" data-toggle="modal">
+                    <i class="zmdi zmdi-edit zmdi-hc-lg"></i>
+                </a>
+            </li>
+            <li class="dropdown hidden-xs-down">
+                <a href="" data-toggle="dropdown" class="waves-effect" aria-expanded="false">
+                    <i class="zmdi zmdi-more-vert zmdi-hc-lg"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-end" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(-171px, 36px, 0px);">
+                    <a href="/@Model.Name" class="dropdown-item">Profile</a>
+                    <div class="dropdown-separator"></div>
+                    <a href="#" class="dropdown-item">Settings</a>
+                    <a id="sign__out" href="#" class="dropdown-item">Log Out</a>
+                </div>
+            </li>
+        </ul>
+    }
+    else
+    {
+        <ul class="top-nav">
+            <li class="dropdown">
+                <a href="" title="" aria-expanded="false" data-placement="top" data-target="#sign-up__modal" data-toggle="modal">
+                    <i class="zmdi zmdi-account-add zmdi-hc-fw"></i>
+                </a>
+            </li>
+            <li class="dropdown">
+                <a href="" title="" aria-expanded="false" data-placement="top" data-target="#log-in__modal" data-toggle="modal">
+                    <i class="zmdi zmdi-sign-in zmdi-hc-fw"></i>
+                </a>
+            </li>
+        </ul>
+    }  
 </header>
 
-<script>    
+<script>
     $(document).ready(function() {
         $(".search").submit(function(event) {
             event.preventDefault();

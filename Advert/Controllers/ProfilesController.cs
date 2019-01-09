@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Advert.Common.Posts;
 using Advert.Managers;
 using Advert.Models.Post;
 using Advert.Models.Profiles;
@@ -21,22 +22,24 @@ namespace Advert.Controllers
     {
         private readonly ILogger _logger;
         private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly PostsManager<MongoDbPost> _postsManager;
         private readonly ProfilesManager<MongoDbProfile> _profilesManager;
         private readonly ProfilesImagesManager<MongoDbProfileImage> _profilesImagesManager;
-        private readonly PostsManager<MongoDbPost> _postsManager;
         
         private const string NoProfileImage = "/images/no-image.png";
 
-        public ProfilesController(ILoggerFactory loggerFactory, IHostingEnvironment hostingEnvironment, 
+        public ProfilesController(
+            ILoggerFactory loggerFactory, 
+            IHostingEnvironment hostingEnvironment, 
+            PostsManager<MongoDbPost> postsManager,
             ProfilesManager<MongoDbProfile> profilesManager,
-            ProfilesImagesManager<MongoDbProfileImage> profilesImagesManager,
-            PostsManager<MongoDbPost> postsManager)
+            ProfilesImagesManager<MongoDbProfileImage> profilesImagesManager)
         {
             _logger = loggerFactory.CreateLogger<ProfilesController>();
             _hostingEnvironment = hostingEnvironment;
+            _postsManager = postsManager;
             _profilesManager = profilesManager;
             _profilesImagesManager = profilesImagesManager;
-            _postsManager = postsManager;
         }
 
         [HttpGet]
@@ -46,16 +49,14 @@ namespace Advert.Controllers
             try
             {
                 var profile = await _profilesManager.FindProfileByNormalizedNameAsync(profileName);
-
+                
                 return View(new PostsAggregatorViewModel
                 {
                     Profile = new ProfileModel
                     {
-                        Id = profile.Id.ToString(),
-                        ProfileName = profile.Name,
-                        ProfileDescription = profile.Description,
+                        Id = profile._id.ToString(),
+                        Name = profile.Name,
                         ImagePath = profile.ImagePath,
-                        PostsCount = ((double) 0).ToMetric(),
                     }
                 });
             }
@@ -74,22 +75,20 @@ namespace Advert.Controllers
             {
                 var profile = await _profilesManager.FindProfileByNormalizedNameAsync(profileName);
 
-                var posts = await _postsManager.FindPostsByProfileIdAsync(profile.Id);
+                var posts = await _postsManager.FindPostsByProfileIdAsync(profile._id);
 
                 return View(new PostsAggregatorViewModel
                 {
                     Profile = new ProfileModel
                     {
-                        Id = profile.Id.ToString(),
-                        ProfileName = profile.Name,
-                        ProfileDescription = profile.Description,
+                        Id = profile._id.ToString(),
+                        Name = profile.Name,
                         ImagePath = profile.ImagePath,
-                        PostsCount = ((double) 0).ToMetric(),
                     },
                     
                     Posts = posts.Select(post => new PostViewModel
                     {
-                        PostId = post.Id.ToString(),
+                        PostId = post._id.ToString(),
                         ProfileId = post.ProfileId.ToString(),
                         ProfileName = post.ProfileName,
                         ProfileImagePath = post.ProfileImagePath ?? NoProfileImage,
@@ -105,9 +104,24 @@ namespace Advert.Controllers
                         CommentsCount = ((double) post.CommentsCount).ToMetric(),
                         CreatedAt = post.CreatedAt.Humanize(),
 //                        IsPostVoted = postsVotes.Any(x => x.PostId.Equals(post.Id) && x.ProfileId.Equals(profile.Id)),
-                        IsTopicOwner = post.ProfileId.Equals(profile.Id)
+                        IsTopicOwner = post.ProfileId.Equals(profile._id)
                     }),
                 });
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpGet]
+        [Route("/{profileName}/Statistics")]
+        public async Task<IActionResult> GetProfileStatistics(string profileName)
+        {
+            try
+            {
+                return View();
             }
             catch (Exception e)
             {

@@ -1,4 +1,5 @@
-﻿using Advert.Managers;
+﻿using Advert.Common.Posts;
+using Advert.Managers;
 using Advert.MongoDbStorage.Posts;
 using Advert.MongoDbStorage.Common;
 using Advert.MongoDbStorage.Profiles;
@@ -52,14 +53,15 @@ namespace Advert
             services.Configure<MongoDbOptions>(Configuration.GetSection("MongoDatabase"));
             
             #region Scoped services
-            services.AddScoped<ProfilesManager<MongoDbProfile>, ProfilesManager<MongoDbProfile>>();
-            services.AddScoped<PostsManager<MongoDbPost>, PostsManager<MongoDbPost>>();
-            services.AddScoped<PostsVotesManager<MongoDbPostVote>, PostsVotesManager<MongoDbPostVote>>();
-            services.AddScoped<ProfilesImagesManager<MongoDbProfileImage>, ProfilesImagesManager<MongoDbProfileImage>>();
-            services.AddScoped<PostCommentsManager<MongoDbPostComment>, PostCommentsManager<MongoDbPostComment>>();
-            services.AddScoped<PostsViewsCountManager<MongoDbPostViewsCount>, PostsViewsCountManager<MongoDbPostViewsCount>>();
-            services.AddScoped<PostCommentsVotesManager<MongoDbPostCommentVote>, PostCommentsVotesManager<MongoDbPostCommentVote>>(); 
-            services.AddScoped<PostCommentsVotesAggregationManager<MongoDbPostCommentVote, MongoDbPostCommentVoteAggregation>, PostCommentsVotesAggregationManager<MongoDbPostCommentVote, MongoDbPostCommentVoteAggregation>>(); 
+            
+            services.AddScoped<PostsManager<MongoDbPost>>();
+            services.AddScoped<PostsVotesManager<MongoDbPostVote>>();
+            services.AddScoped<PostCommentsManager<MongoDbPostComment>>();
+            services.AddScoped<PostsViewsCountManager<MongoDbPostViewsCount>>();
+            services.AddScoped<PostCommentsVotesManager<MongoDbPostCommentVote>>(); 
+            services.AddScoped<ProfilesManager<MongoDbProfile>>();
+            services.AddScoped<ProfilesImagesManager<MongoDbProfileImage>>();
+            
             #endregion
 
             #region Transient services
@@ -76,12 +78,6 @@ namespace Advert
                 return new MongoDbUserStore<MongoDbUser>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
             });
           
-            services.AddTransient<IProfilesStore<MongoDbProfile>>(provider =>
-            {
-                var options = provider.GetService<IOptions<MongoDbOptions>>();
-                return new MongoDbProfilesStore<MongoDbProfile>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
-            });
-
             services.AddTransient<IPostsStore<MongoDbPost>>(provider =>
             {
                 var options = provider.GetService<IOptions<MongoDbOptions>>();
@@ -94,11 +90,6 @@ namespace Advert
                 return new MongoDbPostsVotesStore<MongoDbPostVote>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
             });
             
-            services.AddTransient<IProfilesImagesStore<MongoDbProfileImage>>(provider =>
-            {
-                var options = provider.GetService<IOptions<MongoDbOptions>>();
-                return new MongoDbProfilesImagesStore<MongoDbProfileImage>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
-            });
             
             services.AddTransient<IPostsCommentsStore<MongoDbPostComment>>(provider =>
             {
@@ -117,15 +108,23 @@ namespace Advert
                 var options = provider.GetService<IOptions<MongoDbOptions>>();
                 return new MongoDbPostCommentsVotesStore<MongoDbPostCommentVote>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
             });
-                          
-            services.AddTransient<IPostCommentsVotesAggregationStore<MongoDbPostCommentVote, MongoDbPostCommentVoteAggregation>>(provider =>
+  
+            services.AddTransient<IProfilesStore<MongoDbProfile>>(provider =>
             {
                 var options = provider.GetService<IOptions<MongoDbOptions>>();
-                return new MongoDbPostCommentsVotesAggregationStore<MongoDbPostCommentVote, MongoDbPostCommentVoteAggregation>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+                return new MongoDbProfilesStore<MongoDbProfile>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
             });
+            
+            services.AddTransient<IProfilesImagesStore<MongoDbProfileImage>>(provider =>
+            {
+                var options = provider.GetService<IOptions<MongoDbOptions>>();
+                return new MongoDbProfilesImagesStore<MongoDbProfileImage>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+            });
+
             
             services.AddTransient<IUserValidator<MongoDbUser>, AdvertUserValidator<MongoDbUser>>();
                
+            
             #endregion
             
             #region Identity services

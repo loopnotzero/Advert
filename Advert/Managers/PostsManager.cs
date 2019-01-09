@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Advert.Common;
 using Advert.Common.Posts;
-using Advert.MongoDbStorage.Posts;
 using Advert.MongoDbStorage.Stores;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;

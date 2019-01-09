@@ -1,3 +1,42 @@
+function logInByEmailAsync(login, headers, callback) {
+    console.log(`Log in with email: ${login.email} password: ${login.password}`);
+    $.ajax({
+        url: `/Account/LogInByEmail?returnUrl=${window.location.pathname}`,
+        type: "POST",
+        data: JSON.stringify(login),
+        headers: headers,
+        contentType: "application/json",
+        error: function(jqXhr, textStatus, errorThrown) {
+            console.log("jqXhr: " + jqXhr);
+            console.log("textStatus: " + textStatus);
+            console.log("errorThrown: " + errorThrown);
+        },
+        success: function(response) {
+            callback(response);
+        }
+    });
+
+}
+
+function createNewAccountAsync(account, headers, callback) {
+    console.log(`Create new account with name: ${account.name} email: ${account.email} password: ${account.password}`);
+    $.ajax({
+        url: `/Account/CreateNewAccount?returnUrl=${window.location.pathname}`,
+        type: "POST",
+        data: JSON.stringify(account),
+        headers: headers,
+        contentType: "application/json",
+        error: function(jqXhr, textStatus, errorThrown) {
+            console.log("jqXhr: " + jqXhr);
+            console.log("textStatus: " + textStatus);
+            console.log("errorThrown: " + errorThrown);
+        },
+        success: function(response) {
+            callback(response);
+        }
+    });
+}
+
 function createPostAsync(post, callback) {
     console.log(`Create post title: ${post.title} text: ${post.text} price: ${post.price}${post.currency} location: ${post.location}`);
     $.ajax({

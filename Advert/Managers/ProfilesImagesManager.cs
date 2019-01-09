@@ -2,13 +2,14 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Advert.Common;
+using Advert.Common.Posts;
 using Advert.MongoDbStorage.Stores;
 using Microsoft.AspNetCore.Identity;
 using MongoDB.Bson;
 
 namespace Advert.Managers
 {
-    public class ProfilesImagesManager<T> : IDisposable where T : class
+    public class ProfilesImagesManager<T> : IDisposable where T : IProfileImage
     {
         private bool _disposed;
         

@@ -3008,7 +3008,6 @@ File: Responsive
 
 .team__item {
   text-align: center;
-  margin-bottom: 7rem;
 }
 @media (max-width: 767.98px) {
   .team__item {

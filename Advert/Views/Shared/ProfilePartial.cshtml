@@ -1,0 +1,26 @@
+@using Advert.Models.Profiles
+@model ProfileModel
+
+@if (string.IsNullOrEmpty(Model.ImagePath))
+{
+    <img src="~/images/no-image.png" class="team__img" alt="">
+}
+else
+{
+    <img src="@Model.ImagePath" class="team__img" alt="">
+}
+<div class="card-body">
+    <h4>Victor Chicu</h4>
+    <a href="/@Model.Name">
+        <h5 class="card-title">@@@Model.Name</h5>
+    </a> 
+    <div style="border-bottom: 1px solid #d5d5d5; margin-bottom: 10px;">
+    </div>
+    <p>
+        Joined March 2018
+    </p>
+    <p>
+        Born November 12, 1989
+    </p>
+</div>
+
