@@ -10,4 +10,7 @@
       <HintPath>..\..\..\.nuget\packages\mongodb.bson\2.7.0\lib\netstandard1.5\MongoDB.Bson.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MongoDB.Driver" Version="2.7.0" />
+  </ItemGroup>
 </Project>

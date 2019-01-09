@@ -5,12 +5,11 @@ namespace Advert.Common.Posts
 {
     public interface IPostViewsCount
     {
-        string Email { get; set; }
-        string NormalizedEmail { get; set; }
-        ObjectId Id { get; set; }    
+        ObjectId _id { get; set; }    
         ObjectId PostId { get; set; }  
+        ObjectId ProfileId { get; set; }
         DateTime CreatedAt { get; set; }      
-        DateTime UdpatedAt { get; set; }
+        DateTime UpdatedAt { get; set; }
         DateTime DeletedAt { get; set; }
     }
 }

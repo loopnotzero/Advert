@@ -5,12 +5,12 @@ namespace Advert.Common.Posts
 {
     public interface IPostComment
     {
+        ObjectId _id { get; set; }
         bool IsDeleted { get; set; }
         long VotesCount { get; set; }
         string Text { get; set; }  
         string ProfileName { get; set; }
         string ProfileImagePath { get; set; }
-        ObjectId Id { get; set; }
         ObjectId ReplyTo { get; set; }
         ObjectId ProfileId { get; set; }
         ObjectId PostId { get; set; }

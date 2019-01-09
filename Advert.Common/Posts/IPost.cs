@@ -7,6 +7,7 @@ namespace Advert.Common.Posts
 {
     public interface IPost
     {
+        ObjectId _id { get; set; } 
         bool IsDeleted { get; set; }
         long LikesCount { get; set; }
         long ViewsCount { get; set; }
@@ -20,7 +21,6 @@ namespace Advert.Common.Posts
         string ProfileName { get; set; }
         string ProfileImagePath { get; set; }
         string NormalizedProfileName { get; set; }
-        ObjectId Id { get; set; } 
         ObjectId ProfileId { get; set; }
         DateTime CreatedAt { get; set; }
         DateTime ChangedAt { get; set; }

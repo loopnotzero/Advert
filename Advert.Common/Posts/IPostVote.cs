@@ -6,7 +6,7 @@ namespace Advert.Common.Posts
 {
     public interface IPostVote
     {
-        ObjectId Id { get; set; }
+        ObjectId _id { get; set; }
         ObjectId PostId { get; set; }
         ObjectId ProfileId { get; set; }
         VoteType VoteType { get; set; }
