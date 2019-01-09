@@ -87,7 +87,7 @@ namespace Advert.Managers
             return await _store.FindPostsByProfileIdAsync(profileId, CancellationToken);
         }
 
-        public async Task<List<T>> FindPostsWhichContainsKeywordAsync(int offset, int? howManyElements, string keyword)
+        public async Task<List<T>> FindPostsByKeywordAsync(int offset, int? howManyElements, string keyword)
         {
             ThrowIfDisposed();
             
@@ -96,7 +96,7 @@ namespace Advert.Managers
                 throw new ArgumentNullException(nameof(keyword));
             }
 
-            return await _store.FindPostsWhichContainsKeywordAsync(offset, howManyElements, keyword, CancellationToken);
+            return await _store.FindPostsByKeywordAsync(offset, howManyElements, keyword, CancellationToken);
         }
 
         public async Task<UpdateResult> UpdatePostViewsCountByPostId(ObjectId postId, long viewsCount)

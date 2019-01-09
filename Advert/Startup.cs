@@ -13,6 +13,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.IdGenerators;
+using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 
 namespace Advert
@@ -144,6 +148,12 @@ namespace Advert
             #endregion
             
             services.AddMvc();
+            
+            BsonClassMap.RegisterClassMap<MongoDbUser>(bsonClassMap =>
+            {
+                bsonClassMap.AutoMap();
+                bsonClassMap.MapIdMember(x => x._id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);              
+            });
         }
     }
 }

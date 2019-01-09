@@ -81,7 +81,7 @@ namespace Advert.Controllers
                 }
                 else
                 {
-                    posts = await _postsManager.FindPostsWhichContainsKeywordAsync(offset, postsPerPage, keyword);
+                    posts = await _postsManager.FindPostsByKeywordAsync(offset, postsPerPage, keyword);
                 }
 
                 var lastPage = (long) Math.Ceiling((double) await _postsManager.EstimatedPostsCountAsync() / postsPerPage);
@@ -111,18 +111,18 @@ namespace Advert.Controllers
                     }
                 }
 
-                MongoDbProfile profile = null;
+                IProfile profile = null;
 
                 if (User.Identity.IsAuthenticated)
                 {
                     profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
                 }
-                
-                List<MongoDbPostVote> postsVotes = null;
+
+                var postsVotes = new List<IPostVote>();
 
                 if (User.Identity.IsAuthenticated)
                 {
-                    postsVotes = await _postsVotesManager.FindPostsVotesAsync(profile._id);
+                    postsVotes.AddRange(await _postsVotesManager.FindPostsVotesAsync(profile._id));
                 }
 
                 return View(new PostsAggregatorViewModel
@@ -156,22 +156,22 @@ namespace Advert.Controllers
                             ViewsCount = ((double) post.ViewsCount).ToMetric(),
                             CommentsCount = ((double) post.CommentsCount).ToMetric(),
                             CreatedAt = post.CreatedAt.Humanize(),
-                            IsPostVoted = postsVotes != null && postsVotes.Count > 0 && postsVotes.Any(x => x.PostId.Equals(post._id)),
+                            IsPostVoted = postsVotes.Count > 0 && postsVotes.Any(x => x.PostId.Equals(post._id)),
                             IsTopicOwner = profile != null && post.ProfileId.Equals(profile._id)
                         }),
 
                         PlacesApi = _configuration.GetSection("GoogleApiServices").GetValue<string>("PlacesApi"),
 
-                        RecommendedPosts = posts
-                            .OrderByDescending(x => EngagementRate.ComputeEngagementRate(x.LikesCount, x.SharesCount, x.CommentsCount, x.ViewsCount))
-                            .Select(post => new RecommendedPostViewModel
-                            {
-                                PostId = post._id.ToString(),
-                                ProfileName = post.ProfileName,
-                                ProfileImagePath = post.ProfileImagePath ?? NoProfileImage,
-                                Title = post.Title,
-                                CreatedAt = post.CreatedAt.Humanize(),
-                            }).ToList()
+//                        RecommendedPosts = posts
+//                            .OrderByDescending(x => EngagementRate.ComputeEngagementRate(x.LikesCount, x.SharesCount, x.CommentsCount, x.ViewsCount))
+//                            .Select(post => new RecommendedPostViewModel
+//                            {
+//                                PostId = post._id.ToString(),
+//                                ProfileName = post.ProfileName,
+//                                ProfileImagePath = post.ProfileImagePath ?? NoProfileImage,
+//                                Title = post.Title,
+//                                CreatedAt = post.CreatedAt.Humanize(),
+//                            }).ToList()
                     });  
             }
             catch (Exception e)
@@ -187,29 +187,38 @@ namespace Advert.Controllers
         public async Task<IActionResult> GetPostContent([FromQuery(Name = "postId")] string postId, [FromQuery(Name = "page")] int page = 1)
         {
             try
-            {
-                var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
+            {     
+                var post = await _postsManager.FindPostByIdAsync(ObjectId.Parse(postId));
 
-                var postViewsCount = new MongoDbPostViewsCount
+                var postsVotes = new List<IPostVote>();
+
+                var postsCommentsVotes = new List<IPostCommentVote>();
+                
+                IProfile profile = null;
+
+                if (HttpContext.User.Identity.IsAuthenticated)
                 {
-                    PostId = ObjectId.Parse(postId),
-                    ProfileId = profile._id,
-                    CreatedAt = DateTime.UtcNow
-                };
-                
-                await _postsViewsCountManager.CreatePostViewsCountAsync(postViewsCount);
-               
-                var post = await _postsManager.FindPostByIdAsync(postViewsCount.PostId);
-                
-                post.ViewsCount = await _postsViewsCountManager.CountPostViewsCountAsync(postViewsCount.PostId);
-                
-                await _postsManager.UpdatePostAsync(post);
-       
+                    profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
+
+                    await _postsViewsCountManager.CreatePostViewsCountAsync(new MongoDbPostViewsCount
+                    {
+                        PostId = ObjectId.Parse(postId),
+                        ProfileId = profile._id,
+                        CreatedAt = DateTime.UtcNow
+                    });
+
+                    post.ViewsCount = await _postsViewsCountManager.CountPostViewsCountAsync(post._id);
+
+                    await _postsManager.UpdatePostAsync(post);
+
+                    postsVotes.AddRange(await _postsVotesManager.FindPostsVotesAsync(profile._id));
+                    
+                    postsCommentsVotes.AddRange(await _postCommentsVotesManager.FindPostsCommentsVotesAsync(profile._id));
+                }
+
                 var postComments = await _postCommentsManager.FindPostCommentsAsync(postId, 0, null, SortDefinition.Descending);
    
                 var commentsReplies = new Dictionary<ObjectId, PostCommentViewModel>();
-
-                var postsCommentsVotes = await _postCommentsVotesManager.FindPostsCommentsVotesAsync(profile._id);
 
                 foreach (var comments in postComments.OrderBy(x => x.ReplyTo).GroupBy(comment => comment.ReplyTo))
                 {
@@ -219,8 +228,8 @@ namespace Advert.Controllers
                         {
                             commentsReplies.Add(comment._id, new PostCommentViewModel
                             {
-                                IsCommentOwner = comment.ProfileId.Equals(profile._id),
-                                IsCommentVoted = postsCommentsVotes.Any(x => x.CommentId.Equals(comment._id) && x.ProfileId.Equals(profile._id)),
+                                IsCommentOwner = profile != null && comment.ProfileId.Equals(profile._id),
+                                IsCommentVoted = postsCommentsVotes.Count > 0 && postsCommentsVotes.Any(x => x.CommentId.Equals(comment._id) && x.ProfileId.Equals(profile._id)),
                                 PostId = comment.PostId.ToString(),
                                 Text = comment.Text,
                                 ReplyTo = comment.ReplyTo.ToString(),
@@ -245,8 +254,8 @@ namespace Advert.Controllers
                                     {
                                         return new PostCommentViewModel
                                         {
-                                            IsCommentOwner = comment.ProfileId.Equals(profile._id),
-                                            IsCommentVoted = postsCommentsVotes.Any(x => x.CommentId.Equals(comment._id) && x.ProfileId.Equals(profile._id)),
+                                            IsCommentOwner = profile != null && comment.ProfileId.Equals(profile._id),
+                                            IsCommentVoted = postsCommentsVotes.Count > 0 && postsCommentsVotes.Any(x => x.CommentId.Equals(comment._id) && x.ProfileId.Equals(profile._id)),
                                             PostId = comment.PostId.ToString(),
                                             Text = comment.Text,
                                             ReplyTo = comment.ReplyTo.ToString(),
@@ -266,8 +275,8 @@ namespace Advert.Controllers
                                 {                             
                                     return new PostCommentViewModel
                                     {
-                                        IsCommentOwner = comment.ProfileId.Equals(profile._id),
-                                        IsCommentVoted = postsCommentsVotes.Any(x => x.CommentId.Equals(comment._id) && x.ProfileId.Equals(profile._id)),
+                                        IsCommentOwner = profile != null && comment.ProfileId.Equals(profile._id),
+                                        IsCommentVoted = postsCommentsVotes.Count > 0 && postsCommentsVotes.Any(x => x.CommentId.Equals(comment._id) && x.ProfileId.Equals(profile._id)),
                                         PostId = comment.PostId.ToString(),
                                         Text = comment.Text,
                                         ReplyTo = comment.ReplyTo.ToString(),
@@ -286,13 +295,11 @@ namespace Advert.Controllers
 
                 var posts = await _postsManager.FindPostsAsync(_configuration.GetSection("AdvertOptions").GetValue<int>("PostsPerPage"));
 
-                var orderedPosts = posts.OrderByDescending(x => EngagementRate.ComputeEngagementRate(x.LikesCount, x.SharesCount, x.CommentsCount, x.ViewsCount));
-
-                var postsVotes = await _postsVotesManager.FindPostsVotesAsync(profile._id);
+//                var orderedPosts = posts.OrderByDescending(x => EngagementRate.ComputeEngagementRate(x.LikesCount, x.SharesCount, x.CommentsCount, x.ViewsCount));
 
                 return View(new PostsAggregatorViewModel
                 {
-                    Profile = new ProfileModel
+                    Profile = profile == null ? null : new ProfileModel
                     {
                         Id = profile._id.ToString(),
                         Name = profile.Name,
@@ -318,21 +325,21 @@ namespace Advert.Controllers
                             ViewsCount = ((double) post.ViewsCount).ToMetric(),
                             CommentsCount = ((double) post.CommentsCount).ToMetric(),
                             CreatedAt = post.CreatedAt.Humanize(),
-                            IsPostVoted = postsVotes.Any(x => x.PostId.Equals(post._id) && x.ProfileId.Equals(profile._id)),
-                            IsTopicOwner = post.ProfileId.Equals(profile._id)
+                            IsPostVoted = postsVotes.Count > 0 && postsVotes.Any(x => x.PostId.Equals(post._id) && x.ProfileId.Equals(profile._id)),
+                            IsTopicOwner = profile != null && post.ProfileId.Equals(profile._id)
                         }
                     }, 
                     
                     PlacesApi = _configuration.GetSection("GoogleApiServices").GetValue<string>("PlacesApi"),
                     
-                    RecommendedPosts = orderedPosts.Select(recommendedPost => new RecommendedPostViewModel
-                    {
-                        PostId = recommendedPost._id.ToString(),
-                        ProfileName = recommendedPost.ProfileName,
-                        ProfileImagePath = recommendedPost.ProfileImagePath ?? NoProfileImage,
-                        Title = recommendedPost.Title,
-                        CreatedAt = recommendedPost.CreatedAt.Humanize(),                      
-                    }).ToList(),  
+//                    RecommendedPosts = orderedPosts.Select(recommendedPost => new RecommendedPostViewModel
+//                    {
+//                        PostId = recommendedPost._id.ToString(),
+//                        ProfileName = recommendedPost.ProfileName,
+//                        ProfileImagePath = recommendedPost.ProfileImagePath ?? NoProfileImage,
+//                        Title = recommendedPost.Title,
+//                        CreatedAt = recommendedPost.CreatedAt.Humanize(),                      
+//                    }).ToList(),  
                     
                     PostComments = commentsReplies.Values.ToList(),
                 });
@@ -350,7 +357,7 @@ namespace Advert.Controllers
         public async Task<IActionResult> CreatePostAsync([FromBody] PostViewModel viewModel)
         {
             try
-            {
+            {              
                 var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
 
                 var post = new MongoDbPost

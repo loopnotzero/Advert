@@ -50,14 +50,39 @@ namespace Advert.Controllers
             {
                 var profile = await _profilesManager.FindProfileByNormalizedNameAsync(profileName);
                 
+                var posts = await _postsManager.FindPostsByProfileIdAsync(profile._id);
+                
                 return View(new PostsAggregatorViewModel
                 {
                     Profile = new ProfileModel
                     {
                         Id = profile._id.ToString(),
                         Name = profile.Name,
+                        Email = profile.Email,
                         ImagePath = profile.ImagePath,
-                    }
+                        PhoneNumber = profile.PhoneNumber
+                    },
+                    
+                    Posts = posts.Select(post => new PostViewModel
+                    {
+                        PostId = post._id.ToString(),
+                        ProfileId = post.ProfileId.ToString(),
+                        ProfileName = post.ProfileName,
+                        ProfileImagePath = post.ProfileImagePath ?? NoProfileImage,
+                        Text = post.Text.Length > 1000 ? post.Text.Substring(0, 1000) + "..." : post.Text,
+                        Title = post.Title,
+                        Price = post.Price,
+                        Currency = post.Currency,
+                        Location = post.Location,
+                        Tags = post.Tags,
+                        LikesCount = ((double) post.LikesCount).ToMetric(),
+                        SharesCount = ((double) 0).ToMetric(),
+                        ViewsCount = ((double) post.ViewsCount).ToMetric(),
+                        CommentsCount = ((double) post.CommentsCount).ToMetric(),
+                        CreatedAt = post.CreatedAt.Humanize(),
+//                        IsPostVoted = postsVotes.Any(x => x.PostId.Equals(post.Id) && x.ProfileId.Equals(profile.Id)),
+                        IsTopicOwner = post.ProfileId.Equals(profile._id)
+                    }),
                 });
             }
             catch (Exception e)
@@ -68,8 +93,8 @@ namespace Advert.Controllers
         }
 
         [HttpGet]
-        [Route("/{profileName}/Posts")]
-        public async Task<IActionResult> GetProfilePosts(string profileName)
+        [Route("/{profileName}/Favorites")]
+        public async Task<IActionResult> GetProfileFavoritePosts(string profileName)
         {
             try
             {

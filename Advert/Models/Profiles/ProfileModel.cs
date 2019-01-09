@@ -11,8 +11,6 @@ namespace Advert.Models.Profiles
         public string Email { get; set; }
         public string ImagePath { get; set; }
         
-        public string PrimaryPhoneNumber { get; set; }
-        
-        public List<string> SecondaryPhoneNumbers { get; set; }
+        public string PhoneNumber { get; set; }
     }
 }
