@@ -255,10 +255,11 @@
     }
 
     function onEditPostTagsClick(postId) {
-         var $input = $(`#edit-tags__input--${postId}`).tagify({
+        var $input = $(`#edit-tags__input--${postId}`).tagify({
+                maxTags: 5,
                 whitelist: [
                     { "id": 1, "value": "some string" }
-                ]
+                ],
             })
             .on('add',
                 function(e, tagName) {

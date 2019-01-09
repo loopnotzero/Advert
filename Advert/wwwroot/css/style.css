@@ -2168,6 +2168,7 @@ time {
 .post-header__time {
   color: #9c9c9c;
   font-size: 0.9rem;
+  white-space: nowrap;
 }
 
 .post-header__time:after {
@@ -2178,6 +2179,7 @@ time {
 .post-header__time--notags {
   color: #9c9c9c;
   font-size: 0.9rem;
+  white-space: nowrap;
 }
 
 .post-header__tags {
