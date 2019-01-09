@@ -18,8 +18,8 @@ namespace Advert.MongoDbStorage.Stores
         Task<long> CountPostsByProfileIdAsync(ObjectId profileId, CancellationToken cancellationToken);
         Task<List<T>> FindPostsAsync(int? howManyElements, CancellationToken cancellationToken);
         Task<List<T>> FindPostsAsync(int offset, int? howManyElements, CancellationToken cancellationToken);
+        Task<List<T>> FindPostsByKeywordAsync(int offset, int? howManyElements, string keyword, CancellationToken cancellationToken);
         Task<List<T>> FindPostsByProfileIdAsync(ObjectId profileId, CancellationToken cancellationToken);
-        Task<List<T>> FindPostsWhichContainsKeywordAsync(int offset, int? howManyElements, string keyword, CancellationToken cancellationToken);
         Task<UpdateResult> DeletePostByIdAsync(ObjectId postId, CancellationToken cancellationToken);      
         Task<UpdateResult> UpdatePostViewsCountByPostIdAsync(ObjectId postId, long count, CancellationToken cancellationToken);
         Task<UpdateResult> UpdatePostLikesCountByPostIdAsync(ObjectId postId, long count, CancellationToken cancellationToken);
