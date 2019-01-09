@@ -179,7 +179,7 @@
     }
 
     function onEditPostTagsClick(postId) {
-        var tags = $(`#edit-tags__select--${postId}`);
+        var tags = $(`#edit-tags__input--${postId}`);
 
         tags.select2({
             tags: true,
@@ -201,7 +201,7 @@
 
         $(`#edit-tags__save--${postId}`).off("click").click(function() {
             var postTags = {
-                tags: $(`#edit-tags__select--${postId}`).val()
+                tags: $(`#edit-tags__input--${postId}`).val()
             };
             createPostTagsByPostIdAsync(postId,
                 postTags,

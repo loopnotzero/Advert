@@ -17,8 +17,7 @@
                     @await Html.PartialAsync("ProfilePartial", Model.Profile)
                 </div>
             }        
-        </div>
-        
+        </div>  
         <div class="@(Model.Profile != null ? "col-md-6" : "col-md-6") p-1">
             <div class="card">
                 @foreach (var post in Model.Posts)
@@ -110,7 +109,6 @@
                 </div>
             }
         </div>
-
 @*         <div class="col-md-3 p-1"> *@
 @*             <div class="card p-3"> *@
 @*                 <div style="border-bottom: 1px solid #d5d5d5; margin-bottom: 10px;"> *@
@@ -257,30 +255,39 @@
     }
 
     function onEditPostTagsClick(postId) {
-        var tags = $(`#edit-tags__select--${postId}`);
+         var $input = $(`#edit-tags__input--${postId}`).tagify({
+                whitelist: [
+                    { "id": 1, "value": "some string" }
+                ]
+            })
+            .on('add',
+                function(e, tagName) {
+                    console.log('JQEURY EVENT: ', 'added', tagName)
+                })
+            .on("invalid",
+                function(e, tagName) {
+                    console.log('JQEURY EVENT: ', "invalid", e, ' ', tagName);
+                });
 
-        tags.select2({
-            tags: true,
-            width: "100%",
-            placeholder: "Choose up to 5 tags to describe this post.",
-            tokenSeparators: [',', ' '],
-            maximumSelectionLength: 5,
-        });
+        var tagify = $input.data('tagify');
 
         getPostTagsByPostIdAsync(postId,
             function(response) {
                 console.log(`Response tags: ${response.tags}`);
-                response.tags.forEach(function(element) {
-                    var option = new Option(element, element, false, true);
-                    tags.append(option);
-                });
-                tags.trigger('change');
+                tagify.addTags(response.tags);
             });
 
         $(`#edit-tags__save--${postId}`).off("click").click(function() {
+            var tags = tagify.value;
+           
             var postTags = {
-                tags: $(`#edit-tags__select--${postId}`).val()
+                tags: tags.map(function(element) {
+                    return element.value;
+                })
             };
+            
+            console.log(`Tags: ${postTags.tags}`);
+
             createPostTagsByPostIdAsync(postId,
                 postTags,
                 function(response) {
@@ -322,18 +329,18 @@
                     }
 
                     console.log("Clear tags on response");
-                    tags.empty();
+                    tagify.removeAllTags();
                 });
         });
 
         $(`#edit-tags__close--${postId}`).off("click").click(function() {
             console.log("Clear tags on close");
-            tags.empty();
+            tagify.removeAllTags();
         });
 
         $(`#edit-tags__cancel--${postId}`).off("click").click(function() {
             console.log("Clear tags on cancel");
-            tags.empty();
+            tagify.removeAllTags();
         });
     }
 

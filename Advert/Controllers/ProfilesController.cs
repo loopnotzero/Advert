@@ -139,20 +139,5 @@ namespace Advert.Controllers
                 return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
             }
         }
-
-        [HttpGet]
-        [Route("/{profileName}/Statistics")]
-        public async Task<IActionResult> GetProfileStatistics(string profileName)
-        {
-            try
-            {
-                return View();
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e.Message, e);
-                return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
-            }
-        }
     }
 }
