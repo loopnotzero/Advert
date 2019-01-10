@@ -34,16 +34,16 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-4 p-1">
-            <div class="card p-4">
-                <div style="border-bottom: 1px solid #d5d5d5; margin-bottom: 10px;">
-                    <h4 class="text-muted">Recommendations</h4>
-                </div>
-                @{
-                    @await Html.PartialAsync("RecommendedPosts", Model.RecommendedPosts)
-                }
-            </div>
-        </div>
+@*         <div class="col-md-4 p-1"> *@
+@*             <div class="card p-4"> *@
+@*                 <div style="border-bottom: 1px solid #d5d5d5; margin-bottom: 10px;"> *@
+@*                     <h4 class="text-muted">Recommendations</h4> *@
+@*                 </div> *@
+@*                 @{ *@
+@*                     @await Html.PartialAsync("RecommendedPosts", Model.RecommendedPosts) *@
+@*                 } *@
+@*             </div> *@
+@*         </div> *@
     </div>
     @await Html.PartialAsync("AddPostModal")
     @await Html.PartialAsync("EditPostModal")
@@ -77,7 +77,7 @@
                         }" width="48" height="48" alt="profile-image">
                     <div class="media-body media__img content__break">
                         <div class="col-auto">
-                            <span class="font-weight-bold" style="font-size: 0.8rem">
+                            <span class="font-weight-bold" style="font-size: 0.9rem">
                                 <a href="/${response.profileName}">${response.profileName}</a>
                             </span>
                             <span class="time"> ${response.createdAt}</span>         
@@ -98,7 +98,7 @@
                                     <small id='votes-count__${response.commentId}'>${response.votesCount}</small>
                                     <span class="dot-separator"></span>
                                     <a href="#reply" onclick="onReplyCommentClick('${response.postId}', '${
-                        response.replyTo}', '${response.commentId}')" style="font-size: 0.8rem">
+                        response.replyTo}', '${response.commentId}')" style="font-size: 0.9rem">
                                         Reply
                                     </a>
                                     <span class="dot-separator"></span>

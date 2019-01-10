@@ -11,11 +11,35 @@
   top: 0;
   left: 0;
   border-bottom: 0.01rem solid #29487d;
-  
+
   @include clearfix();
 
   .ma-backdrop {
     position: absolute;
+  }
+
+  &:not(.content--boxed):not(.header--full) {
+    @include media-breakpoint-up(xl) {
+      padding: 0 12% 0 12%;
+    }
+
+    @include media-breakpoint-between(sm, lg) {
+      padding: 0 12% 0 12%;
+    }
+
+    @include media-breakpoint-down(xs) {
+      padding: 0 0 0 0;
+    }
+  }
+}
+
+.header--full {
+  @include media-breakpoint-up(sm) {
+    padding: 0 10% 0 10%;
+  }
+
+  @include media-breakpoint-down(sm) {
+    padding: 0 10% 0 10%;
   }
 }
 
@@ -220,6 +244,8 @@
 .search {
   flex: 1;
   margin-right: 3rem;
+  //margin-left: 24.9rem;
+  //margin-right: 27.9rem;
   position: relative;
 
   @include media-breakpoint-down(lg) {

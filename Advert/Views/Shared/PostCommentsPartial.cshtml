@@ -16,10 +16,10 @@
             }
             <div class="media-body media__img content__break">
                 <div class="col-auto">
-                    <span class="font-weight-bold" style="font-size: 0.8rem">
+                    <span class="font-weight-bold" style="font-size: 0.9rem">
                         <a href="/@comment.ProfileName">@comment.ProfileName</a>
                     </span>
-                    <span class="time" style="font-size: 0.8rem"> @comment.CreatedAt</span>
+                    <span class="time" style="font-size: 0.9rem"> @comment.CreatedAt</span>
                 </div>
                 <div class="col-auto media__border">
                     <div id="media-comment__@comment.CommentId" class="media__comment">
@@ -41,7 +41,7 @@
                             </div>
                             <small id="votes-count__@comment.CommentId">@comment.VotesCount</small>
                             <span class="dot-separator"></span>
-                            <a href="#reply" onclick="onReplyCommentClick('@comment.PostId', null, '@comment.CommentId')" style="font-size: 0.8rem">
+                            <a href="#reply" onclick="onReplyCommentClick('@comment.PostId', null, '@comment.CommentId')" style="font-size: 0.9rem">
                                 Reply
                             </a>
                             @if (comment.IsCommentOwner)
@@ -78,10 +78,10 @@
                             }
                             <div class="media-body media__img content__break">
                                 <div class="col-auto">
-                                    <span class="font-weight-bold" style="font-size: 0.8rem">
+                                    <span class="font-weight-bold" style="font-size: 0.9rem">
                                         <a href="/@reply.ProfileName">@reply.ProfileName</a>
                                     </span>
-                                    <span class="time" style="font-size: 0.8rem"> @reply.CreatedAt</span>
+                                    <span class="time" style="font-size: 0.9rem"> @reply.CreatedAt</span>
                                 </div>
                                 <div class="col-auto media__border">
                                     <div id="media-comment__@reply.CommentId" class="media__comment">
@@ -103,7 +103,7 @@
                                             </div>
                                             <small id="votes-count__@reply.CommentId">@reply.VotesCount</small>
                                             <span class="dot-separator"></span>
-                                            <a href="#reply" onclick="onReplyCommentClick('@reply.PostId', '@reply.ReplyTo', '@reply.CommentId')" style="font-size: 0.8rem">
+                                            <a href="#reply" onclick="onReplyCommentClick('@reply.PostId', '@reply.ReplyTo', '@reply.CommentId')" style="font-size: 0.9rem">
                                                 Reply
                                             </a>
                                             @if (reply.IsCommentOwner)
@@ -261,10 +261,10 @@
                     <img class="card-user__img" src="${response.profileImagePath}" width="48" height="48" alt="profile-image">
                     <div class="media-body media__img content__break">
                         <div class="col-auto">
-                            <span class="font-weight-bold" style="font-size: 0.8rem">
+                            <span class="font-weight-bold" style="font-size: 0.9rem">
                                 <a href="/${response.profileName}">${response.profileName}</a>
                             </span>
-                            <span class="time" style="font-size: 0.8rem"> ${response.createdAt}</span>  
+                            <span class="time" style="font-size: 0.9rem"> ${response.createdAt}</span>  
                         </div>                        
                         <div class="col-auto media__border">
                             <div id="media-comment__${response.commentId}" class="media__comment">
@@ -279,7 +279,7 @@
                                     </div>
                                     <small id='votes-count__${response.commentId}'>${response.votesCount}</small>
                                     <span class="dot-separator"></span>
-                                    <a href="#reply" onclick="onReplyCommentClick('${comment.postId}', '${comment.replyTo}', '${response.commentId}')" style="font-size: 0.8rem">
+                                    <a href="#reply" onclick="onReplyCommentClick('${comment.postId}', '${comment.replyTo}', '${response.commentId}')" style="font-size: 0.9rem">
                                         Reply
                                     </a>
                                     <span class="dot-separator"></span>
