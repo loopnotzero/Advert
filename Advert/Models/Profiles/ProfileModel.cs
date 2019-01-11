@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Advert.Models.Profiles
+﻿namespace Advert.Models.Profiles
 {
     public class ProfileModel
     {

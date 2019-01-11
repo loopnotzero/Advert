@@ -48,7 +48,7 @@ namespace Advert.Controllers
         {
             try
             {
-                var profile = await _profilesManager.FindProfileByNormalizedNameAsync(profileName);
+                IProfile profile = await _profilesManager.FindProfileByNormalizedNameAsync(profileName);
                 
                 var posts = await _postsManager.FindPostsByProfileIdAsync(profile._id);
                 

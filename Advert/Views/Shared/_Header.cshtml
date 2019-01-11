@@ -18,7 +18,7 @@
         <ul class="top-nav">
             <li class="hidden-xl-up">
                 <a href="" data-ma-action="search-open">
-                    <i class="zmdi zmdi-search" style="-webkit-transform: scaleX(-1); transform: scaleX(-1);"></i>
+                    <i class="zmdi zmdi-search"></i>
                 </a>
             </li>
             <li class="dropdown" onclick="onAddPostClick()">
@@ -33,8 +33,7 @@
                 <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-end" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(-171px, 36px, 0px);">
                     <a href="/@Model.Name" class="dropdown-item">Profile</a>
                     <div class="dropdown-separator"></div>
-                    <a href="#" class="dropdown-item">Settings</a>
-                    <a id="sign__out" href="#" class="dropdown-item">Log Out</a>
+                    <a id="sign-out__dropdown" href="#" class="dropdown-item">Log Out</a>
                 </div>
             </li>
         </ul>
@@ -44,46 +43,19 @@
         <ul class="top-nav">
             <li class="hidden-xl-up">
                 <a href="" data-ma-action="search-open">
-                    <i class="zmdi zmdi-search" style="-webkit-transform: scaleX(-1); transform: scaleX(-1);"></i>
+                    <i class="zmdi zmdi-search"></i>
                 </a>
             </li>
-            <li class="dropdown">
-                <a href="" title="" aria-expanded="false" data-placement="top" data-target="#sign-up__modal" data-toggle="modal">
-                    <i class="zmdi zmdi-account-add zmdi-hc-fw"></i>
+            <li class="dropdown hidden-xs-down">
+                <a href="" data-toggle="dropdown" class="waves-effect" aria-expanded="false">
+                    <i class="zmdi zmdi-help-outline zmdi-hc-fw"></i>
                 </a>
-            </li>
-            <li class="dropdown">
-                <a href="" title="" aria-expanded="false" data-placement="top" data-target="#log-in__modal" data-toggle="modal">
-                    <i class="zmdi zmdi-sign-in zmdi-hc-fw"></i>
-                </a>
-            </li>
+                <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-end" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(-171px, 36px, 0px);">
+                    <a href="#" class="dropdown-item">Privacy</a>
+                    <div class="dropdown-separator"></div>
+                    <a id="report-problem" href="#" class="dropdown-item">Report a Problen</a>
+                </div>
+            </li> 
         </ul>
     }  
 </header>
-
-<script>
-    $(document).ready(function() {
-        $(".search").submit(function(event) {
-            event.preventDefault();
-            window.location.replace(window.location.href + "?page=1&keyword=" + $(".search__text").val());
-        });
-        
-        $("#sign__out").click(function(e) {
-            e.preventDefault();
-            $.ajax({
-                url: "/Account/SignOut?returnUrl=/",
-                type: "GET",
-                contentType: "application/json",
-                error: function(jqXhr, textStatus, errorThrown) {
-                    console.log("jqXhr: " + jqXhr);
-                    console.log("textStatus: " + textStatus);
-                    console.log("errorThrown: " + errorThrown);
-                },
-                success: function(response) {
-                    window.location.replace(response.returnUrl);
-                }
-            });
-            return false;
-        });
-    });
-</script>

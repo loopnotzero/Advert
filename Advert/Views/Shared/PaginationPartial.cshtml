@@ -1,0 +1,71 @@
+@using Advert.Models.Post
+@model PostsAggregatorViewModel
+
+@if (Model.LastPage > 1)
+{
+    <div class="mt-4">
+        <nav>
+            <ul class="pagination justify-content-center">
+                @if (Model.CurrentPage > 1)
+                {
+                    <li class="page-item pagination-first">
+                        <a class="page-link" href="/?page=1"></a>
+                    </li>
+
+                    <li class="page-item pagination-prev">
+                        <a class="page-link" href="/?page=@(Model.CurrentPage - 1)"></a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item pagination-first disabled">
+                        <a class="page-link" href="#"></a>
+                    </li>
+
+                    <li class="page-item pagination-prev disabled">
+                        <a class="page-link"></a>
+                    </li>
+                }
+
+                @{
+                    for (var index = Model.BeginPage; index <= Model.EndPage; index++)
+                    {
+                        if (Model.CurrentPage == index)
+                        {
+                            <li class="page-item active">
+                                <a class="page-link" href="/?page=@index">@index</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="/?page=@index">@index</a>
+                            </li>
+                        }
+                    }
+                }
+
+                @if (Model.CurrentPage >= Model.EndPage)
+                {
+                    <li class="page-item pagination-next disabled">
+                        <a class="page-link" href="#"></a>
+                    </li>
+
+                    <li class="page-item pagination-last disabled">
+                        <a class="page-link" href="#"></a>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item pagination-next">
+                        <a class="page-link" href="/?page=@(Model.CurrentPage + 1)"></a>
+                    </li>
+
+                    <li class="page-item pagination-last">
+                        <a class="page-link" href="/?page=@Model.LastPage"></a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    </div>
+}
