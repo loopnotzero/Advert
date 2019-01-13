@@ -14,9 +14,9 @@ namespace Advert.MongoDbStorage.Stores
         Task<T> FindPostCommentByIdAsync(ObjectId commentId, CancellationToken cancellationToken);
         Task<long> CountPostCommentsCountAsync(CancellationToken cancellationToken);
         Task<long> EstimatedPostCommentsCountAsync(CancellationToken cancellationToken);
-        Task<List<T>> FindPostCommentsAsync(int? howManyElements, CancellationToken cancellationToken);
-        Task<List<T>> FindPostCommentsAsync(int offset, int? howManyElements, CancellationToken cancellationToken);
-        Task<List<T>> FindPostCommentsAsync(int offset, int? howManyElements, SortDefinition sortDef, CancellationToken cancellationToken);
+        Task<List<T>> FindPostCommentsAsync(int? limit, CancellationToken cancellationToken);
+        Task<List<T>> FindPostCommentsAsync(int offset, int? limit, CancellationToken cancellationToken);
+        Task<List<T>> FindPostCommentsAsync(int offset, int? limit, SortDefinition sortDef, CancellationToken cancellationToken);
         Task<List<T>> FindPostCommentsByProfileIdAsync(ObjectId profileId, CancellationToken cancellationToken);
         Task<UpdateResult> DeletePostCommentByIdAsync(ObjectId commentId, CancellationToken cancellationToken);
         Task<ReplaceOneResult> ReplacePostCommentAsync(ObjectId commentId, T entity, CancellationToken cancellationToken);

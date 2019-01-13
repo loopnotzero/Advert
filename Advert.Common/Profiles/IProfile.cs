@@ -18,7 +18,7 @@ namespace Advert.Common.Posts
         string NormalizedName { get; set; }
         string NormalizedEmail { get; set; }
         DateTime CreatedAt { get; set; }
-        DateTime ChangedAt { get; set; }  
+        DateTime UpdatedAt { get; set; }  
         DateTime DeletedAt { get; set; } 
     }
 }

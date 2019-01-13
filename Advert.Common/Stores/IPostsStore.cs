@@ -16,10 +16,12 @@ namespace Advert.MongoDbStorage.Stores
         Task<T> FindPostByIdOrDefaultAsync(ObjectId postId, T defaultValue, CancellationToken cancellationToken);    
         Task<long> EstimatedPostsCountAsync(CancellationToken cancellationToken);
         Task<long> CountPostsByProfileIdAsync(ObjectId profileId, CancellationToken cancellationToken);
-        Task<List<T>> FindPostsAsync(int? howManyElements, CancellationToken cancellationToken);
-        Task<List<T>> FindPostsAsync(int offset, int? howManyElements, CancellationToken cancellationToken);
-        Task<List<T>> FindPostsByKeywordAsync(int offset, int? howManyElements, string keyword, CancellationToken cancellationToken);
-        Task<List<T>> FindPostsByProfileIdAsync(ObjectId profileId, CancellationToken cancellationToken);
+        Task<List<T>> FindPostsAsync(List<ObjectId> list, CancellationToken cancellationToken);
+        Task<List<T>> FindPostsAsync(int offset, int? limit, CancellationToken cancellationToken);
+        Task<List<T>> FindPostsByKeywordAsync(int offset, int? limit, string keyword, CancellationToken cancellationToken);
+        Task<List<T>> FindPostsByProfileIdAsync(ObjectId profileId, int offset, int? limit, CancellationToken cancellationToken);
+        Task<List<T>> FindPostsWithSoldItemsByProfileIdAsync(ObjectId profileId, int offset, int? limit, CancellationToken cancellationToken);
+        Task<List<T>> FindPostsWithSellingItemsByProfileIdAsync(ObjectId profileId, int offset, int? limit, CancellationToken cancellationToken);
         Task<UpdateResult> DeletePostByIdAsync(ObjectId postId, CancellationToken cancellationToken);      
         Task<UpdateResult> UpdatePostViewsCountByPostIdAsync(ObjectId postId, long count, CancellationToken cancellationToken);
         Task<UpdateResult> UpdatePostLikesCountByPostIdAsync(ObjectId postId, long count, CancellationToken cancellationToken);
