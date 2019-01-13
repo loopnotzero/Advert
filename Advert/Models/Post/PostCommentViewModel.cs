@@ -4,8 +4,8 @@ namespace Advert.Models.Post
 {
     public class PostCommentViewModel
     {
-        public bool IsCommentVoted { get; set; }
-        public bool IsCommentOwner { get; set; }
+        public bool IsVoted { get; set; }
+        public bool IsOwner { get; set; }
         public string PostId { get; set; }
         public string Text { get; set; }
         public string ReplyTo { get; set; }

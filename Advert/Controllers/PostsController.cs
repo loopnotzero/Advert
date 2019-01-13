@@ -5,7 +5,6 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Advert.Common.Posts;
-using Advert.Common.Metrics;
 using Advert.Exceptions;
 using Advert.Managers;
 using Advert.Models.Post;
@@ -38,7 +37,7 @@ namespace Advert.Controllers
         private readonly PostsViewsCountManager<MongoDbPostViewsCount> _postsViewsCountManager;
         private readonly PostCommentsVotesManager<MongoDbPostCommentVote> _postCommentsVotesManager;
         
-        private const string NoProfileImage = "/images/no-image.png";
+        private const string EmptyProfileImage = "/images/no-image.png";
 
         public PostsController(ILoggerFactory loggerFactory,
             IConfiguration configuration,
@@ -130,37 +129,38 @@ namespace Advert.Controllers
                         EndPage = endPage,
                         CurrentPage = page,
                         LastPage = lastPage,
-
+                        
+                        Posts = posts.Select(post => new PostViewModel
+                        {
+                            Sold = post.Sold,
+                            IsOwner = User.Identity.IsAuthenticated && profile != null && post.ProfileId.Equals(profile._id),
+                            IsVoted = postsVotes.Count > 0 && postsVotes.Any(x => x.PostId.Equals(post._id)),
+                            PostId = post._id.ToString(),
+                            Text = post.Text.Length > 1000 ? post.Text.Substring(0, 1000) + "..." : post.Text,
+                            Title = post.Title,
+                            Currency = post.Currency,
+                            Location = post.Location,
+                            CreatedAt = post.CreatedAt.Humanize(),
+                            ViewsCount = ((double) post.ViewsCount).ToMetric(),
+                            LikesCount = ((double) post.LikesCount).ToMetric(),
+                            SharesCount = ((double) 0).ToMetric(),
+                            CommentsCount = ((double) post.CommentsCount).ToMetric(),
+                            ProfileId = post.ProfileId.ToString(),
+                            ProfileName = post.ProfileName,
+                            ProfileImagePath = post.ProfileImagePath ?? EmptyProfileImage,
+                            Price = post.Price,
+                            Tags = post.Tags,
+                        }),
+                        
                         Profile = profile == null ? null : new ProfileModel
                         {
                             Id = profile._id.ToString(),
                             Name = profile.Name,
-                            ImagePath = profile.ImagePath ?? NoProfileImage,
-                        },
-
-                        Posts = posts.Select(post => new PostViewModel
-                        {
-                            PostId = post._id.ToString(),
-                            ProfileId = post.ProfileId.ToString(),
-                            ProfileName = post.ProfileName,
-                            ProfileImagePath = post.ProfileImagePath ?? NoProfileImage,
-                            Text = post.Text.Length > 1000 ? post.Text.Substring(0, 1000) + "..." : post.Text,
-                            Title = post.Title,
-                            Price = post.Price,
-                            Currency = post.Currency,
-                            Location = post.Location,
-                            Tags = post.Tags,
-                            LikesCount = ((double) post.LikesCount).ToMetric(),
-                            SharesCount = ((double) 0).ToMetric(),
-                            ViewsCount = ((double) post.ViewsCount).ToMetric(),
-                            CommentsCount = ((double) post.CommentsCount).ToMetric(),
-                            CreatedAt = post.CreatedAt.Humanize(),
-                            IsPostVoted = postsVotes.Count > 0 && postsVotes.Any(x => x.PostId.Equals(post._id)),
-                            IsTopicOwner = profile != null && post.ProfileId.Equals(profile._id)
-                        }),
-
+                            ImagePath = profile.ImagePath ?? EmptyProfileImage,
+                        },  
+                        
                         PlacesApi = _configuration.GetSection("GoogleApiServices").GetValue<string>("PlacesApi"),
-
+                        
 //                        RecommendedPosts = posts
 //                            .OrderByDescending(x => EngagementRate.ComputeEngagementRate(x.LikesCount, x.SharesCount, x.CommentsCount, x.ViewsCount))
 //                            .Select(post => new RecommendedPostViewModel
@@ -226,8 +226,8 @@ namespace Advert.Controllers
                         {
                             commentsReplies.Add(comment._id, new PostCommentViewModel
                             {
-                                IsCommentOwner = profile != null && comment.ProfileId.Equals(profile._id),
-                                IsCommentVoted = postsCommentsVotes.Count > 0 && postsCommentsVotes.Any(x => x.CommentId.Equals(comment._id) && x.ProfileId.Equals(profile._id)),
+                                IsOwner = profile != null && comment.ProfileId.Equals(profile._id),
+                                IsVoted = postsCommentsVotes.Count > 0 && postsCommentsVotes.Any(x => x.CommentId.Equals(comment._id) && x.ProfileId.Equals(profile._id)),
                                 PostId = comment.PostId.ToString(),
                                 Text = comment.Text,
                                 ReplyTo = comment.ReplyTo.ToString(),
@@ -236,7 +236,7 @@ namespace Advert.Controllers
                                 VotesCount = ((double) comment.VotesCount).ToMetric(),
                                 ProfileId = comment.ProfileId.ToString(),
                                 ProfileName = comment.ProfileName,
-                                ProfileImagePath = comment.ProfileImagePath ?? NoProfileImage,
+                                ProfileImagePath = comment.ProfileImagePath ?? EmptyProfileImage,
                             });
                         }
                     }
@@ -252,8 +252,8 @@ namespace Advert.Controllers
                                     {
                                         return new PostCommentViewModel
                                         {
-                                            IsCommentOwner = profile != null && comment.ProfileId.Equals(profile._id),
-                                            IsCommentVoted = postsCommentsVotes.Count > 0 && postsCommentsVotes.Any(x => x.CommentId.Equals(comment._id) && x.ProfileId.Equals(profile._id)),
+                                            IsOwner = profile != null && comment.ProfileId.Equals(profile._id),
+                                            IsVoted = postsCommentsVotes.Count > 0 && postsCommentsVotes.Any(x => x.CommentId.Equals(comment._id) && x.ProfileId.Equals(profile._id)),
                                             PostId = comment.PostId.ToString(),
                                             Text = comment.Text,
                                             ReplyTo = comment.ReplyTo.ToString(),
@@ -262,7 +262,7 @@ namespace Advert.Controllers
                                             VotesCount = ((double) comment.VotesCount).ToMetric(),
                                             ProfileId = comment.ProfileId.ToString(),
                                             ProfileName = comment.ProfileName,
-                                            ProfileImagePath = comment.ProfileImagePath ?? NoProfileImage,
+                                            ProfileImagePath = comment.ProfileImagePath ?? EmptyProfileImage,
                                         };       
                                     }).ToList();
                                 }
@@ -273,8 +273,8 @@ namespace Advert.Controllers
                                 {                             
                                     return new PostCommentViewModel
                                     {
-                                        IsCommentOwner = profile != null && comment.ProfileId.Equals(profile._id),
-                                        IsCommentVoted = postsCommentsVotes.Count > 0 && postsCommentsVotes.Any(x => x.CommentId.Equals(comment._id) && x.ProfileId.Equals(profile._id)),
+                                        IsOwner = profile != null && comment.ProfileId.Equals(profile._id),
+                                        IsVoted = postsCommentsVotes.Count > 0 && postsCommentsVotes.Any(x => x.CommentId.Equals(comment._id) && x.ProfileId.Equals(profile._id)),
                                         PostId = comment.PostId.ToString(),
                                         Text = comment.Text,
                                         ReplyTo = comment.ReplyTo.ToString(),
@@ -283,7 +283,7 @@ namespace Advert.Controllers
                                         VotesCount = ((double) comment.VotesCount).ToMetric(),
                                         ProfileId = comment.ProfileId.ToString(),
                                         ProfileName = comment.ProfileName,
-                                        ProfileImagePath = comment.ProfileImagePath ?? NoProfileImage,
+                                        ProfileImagePath = comment.ProfileImagePath ?? EmptyProfileImage,
                                     };
                                 }));
                             }
@@ -291,45 +291,42 @@ namespace Advert.Controllers
                     }
                 }
 
-                var posts = await _postsManager.FindPostsAsync(_configuration.GetSection("AdvertOptions").GetValue<int>("PostsPerPage"));
-
-//                var orderedPosts = posts.OrderByDescending(x => EngagementRate.ComputeEngagementRate(x.LikesCount, x.SharesCount, x.CommentsCount, x.ViewsCount));
-
                 return View(new PostsAggregatorViewModel
-                {
-                    Profile = profile == null ? null : new ProfileModel
-                    {
-                        Id = profile._id.ToString(),
-                        Name = profile.Name,
-                        ImagePath = profile.ImagePath ?? NoProfileImage,
-                    },                
-                    
+                {                                               
                     Posts = new List<PostViewModel>
                     {
                         new PostViewModel
                         {
+                            Sold = post.Sold,
+                            IsOwner = User.Identity.IsAuthenticated && profile != null && post.ProfileId.Equals(profile._id),
+                            IsVoted = postsVotes.Count > 0 && postsVotes.Any(x => x.PostId.Equals(post._id)),
                             PostId = post._id.ToString(),
-                            ProfileId = post.ProfileId.ToString(),
-                            ProfileName = post.ProfileName,
-                            ProfileImagePath = post.ProfileImagePath ?? NoProfileImage,
-                            Text = post.Text,
+                            Text = post.Text.Length > 1000 ? post.Text.Substring(0, 1000) + "..." : post.Text,
                             Title = post.Title,
-                            Price = post.Price,
                             Currency = post.Currency,
                             Location = post.Location,
-                            Tags = post.Tags,
-                            LikesCount = ((double) post.LikesCount).ToMetric(),
-                            SharesCount = ((double)0).ToMetric(),
-                            ViewsCount = ((double) post.ViewsCount).ToMetric(),
-                            CommentsCount = ((double) post.CommentsCount).ToMetric(),
                             CreatedAt = post.CreatedAt.Humanize(),
-                            IsPostVoted = postsVotes.Count > 0 && postsVotes.Any(x => x.PostId.Equals(post._id) && x.ProfileId.Equals(profile._id)),
-                            IsTopicOwner = profile != null && post.ProfileId.Equals(profile._id)
+                            ViewsCount = ((double) post.ViewsCount).ToMetric(),
+                            LikesCount = ((double) post.LikesCount).ToMetric(),
+                            SharesCount = ((double) 0).ToMetric(),
+                            CommentsCount = ((double) post.CommentsCount).ToMetric(),
+                            ProfileId = post.ProfileId.ToString(),
+                            ProfileName = post.ProfileName,
+                            ProfileImagePath = post.ProfileImagePath ?? EmptyProfileImage,
+                            Price = post.Price,
+                            Tags = post.Tags,
                         }
-                    }, 
+                    },
+                    
+                    Profile = profile == null ? null : new ProfileModel
+                    {
+                        Id = profile._id.ToString(),
+                        Name = profile.Name,
+                        ImagePath = profile.ImagePath ?? EmptyProfileImage,
+                    },
                     
                     PlacesApi = _configuration.GetSection("GoogleApiServices").GetValue<string>("PlacesApi"),
-                    
+           
 //                    RecommendedPosts = orderedPosts.Select(recommendedPost => new RecommendedPostViewModel
 //                    {
 //                        PostId = recommendedPost._id.ToString(),
@@ -355,21 +352,26 @@ namespace Advert.Controllers
         public async Task<IActionResult> CreatePostAsync([FromBody] PostViewModel viewModel)
         {
             try
-            {              
+            {
+                if (!HttpContext.User.Identity.IsAuthenticated)
+                {
+                    return Unauthorized();
+                }
+                
                 var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
 
                 var post = new MongoDbPost
-                {
+                {     
                     Text = viewModel.Text,
                     Title = viewModel.Title,
-                    Price = viewModel.Price,
                     Location = viewModel.Location,
                     Currency = viewModel.Currency,
-                    ReleaseType = ReleaseType.Moderating,
-                    ProfileId = profile._id,
                     ProfileName = profile.Name,
                     ProfileImagePath = profile.ImagePath,
+                    Price = viewModel.Price,
+                    ProfileId = profile._id,
                     CreatedAt = DateTime.UtcNow,
+                    ReleaseType = ReleaseType.Moderating,
                 };
 
                 await _postsManager.CreatePostAsync(post);
@@ -397,10 +399,10 @@ namespace Advert.Controllers
 
                 post.Text = viewModel.Text;
                 post.Title = viewModel.Title;
-                post.Price = viewModel.Price;
                 post.Location = viewModel.Location;
                 post.Currency = viewModel.Currency;
-                post.ChangedAt = DateTime.UtcNow;
+                post.Price = viewModel.Price;
+                post.UpdatedAt = DateTime.UtcNow;
 
                 var result = await _postsManager.UpdatePostAsync(post);
 
@@ -454,27 +456,37 @@ namespace Advert.Controllers
         {
             try
             {
+                if (!HttpContext.User.Identity.IsAuthenticated)
+                {
+                    return Unauthorized();
+                }
+                
                 var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
 
                 var post = await _postsManager.FindPostByIdAsync(ObjectId.Parse(postId));
-  
+
+                var postsVotes = await _postsVotesManager.FindPostsVotesAsync(profile._id);
+
                 return Ok(new PostViewModel
                 {
+                    Sold = post.Sold,
+                    IsOwner = User.Identity.IsAuthenticated && profile != null && post.ProfileId.Equals(profile._id),
+                    IsVoted = postsVotes.Count > 0 && postsVotes.Any(x => x.PostId.Equals(post._id)),
                     PostId = post._id.ToString(),
-                    ProfileName = post.ProfileName,
-                    ProfileImagePath = post.ProfileImagePath ?? NoProfileImage,
-                    Text = post.Text,
+                    Text = post.Text.Length > 1000 ? post.Text.Substring(0, 1000) + "..." : post.Text,
                     Title = post.Title,
-                    Price = post.Price,
                     Currency = post.Currency,
                     Location = post.Location,
-                    Tags = post.Tags,
+                    CreatedAt = post.CreatedAt.Humanize(),
+                    ViewsCount = ((double) post.ViewsCount).ToMetric(),
                     LikesCount = ((double) post.LikesCount).ToMetric(),
                     SharesCount = ((double) 0).ToMetric(),
-                    ViewsCount = ((double) post.ViewsCount).ToMetric(),
                     CommentsCount = ((double) post.CommentsCount).ToMetric(),
-                    CreatedAt = post.CreatedAt.Humanize(),
-                    IsTopicOwner = post.ProfileId.Equals(profile._id)
+                    ProfileId = post.ProfileId.ToString(),
+                    ProfileName = post.ProfileName,
+                    ProfileImagePath = post.ProfileImagePath ?? EmptyProfileImage,
+                    Price = post.Price,
+                    Tags = post.Tags,
                 });
             }
             catch (Exception e)
@@ -499,8 +511,8 @@ namespace Advert.Controllers
 
                 return Ok(new PostCommentViewModel
                 {
-                    IsCommentOwner = postComment.ProfileId.Equals(profile._id),
-                    IsCommentVoted = postsCommentsVotes.Any(x => x.CommentId.Equals(postComment._id) && x.ProfileId.Equals(profile._id)),
+                    IsOwner = postComment.ProfileId.Equals(profile._id),
+                    IsVoted = postsCommentsVotes.Any(x => x.CommentId.Equals(postComment._id) && x.ProfileId.Equals(profile._id)),
                     PostId = postComment.PostId.ToString(),
                     Text = postComment.Text,
                     ReplyTo = postComment.ReplyTo.ToString(),
@@ -509,7 +521,7 @@ namespace Advert.Controllers
                     VotesCount = ((double) postComment.VotesCount).ToMetric(),
                     ProfileId = postComment.ProfileId.ToString(),
                     ProfileName = postComment.ProfileName,
-                    ProfileImagePath = postComment.ProfileImagePath ?? NoProfileImage,
+                    ProfileImagePath = postComment.ProfileImagePath ?? EmptyProfileImage,
                 });
             }
             catch (Exception e)
@@ -691,7 +703,7 @@ namespace Advert.Controllers
                     PostId = postId,
                     ProfileId = profile._id,
                     ProfileName = profile.Name,
-                    ProfileImagePath = profile.ImagePath ?? NoProfileImage,
+                    ProfileImagePath = profile.ImagePath ?? EmptyProfileImage,
                     VotesCount = 0,
                 };
               
@@ -714,7 +726,7 @@ namespace Advert.Controllers
                     PostId = viewModel.PostId,
                     ProfileId = comment.ProfileId.ToString(),
                     ProfileName = comment.ProfileName,
-                    ProfileImagePath = comment.ProfileImagePath ?? NoProfileImage,     
+                    ProfileImagePath = comment.ProfileImagePath ?? EmptyProfileImage,     
                     VotesCount = ((double)comment.VotesCount).ToMetric()
                 });
             }

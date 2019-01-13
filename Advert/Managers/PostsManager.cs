@@ -63,19 +63,19 @@ namespace Advert.Managers
             return await _store.EstimatedPostsCountAsync(CancellationToken);           
         } 
 
-        public async Task<List<T>> FindPostsAsync(int? howManyElements)
+        public async Task<List<T>> FindPostsAsync(int offset, int? limit)
         {
             ThrowIfDisposed();          
-            return await _store.FindPostsAsync(howManyElements, CancellationToken);
+            return await _store.FindPostsAsync(offset, limit, CancellationToken);
         }
         
-        public async Task<List<T>> FindPostsAsync(int offset, int? howManyElements)
+        public async Task<List<T>> FindPostsAsync(List<ObjectId> list)
         {
             ThrowIfDisposed();          
-            return await _store.FindPostsAsync(offset, howManyElements, CancellationToken);
+            return await _store.FindPostsAsync(list, CancellationToken);
         }
-      
-        public async Task<List<T>> FindPostsByProfileIdAsync(ObjectId profileId)
+                   
+        public async Task<List<T>> FindPostsByProfileIdAsync(ObjectId profileId, int offset, int? limit)
         {
             ThrowIfDisposed();
             
@@ -84,10 +84,22 @@ namespace Advert.Managers
                 throw new ArgumentNullException(nameof(profileId));
             }
 
-            return await _store.FindPostsByProfileIdAsync(profileId, CancellationToken);
+            return await _store.FindPostsByProfileIdAsync(profileId, offset, limit, CancellationToken);
         }
 
-        public async Task<List<T>> FindPostsByKeywordAsync(int offset, int? howManyElements, string keyword)
+        public async Task<List<T>> FindPostsWithSoldItemsByProfileIdAsync(ObjectId profileId, int offset, int? limit)
+        {
+            ThrowIfDisposed();          
+            return await _store.FindPostsWithSoldItemsByProfileIdAsync(profileId, offset, limit, CancellationToken);
+        }
+        
+        public async Task<List<T>> FindPostsWithSellingItemsByProfileIdAsync(ObjectId profileId, int offset, int? limit)
+        {
+            ThrowIfDisposed();          
+            return await _store.FindPostsWithSellingItemsByProfileIdAsync(profileId, offset, limit, CancellationToken);
+        }
+
+        public async Task<List<T>> FindPostsByKeywordAsync(int offset, int? limit, string keyword)
         {
             ThrowIfDisposed();
             
@@ -96,7 +108,7 @@ namespace Advert.Managers
                 throw new ArgumentNullException(nameof(keyword));
             }
 
-            return await _store.FindPostsByKeywordAsync(offset, howManyElements, keyword, CancellationToken);
+            return await _store.FindPostsByKeywordAsync(offset, limit, keyword, CancellationToken);
         }
 
         public async Task<UpdateResult> UpdatePostViewsCountByPostId(ObjectId postId, long viewsCount)

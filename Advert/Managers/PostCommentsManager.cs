@@ -74,7 +74,7 @@ namespace Advert.Managers
             return await Store.GetPostCommentsCollection(collectionName, CancellationToken).CountPostCommentsCountAsync(CancellationToken);
         }
 
-        public async Task<List<T>> FindPostCommentsAsync(string collectionName, int? howManyElements)
+        public async Task<List<T>> FindPostCommentsAsync(string collectionName, int? limit)
         {
             ThrowIfDisposed();
 
@@ -83,10 +83,10 @@ namespace Advert.Managers
                 throw new ArgumentNullException(nameof(collectionName));
             }
 
-            return await Store.GetPostCommentsCollection(collectionName, CancellationToken).FindPostCommentsAsync(howManyElements, CancellationToken);
+            return await Store.GetPostCommentsCollection(collectionName, CancellationToken).FindPostCommentsAsync(limit, CancellationToken);
         }
         
-        public async Task<List<T>> FindPostCommentsAsync(string collectionName, int offset, int? howManyElements)
+        public async Task<List<T>> FindPostCommentsAsync(string collectionName, int offset, int? limit)
         {
             ThrowIfDisposed();
 
@@ -95,10 +95,10 @@ namespace Advert.Managers
                 throw new ArgumentNullException(nameof(collectionName));
             }
 
-            return await Store.GetPostCommentsCollection(collectionName, CancellationToken).FindPostCommentsAsync(offset, howManyElements, CancellationToken);
+            return await Store.GetPostCommentsCollection(collectionName, CancellationToken).FindPostCommentsAsync(offset, limit, CancellationToken);
         }
         
-        public async Task<List<T>> FindPostCommentsAsync(string collectionName, int offset, int? howManyElements, SortDefinition sortDef)
+        public async Task<List<T>> FindPostCommentsAsync(string collectionName, int offset, int? limit, SortDefinition sortDef)
         {
             ThrowIfDisposed();
 
@@ -107,7 +107,7 @@ namespace Advert.Managers
                 throw new ArgumentNullException(nameof(collectionName));
             }
 
-            return await Store.GetPostCommentsCollection(collectionName, CancellationToken).FindPostCommentsAsync(offset, howManyElements, sortDef, CancellationToken);
+            return await Store.GetPostCommentsCollection(collectionName, CancellationToken).FindPostCommentsAsync(offset, limit, sortDef, CancellationToken);
         }
         
         public async Task<List<T>> FindPostCommentsByProfileIdAsync(string collectionName, ObjectId profileId)

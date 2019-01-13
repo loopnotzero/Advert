@@ -30,7 +30,7 @@
                     <div class="row">
                         <div class="col-md-12 p-1">
                             <div class="r-btn r-btn-light r-btn--icon waves-effect ml-4" onclick="onPostCommentVoteClick('@comment.PostId', '@comment.CommentId', 1)">
-                                @if (comment.IsCommentVoted)
+                                @if (comment.IsVoted)
                                 {
                                     <i id="vote-icon__@comment.CommentId" class="zmdi zmdi-favorite zmdi-hc-fw"></i>
                                 }
@@ -44,7 +44,7 @@
                             <a href="#reply" onclick="onReplyCommentClick('@comment.PostId', null, '@comment.CommentId')" style="font-size: 0.9rem">
                                 Reply
                             </a>
-                            @if (comment.IsCommentOwner)
+                            @if (comment.IsOwner)
                             {
                                 <span class="dot-separator"></span>
                                 <div class="dropdown comments__item">
@@ -92,7 +92,7 @@
                                     <div class="row">
                                         <div class="col-md-12 p-1">
                                             <div class="r-btn r-btn-light r-btn--icon waves-effect ml-4" onclick="onPostCommentVoteClick('@reply.PostId', '@reply.CommentId', 1)">
-                                                @if (reply.IsCommentVoted)
+                                                @if (reply.IsVoted)
                                                 {
                                                     <i id="vote-icon__@reply.CommentId" class="zmdi zmdi-favorite zmdi-hc-fw"></i>
                                                 }
@@ -106,7 +106,7 @@
                                             <a href="#reply" onclick="onReplyCommentClick('@reply.PostId', '@reply.ReplyTo', '@reply.CommentId')" style="font-size: 0.9rem">
                                                 Reply
                                             </a>
-                                            @if (reply.IsCommentOwner)
+                                            @if (reply.IsOwner)
                                             {
                                                 <span class="dot-separator"></span>
                                                 <div class="dropdown comments__item">

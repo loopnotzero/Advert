@@ -2368,7 +2368,8 @@ blockquote {
 }
 
 .header__logo {
-  margin-left: 11px;
+  text-align: center;
+  padding-left: 1rem;
 }
 @media (min-width: 1200px) {
   .header__logo {
@@ -2489,12 +2490,12 @@ blockquote {
 
 .search {
   flex: 1;
-  margin-right: 3rem;
+  margin-right: 1rem;
   position: relative;
 }
 @media (max-width: 1199.98px) {
   .search {
-    padding: 0 1.5rem;
+    padding: 0;
     position: absolute;
     left: 0;
     top: 0;

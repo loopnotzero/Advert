@@ -5,6 +5,7 @@ namespace Advert.Models.Post
 {
     public class PostsAggregatorViewModel
     {
+        public bool IsProfileOwner { get; set; }
         public long BeginPage { get; set; }
         public long EndPage { get; set; }
         public long CurrentPage { get; set; }
@@ -12,7 +13,8 @@ namespace Advert.Models.Post
         public string PlacesApi { get; set; }
         public ProfileModel Profile { get; set; }
         public IEnumerable<PostViewModel> Posts { get; set; }
-        public IEnumerable<PostCommentViewModel> PostComments { get; set; }   
+        public IEnumerable<PostCommentViewModel> PostComments { get; set; } 
+        
         public IEnumerable<RecommendedPostViewModel> RecommendedPosts { get; set; }
     }
 }

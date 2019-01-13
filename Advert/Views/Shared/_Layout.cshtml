@@ -1,17 +1,13 @@
 ﻿<!DOCTYPE html>
 <html>
-
 <head>
     <title>Advert.md</title>
-
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description"/>
-    <meta content="Coderthemes" name="author"/>
+    <meta content="Advert" name="author"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-
     <link rel="shortcut icon" href="~/images/favicon.ico">
-
     <link href="~/css/dropzone.css" rel="stylesheet" type="text/css"/>
     <link href="~/css/font.css" rel="stylesheet" type="text/css"/>
     <link href="~/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
@@ -38,13 +34,15 @@
 <script>
     var turndown = new TurndownService();
     
+    var textEditor = {};
+
     function initMap() {
-        new google.maps.places.Autocomplete(document.getElementById('add-post__location'))
+        new google.maps.places.Autocomplete($("#add-post__location")[0])
             .addListener('place_changed',
                 function() {
 
                 });
-        new google.maps.places.Autocomplete(document.getElementById('edit-post__location'))
+        new google.maps.places.Autocomplete($("#edit-post__location")[0])
             .addListener('place_changed',
                 function() {
 
@@ -119,7 +117,7 @@
                 text: textEditor["add-post__text--editor"].options.previewRender(textEditor["add-post__text--editor"].value()),
                 title: $("#add-post__title").val(),
                 price: $("#add-post__price").val(),
-                location: $("#add-post__location]").val(),
+                location: $("#add-post__location").val(),
                 currency: $('#add-post__currency :selected').text()
             };
             createPostAsync(post,
@@ -180,8 +178,10 @@
                 function(response) {
                     console.log("Close edit post modal window");
                     $("#edit-post__modal").modal('toggle');
-                    $(`#post-content__${postId}`).html(post.text);
+                    $(`#post-title__${postId}`).html(post.title);
+                    $(`#post-price__${postId}`).html(`${post.price}${post.currency}`);
                     $(`#post-location__${postId}`).text(post.location);
+                    $(`#post-text__${postId}`).html(post.text);
                     console.log(
                         `MatchedCount: ${response.matchedCount} ModifiedCount: ${response.matchedCount
                         } IsAcknowledged: ${response.isAcknowledged} IsModifiedCountAvailable: ${response
@@ -288,6 +288,14 @@
             console.log("Clear tags on cancel");
             tagify.removeAllTags();
         });
+    }
+    
+    function onMarkPostAsSold(postId) {
+        console.log(`Mark post: ${postId} as sold`);
+    }
+    
+    function onMarkPostAsAvailable(postId) {
+        console.log(`Mark post: ${postId} as available`);
     }
     
     function onEditCommentClick(postId, commentId) {
@@ -479,10 +487,6 @@
                 $(this).closest('.search').addClass('search--focus');
             });
         
-        var textEditor = {};
-
-        console.log("Pre log before create simple mde");
-        
         $("#add-post__text--editor, #edit-post__text--editor, #add-comment__text--editor, #edit-comment__text--editor").each(function(index, element) {
             console.log(`Text editor element id: ${element.id}`);
            
@@ -581,8 +585,6 @@
         $("#add-comment").click(function() {
             var postId = $("section").attr('id')
             var text = textEditor["add-comment__text--editor"].options.previewRender(textEditor["add-comment__text--editor"].value());
-            console.log(`Add comment: ${text}`);
-            return;
             var comment = {
                 postId: postId,
                 text: text
@@ -671,4 +673,4 @@
             $('#body').fadeIn(200);
         });
 </script>
-@* <script src="https://maps.googleapis.com/maps/api/js?key=@Model.PlacesApi&libraries=places&callback=initMap" async defer></script> *@
+<script src="https://maps.googleapis.com/maps/api/js?key=@Model.PlacesApi&libraries=places&callback=initMap" async defer></script>

@@ -44,7 +44,7 @@ function createPostAsync(post, callback) {
         type: "POST",
         data: JSON.stringify(post),
         contentType: "application/json",
-        error: function() {
+        error: function(jqXhr, textStatus, errorThrown) {
             console.log("jqXhr: " + jqXhr);
             console.log("textStatus: " + textStatus);
             console.log("errorThrown: " + errorThrown);
@@ -114,7 +114,7 @@ function updatePostCommentAsync(postId, commentId, postComment, callback) {
         type: "POST",
         data: JSON.stringify(postComment),
         contentType: "application/json",
-        error: function() {
+        error: function(jqXhr, textStatus, errorThrown) {
             console.log("jqXhr: " + jqXhr);
             console.log("textStatus: " + textStatus);
             console.log("errorThrown: " + errorThrown);
@@ -131,7 +131,7 @@ function deletePostByIdAsync(postId, callback) {
         url: `/Posts/DeletePostByIdAsync?postId=${postId}`,
         type: "DELETE",
         contentType: "application/json",
-        error: function() {
+        error: function(jqXhr, textStatus, errorThrown) {
             console.log("jqXhr: " + jqXhr);
             console.log("textStatus: " + textStatus);
             console.log("errorThrown: " + errorThrown);
@@ -148,7 +148,7 @@ function deletePostCommentAsync(postId, commentId, callback) {
         url: `/Posts/DeletePostCommentAsync?postId=${postId}&commentId=${commentId}`,
         type: "DELETE",
         contentType: "application/json",
-        error: function() {
+        error: function(jqXhr, textStatus, errorThrown) {
             console.log("jqXhr: " + jqXhr);
             console.log("textStatus: " + textStatus);
             console.log("errorThrown: " + errorThrown);

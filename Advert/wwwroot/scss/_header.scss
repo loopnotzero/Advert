@@ -105,7 +105,8 @@
 }
 
 .header__logo {
-  margin-left: 11px;
+  text-align: center;
+  padding-left: 1rem;
   
   @include media-breakpoint-up(xl) {
     min-width: calc(#{$sidebar-width} - 8.05rem);
@@ -243,13 +244,11 @@
 
 .search {
   flex: 1;
-  margin-right: 3rem;
-  //margin-left: 24.9rem;
-  //margin-right: 27.9rem;
+  margin-right: 1rem;
   position: relative;
 
   @include media-breakpoint-down(lg) {
-    padding: 0 1.5rem;
+    padding: 0;
     position: absolute;
     left: 0;
     top: 0;

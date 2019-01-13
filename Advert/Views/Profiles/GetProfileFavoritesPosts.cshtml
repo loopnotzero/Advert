@@ -24,7 +24,7 @@
                 <div class="card">
                     <ul class="nav nav-tabs">
                         <li class="nav-item">
-                            <a class="nav-link active" href="/@Model.Profile.Name">Selling</a>
+                            <a class="nav-link" href="/@Model.Profile.Name/Selling">Selling</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="/@Model.Profile.Name/Sold">Sold</a>
@@ -32,7 +32,7 @@
                         @if (Model.IsProfileOwner)
                         {
                             <li class="nav-item">
-                                <a class="nav-link" href="/@Model.Profile.Name/Favorites">Favorites</a>
+                                <a class="nav-link active" href="/@Model.Profile.Name/Favorites">Favorites</a>
                             </li>
                         }
                     </ul>
