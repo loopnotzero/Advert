@@ -48,7 +48,7 @@ namespace Advert.MongoDbStorage.Stores
             return await _collection.EstimatedDocumentCountAsync(cancellationToken: cancellationToken);
         }
 
-        public async Task<List<T>> FindPostCommentsAsync(int? howManyElements, CancellationToken cancellationToken)
+        public async Task<List<T>> FindPostCommentsAsync(int? limit, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             
@@ -57,9 +57,9 @@ namespace Advert.MongoDbStorage.Stores
                 Sort = Builders<T>.Sort.Ascending(field => field.CreatedAt),
             };
 
-            if (howManyElements.HasValue)
+            if (limit.HasValue)
             {
-                findOptions.Limit = howManyElements;
+                findOptions.Limit = limit;
             }
             
             var filter = Builders<T>.Filter.Eq(x => x.IsDeleted, false);
@@ -69,15 +69,15 @@ namespace Advert.MongoDbStorage.Stores
             return await cursor.ToListAsync(cancellationToken);
         }
 
-        public async Task<List<T>> FindPostCommentsAsync(int offset, int? howManyElements, CancellationToken cancellationToken)
+        public async Task<List<T>> FindPostCommentsAsync(int offset, int? limit, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
             var findOptions = new FindOptions<T> {Sort = Builders<T>.Sort.Ascending(field => field.CreatedAt), Skip = offset,};
 
-            if (howManyElements.HasValue)
+            if (limit.HasValue)
             {
-                findOptions.Limit = howManyElements;
+                findOptions.Limit = limit;
             }
             
             var filter = Builders<T>.Filter.Eq(x => x.IsDeleted, false);
@@ -87,7 +87,7 @@ namespace Advert.MongoDbStorage.Stores
             return await cursor.ToListAsync(cancellationToken);
         }
 
-        public async Task<List<T>> FindPostCommentsAsync(int offset, int? howManyElements, SortDefinition sortDef, CancellationToken cancellationToken)
+        public async Task<List<T>> FindPostCommentsAsync(int offset, int? limit, SortDefinition sortDef, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -97,9 +97,9 @@ namespace Advert.MongoDbStorage.Stores
                 Skip = offset,
             };
 
-            if (howManyElements.HasValue)
+            if (limit.HasValue)
             {
-                findOptions.Limit = howManyElements;
+                findOptions.Limit = limit;
             }
             
             var filter = Builders<T>.Filter.Eq(x => x.IsDeleted, false);
@@ -144,7 +144,7 @@ namespace Advert.MongoDbStorage.Stores
         {
             cancellationToken.ThrowIfCancellationRequested();
             
-            entity.ChangedAt = DateTime.UtcNow;
+            entity.UpdatedAt = DateTime.UtcNow;
             
             return await _collection.ReplaceOneAsync(Builders<T>.Filter.Eq(x => x._id, commentId), entity, new UpdateOptions
             {

@@ -16,6 +16,7 @@ namespace Advert.MongoDbStorage.Posts
         [BsonId]
         public ObjectId _id { get; set; }
 
+        public bool IsOwner { get; set; }
         public bool IsDeleted { get; set; }
         public long VotesCount { get; set; }
         public string Text { get; set; }  
@@ -25,7 +26,7 @@ namespace Advert.MongoDbStorage.Posts
         public ObjectId ProfileId { get; set; }
         public ObjectId PostId { get; set; }
         public DateTime CreatedAt { get; set; }
-        public DateTime ChangedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
         public DateTime DeletedAt { get; set; }
     }
 }

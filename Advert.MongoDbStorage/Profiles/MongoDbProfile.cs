@@ -31,7 +31,7 @@ namespace Advert.MongoDbStorage.Profiles
         public string NormalizedEmail { get; set; }
         public DateTime CreatedAt { get; set; }
         
-        public DateTime ChangedAt { get; set; }  
+        public DateTime UpdatedAt { get; set; }  
         
         public DateTime DeletedAt { get; set; }
     }

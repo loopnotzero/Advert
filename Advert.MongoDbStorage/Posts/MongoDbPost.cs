@@ -15,12 +15,14 @@ namespace Advert.MongoDbStorage.Posts
         }
 
         [BsonId] public ObjectId _id { get; set; }
+        
+        [BsonElement] public bool Sold { get; set; }
         [BsonElement] public bool IsDeleted { get; set; }
         [BsonElement] public long LikesCount { get; set; }
         [BsonElement] public long ViewsCount { get; set; }
+       
         [BsonElement] public long SharesCount { get; set; }
         [BsonElement] public long CommentsCount { get; set; }
-        [BsonElement] public long Price { get; set; }
         [BsonElement] public string Text { get; set; }
         [BsonElement] public string Title { get; set; }
         [BsonElement] public string Location { get; set; }
@@ -28,9 +30,10 @@ namespace Advert.MongoDbStorage.Posts
         [BsonElement] public string ProfileName { get; set; }
         [BsonElement] public string ProfileImagePath { get; set; }
         [BsonElement] public string NormalizedProfileName { get; set; }
+        [BsonElement] public decimal Price { get; set; }
         [BsonElement] public ObjectId ProfileId { get; set; }
         [BsonElement] public DateTime CreatedAt { get; set; }
-        [BsonElement] public DateTime ChangedAt { get; set; }
+        [BsonElement] public DateTime UpdatedAt { get; set; }
         [BsonElement] public DateTime DeletedAt { get; set; }
         [BsonElement] public ReleaseType ReleaseType { get; set; }
         [BsonElement] public List<string> Tags { get; set; }

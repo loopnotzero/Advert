@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Advert.Common.Posts;
@@ -56,7 +57,7 @@ namespace Advert.MongoDbStorage.Stores
             var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x._id, postId), cancellationToken: cancellationToken);
             return await cursor.FirstOrDefaultAsync(cancellationToken);
         }
-
+        
         public async Task<long> EstimatedPostsCountAsync(CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -69,26 +70,25 @@ namespace Advert.MongoDbStorage.Stores
             return await _collection.CountDocumentsAsync(Builders<T>.Filter.Eq(x => x.ProfileId, profileId), cancellationToken: cancellationToken);
         }
 
-        public async Task<List<T>> FindPostsAsync(int? howManyElements, CancellationToken cancellationToken)
+        public async Task<List<T>> FindPostsAsync(List<ObjectId> postIds, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-           
+
+            var filter = Builders<T>.Filter.Eq(x => x._id, postIds[0]);
+
+            filter = postIds.Skip(1).Aggregate(filter, (current, postId) => current | Builders<T>.Filter.Eq(x => x._id, postId));
+
             var findOptions = new FindOptions<T>
             {
                 Sort = Builders<T>.Sort.Descending(field => field.CreatedAt),                
             };
-
-            if (howManyElements.HasValue)
-            {
-                findOptions.Limit = howManyElements;
-            }
-                       
-            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.IsDeleted, false), findOptions, cancellationToken: cancellationToken);
+                  
+            var cursor = await _collection.FindAsync(filter, findOptions, cancellationToken: cancellationToken);
            
             return await cursor.ToListAsync(cancellationToken);
         }
 
-        public async Task<List<T>> FindPostsAsync(int offset, int? howManyElements, CancellationToken cancellationToken)
+        public async Task<List<T>> FindPostsAsync(int offset, int? limit, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -98,9 +98,9 @@ namespace Advert.MongoDbStorage.Stores
                 Skip = offset,
             };
 
-            if (howManyElements.HasValue)
+            if (limit.HasValue)
             {
-                findOptions.Limit = howManyElements;
+                findOptions.Limit = limit;
             }
             
             var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.IsDeleted, false), findOptions, cancellationToken: cancellationToken);
@@ -108,7 +108,7 @@ namespace Advert.MongoDbStorage.Stores
             return await cursor.ToListAsync(cancellationToken);
         }
 
-        public async Task<List<T>> FindPostsByKeywordAsync(int offset, int? howManyElements, string keyword, CancellationToken cancellationToken)
+        public async Task<List<T>> FindPostsByKeywordAsync(int offset, int? limit, string keyword, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
            
@@ -119,9 +119,9 @@ namespace Advert.MongoDbStorage.Stores
 
             findOptions.Skip = offset;
 
-            if (howManyElements.HasValue)
+            if (limit.HasValue)
             {
-                findOptions.Limit = howManyElements;
+                findOptions.Limit = limit;
             }
             
             var cursor = await _collection.FindAsync(Builders<T>.Filter.Regex(x => x.Title, new BsonRegularExpression(keyword, "-i")), findOptions, cancellationToken: cancellationToken);
@@ -129,15 +129,57 @@ namespace Advert.MongoDbStorage.Stores
             return await cursor.ToListAsync(cancellationToken);
         }
 
-        public async Task<List<T>> FindPostsByProfileIdAsync(ObjectId profileId, CancellationToken cancellationToken)
+        public async Task<List<T>> FindPostsByProfileIdAsync(ObjectId profileId, int offset, int? limit, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var findOptions = new FindOptions<T>
+
+            var findOptions = new FindOptions<T>{Sort = Builders<T>.Sort.Descending(field => field.CreatedAt), Skip = offset};
+
+            if (limit.HasValue)
             {
-                Sort = Builders<T>.Sort.Descending(field => field.CreatedAt),
-            };
+                findOptions.Limit = limit;
+            }
+
             var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.ProfileId, profileId), findOptions, cancellationToken: cancellationToken);
-            return await cursor.ToListAsync(cancellationToken);           
+
+            return await cursor.ToListAsync(cancellationToken);
+        }
+        
+
+        public async Task<List<T>> FindPostsWithSoldItemsByProfileIdAsync(ObjectId profileId, int offset, int? limit, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var filter = Builders<T>.Filter.And(Builders<T>.Filter.Eq(x => x.ProfileId, profileId), Builders<T>.Filter.Eq(x => x.Sold, true));
+
+            var findOptions = new FindOptions<T> {Sort = Builders<T>.Sort.Descending(field => field.CreatedAt), Skip = offset};
+
+            if (limit.HasValue)
+            {
+                findOptions.Limit = limit;
+            }
+            
+            var cursor = await _collection.FindAsync(filter, findOptions, cancellationToken: cancellationToken);
+            
+            return await cursor.ToListAsync(cancellationToken);
+        }
+
+        public async Task<List<T>> FindPostsWithSellingItemsByProfileIdAsync(ObjectId profileId, int offset, int? limit, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var filter = Builders<T>.Filter.And(Builders<T>.Filter.Eq(x => x.ProfileId, profileId), Builders<T>.Filter.Eq(x => x.Sold, false));
+
+            var findOptions = new FindOptions<T> {Sort = Builders<T>.Sort.Descending(field => field.CreatedAt), Skip = offset};
+
+            if (limit.HasValue)
+            {
+                findOptions.Limit = limit;
+            }
+            
+            var cursor = await _collection.FindAsync(filter, findOptions, cancellationToken: cancellationToken);
+            
+            return await cursor.ToListAsync(cancellationToken);
         }
 
         public async Task<UpdateResult> DeletePostByIdAsync(ObjectId postId, CancellationToken cancellationToken)
@@ -174,7 +216,7 @@ namespace Advert.MongoDbStorage.Stores
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            entity.ChangedAt = DateTime.UtcNow;
+            entity.UpdatedAt = DateTime.UtcNow;
             
             return await _collection.ReplaceOneAsync(Builders<T>.Filter.Eq(x => x._id, entity._id), entity, new UpdateOptions
             {
