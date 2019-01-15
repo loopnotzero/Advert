@@ -76,6 +76,8 @@
                     console.log(`Redirect to URL: ${response.returnUrl}`);
                     window.location.replace(response.returnUrl);
                 }
+            }, function(jqXhr, textStatus, errorThrown) {
+                alert("Unauthorized user");
             });
     }
 
@@ -153,6 +155,8 @@
                     }
                     break;
                 }
+            }, function(jqXhr, textStatus, errorThrown) {
+                alert("Unauthorized user");
             });
     }
 
