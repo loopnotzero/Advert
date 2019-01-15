@@ -1,5 +1,4 @@
-﻿using Advert.Common.Posts;
-using Advert.Managers;
+﻿using Advert.Managers;
 using Advert.MongoDbStorage.Posts;
 using Advert.MongoDbStorage.Common;
 using Advert.MongoDbStorage.Profiles;

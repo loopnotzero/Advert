@@ -20,14 +20,16 @@ else
                                 <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-end" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(30px, 26px, 0px);">
                                     @if (!post.Sold)
                                     {
-                                        <span class="dropdown-item" onclick="onMarkPostAsSold('@post.PostId')">
-                                            <i class="zmdi zmdi-check zmdi-hc-fw"></i> Mark as sold
+                                        <span class="dropdown-item" onclick="onUpdatePostItemAvailability('@post.PostId')">
+                                            <i class="zmdi zmdi-check zmdi-hc-fw"></i> 
+                                            <span id="post-availability__@post.PostId">Set as sold</span>
                                         </span>
                                     }
                                     else
                                     {
-                                        <span href="" class="dropdown-item" onclick="onMarkPostAsAvailable('@post.PostId')">
-                                            <i class="zmdi zmdi-check zmdi-hc-fw"></i> Mark as available
+                                        <span href="" class="dropdown-item" onclick="onUpdatePostItemAvailability('@post.PostId')">
+                                            <i class="zmdi zmdi-check zmdi-hc-fw"></i> 
+                                            <span id="post-availability__@post.PostId">Set as available</span>
                                         </span>
                                     }
                                     <div class="dropdown-separator"></div>

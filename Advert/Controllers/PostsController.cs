@@ -397,6 +397,7 @@ namespace Advert.Controllers
             {
                 var post = await _postsManager.FindPostByIdAsync(ObjectId.Parse(postId));
 
+                post.Sold = viewModel.Sold;
                 post.Text = viewModel.Text;
                 post.Title = viewModel.Title;
                 post.Location = viewModel.Location;

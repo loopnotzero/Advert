@@ -290,12 +290,48 @@
         });
     }
     
-    function onMarkPostAsSold(postId) {
-        console.log(`Mark post: ${postId} as sold`);
+    function onUpdatePostItemAvailability(postId) {
+        console.log(`Update post: ${postId} item availability`);     
+        getPostByIdAsync(postId,
+            function(post) {
+                console.log(`Current sold state is: ${post.sold}`);
+                post.sold = !post.sold;
+                console.log(`Set current sold state as: ${post.sold}`);
+                updatePostByIdAsync(postId,
+                    post,
+                    function(response) {
+                        if (!post.sold) {
+                            $(`#post-availability__${postId}`).text("Set as sold");                      
+                        } else {
+                            $(`#post-availability__${postId}`).text("Set as available");                      
+                        }
+                        console.log(
+                            `MatchedCount: ${response.matchedCount} ModifiedCount: ${response.matchedCount
+                            } IsAcknowledged: ${response.isAcknowledged} IsModifiedCountAvailable: ${response
+                            .isModifiedCountAvailable}`);
+                    });
+            });
     }
     
-    function onMarkPostAsAvailable(postId) {
-        console.log(`Mark post: ${postId} as available`);
+    function onSetPostItemAsAvailable(postId) {
+        console.log(`Set item as available for post: ${postId}`);     
+        getPostByIdAsync(postId,
+            function(response) {
+                console.log(`Current sold state is: ${response.sold}`);
+                if (!response.sold) {
+                    response.sold = false;
+                    console.log(`Set current sold state as: ${response.sold}`);
+                }
+                updatePostByIdAsync(postId,
+                    response,
+                    function(response) {
+                        $(`#post-availability__${postId}`).text("Set as sold");                      
+                        console.log(
+                            `MatchedCount: ${response.matchedCount} ModifiedCount: ${response.matchedCount
+                            } IsAcknowledged: ${response.isAcknowledged} IsModifiedCountAvailable: ${response
+                            .isModifiedCountAvailable}`);
+                    });
+            });
     }
     
     function onEditCommentClick(postId, commentId) {
