@@ -150,8 +150,7 @@ namespace Advert.Controllers
                     {
                         new IdentityError
                         {
-                            //todo: Error code
-                            Description = "Unhandled error"
+                            Description = "Wrong email or password. Try again or click Forgot password to reset it."
                         }
                     }
                 });

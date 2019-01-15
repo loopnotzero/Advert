@@ -13,7 +13,7 @@
         @if (Model.Profile == null)
         {
             <div class="col-md-3 p-1">
-                @await Html.PartialAsync("AuthenticationPartial", Model.Profile)
+                @await Html.PartialAsync("SignUpOrLoginPartial", Model.Profile)
             </div>        
         }
         else
