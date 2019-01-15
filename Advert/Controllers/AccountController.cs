@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
+using System.Net.Mail;
 using System.Threading.Tasks;
 using Advert.Common.Posts;
 using Advert.Managers;
@@ -84,8 +86,23 @@ namespace Advert.Controllers
                         {
                             new IdentityError
                             {
-                                //todo: Error code
                                 Description = "Model is not valid"
+                            }
+                        },
+                    });
+                }
+                
+                var emailAddressAttr = new EmailAddressAttribute();
+
+                if (!emailAddressAttr.IsValid(model.Email))
+                {
+                    return Ok(new IdentityResultModel
+                    {
+                        Errors = new List<IdentityError>
+                        {
+                            new IdentityError
+                            {
+                                Description = string.Format(emailAddressAttr.ErrorMessage, model.Email)
                             }
                         },
                     });
@@ -188,6 +205,38 @@ namespace Advert.Controllers
                             new IdentityError
                             {
                                 Description = "Model is not valid"
+                            }
+                        },
+                    });
+                }
+                
+                var emailAddressAttr = new EmailAddressAttribute();
+
+                if (!emailAddressAttr.IsValid(model.Email))
+                {
+                    return Ok(new IdentityResultModel
+                    {
+                        Errors = new List<IdentityError>
+                        {
+                            new IdentityError
+                            {
+                                Description = string.Format(emailAddressAttr.ErrorMessage, model.Email)
+                            }
+                        },
+                    });
+                }
+                
+                var profile = await _profilesManager.FindProfileByNormalizedEmailOrDefaultAsync(model.Email, null);
+
+                if (profile != null)
+                {
+                    return Ok(new IdentityResultModel
+                    {
+                        Errors = new List<IdentityError>
+                        {
+                            new IdentityError
+                            {
+                                Description = "That email is taken. Try another."
                             }
                         },
                     });
