@@ -386,8 +386,10 @@
             var text = writeReplyEditor.options.previewRender(writeReplyEditor.value());
             var parentId = null;         
             if (replyTo !== null) {
+                parentId = replyTo;
+            } else {
                 parentId = commentId;
-            }          
+            }
             addCommentReply({
                 text: text,
                 postId: postId,
@@ -466,6 +468,9 @@
 //                        scrollTop: $(`#media-comment__${response.commentId}`).offset().top - 250
 //                    },
 //                    200);
+            },
+            function(jqXhr, textStatus, errorThrown) {
+                alert("Error");
             });
     }
 
@@ -632,15 +637,12 @@
                         <div class="col-auto">
                             <div class="row">
                                 <div class="col-md-12 p-1">
-                                    <div class="r-btn r-btn-light r-btn--icon waves-effect ml-4" onclick="onPostCommentVoteClick('${
-                        response.postId}', '${response.commentId}', 1)" >
-                                        <i id="vote-icon__${response.commentId
-                        }" class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
+                                    <div class="r-btn r-btn-light r-btn--icon waves-effect ml-4" onclick="onPostCommentVoteClick('${response.postId}', '${response.commentId}', 1)" >
+                                        <i id="vote-icon__${response.commentId}" class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
                                     </div>
                                     <small id='votes-count__${response.commentId}'>${response.votesCount}</small>
                                     <span class="dot-separator"></span>
-                                    <a href="#reply" onclick="onReplyCommentClick('${response.postId}', '${
-                        response.replyTo}', '${response.commentId}')" style="font-size: 0.9rem">
+                                    <a href="#reply" onclick="onReplyCommentClick('${response.postId}', '${response.replyTo}', '${response.commentId}')" style="font-size: 0.9rem">
                                         Reply
                                     </a>
                                     <span class="dot-separator"></span>

@@ -15,8 +15,6 @@ namespace Advert.MongoDbStorage.Posts
 
         [BsonId]
         public ObjectId _id { get; set; }
-
-        public bool IsOwner { get; set; }
         public bool IsDeleted { get; set; }
         public long VotesCount { get; set; }
         public string Text { get; set; }  
