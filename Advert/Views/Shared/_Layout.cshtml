@@ -384,11 +384,11 @@
         $("#add-comment__reply").off("click").click(function() {
             removeReplyForm("reply-form");
             var text = writeReplyEditor.options.previewRender(writeReplyEditor.value());
-            var parentId = null;         
+            var parentId;         
             if (replyTo !== null) {
                 parentId = replyTo;
             } else {
-                parentId = commentId;
+                parentId = null;
             }
             addCommentReply({
                 text: text,
@@ -396,7 +396,7 @@
                 replyTo: parentId
             });
             writeReplyEditor.toTextArea();
-            writeReplyEditor = null;
+            writeReplyEditor = parentId;
         });
     }
 
@@ -440,10 +440,10 @@
                                         <i id="vote-icon__${response.commentId}" class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
                                     </div>
                                     <small id='votes-count__${response.commentId}'>${response.votesCount}</small>
-                                    <span class="dot-separator"></span>
-                                    <a href="#reply" onclick="onReplyCommentClick('${comment.postId}', '${comment.replyTo}', '${response.commentId}')" style="font-size: 0.9rem">
+                                    <span class="dot-separator"></span>               
+                                    <a href="#reply" onclick="onReplyCommentClick('${response.postId}', '${response.replyTo}', '${response.commentId}')" style="font-size: 0.9rem">
                                         Reply
-                                    </a>
+                                    </a>      
                                     <span class="dot-separator"></span>
                                     <div class="dropdown comments__item">
                                         <i data-toggle="dropdown" class="zmdi zmdi-chevron-down zmdi-hc-fw" aria-expanded="false"></i>
