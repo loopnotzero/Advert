@@ -1,4 +1,4 @@
-function logInByEmailAsync(login, headers, success, error) {
+function logInByEmailAsync(login, headers, successCallback, errorCallback) {
     console.log(`Log in with email: ${login.email} password: ${login.password}`);
     $.ajax({
         url: `/Account/LogInByEmail?returnUrl=${window.location.pathname}`,
@@ -10,16 +10,16 @@ function logInByEmailAsync(login, headers, success, error) {
             console.log("jqXhr: " + jqXhr);
             console.log("textStatus: " + textStatus);
             console.log("errorThrown: " + errorThrown);
-            error(jqXhr, textStatus, errorThrown);
+            errorCallback(jqXhr, textStatus, errorThrown);
         },
         success: function(response) {
-            success(response);
+            successCallback(response);
         }
     });
 
 }
 
-function createNewAccountAsync(account, headers, success, error) {
+function createNewAccountAsync(account, headers, successCallback, errorCallback) {
     console.log(`Create new account with name: ${account.name} email: ${account.email} password: ${account.password}`);
     $.ajax({
         url: `/Account/CreateNewAccount?returnUrl=${window.location.pathname}`,
@@ -31,15 +31,15 @@ function createNewAccountAsync(account, headers, success, error) {
             console.log("jqXhr: " + jqXhr);
             console.log("textStatus: " + textStatus);
             console.log("errorThrown: " + errorThrown);
-            error(jqXhr, textStatus, errorThrown);
+            errorCallback(jqXhr, textStatus, errorThrown);
         },
         success: function(response) {
-            success(response);
+            successCallback(response);
         }
     });
 }
 
-function createPostAsync(post, success, error) {
+function createPostAsync(post, successCallback, errorCallback) {
     console.log(`Create post title: ${post.title} text: ${post.text} price: ${post.price}${post.currency} location: ${post.location}`);
     $.ajax({
         url: "/Posts/CreatePostAsync",
@@ -50,15 +50,15 @@ function createPostAsync(post, success, error) {
             console.log("jqXhr: " + jqXhr);
             console.log("textStatus: " + textStatus);
             console.log("errorThrown: " + errorThrown);
-            error(jqXhr, textStatus, errorThrown);
+            errorCallback(jqXhr, textStatus, errorThrown);
         },
         success: function(response) {
-            success(response);
+            successCallback(response);
         }
     });
 }
 
-function getPostByIdAsync(postId, success, error) {
+function getPostByIdAsync(postId, successCallback, errorCallback) {
     console.log(`Get post by id: ${postId}`);
     $.ajax({
         url: `/Posts/GetPostByIdAsync?postId=${postId}`,
@@ -68,15 +68,15 @@ function getPostByIdAsync(postId, success, error) {
             console.log("jqXhr: " + jqXhr);
             console.log("textStatus: " + textStatus);
             console.log("errorThrown: " + errorThrown);
-            error(jqXhr, textStatus, errorThrown);
+            errorCallback(jqXhr, textStatus, errorThrown);
         },
         success: function(response) {
-            success(response);
+            successCallback(response);
         }
     });
 }
 
-function getPostCommentAsync(postId, commentId, success, error) {
+function getPostCommentAsync(postId, commentId, successCallback, errorCallback) {
     console.log(`Get post comment by post id: ${postId} comment id: ${commentId}`);
     $.ajax({
         url: `/Posts/getPostCommentAsync?postId=${postId}&commentId=${commentId}`,
@@ -86,15 +86,15 @@ function getPostCommentAsync(postId, commentId, success, error) {
             console.log("jqXhr: " + jqXhr);
             console.log("textStatus: " + textStatus);
             console.log("errorThrown: " + errorThrown);
-            error(jqXhr, textStatus, errorThrown);
+            errorCallback(jqXhr, textStatus, errorThrown);
         },
         success: function(response) {
-            success(response);
+            successCallback(response);
         }
     });
 }
 
-function updatePostByIdAsync(postId, post, success, error) {
+function updatePostByIdAsync(postId, post, successCallback, errorCallback) {
     console.log(`Update post by id: ${postId}`);
     $.ajax({
         url: `/Posts/UpdatePostByIdAsync?postId=${postId}`,
@@ -105,15 +105,15 @@ function updatePostByIdAsync(postId, post, success, error) {
             console.log("jqXhr: " + jqXhr);
             console.log("textStatus: " + textStatus);
             console.log("errorThrown: " + errorThrown);
-            error(jqXhr, textStatus, errorThrown);
+            errorCallback(jqXhr, textStatus, errorThrown);
         },
         success: function(response) {
-            success(response);
+            successCallback(response);
         }
     });
 }
 
-function updatePostCommentAsync(postId, commentId, postComment, success, error) {
+function updatePostCommentAsync(postId, commentId, postComment, successCallback, errorCallback) {
     console.log(`Update post comment by post id: ${postId} comment id: ${commentId}`);
     $.ajax({
         url: `/Posts/UpdatePostCommentAsync?postId=${postId}&commentId=${commentId}`,
@@ -124,15 +124,15 @@ function updatePostCommentAsync(postId, commentId, postComment, success, error) 
             console.log("jqXhr: " + jqXhr);
             console.log("textStatus: " + textStatus);
             console.log("errorThrown: " + errorThrown);
-            error(jqXhr, textStatus, errorThrown);
+            errorCallback(jqXhr, textStatus, errorThrown);
         },
         success: function(response) {
-            success(response);
+            successCallback(response);
         }
     });
 }
 
-function deletePostByIdAsync(postId, success, error) {
+function deletePostByIdAsync(postId, successCallback, errorCallback) {
     console.log(`Delete post by id: ${postId}`);
     $.ajax({
         url: `/Posts/DeletePostByIdAsync?postId=${postId}`,
@@ -142,15 +142,15 @@ function deletePostByIdAsync(postId, success, error) {
             console.log("jqXhr: " + jqXhr);
             console.log("textStatus: " + textStatus);
             console.log("errorThrown: " + errorThrown);
-            error(jqXhr, textStatus, errorThrown);
+            errorCallback(jqXhr, textStatus, errorThrown);
         },
         success: function(response) {
-            success(response);
+            successCallback(response);
         }
     });
 }
 
-function deletePostCommentAsync(postId, commentId, success, error) {
+function deletePostCommentAsync(postId, commentId, successCallback, errorCallback) {
     console.log(`Delete post comment by post id: ${postId} comment id: ${commentId}`);
     $.ajax({
         url: `/Posts/DeletePostCommentAsync?postId=${postId}&commentId=${commentId}`,
@@ -160,15 +160,15 @@ function deletePostCommentAsync(postId, commentId, success, error) {
             console.log("jqXhr: " + jqXhr);
             console.log("textStatus: " + textStatus);
             console.log("errorThrown: " + errorThrown);
-            error(jqXhr, textStatus, errorThrown);
+            errorCallback(jqXhr, textStatus, errorThrown);
         },
         success: function(response) {
-            success(response);
+            successCallback(response);
         }
     }); 
 }
 
-function createPostCommentAsync(comment, success, error) {
+function createPostCommentAsync(comment, successCallback, errorCallback) {
     $.ajax({
         url: `/Posts/CreatePostCommentAsync`,
         type: "POST",
@@ -178,15 +178,15 @@ function createPostCommentAsync(comment, success, error) {
             console.log("jqXhr: " + jqXhr);
             console.log("textStatus: " + textStatus);
             console.log("errorThrown: " + errorThrown);
-            error(jqXhr, textStatus, errorThrown);
+            errorCallback(jqXhr, textStatus, errorThrown);
         },
         success: function(response) {
-            success(response);
+            successCallback(response);
         }
     });
 }
 
-function countPostCommentsByPostIdAsync(postId, success, error) {
+function countPostCommentsByPostIdAsync(postId, successCallback, errorCallback) {
     $.ajax({
         url: `/Posts/CountPostCommentsByPostIdAsync?postId={postId}`,
         type: "GET",
@@ -195,15 +195,15 @@ function countPostCommentsByPostIdAsync(postId, success, error) {
             console.log("jqXhr: " + jqXhr);
             console.log("textStatus: " + textStatus);
             console.log("errorThrown: " + errorThrown);
-            error(jqXhr, textStatus, errorThrown);
+            errorCallback(jqXhr, textStatus, errorThrown);
         },
         success: function(response) {
-            success(response);
+            successCallback(response);
         }
     });
 }
 
-function createPostVoteIdAsync(postId, vote, success, error) {
+function createPostVoteIdAsync(postId, vote, successCallback, errorCallback) {
     console.log(`Create post vote by post id: ${postId} vote type: ${vote.voteType}`);
     $.ajax({
         url: `/Posts/CreatePostVoteAsync?postId=${postId}`,
@@ -214,15 +214,15 @@ function createPostVoteIdAsync(postId, vote, success, error) {
             console.log("jqXhr: " + jqXhr);
             console.log("textStatus: " + textStatus);
             console.log("errorThrown: " + errorThrown);
-            error(jqXhr, textStatus, errorThrown);
+            errorCallback(jqXhr, textStatus, errorThrown);
         },
         success: function(response) {
-            success(response);
+            successCallback(response);
         }
     });
 }
 
-function createPostCommentVoteAsync(postId, commentId, vote, success, error) {
+function createPostCommentVoteAsync(postId, commentId, vote, successCallback, errorCallback) {
     $.ajax({
         url: `/Posts/CreatePostCommentVoteAsync?postId=${postId}&commentId=${commentId}`,
         type: "POST",
@@ -232,15 +232,15 @@ function createPostCommentVoteAsync(postId, commentId, vote, success, error) {
             console.log("jqXhr: " + jqXhr);
             console.log("textStatus: " + textStatus);
             console.log("errorThrown: " + errorThrown);
-            error(jqXhr, textStatus, errorThrown);
+            errorCallback(jqXhr, textStatus, errorThrown);
         },
         success: function(response) {
-            success(response);
+            successCallback(response);
         }
     });
 }
 
-function getPostTagsByPostIdAsync(postId, success, error) {
+function getPostTagsByPostIdAsync(postId, successCallback, errorCallback) {
     console.log(`Get post tags by post id: ${postId}`);
     $.ajax({
         url: `/Posts/GetPostTagsByPostIdAsync?postId=${postId}`,
@@ -250,15 +250,15 @@ function getPostTagsByPostIdAsync(postId, success, error) {
             console.log("jqXhr: " + jqXhr);
             console.log("textStatus: " + textStatus);
             console.log("errorThrown: " + errorThrown);
-            error(jqXhr, textStatus, errorThrown);
+            errorCallback(jqXhr, textStatus, errorThrown);
         },
         success: function(response) {
-            success(response);
+            successCallback(response);
         }
     });
 }
 
-function createPostTagsByPostIdAsync(postId, postTags, success, error) {
+function createPostTagsByPostIdAsync(postId, postTags, successCallback, errorCallback) {
     console.log(`Create post tags: ${postTags.tags}`);
     $.ajax({
         url: `/Posts/CreatePostTagsByPostIdAsync?postId=${postId}`,
@@ -269,10 +269,10 @@ function createPostTagsByPostIdAsync(postId, postTags, success, error) {
             console.log("jqXhr: " + jqXhr);
             console.log("textStatus: " + textStatus);
             console.log("errorThrown: " + errorThrown);
-            error(jqXhr, textStatus, errorThrown);
+            errorCallback(jqXhr, textStatus, errorThrown);
         },
         success: function(response) {
-            success(response);
+            successCallback(response);
         }
     });
 }

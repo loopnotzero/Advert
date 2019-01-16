@@ -317,33 +317,15 @@
             });
     }
     
-    function onSetPostItemAsAvailable(postId) {
-        console.log(`Set item as available for post: ${postId}`);     
-        getPostByIdAsync(postId,
-            function(response) {
-                console.log(`Current sold state is: ${response.sold}`);
-                if (!response.sold) {
-                    response.sold = false;
-                    console.log(`Set current sold state as: ${response.sold}`);
-                }
-                updatePostByIdAsync(postId,
-                    response,
-                    function(response) {
-                        $(`#post-availability__${postId}`).text("Set as sold");                      
-                        console.log(
-                            `MatchedCount: ${response.matchedCount} ModifiedCount: ${response.matchedCount
-                            } IsAcknowledged: ${response.isAcknowledged} IsModifiedCountAvailable: ${response
-                            .isModifiedCountAvailable}`);
-                    });
-            });
-    }
-    
     function onEditCommentClick(postId, commentId) {
         getPostCommentAsync(postId,
             commentId,
             function(response) {
                 console.log(`Set comment text: ${response.text}`);
                 textEditor["edit-comment__text--editor"].value(turndown.turndown(response.text));
+            },
+            function(jqXhr, textStatus, errorThrown) {
+                alert("Error");
             });
 
         $(`#edit-comment__save`).off("click").click(function() {
@@ -409,7 +391,7 @@
             addCommentReply({
                 text: text,
                 postId: postId,
-                replyTo: parentId,
+                replyTo: parentId
             });
             writeReplyEditor.toTextArea();
             writeReplyEditor = null;
@@ -480,10 +462,10 @@
                 </div>
                 `);
 
-                $([document.documentElement, document.body]).animate({
-                        scrollTop: $(`#${response.commentId}`).offset().top - 250
-                    },
-                    200);
+//                $([document.documentElement, document.body]).animate({
+//                        scrollTop: $(`#media-comment__${response.commentId}`).offset().top - 250
+//                    },
+//                    200);
             });
     }
 
@@ -623,7 +605,7 @@
         });
 
         $("#add-comment").click(function() {
-            var postId = $("section").attr('id')
+            var postId = $("section").attr('id');
             var text = textEditor["add-comment__text--editor"].options.previewRender(textEditor["add-comment__text--editor"].value());
             var comment = {
                 postId: postId,
@@ -665,13 +647,10 @@
                                     <div class="dropdown comments__item">
                                         <i data-toggle="dropdown" class="zmdi zmdi-chevron-down zmdi-hc-fw" aria-expanded="false"></i>
                                         <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-end" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(30px, 26px, 0px);">
-                                            <a href="" class="dropdown-item" data-placement="top" data-target="#edit-comment__modal" data-toggle="modal" onclick="onEditCommentClick('${
-                        response.commentId}')">
+                                            <a href="" class="dropdown-item" data-placement="top" data-target="#edit-comment__modal" data-toggle="modal" onclick="onEditCommentClick('${response.postId}', '${response.commentId}')">
                                                 <i class="zmdi zmdi-edit zmdi-hc-fw"></i> Edit...
                                             </a> 
-                                            <a href="" class="dropdown-item" data-placement="top" data-target="#delete-comment__modal" data-toggle="modal" onclick="onDeleteCommentClick('${
-                        response.postId}', '${
-                        response.commentId}')">
+                                            <a href="" class="dropdown-item" data-placement="top" data-target="#delete-comment__modal" data-toggle="modal" onclick="onDeleteCommentClick('${response.postId}', '${response.commentId}')">
                                                 <i class="zmdi zmdi-delete zmdi-hc-fw"></i> Delete...
                                             </a>
                                         </div>
@@ -683,10 +662,10 @@
                     </div>
                 </div>`);
 
-                    $([document.documentElement, document.body]).animate({
-                            scrollTop: $(`#${response.commentId}`).offset().top - 250
-                        },
-                        200);
+//                    $([document.documentElement, document.body]).animate({
+//                            scrollTop: $(`#media-comment__${response.commentId}`).offset().top - 250
+//                        },
+//                        200);
                 });
             textEditor["add-comment__text--editor"].value("");
         });
