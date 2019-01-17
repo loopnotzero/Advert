@@ -1966,7 +1966,7 @@ select.form-control {
   color: #a9adb1;
   display: inline-block;
   vertical-align: top;
-  line-height: 38px;
+  line-height: 35px;
   font-size: 1.3rem;
   cursor: pointer;
   transition: color 300ms;
