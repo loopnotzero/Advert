@@ -49,7 +49,14 @@
                 });
     }
 
-    function getCommentForm(response) {
+    function removeReplyForm(commentId) {
+        var form = $(`#${commentId}`);
+        if (form.length !== 0) {
+            form.remove();
+        }
+    }
+
+    function renderCommentForm(response) {
         var html = `<div id="${response.commentId}" class="media p-2">
                     <img class="card-user__img" src="${response.profileImagePath}" width="48" height="48" alt="profile-image">
                     <div class="media-body media__img content__break">
@@ -70,8 +77,8 @@
                                         <i id="vote-icon__${response.commentId}" class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
                                     </div>
                                     <small id='votes-count__${response.commentId}'>${response.votesCount}</small>
-                                    <span class="dot-separator"></span>               
-                                    <a href="#reply" onclick="onReplyCommentClick('${response.postId}', '${response.replyTo}', '${response.commentId}')" style="font-size: 0.9rem">
+                                    <span class="dot-separator"></span>        
+                                    <a href="#reply" onclick="onReplyCommentClick('${response.postId}', ${response.replyTo === null ? null : `'${response.replyTo}'`}, '${response.commentId}')" style="font-size: 0.9rem">
                                         Reply
                                     </a>      
                                     <span class="dot-separator"></span>
@@ -93,13 +100,6 @@
                     </div>
                 </div>`;
         return html;
-    }
-
-    function removeReplyForm(commentId) {
-        var form = $(`#${commentId}`);
-        if (form.length !== 0) {
-            form.remove();
-        }
     }
 
     function onLogInClick() {
@@ -131,7 +131,7 @@
                 }
             },
             function(jqXhr, textStatus, errorThrown) {
-                alert("Unauthorized user");
+                alert("Error");
             });
     }
 
@@ -164,6 +164,9 @@
                     console.log(`Redirect to URL: ${response.returnUrl}`);
                     window.location.replace(response.returnUrl);
                 }
+            },
+            function(jqXhr, textStatus, errorThrown) {
+                alert("Error");
             });
     }
 
@@ -183,6 +186,9 @@
                     $("#add-post__modal").modal('toggle');
                     console.log(`Redirect to URL: ${response.returnUrl}`);
                     window.location.replace(response.returnUrl);
+                },
+                function(jqXhr, textStatus, errorThrown) {
+                    alert("Error");
                 });
         });
         $("#add-post__close").off("click").click(function() {
@@ -212,7 +218,7 @@
                 }
             },
             function(jqXhr, textStatus, errorThrown) {
-                alert("Unauthorized user");
+                alert("Error");
             });
     }
 
@@ -224,6 +230,9 @@
                 $("#edit-post__location").val(response.location);
                 $('#edit-post__currency').val(response.currency).trigger('change');
                 textEditor["edit-post__text--editor"].value(turndown.turndown(response.text));
+            },
+            function(jqXhr, textStatus, errorThrown) {
+                alert("Error");
             });
         $("#edit-post__save").off("click").click(function() {
             var post = {
@@ -247,6 +256,9 @@
                         `MatchedCount: ${response.matchedCount} ModifiedCount: ${response.matchedCount
                         } IsAcknowledged: ${response.isAcknowledged} IsModifiedCountAvailable: ${response
                         .isModifiedCountAvailable}`);
+                },
+                function(jqXhr, textStatus, errorThrown) {
+                    alert("Error");
                 });
         });
         $("#edit-post__close").off("click").click(function() {
@@ -264,6 +276,9 @@
                     $("#delete-post__modal").modal('toggle');
                     console.log(`Redirect to URL: ${response.returnUrl}`);
                     window.location.replace(response.returnUrl);
+                },
+                function(jqXhr, textStatus, errorThrown) {
+                    alert("Error");
                 });
         });
     }
@@ -282,6 +297,9 @@
             function(response) {
                 console.log(`Response tags: ${response.tags}`);
                 tagify.addTags(response.tags);
+            },
+            function(jqXhr, textStatus, errorThrown) {
+                alert("Error");
             });
 
         $(`#edit-tags__save--${postId}`).off("click").click(function() {
@@ -307,15 +325,13 @@
 
                     if (postTags.tags === null || postTags.tags.length == 0) {
                         tagsElement.append(`
-                        <a href="" title="" data-placement="top" data-target="#edit-tags__modal--${postId
-                            }" data-toggle="modal" onclick="onEditPostTagsClick('${postId}')">
+                        <a href="" title="" data-placement="top" data-target="#edit-tags__modal--${postId}" data-toggle="modal" onclick="onEditPostTagsClick('${postId}')">
                             <i class="zmdi zmdi-tag-more zmdi-hc-fw post-tag__icon"></i>Add tags
                         </a>
                         `);
                     } else {
                         tagsElement.append(`
-                            <a href="" title="" data-placement="top" data-target="#edit-tags__modal--${postId
-                            }" data-toggle="modal" onclick="onEditPostTagsClick('${postId}')">
+                            <a href="" title="" data-placement="top" data-target="#edit-tags__modal--${postId}" data-toggle="modal" onclick="onEditPostTagsClick('${postId}')">
                                 <i class="zmdi zmdi-tag-more zmdi-hc-fw post-tag__icon"></i>
                             </a>
                         `);
@@ -334,6 +350,9 @@
 
                     console.log("Clear tags on response");
                     tagify.removeAllTags();
+                },
+                function(jqXhr, textStatus, errorThrown) {
+                    alert("Error");
                 });
         });
 
@@ -378,6 +397,9 @@
                     var comment = $(`#media-comment__${commentId}`);
                     comment.empty();
                     comment.append(postComment.text);
+                },
+                function(jqXhr, textStatus, errorThrown) {
+                    alert("Error");
                 });
             $("#edit-comment__modal").modal('toggle');
         });
@@ -416,27 +438,27 @@
             removeReplyForm("reply-form");
 
             var text = writeReplyEditor.options.previewRender(writeReplyEditor.value());
-//
-//            var parentId = null;
-//            
-//            if (replyTo != null) {
-//                parentId = replyTo;
-//            } else {
-//                parentId = commentId;
-//            }
+
+            var parentId = null;
+            
+            if (replyTo != null) {
+                parentId = replyTo;
+            } else {
+                parentId = commentId;
+            }
 
             console.log(`Post: ${postId} Reply to: ${replyTo} Comment: ${commentId}`);
 
             var comment = {
                 text: text,
                 postId: postId,
-                replyTo: replyTo
+                replyTo: parentId
             };
 
             createPostCommentAsync(comment,
                 function(response) {
-                    $(`#${comment.replyTo} .media-body:first`).append(getCommentForm(response));
-
+                    $(`#${comment.replyTo} .media-body:first`).append(renderCommentForm(response));
+                    
                     $([document.documentElement, document.body]).animate({
                             scrollTop: $(`#media-comment__${response.commentId}`).offset().top - 250
                         },
@@ -447,7 +469,7 @@
                 });
 
             writeReplyEditor.toTextArea();
-            writeReplyEditor = parentId;
+            writeReplyEditor = null;
         });
     }
 
@@ -461,6 +483,9 @@
                     console.log(`Is acknowledged: ${response.isAcknowledged}`);
                     console.log(`Is modified count available: ${response.isModifiedCountAvailable}`);
                     $(`#${commentId}`).empty();
+                },
+                function(jqXhr, textStatus, errorThrown) {
+                    alert("Error");
                 });
             $("#delete-comment__modal").modal('toggle');
         });
@@ -487,6 +512,9 @@
                     }
                     break;
                 }
+            },
+            function(jqXhr, textStatus, errorThrown) {
+                alert("Error");
             });
     }
 
@@ -510,6 +538,9 @@
                             } IsAcknowledged: ${response.isAcknowledged} IsModifiedCountAvailable: ${response
                             .isModifiedCountAvailable}`);
                     });
+            },
+            function(jqXhr, textStatus, errorThrown) {
+                alert("Error");
             });
     }
 
@@ -628,12 +659,15 @@
             }
             createPostCommentAsync(comment,
                 function(response) {
-                    $("#post-comments").prepend(getCommentForm(response));
+                    $("#post-comments").prepend(renderCommentForm(response));
 
                     $([document.documentElement, document.body]).animate({
                             scrollTop: $(`#media-comment__${response.commentId}`).offset().top - 250
                         },
                         200);
+                },
+                function(jqXhr, textStatus, errorThrown) {
+                    alert("Error");
                 });
             textEditor["add-comment__text--editor"].value("");
         });
