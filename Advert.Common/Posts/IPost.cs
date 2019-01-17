@@ -8,7 +8,7 @@ namespace Advert.Common.Posts
     public interface IPost
     {
         ObjectId _id { get; set; } 
-        bool Sold { get; set; }
+        bool Hidden { get; set; }
         bool IsDeleted { get; set; }
         long LikesCount { get; set; }
         long ViewsCount { get; set; }
