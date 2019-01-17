@@ -145,30 +145,11 @@ namespace Advert.MongoDbStorage.Stores
             return await cursor.ToListAsync(cancellationToken);
         }
         
-
-        public async Task<List<T>> FindPostsWithSoldItemsByProfileIdAsync(ObjectId profileId, int offset, int? limit, CancellationToken cancellationToken)
+        public async Task<List<T>> FindHiddenPostsByProfileIdAsync(ObjectId profileId, int offset, int? limit, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var filter = Builders<T>.Filter.And(Builders<T>.Filter.Eq(x => x.ProfileId, profileId), Builders<T>.Filter.Eq(x => x.Sold, true));
-
-            var findOptions = new FindOptions<T> {Sort = Builders<T>.Sort.Descending(field => field.CreatedAt), Skip = offset};
-
-            if (limit.HasValue)
-            {
-                findOptions.Limit = limit;
-            }
-            
-            var cursor = await _collection.FindAsync(filter, findOptions, cancellationToken: cancellationToken);
-            
-            return await cursor.ToListAsync(cancellationToken);
-        }
-
-        public async Task<List<T>> FindPostsWithSellingItemsByProfileIdAsync(ObjectId profileId, int offset, int? limit, CancellationToken cancellationToken)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var filter = Builders<T>.Filter.And(Builders<T>.Filter.Eq(x => x.ProfileId, profileId), Builders<T>.Filter.Eq(x => x.Sold, false));
+            var filter = Builders<T>.Filter.And(Builders<T>.Filter.Eq(x => x.ProfileId, profileId), Builders<T>.Filter.Eq(x => x.Hidden, true));
 
             var findOptions = new FindOptions<T> {Sort = Builders<T>.Sort.Descending(field => field.CreatedAt), Skip = offset};
 
