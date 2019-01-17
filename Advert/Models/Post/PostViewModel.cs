@@ -4,7 +4,7 @@ namespace Advert.Models.Post
 {
     public class PostViewModel
     {     
-        public bool Sold { get; set; }
+        public bool Hidden { get; set; }
         public bool IsOwner { get; set; }
         public bool IsVoted { get; set; }
         public string PostId { get; set; }

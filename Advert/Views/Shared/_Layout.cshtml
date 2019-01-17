@@ -522,13 +522,13 @@
         console.log(`Update post: ${postId} item availability`);
         getPostByIdAsync(postId,
             function(post) {
-                console.log(`Current sold state is: ${post.sold}`);
-                post.sold = !post.sold;
-                console.log(`Set current sold state as: ${post.sold}`);
+                console.log(`Current hidden state is: ${post.hidden}`);
+                post.hidden = !post.hidden;
+                console.log(`Set current hidden state as: ${post.hidden}`);
                 updatePostByIdAsync(postId,
                     post,
                     function(response) {
-                        if (!post.sold) {
+                        if (!post.hidden) {
                             $(`#post-availability__${postId}`).text("Hide post");
                         } else {
                             $(`#post-availability__${postId}`).text("Show post");

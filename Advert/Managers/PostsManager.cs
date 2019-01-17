@@ -87,16 +87,10 @@ namespace Advert.Managers
             return await _store.FindPostsByProfileIdAsync(profileId, offset, limit, CancellationToken);
         }
 
-        public async Task<List<T>> FindPostsWithSoldItemsByProfileIdAsync(ObjectId profileId, int offset, int? limit)
+        public async Task<List<T>> FindHiddenPostsByProfileIdAsync(ObjectId profileId, int offset, int? limit)
         {
             ThrowIfDisposed();          
-            return await _store.FindPostsWithSoldItemsByProfileIdAsync(profileId, offset, limit, CancellationToken);
-        }
-        
-        public async Task<List<T>> FindPostsWithSellingItemsByProfileIdAsync(ObjectId profileId, int offset, int? limit)
-        {
-            ThrowIfDisposed();          
-            return await _store.FindPostsWithSellingItemsByProfileIdAsync(profileId, offset, limit, CancellationToken);
+            return await _store.FindHiddenPostsByProfileIdAsync(profileId, offset, limit, CancellationToken);
         }
 
         public async Task<List<T>> FindPostsByKeywordAsync(int offset, int? limit, string keyword)

@@ -132,7 +132,7 @@ namespace Advert.Controllers
                         
                         Posts = posts.Select(post => new PostViewModel
                         {
-                            Sold = post.Sold,
+                            Hidden = post.Hidden,
                             IsOwner = User.Identity.IsAuthenticated && profile != null && post.ProfileId.Equals(profile._id),
                             IsVoted = postsVotes.Count > 0 && postsVotes.Any(x => x.PostId.Equals(post._id)),
                             PostId = post._id.ToString(),
@@ -297,7 +297,7 @@ namespace Advert.Controllers
                     {
                         new PostViewModel
                         {
-                            Sold = post.Sold,
+                            Hidden = post.Hidden,
                             IsOwner = User.Identity.IsAuthenticated && profile != null && post.ProfileId.Equals(profile._id),
                             IsVoted = postsVotes.Count > 0 && postsVotes.Any(x => x.PostId.Equals(post._id)),
                             PostId = post._id.ToString(),
@@ -397,7 +397,7 @@ namespace Advert.Controllers
             {
                 var post = await _postsManager.FindPostByIdAsync(ObjectId.Parse(postId));
 
-                post.Sold = viewModel.Sold;
+                post.Hidden = viewModel.Hidden;
                 post.Text = viewModel.Text;
                 post.Title = viewModel.Title;
                 post.Location = viewModel.Location;
@@ -470,7 +470,7 @@ namespace Advert.Controllers
 
                 return Ok(new PostViewModel
                 {
-                    Sold = post.Sold,
+                    Hidden = post.Hidden,
                     IsOwner = User.Identity.IsAuthenticated && profile != null && post.ProfileId.Equals(profile._id),
                     IsVoted = postsVotes.Count > 0 && postsVotes.Any(x => x.PostId.Equals(post._id)),
                     PostId = post._id.ToString(),
