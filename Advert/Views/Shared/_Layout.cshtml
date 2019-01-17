@@ -33,7 +33,7 @@
 <script src="~/js/jquery.tagify.js"></script>
 <script>
     var turndown = new TurndownService();
-    
+
     var textEditor = {};
 
     function initMap() {
@@ -47,6 +47,59 @@
                 function() {
 
                 });
+    }
+
+    function getCommentForm(response) {
+        var html = `<div id="${response.commentId}" class="media p-2">
+                    <img class="card-user__img" src="${response.profileImagePath}" width="48" height="48" alt="profile-image">
+                    <div class="media-body media__img content__break">
+                        <div class="col-auto">
+                            <span class="font-weight-bold" style="font-size: 0.9rem">
+                                <a href="/${response.profileName}">${response.profileName}</a>
+                            </span>
+                            <span class="time" style="font-size: 0.9rem"> ${response.createdAt}</span>  
+                        </div>                        
+                        <div class="col-auto media__border">
+                            <div id="media-comment__${response.commentId}" class="media__comment">${response.text}
+                            </div>             
+                        </div>
+                        <div class="col-auto">
+                            <div class="row">
+                                <div class="col-md-12 p-1">
+                                    <div class="r-btn r-btn-light r-btn--icon waves-effect ml-4" onclick="onPostCommentVoteClick('${response.postId}', '${response.commentId}', 1)" >
+                                        <i id="vote-icon__${response.commentId}" class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
+                                    </div>
+                                    <small id='votes-count__${response.commentId}'>${response.votesCount}</small>
+                                    <span class="dot-separator"></span>               
+                                    <a href="#reply" onclick="onReplyCommentClick('${response.postId}', '${response.replyTo}', '${response.commentId}')" style="font-size: 0.9rem">
+                                        Reply
+                                    </a>      
+                                    <span class="dot-separator"></span>
+                                    <div class="dropdown comments__item">
+                                        <i data-toggle="dropdown" class="zmdi zmdi-chevron-down zmdi-hc-fw" aria-expanded="false"></i>
+                                        <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-end" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(30px, 26px, 0px);">
+                                            <a href="" class="dropdown-item" data-placement="top" data-target="#edit-comment__modal" data-toggle="modal" onclick="onEditCommentClick('${response.postId}', '${response.commentId}')">
+                                                <i class="zmdi zmdi-edit zmdi-hc-fw"></i> Edit...
+                                            </a> 
+                                            <a href="" class="dropdown-item" data-placement="top" data-target="#delete-comment__modal" data-toggle="modal" onclick="onDeleteCommentClick('${response.postId}', '${response.commentId}')">
+                                                <i class="zmdi zmdi-delete zmdi-hc-fw"></i> Delete...
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="reply-placeholder"></div>
+                    </div>
+                </div>`;
+        return html;
+    }
+
+    function removeReplyForm(commentId) {
+        var form = $(`#${commentId}`);
+        if (form.length !== 0) {
+            form.remove();
+        }
     }
 
     function onLogInClick() {
@@ -71,12 +124,13 @@
                         return element.description;
                     }).join(","));
                 } else {
-                    console.log("Close log in modal")
+                    console.log("Close log in modal");
                     $("#log-in__modal").modal('toggle');
                     console.log(`Redirect to URL: ${response.returnUrl}`);
                     window.location.replace(response.returnUrl);
                 }
-            }, function(jqXhr, textStatus, errorThrown) {
+            },
+            function(jqXhr, textStatus, errorThrown) {
                 alert("Unauthorized user");
             });
     }
@@ -116,7 +170,8 @@
     function onAddPostClick() {
         $("#add-post__post").off("click").click(function() {
             var post = {
-                text: textEditor["add-post__text--editor"].options.previewRender(textEditor["add-post__text--editor"].value()),
+                text: textEditor["add-post__text--editor"].options.previewRender(textEditor["add-post__text--editor"]
+                    .value()),
                 title: $("#add-post__title").val(),
                 price: $("#add-post__price").val(),
                 location: $("#add-post__location").val(),
@@ -155,7 +210,8 @@
                     }
                     break;
                 }
-            }, function(jqXhr, textStatus, errorThrown) {
+            },
+            function(jqXhr, textStatus, errorThrown) {
                 alert("Unauthorized user");
             });
     }
@@ -171,7 +227,8 @@
             });
         $("#edit-post__save").off("click").click(function() {
             var post = {
-                text: textEditor["edit-post__text--editor"].options.previewRender(textEditor["edit-post__text--editor"].value()),
+                text: textEditor["edit-post__text--editor"].options.previewRender(textEditor["edit-post__text--editor"]
+                    .value()),
                 title: $("#edit-post__title").val(),
                 price: $("#edit-post__price").val(),
                 location: $("#edit-post__location").val(),
@@ -264,16 +321,13 @@
                         `);
                         var index = 0;
                         postTags.tags.forEach(function(tag) {
-                            if (index++ == postTags.tags.length - 1) {
-                                tagsElement
-                                    .append(
-                                        `<a class="post-tag__link" href="/Posts/GetPostsByTag?tagName=${tag}">${tag
-                                        }</a>`);
+                            if (index++ === postTags.tags.length - 1) {
+                                tagsElement.append(
+                                    `<a class="post-tag__link" href="/Posts/GetPostsByTag?tagName=${tag}">${tag}</a>`);
                             } else {
-                                tagsElement
-                                    .append(
-                                        `<a class="post-tag__link" href="/Posts/GetPostsByTag?tagName=${tag}">${tag
-                                        }</a><span>, </span>`);
+                                tagsElement.append(
+                                    `<a class="post-tag__link" href="/Posts/GetPostsByTag?tagName=${tag}">${tag
+                                    }</a><span>, </span>`);
                             }
                         });
                     }
@@ -293,30 +347,7 @@
             tagify.removeAllTags();
         });
     }
-    
-    function onUpdatePostItemAvailability(postId) {
-        console.log(`Update post: ${postId} item availability`);     
-        getPostByIdAsync(postId,
-            function(post) {
-                console.log(`Current sold state is: ${post.sold}`);
-                post.sold = !post.sold;
-                console.log(`Set current sold state as: ${post.sold}`);
-                updatePostByIdAsync(postId,
-                    post,
-                    function(response) {
-                        if (!post.sold) {
-                            $(`#post-availability__${postId}`).text("Set as sold");                      
-                        } else {
-                            $(`#post-availability__${postId}`).text("Set as available");                      
-                        }
-                        console.log(
-                            `MatchedCount: ${response.matchedCount} ModifiedCount: ${response.matchedCount
-                            } IsAcknowledged: ${response.isAcknowledged} IsModifiedCountAvailable: ${response
-                            .isModifiedCountAvailable}`);
-                    });
-            });
-    }
-    
+
     function onEditCommentClick(postId, commentId) {
         getPostCommentAsync(postId,
             commentId,
@@ -330,20 +361,20 @@
 
         $(`#edit-comment__save`).off("click").click(function() {
             var postComment = {
-                text: textEditor["edit-comment__text--editor"].options.previewRender(textEditor["edit-comment__text--editor"].value()),
+                text: textEditor["edit-comment__text--editor"].options.previewRender(
+                    textEditor["edit-comment__text--editor"].value()),
             };
             updatePostCommentAsync(postId,
                 commentId,
                 postComment,
                 function(response) {
                     console.log("Close edit post comment modal window");
-                    $(`#edit-post__modal--${commentId}`).modal('toggle');                    
-                    
+                    $(`#edit-post__modal--${commentId}`).modal('toggle');
                     console.log(
                         `MatchedCount: ${response.matchedCount} ModifiedCount: ${response.matchedCount
                         } IsAcknowledged: ${response.isAcknowledged} IsModifiedCountAvailable: ${response
                         .isModifiedCountAvailable}`);
-                    
+
                     var comment = $(`#media-comment__${commentId}`);
                     comment.empty();
                     comment.append(postComment.text);
@@ -352,7 +383,7 @@
         });
         $("#edit-comment__close").off("click").click(function() {
             if (textEditor["edit-comment__text--editor"].isFullscreenActive())
-                textEditor["edit-comment__text--editor"].toggleFullScreen();     
+                textEditor["edit-comment__text--editor"].toggleFullScreen();
         });
     }
 
@@ -383,18 +414,38 @@
 
         $("#add-comment__reply").off("click").click(function() {
             removeReplyForm("reply-form");
+
             var text = writeReplyEditor.options.previewRender(writeReplyEditor.value());
-            var parentId;         
-            if (replyTo !== null) {
-                parentId = replyTo;
-            } else {
-                parentId = null;
-            }
-            addCommentReply({
+//
+//            var parentId = null;
+//            
+//            if (replyTo != null) {
+//                parentId = replyTo;
+//            } else {
+//                parentId = commentId;
+//            }
+
+            console.log(`Post: ${postId} Reply to: ${replyTo} Comment: ${commentId}`);
+
+            var comment = {
                 text: text,
                 postId: postId,
-                replyTo: parentId
-            });
+                replyTo: replyTo
+            };
+
+            createPostCommentAsync(comment,
+                function(response) {
+                    $(`#${comment.replyTo} .media-body:first`).append(getCommentForm(response));
+
+                    $([document.documentElement, document.body]).animate({
+                            scrollTop: $(`#media-comment__${response.commentId}`).offset().top - 250
+                        },
+                        200);
+                },
+                function(jqXhr, textStatus, errorThrown) {
+                    alert("Error");
+                });
+
             writeReplyEditor.toTextArea();
             writeReplyEditor = parentId;
         });
@@ -413,72 +464,6 @@
                 });
             $("#delete-comment__modal").modal('toggle');
         });
-    }
-
-    function addCommentReply(comment) {
-        createPostCommentAsync(comment,
-            function(response) {
-                $(`#${comment.replyTo} .media-body:first`).append(`
-                <div id="${response.commentId}" class="media p-2">
-                    <img class="card-user__img" src="${response.profileImagePath}" width="48" height="48" alt="profile-image">
-                    <div class="media-body media__img content__break">
-                        <div class="col-auto">
-                            <span class="font-weight-bold" style="font-size: 0.9rem">
-                                <a href="/${response.profileName}">${response.profileName}</a>
-                            </span>
-                            <span class="time" style="font-size: 0.9rem"> ${response.createdAt}</span>  
-                        </div>                        
-                        <div class="col-auto media__border">
-                            <div id="media-comment__${response.commentId}" class="media__comment">
-                                ${response.text}
-                            </div>             
-                        </div>
-                        <div class="col-auto">
-                            <div class="row">
-                                <div class="col-md-12 p-1">
-                                    <div class="r-btn r-btn-light r-btn--icon waves-effect ml-4" onclick="onPostCommentVoteClick('${response.postId}', '${response.commentId}', 1)" >
-                                        <i id="vote-icon__${response.commentId}" class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
-                                    </div>
-                                    <small id='votes-count__${response.commentId}'>${response.votesCount}</small>
-                                    <span class="dot-separator"></span>               
-                                    <a href="#reply" onclick="onReplyCommentClick('${response.postId}', '${response.replyTo}', '${response.commentId}')" style="font-size: 0.9rem">
-                                        Reply
-                                    </a>      
-                                    <span class="dot-separator"></span>
-                                    <div class="dropdown comments__item">
-                                        <i data-toggle="dropdown" class="zmdi zmdi-chevron-down zmdi-hc-fw" aria-expanded="false"></i>
-                                        <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-end" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(30px, 26px, 0px);">
-                                            <a href="" class="dropdown-item" data-placement="top" data-target="#edit-comment__modal" data-toggle="modal" onclick="onEditCommentClick('${response.postId}', '${response.commentId}')">
-                                                <i class="zmdi zmdi-edit zmdi-hc-fw"></i> Edit...
-                                            </a> 
-                                            <a href="" class="dropdown-item" data-placement="top" data-target="#delete-comment__modal" data-toggle="modal" onclick="onDeleteCommentClick('${response.postId}', '${response.commentId}')">
-                                                <i class="zmdi zmdi-delete zmdi-hc-fw"></i> Delete...
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="reply-placeholder"></div>
-                    </div>
-                </div>
-                `);
-
-//                $([document.documentElement, document.body]).animate({
-//                        scrollTop: $(`#media-comment__${response.commentId}`).offset().top - 250
-//                    },
-//                    200);
-            },
-            function(jqXhr, textStatus, errorThrown) {
-                alert("Error");
-            });
-    }
-
-    function removeReplyForm(commentId) {
-        var form = $(`#${commentId}`);
-        if (form.length !== 0) {
-            form.remove();
-        }
     }
 
     function onPostCommentVoteClick(postId, commentId, voteType) {
@@ -505,56 +490,80 @@
             });
     }
 
+    function onUpdatePostItemAvailability(postId) {
+        console.log(`Update post: ${postId} item availability`);
+        getPostByIdAsync(postId,
+            function(post) {
+                console.log(`Current sold state is: ${post.sold}`);
+                post.sold = !post.sold;
+                console.log(`Set current sold state as: ${post.sold}`);
+                updatePostByIdAsync(postId,
+                    post,
+                    function(response) {
+                        if (!post.sold) {
+                            $(`#post-availability__${postId}`).text("Hide post");
+                        } else {
+                            $(`#post-availability__${postId}`).text("Show post");
+                        }
+                        console.log(
+                            `MatchedCount: ${response.matchedCount} ModifiedCount: ${response.matchedCount
+                            } IsAcknowledged: ${response.isAcknowledged} IsModifiedCountAvailable: ${response
+                            .isModifiedCountAvailable}`);
+                    });
+            });
+    }
+
     $(document).ready(function() {
         var body = $('body');
-      
+
         body.on('focus',
             '.search__text',
             function() {
                 $(this).closest('.search').addClass('search--focus');
             });
-        
-        $("#add-post__text--editor, #edit-post__text--editor, #add-comment__text--editor, #edit-comment__text--editor").each(function(index, element) {
-            console.log(`Text editor element id: ${element.id}`);
-           
-            textEditor[element.id] = new SimpleMDE({
-                status: false,
-                element: element,
-                placeholder: "Write something...",
-                fullScreen: false,
-                withPreview: false,
-                spellChecker: false
+
+        $("#add-post__text--editor, #edit-post__text--editor, #add-comment__text--editor, #edit-comment__text--editor")
+            .each(function(index, element) {
+                console.log(`Text editor element id: ${element.id}`);
+
+                textEditor[element.id] = new SimpleMDE({
+                    status: false,
+                    element: element,
+                    placeholder: "Write something...",
+                    fullScreen: false,
+                    withPreview: false,
+                    spellChecker: false
+                });
+
+                //Fix for empty editors until it has no focus
+                $('#add-post__modal').on('shown.bs.modal',
+                    function() {
+                        console.log("Add post shown.bs.modal");
+                        textEditor["add-post__text--editor"].codemirror.refresh();
+                    });
+
+                $('#edit-post__modal').on('shown.bs.modal',
+                    function() {
+                        console.log("Edit post shown.bs.modal");
+                        textEditor["edit-post__text--editor"].codemirror.refresh();
+                    });
+
+                $("#edit-comment__modal").on('shown.bs.modal',
+                    function() {
+                        console.log("Edit comment shown.bs.modal");
+                        textEditor["edit-comment__text--editor"].codemirror.refresh();
+                    });
+
+                //Fix for side by side & fullscreen
+                textEditor[element.id].codemirror.on('refresh',
+                    function() {
+                        if (textEditor[element.id].isFullscreenActive()) {
+                            $('body').addClass('simplemde-fullscreen');
+                        } else {
+                            $('body').removeClass('simplemde-fullscreen');
+                        }
+                    });
             });
-
-            //Fix for empty editors until it has no focus
-            $('#add-post__modal').on('shown.bs.modal',
-                function() {
-                    console.log("Add post shown.bs.modal");
-                    textEditor["add-post__text--editor"].codemirror.refresh();
-                });
-
-            $('#edit-post__modal').on('shown.bs.modal',
-                function() {
-                    console.log("Edit post shown.bs.modal");
-                    textEditor["edit-post__text--editor"].codemirror.refresh();
-                });
-            
-            $("#edit-comment__modal").on('shown.bs.modal',
-                function() {
-                    console.log("Edit comment shown.bs.modal");
-                    textEditor["edit-comment__text--editor"].codemirror.refresh();
-                });
-        
-            //Fix for side by side & fullscreen
-            textEditor[element.id].codemirror.on('refresh',
-                function() {
-                    if (textEditor[element.id].isFullscreenActive()) {
-                        $('body').addClass('simplemde-fullscreen');
-                    } else {
-                        $('body').removeClass('simplemde-fullscreen');
-                    }
-                });
-        });  
 
         body.on('blur',
             '.search__text',
@@ -578,7 +587,7 @@
                     break;
                 }
             });
-        
+
         $(".search").submit(function(event) {
             event.preventDefault();
             window.location.replace(window.location.href + "?page=1&keyword=" + $(".search__text").val());
@@ -590,7 +599,7 @@
             function() {
                 console.log("Shown");
             });
-        
+
         $("#sign-out__dropdown").click(function(e) {
             e.preventDefault();
             $.ajax({
@@ -611,63 +620,20 @@
 
         $("#add-comment").click(function() {
             var postId = $("section").attr('id');
-            var text = textEditor["add-comment__text--editor"].options.previewRender(textEditor["add-comment__text--editor"].value());
+            var text = textEditor["add-comment__text--editor"].options.previewRender(
+                textEditor["add-comment__text--editor"].value());
             var comment = {
                 postId: postId,
                 text: text
             }
             createPostCommentAsync(comment,
                 function(response) {
-                    $("#post-comments").prepend(`
-                <div id="${response.commentId}" class="media p-2">
-                    <img class="card-user__img" src="${response.profileImagePath
-                        }" width="48" height="48" alt="profile-image">
-                    <div class="media-body media__img content__break">
-                        <div class="col-auto">
-                            <span class="font-weight-bold" style="font-size: 0.9rem">
-                                <a href="/${response.profileName}">${response.profileName}</a>
-                            </span>
-                            <span class="time"> ${response.createdAt}</span>         
-                        </div>                        
-                        <div class="col-auto media__border">
-                            <div id="media-comment__${response.commentId}" class="media__comment">
-                                ${response.text}
-                            </div>   
-                        </div>
-                        <div class="col-auto">
-                            <div class="row">
-                                <div class="col-md-12 p-1">
-                                    <div class="r-btn r-btn-light r-btn--icon waves-effect ml-4" onclick="onPostCommentVoteClick('${response.postId}', '${response.commentId}', 1)" >
-                                        <i id="vote-icon__${response.commentId}" class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
-                                    </div>
-                                    <small id='votes-count__${response.commentId}'>${response.votesCount}</small>
-                                    <span class="dot-separator"></span>
-                                    <a href="#reply" onclick="onReplyCommentClick('${response.postId}', '${response.replyTo}', '${response.commentId}')" style="font-size: 0.9rem">
-                                        Reply
-                                    </a>
-                                    <span class="dot-separator"></span>
-                                    <div class="dropdown comments__item">
-                                        <i data-toggle="dropdown" class="zmdi zmdi-chevron-down zmdi-hc-fw" aria-expanded="false"></i>
-                                        <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-end" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(30px, 26px, 0px);">
-                                            <a href="" class="dropdown-item" data-placement="top" data-target="#edit-comment__modal" data-toggle="modal" onclick="onEditCommentClick('${response.postId}', '${response.commentId}')">
-                                                <i class="zmdi zmdi-edit zmdi-hc-fw"></i> Edit...
-                                            </a> 
-                                            <a href="" class="dropdown-item" data-placement="top" data-target="#delete-comment__modal" data-toggle="modal" onclick="onDeleteCommentClick('${response.postId}', '${response.commentId}')">
-                                                <i class="zmdi zmdi-delete zmdi-hc-fw"></i> Delete...
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>                          
-                        </div>
-                        <div id="reply-placeholder"></div>
-                    </div>
-                </div>`);
+                    $("#post-comments").prepend(getCommentForm(response));
 
-//                    $([document.documentElement, document.body]).animate({
-//                            scrollTop: $(`#media-comment__${response.commentId}`).offset().top - 250
-//                        },
-//                        200);
+                    $([document.documentElement, document.body]).animate({
+                            scrollTop: $(`#media-comment__${response.commentId}`).offset().top - 250
+                        },
+                        200);
                 });
             textEditor["add-comment__text--editor"].value("");
         });
@@ -676,17 +642,17 @@
             tags: ["€", "$", "MDL"],
             width: "100%",
             height: "34px",
-            minimumResultsForSearch: -1,
+            minimumResultsForSearch: -1
         });
 
         $("#edit-post__currency").select2({
             tags: ["€", "$", "MDL"],
             width: "100%",
             height: "34px",
-            minimumResultsForSearch: -1,
+            minimumResultsForSearch: -1
         });
 
-        $(".CodeMirror, .CodeMirror-scroll").css('min-height', '150px');  
+        $(".CodeMirror, .CodeMirror-scroll").css('min-height', '150px');
     });
 
     $(window).on('load',
