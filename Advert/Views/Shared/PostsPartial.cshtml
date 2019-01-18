@@ -32,6 +32,7 @@ else
                                             <span id="post-availability__@post.PostId">Show post</span>
                                         </span>
                                     }
+                                    <div class="dropdown-separator"></div>
                                     <a href="" class="dropdown-item" data-placement="top" data-target="#edit-post__modal" data-toggle="modal" onclick="onEditPostClick('@post.PostId')">
                                         <i class="zmdi zmdi-edit zmdi-hc-fw"></i> Edit post
                                     </a>
@@ -41,7 +42,6 @@ else
                                     <a href="" class="dropdown-item" data-placement="top" data-target="#delete-post__modal" data-toggle="modal" onclick="onDeletePostClick('@post.PostId')">
                                         <i class="zmdi zmdi-delete zmdi-hc-fw"></i> Delete post
                                     </a>
-                                    @* <div class="dropdown-separator"></div> *@
                                 </div>
                             </div>
                         </div>
