@@ -33,8 +33,8 @@ namespace Advert.MongoDbStorage.Posts
         [BsonElement] public decimal Price { get; set; }
         [BsonElement] public ObjectId ProfileId { get; set; }
         [BsonElement] public DateTime CreatedAt { get; set; }
-        [BsonElement] public DateTime UpdatedAt { get; set; }
-        [BsonElement] public DateTime DeletedAt { get; set; }
+        [BsonElement] public DateTime? UpdatedAt { get; set; }
+        [BsonElement] public DateTime? DeletedAt { get; set; }
         [BsonElement] public ReleaseType ReleaseType { get; set; }
         [BsonElement] public List<string> Tags { get; set; }
     }

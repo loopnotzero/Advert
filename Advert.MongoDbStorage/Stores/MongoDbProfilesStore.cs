@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Advert.Common.Posts;
+using Advert.Common.Profiles;
 using Advert.MongoDbStorage.Common;
 using Advert.MongoDbStorage.Profiles;
 using MongoDB.Bson;
