@@ -993,6 +993,21 @@ select.form-control-lg:not([size]):not([multiple]) {
   border-bottom: 0;
 }
 
+.profile-header, .card-footer {
+  padding: 0;
+  background-color: #FFFFFF;
+}
+
+.profile-header {
+  border-bottom: 0;
+  position: absolute;
+  width: 100%;
+  margin-top: 0.5rem;
+  padding-right: 1rem;
+  background-color: transparent;
+  font-size: 1rem;
+}
+
 .card-footer {
   margin-top: -1.2rem;
   border-top: 0;
@@ -1756,6 +1771,24 @@ select.form-control {
   background-color: rgba(0, 0, 0, 0.65);
 }
 
+.profile__img__edit {
+  color: white !important;
+  position: absolute;
+  font-size: 1.2rem;
+  top: 15px;
+  left: 15px;
+  background-color: rgba(0, 0, 0, 0.4);
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  border-radius: 50%;
+  text-align: center;
+}
+.profile__img__edit:hover {
+  background-color: rgba(0, 0, 0, 0.5);
+  color: #FFFFFF;
+}
+
 .profile__links {
   -ms-flex: 1 1 auto;
   flex: 1 1 auto;
@@ -2411,10 +2444,10 @@ blockquote {
 }
 .top-nav > li > a:not(.header__nav__text) {
   padding: 0.5rem 0.15rem;
-  min-width: 50px;
+  min-width: 25px;
 }
 .top-nav > li > a:not(.header__nav__text) > .zmdi {
-  font-size: 1.65rem;
+  font-size: 1.55rem;
   line-height: 100%;
 }
 .top-nav > li > a.active, .top-nav > li > a:hover {

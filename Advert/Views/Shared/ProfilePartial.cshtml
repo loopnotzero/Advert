@@ -1,13 +1,18 @@
 @using Advert.Models.Profiles
 @model ProfileModel
 
+<div class="profile-header">
+    <a href="" class="zmdi zmdi-edit float-right" data-placement="top" data-target="#edit-profile__modal" data-toggle="modal">
+    </a>
+</div>
+
 @if (string.IsNullOrEmpty(Model.ImagePath))
 {
-    <img src="~/images/no-image.png" class="team__img" alt="">
+    <img id="profile-image" src="~/images/no-image.png" class="team__img" alt="">
 }
 else
 {
-    <img src="@Model.ImagePath" class="team__img" alt="">
+    <img id="profile-image" src="@Model.ImagePath" class="team__img" alt="">
 }
 <div class="card-body">
     <a href="/@Model.Name">
@@ -22,4 +27,6 @@ else
         Born November 12, 1989
     </p>
 </div>
+
+@await Html.PartialAsync("EditProfileModal")
 

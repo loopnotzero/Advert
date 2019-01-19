@@ -48,6 +48,26 @@
   }
 }
 
+.profile__img__edit {
+  color: white !important;
+  position: absolute;
+  font-size: 1.2rem;
+  top: 15px;
+  left: 15px;
+  background-color: rgba($black, 0.4);
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  border-radius: 50%;
+  text-align: center;
+  //color: $white;
+
+  &:hover {
+    background-color: rgba($black, 0.5);
+    color: $white;
+  }
+}
+
 .profile__links {
   -ms-flex: 1 1 auto;
   flex: 1 1 auto;

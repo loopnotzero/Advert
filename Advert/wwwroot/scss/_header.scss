@@ -144,10 +144,10 @@
 
       &:not(.header__nav__text) {
         padding: 0.5rem 0.15rem;
-        min-width: 50px;
+        min-width: 25px;
 
         & > .zmdi {
-          font-size: 1.65rem;
+          font-size: 1.55rem;
           line-height: 100%;
         }
       }

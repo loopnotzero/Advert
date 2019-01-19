@@ -16,6 +16,7 @@
     <link href="~/css/animate.css" rel="stylesheet" type="text/css">
     <link href="~/css/select2.css" rel="stylesheet" type="text/css">
     <link href="~/css/tagify.css" rel="stylesheet" type="text/css"/>
+    <link href="~/css/cropper.css" rel="stylesheet" type="text/css"/>
 </head>
 <body id="body" data-ma-theme="advert" style="display: none">
 @RenderBody()
@@ -31,6 +32,7 @@
 <script src="~/js/select2.js"></script>
 <script src="~/js/advert.js"></script>
 <script src="~/js/jquery.tagify.js"></script>
+<script src="~/js/cropper.js"></script>
 <script>
     var turndown = new TurndownService();
 
@@ -687,6 +689,21 @@
         });
 
         $(".CodeMirror, .CodeMirror-scroll").css('min-height', '150px');
+        
+//        var image = document.getElementById('profile-image');
+//        var cropper = new Cropper(image,
+//            {
+//                aspectRatio: 16 / 9,
+//                crop(event) {
+//                    console.log(event.detail.x);
+//                    console.log(event.detail.y);
+//                    console.log(event.detail.width);
+//                    console.log(event.detail.height);
+//                    console.log(event.detail.rotate);
+//                    console.log(event.detail.scaleX);
+//                    console.log(event.detail.scaleY);
+//                },
+//            });
     });
 
     $(window).on('load',
