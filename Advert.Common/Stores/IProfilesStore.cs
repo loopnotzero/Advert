@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Advert.Common.Posts;
+using Advert.Common.Profiles;
 using MongoDB.Bson;
 
 namespace Advert.MongoDbStorage.Stores

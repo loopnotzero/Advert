@@ -11,7 +11,7 @@ namespace Advert.Common.Posts
         ObjectId ProfileId { get; set; }
         VoteType VoteType { get; set; }
         DateTime CreatedAt { get; set; }
-        DateTime UpdatedAt { get; set; }
-        DateTime DeletedAt { get; set; }
+        DateTime? UpdatedAt { get; set; }
+        DateTime? DeletedAt { get; set; }
     }
 }

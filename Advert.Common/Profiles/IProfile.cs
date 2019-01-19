@@ -1,9 +1,7 @@
 using System;
-using System.Collections.Generic;
 using MongoDB.Bson;
-using MongoDB.Bson.Serialization.IdGenerators;
 
-namespace Advert.Common.Posts
+namespace Advert.Common.Profiles
 {
     public interface IProfile
     {
@@ -17,8 +15,10 @@ namespace Advert.Common.Posts
         string PhoneNumber { get; set; }  
         string NormalizedName { get; set; }
         string NormalizedEmail { get; set; }
+        Gender Gender { get; set; }
         DateTime CreatedAt { get; set; }
-        DateTime UpdatedAt { get; set; }  
-        DateTime DeletedAt { get; set; } 
+        DateTime? UpdatedAt { get; set; }  
+        DateTime? DeletedAt { get; set; }
+        DateTime? Birthday { get; set; }
     }
 }
