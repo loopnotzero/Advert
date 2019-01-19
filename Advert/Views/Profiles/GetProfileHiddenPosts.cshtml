@@ -25,12 +25,12 @@
                     <ul class="nav nav-tabs">
                         <li class="nav-item">
                             <a class="nav-link" href="/@Model.Profile.Name/Posts">Posts</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link active" href="/@Model.Profile.Name/Hidden">Hidden</a>
-                        </li>
+                        </li>      
                         @if (Model.IsProfileOwner)
                         {
+                            <li class="nav-item">
+                                <a class="nav-link active" href="/@Model.Profile.Name/Hidden">Hidden</a>
+                            </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="/@Model.Profile.Name/Favorites">Favorites</a>
                             </li>
