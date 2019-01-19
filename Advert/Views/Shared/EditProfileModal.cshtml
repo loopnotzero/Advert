@@ -1,3 +1,6 @@
+@using Advert.Models.Profiles
+@model ProfileModel
+
 <div id="edit-profile__modal" class="modal fade" data-backdrop="static" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -10,16 +13,106 @@
                 </button>
             </div>
             <div class="modal-body">
-               Hello, World
+                <h5 class="float-left">
+                    Email
+                </h5>
+                <div class="form-group">
+                    <input id="edit-profile__email" type="text" class="form-control" placeholder="Email" value="@Model.Email" readonly="readonly">
+                    <i class="form-group__bar"></i>
+                </div>
+                <h5 class="float-left">
+                    Common
+                </h5>
+                <div class="form-group">
+                    <input id="edit-profile__name" type="text" class="form-control" placeholder="Name" value="@Model.Name" readonly="readonly">
+                    <i class="form-group__bar"></i>
+                </div>
+                <div class="form-group">
+                    @if (string.IsNullOrEmpty(Model.Birthday))
+                    {
+                        <input id="birthday-date" class="form-control flatpickr flatpickr-input" style="display: block !important; color: #C0C0C0;" type="text" placeholder="Birthday">
+                    }
+                    else
+                    {
+                        <input id="birthday-date" class="form-control flatpickr flatpickr-input" style="display: block !important; color: #C0C0C0;" type="text" placeholder="Birthday" value="@Model.Birthday">
+                    }
+                    <i class="form-group__bar"></i>
+                </div>
+                <div class="form-group">
+                    <select id="edit-profile__gender" class="form-control select2-pt">
+                        @if (Model.Gender.ToUpper().Equals("MALE"))
+                        {
+                            <option selected="selected">Male</option>
+                        }
+                        else
+                        {
+                            <option>Male</option>
+                        }
+                        @if (Model.Gender.ToUpper().Equals("FEMALE"))
+                        {
+                            <option selected="selected">Male</option>
+                        }
+                        else
+                        {
+                            <option>Female</option>
+                        }
+                        @if (Model.Gender.ToUpper().Equals("NOT SPECIFIED"))
+                        {
+                            <option selected="selected">Not specified</option>
+                        }
+                        else
+                        {
+                            <option>Not specified</option>
+                        }
+                    </select>
+                    <i class="form-group__bar"></i>
+                </div>
+                <div class="form-group">
+                    @if (string.IsNullOrEmpty(Model.Birthday))
+                    {
+                        <input id="edit-profile__location" type="text" class="form-control" placeholder="Enter a location">
+                    }
+                    else
+                    {
+                        <input id="edit-profile__location" type="text" class="form-control" placeholder="Enter a location" value="@Model.Location">
+                    }
+                    <i class="form-group__bar"></i>
+                </div>
+                <h5 class="float-left">
+                    Add photo
+                </h5>
+                <div class="form-group">
+                    <form asp-controller="Posts" asp-action="AddPostPhotos" class="dropzone needsclick dz-clickable" id="profile-dropzone">
+                        <div class="dz-message needsclick">
+                            <img src="~/images/add-photos.png"/>
+                        </div>
+                    </form>
+                </div>
+                <h5 class="float-left">
+                    Change password
+                </h5>
+                <div class="form-group">
+                    <input id="edit-profile__new--password" type="password" class="form-control" placeholder="New password">
+                    <i class="form-group__bar"></i>
+                </div>
+                <div class="form-group">
+                    <input id="edit-profile__confirm--password" type="password" class="form-control" placeholder="Confirm new password">
+                    <i class="form-group__bar"></i>
+                </div>
+                <div class="form-group">
+                    <input id="edit-profile__current--password" type="password" class="form-control" placeholder="Current password">
+                    <i class="form-group__bar"></i>
+                </div>
             </div>
             <div class="modal-footer">
-                <button id="edit-profile__cancel"  type="button" class="btn btn-light" data-dismiss="modal">
+                <button id="edit-profile__cancel" type="button" class="btn btn-light" data-dismiss="modal">
                     Cancel
                 </button>
-                <button id="edit-profile__save" type="button" class="btn btn-primary__advert">
+                <button id="edit-profile__save" type="button" class="btn btn-primary__advert" onclick="onEditProfileSaveChangesClick()">
                     Save changes
                 </button>
             </div>
         </div>
     </div>
 </div>
+

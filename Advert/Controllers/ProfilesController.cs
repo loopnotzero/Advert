@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Advert.Common.Posts;
+using Advert.Common.Profiles;
 using Advert.Managers;
 using Advert.Models.Post;
 using Advert.Models.Profiles;
@@ -12,6 +13,7 @@ using Advert.MongoDbStorage.Profiles;
 using Humanizer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace Advert.Controllers
@@ -19,6 +21,7 @@ namespace Advert.Controllers
     public class ProfilesController : Controller
     {
         private readonly ILogger _logger;
+        private readonly IConfiguration _configuration;
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly PostsManager<MongoDbPost> _postsManager;
         private readonly ProfilesManager<MongoDbProfile> _profilesManager;
@@ -29,6 +32,7 @@ namespace Advert.Controllers
 
         public ProfilesController(
             ILoggerFactory loggerFactory,
+            IConfiguration configuration,
             IHostingEnvironment hostingEnvironment,
             PostsManager<MongoDbPost> postsManager,
             ProfilesManager<MongoDbProfile> profilesManager,
@@ -36,6 +40,7 @@ namespace Advert.Controllers
             ProfilesImagesManager<MongoDbProfileImage> profilesImagesManager)
         {
             _logger = loggerFactory.CreateLogger<ProfilesController>();
+            _configuration = configuration;
             _hostingEnvironment = hostingEnvironment;
             _postsManager = postsManager;
             _profilesManager = profilesManager;
@@ -100,9 +105,15 @@ namespace Advert.Controllers
                             Id = profile._id.ToString(),
                             Name = profile.Name,
                             Email = profile.Email,
+                            Gender = profile.Gender.ToString(),
+                            Location = profile.Location,
+                            Birthday = profile.Birthday?.ToString(CultureInfo.CreateSpecificCulture("ru-RU")),
+                            CreatedAt = profile.CreatedAt.Humanize(),
                             ImagePath = profile.ImagePath,
-                            PhoneNumber = profile.PhoneNumber
+                            PhoneNumber = profile.PhoneNumber,
                         },
+                        
+                        PlacesApi = _configuration.GetSection("GoogleApiServices").GetValue<string>("PlacesApi"),
                         
                         IsProfileOwner = false
                     });
@@ -113,17 +124,22 @@ namespace Advert.Controllers
                 if (HttpContext.User.Identity.IsAuthenticated)
                 {
                     myProfile = await _profilesManager.FindProfileByNormalizedEmailOrDefaultAsync(HttpContext.User.Identity.Name, null);
-                }   
+                }
 
-                var postsVotes = await _postsVotesManager.FindPostsVotesAsync(myProfile._id);
+                List<MongoDbPostVote> postsVotes = null;
+
+                if (myProfile != null)
+                {
+                    postsVotes = await _postsVotesManager.FindPostsVotesAsync(myProfile._id);
+                }
 
                 return View(new PostsAggregatorViewModel
-                {     
+                {
                     Posts = posts.Select(post => new PostViewModel
                     {
                         Hidden = post.Hidden,
-                        IsOwner = post.ProfileId.Equals(profile._id) && profile._id.Equals(myProfile._id),
-                        IsVoted = postsVotes.Count > 0 && postsVotes.Any(x => x.PostId.Equals(post._id)),
+                        IsOwner = myProfile != null && post.ProfileId.Equals(profile._id) && profile._id.Equals(myProfile._id),
+                        IsVoted = postsVotes != null && postsVotes.Any(x => x.PostId.Equals(post._id)),
                         PostId = post._id.ToString(),
                         Text = post.Text.Length > 1000 ? post.Text.Substring(0, 1000) + "..." : post.Text,
                         Title = post.Title,
@@ -146,11 +162,17 @@ namespace Advert.Controllers
                         Id = profile._id.ToString(),
                         Name = profile.Name,
                         Email = profile.Email,
+                        Gender = profile.Gender.Humanize(),
+                        Location = profile.Location,
+                        Birthday = profile.Birthday?.ToString(CultureInfo.CreateSpecificCulture("ru-RU")),
+                        CreatedAt = profile.CreatedAt.Humanize(),
                         ImagePath = profile.ImagePath,
                         PhoneNumber = profile.PhoneNumber
                     },
                     
-                    IsProfileOwner = myProfile != null && profile._id.Equals(myProfile._id),
+                    PlacesApi = _configuration.GetSection("GoogleApiServices").GetValue<string>("PlacesApi"),
+                    
+                    IsProfileOwner = myProfile != null && profile._id.Equals(myProfile._id)
                 });
             }
             catch (Exception e)
@@ -202,9 +224,15 @@ namespace Advert.Controllers
                             Id = profile._id.ToString(),
                             Name = profile.Name,
                             Email = profile.Email,
+                            Gender = profile.Gender.Humanize(),
+                            Location = profile.Location,
+                            Birthday = profile.Birthday?.ToString(CultureInfo.CreateSpecificCulture("ru-RU")),
+                            CreatedAt = profile.CreatedAt.Humanize(),
                             ImagePath = profile.ImagePath,
                             PhoneNumber = profile.PhoneNumber
                         },
+                        
+                        PlacesApi = _configuration.GetSection("GoogleApiServices").GetValue<string>("PlacesApi"),
                         
                         IsProfileOwner = false
                     });
@@ -217,15 +245,20 @@ namespace Advert.Controllers
                     myProfile = await _profilesManager.FindProfileByNormalizedEmailOrDefaultAsync(HttpContext.User.Identity.Name, null);
                 }
 
-                var postsVotes = await _postsVotesManager.FindPostsVotesAsync(myProfile._id);
+                List<MongoDbPostVote> postsVotes = null;
+
+                if (myProfile != null)
+                {
+                    postsVotes = await _postsVotesManager.FindPostsVotesAsync(myProfile._id);
+                }
 
                 return View(new PostsAggregatorViewModel
                 {
                     Posts = posts.Select(post => new PostViewModel
                     {
                         Hidden = post.Hidden,
-                        IsOwner = post.ProfileId.Equals(profile._id) && profile._id.Equals(myProfile._id),
-                        IsVoted = postsVotes.Count > 0 && postsVotes.Any(x => x.PostId.Equals(post._id)),
+                        IsOwner = myProfile != null && post.ProfileId.Equals(profile._id) && profile._id.Equals(myProfile._id),
+                        IsVoted = postsVotes != null && postsVotes.Count > 0 && postsVotes.Any(x => x.PostId.Equals(post._id)),
                         PostId = post._id.ToString(),
                         Text = post.Text.Length > 1000 ? post.Text.Substring(0, 1000) + "..." : post.Text,
                         Title = post.Title,
@@ -248,9 +281,15 @@ namespace Advert.Controllers
                         Id = profile._id.ToString(),
                         Name = profile.Name,
                         Email = profile.Email,
+                        Gender = profile.Gender.Humanize(),
+                        Location = profile.Location,
+                        Birthday = profile.Birthday?.ToString(CultureInfo.CreateSpecificCulture("ru-RU")),
+                        CreatedAt = profile.CreatedAt.Humanize(),
                         ImagePath = profile.ImagePath,
                         PhoneNumber = profile.PhoneNumber
                     },
+                    
+                    PlacesApi = _configuration.GetSection("GoogleApiServices").GetValue<string>("PlacesApi"),
                     
                     IsProfileOwner = myProfile != null && profile._id.Equals(myProfile._id)
                 });
@@ -320,9 +359,15 @@ namespace Advert.Controllers
                         Id = profile._id.ToString(),
                         Name = profile.Name,
                         Email = profile.Email,
+                        Gender = profile.Gender.Humanize(),
+                        Location = profile.Location,
+                        Birthday = profile.Birthday?.ToString(CultureInfo.CreateSpecificCulture("ru-RU")),
+                        CreatedAt = profile.CreatedAt.Humanize(),
                         ImagePath = profile.ImagePath,
                         PhoneNumber = profile.PhoneNumber
                     },
+                    
+                    PlacesApi = _configuration.GetSection("GoogleApiServices").GetValue<string>("PlacesApi"),
                     
                     IsProfileOwner = myProfile != null && profile.NormalizedEmail.Equals(HttpContext.User.Identity.Name.ToUpper())
                 });

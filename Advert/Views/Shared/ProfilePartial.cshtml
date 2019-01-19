@@ -2,7 +2,7 @@
 @model ProfileModel
 
 <div class="profile-header">
-    <a href="" class="zmdi zmdi-edit float-right" data-placement="top" data-target="#edit-profile__modal" data-toggle="modal">
+    <a href="" class="zmdi zmdi-edit float-right" aria-expanded="false" data-placement="top" data-target="#edit-profile__modal" data-toggle="modal">
     </a>
 </div>
 
@@ -16,17 +16,20 @@ else
 }
 <div class="card-body">
     <a href="/@Model.Name">
-        <h5 class="card-title">@@@Model.Name</h5>
+        <h5 class="card-title">@Model.Name</h5>
     </a> 
     <div style="border-bottom: 1px solid #d5d5d5; margin-bottom: 10px;">
     </div>
     <p>
-        Joined March 2018
+        Joined @Model.CreatedAt
     </p>
-    <p>
-        Born November 12, 1989
-    </p>
+    @if (Model.Birthday != null)
+    {
+        <p>      
+            Born @Model.Birthday
+        </p> 
+    } 
 </div>
 
-@await Html.PartialAsync("EditProfileModal")
+@await Html.PartialAsync("EditProfileModal", @Model)
 

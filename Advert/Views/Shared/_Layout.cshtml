@@ -10,13 +10,13 @@
     <link rel="shortcut icon" href="~/images/favicon.ico">
     <link href="~/css/dropzone.css" rel="stylesheet" type="text/css"/>
     <link href="~/css/font.css" rel="stylesheet" type="text/css"/>
-    <link href="~/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <link href="~/css/bootstrap.css" rel="stylesheet" type="text/css"/>
     <link href="~/css/style.css" rel="stylesheet" type="text/css"/>
     <link href="~/css/simplemde.css" rel="stylesheet" type="text/css">
     <link href="~/css/animate.css" rel="stylesheet" type="text/css">
-    <link href="~/css/select2.css" rel="stylesheet" type="text/css">
     <link href="~/css/tagify.css" rel="stylesheet" type="text/css"/>
     <link href="~/css/cropper.css" rel="stylesheet" type="text/css"/>
+    <link href="~/css/flatpickr.css" rel="stylesheet" type="text/css"/>
 </head>
 <body id="body" data-ma-theme="advert" style="display: none">
 @RenderBody()
@@ -24,31 +24,45 @@
 </html>
 <script src="~/js/popper.js"></script>
 <script src="~/js/jquery.min.js"></script>
-<script src="~/js/bootstrap.min.js"></script>
+<script src="~/js/bootstrap.js"></script>
 <script src="~/js/waves.js"></script>
 <script src="~/js/turndown.js"></script>
 <script src="~/js/simplemde.js"></script>
 <script src="~/js/dropzone.js"></script>
-<script src="~/js/select2.js"></script>
 <script src="~/js/advert.js"></script>
 <script src="~/js/jquery.tagify.js"></script>
 <script src="~/js/cropper.js"></script>
+<script src="~/js/flatpickr.js"></script>
+
 <script>
     var turndown = new TurndownService();
-
     var textEditor = {};
+    var birthdayPicker;
 
     function initMap() {
-        new google.maps.places.Autocomplete($("#add-post__location")[0])
-            .addListener('place_changed',
-                function() {
+        if ($("#add-post__location").length) {
+            new google.maps.places.Autocomplete($("#add-post__location")[0])
+                .addListener('place_changed',
+                    function() {
 
-                });
-        new google.maps.places.Autocomplete($("#edit-post__location")[0])
-            .addListener('place_changed',
-                function() {
+                    });
+        }
 
-                });
+        if ($("#edit-post__location").length) {
+            new google.maps.places.Autocomplete($("#edit-post__location")[0])
+                .addListener('place_changed',
+                    function() {
+
+                    });
+        }
+
+        if ($("#edit-profile__location").length) {
+            new google.maps.places.Autocomplete($("#edit-profile__location")[0])
+                .addListener('place_changed',
+                    function() {
+
+                    });
+        }
     }
 
     function removeReplyForm(commentId) {
@@ -410,7 +424,11 @@
                 textEditor["edit-comment__text--editor"].toggleFullScreen();
         });
     }
-
+    
+    function onEditProfileSaveChangesClick() {
+        alert(birthdayPicker.altInput.value);
+    }
+ 
     function onReplyCommentClick(postId, replyTo, commentId) {
         removeReplyForm("reply-form");
 
@@ -586,7 +604,7 @@
                         console.log("Edit comment shown.bs.modal");
                         textEditor["edit-comment__text--editor"].codemirror.refresh();
                     });
-
+                               
                 //Fix for side by side & fullscreen
                 textEditor[element.id].codemirror.on('refresh',
                     function() {
@@ -625,14 +643,7 @@
             event.preventDefault();
             window.location.replace(window.location.href + "?page=1&keyword=" + $(".search__text").val());
         });
-
-        $("#add-post__modal").modal({
-            show: false
-        }).on("shown",
-            function() {
-                console.log("Shown");
-            });
-
+        
         $("#sign-out__dropdown").click(function(e) {
             e.preventDefault();
             $.ajax({
@@ -674,36 +685,14 @@
             textEditor["add-comment__text--editor"].value("");
         });
 
-        $("#add-post__currency").select2({
-            tags: ["€", "$", "MDL"],
-            width: "100%",
-            height: "34px",
-            minimumResultsForSearch: -1
-        });
-
-        $("#edit-post__currency").select2({
-            tags: ["€", "$", "MDL"],
-            width: "100%",
-            height: "34px",
-            minimumResultsForSearch: -1
-        });
-
         $(".CodeMirror, .CodeMirror-scroll").css('min-height', '150px');
         
-//        var image = document.getElementById('profile-image');
-//        var cropper = new Cropper(image,
-//            {
-//                aspectRatio: 16 / 9,
-//                crop(event) {
-//                    console.log(event.detail.x);
-//                    console.log(event.detail.y);
-//                    console.log(event.detail.width);
-//                    console.log(event.detail.height);
-//                    console.log(event.detail.rotate);
-//                    console.log(event.detail.scaleX);
-//                    console.log(event.detail.scaleY);
-//                },
-//            });
+//        birthdayPicker = flatpickr($("#birthday-date")[0], {
+//            static: true,
+//            altInput: true,
+//            enableTime: false,
+//            dateFormat: "Y-m-d"
+//        });
     });
 
     $(window).on('load',
@@ -711,4 +700,5 @@
             $('#body').fadeIn(200);
         });
 </script>
+
 <script src="https://maps.googleapis.com/maps/api/js?key=@Model.PlacesApi&libraries=places&callback=initMap" async defer></script>

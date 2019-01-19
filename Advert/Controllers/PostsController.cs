@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Advert.Common.Posts;
+using Advert.Common.Profiles;
 using Advert.Exceptions;
 using Advert.Managers;
 using Advert.Models.Post;
@@ -156,21 +158,16 @@ namespace Advert.Controllers
                         {
                             Id = profile._id.ToString(),
                             Name = profile.Name,
-                            ImagePath = profile.ImagePath ?? EmptyProfileImage,
+                            Email = profile.Email,
+                            Gender = profile.Gender.Humanize(),
+                            Location = profile.Location,
+                            Birthday = profile.Birthday?.ToString(CultureInfo.CreateSpecificCulture("ru-RU")),
+                            CreatedAt = profile.CreatedAt.Humanize(),
+                            ImagePath = profile.ImagePath ?? EmptyProfileImage,     
+                            PhoneNumber = profile.PhoneNumber,
                         },  
                         
                         PlacesApi = _configuration.GetSection("GoogleApiServices").GetValue<string>("PlacesApi"),
-                        
-//                        RecommendedPosts = posts
-//                            .OrderByDescending(x => EngagementRate.ComputeEngagementRate(x.LikesCount, x.SharesCount, x.CommentsCount, x.ViewsCount))
-//                            .Select(post => new RecommendedPostViewModel
-//                            {
-//                                PostId = post._id.ToString(),
-//                                ProfileName = post.ProfileName,
-//                                ProfileImagePath = post.ProfileImagePath ?? NoProfileImage,
-//                                Title = post.Title,
-//                                CreatedAt = post.CreatedAt.Humanize(),
-//                            }).ToList()
                     });  
             }
             catch (Exception e)
@@ -322,19 +319,16 @@ namespace Advert.Controllers
                     {
                         Id = profile._id.ToString(),
                         Name = profile.Name,
+                        Email = profile.Email,
+                        Gender = profile.Gender.Humanize(),
+                        Location = profile.Location,
+                        Birthday = profile.Birthday?.ToString(CultureInfo.CreateSpecificCulture("ru-RU")),
+                        CreatedAt = profile.CreatedAt.Humanize(),
                         ImagePath = profile.ImagePath ?? EmptyProfileImage,
+                        PhoneNumber = profile.PhoneNumber,
                     },
                     
                     PlacesApi = _configuration.GetSection("GoogleApiServices").GetValue<string>("PlacesApi"),
-           
-//                    RecommendedPosts = orderedPosts.Select(recommendedPost => new RecommendedPostViewModel
-//                    {
-//                        PostId = recommendedPost._id.ToString(),
-//                        ProfileName = recommendedPost.ProfileName,
-//                        ProfileImagePath = recommendedPost.ProfileImagePath ?? NoProfileImage,
-//                        Title = recommendedPost.Title,
-//                        CreatedAt = recommendedPost.CreatedAt.Humanize(),                      
-//                    }).ToList(),  
                     
                     PostComments = commentsReplies.Values.ToList(),
                 });
@@ -471,7 +465,7 @@ namespace Advert.Controllers
                 return Ok(new PostViewModel
                 {
                     Hidden = post.Hidden,
-                    IsOwner = User.Identity.IsAuthenticated && profile != null && post.ProfileId.Equals(profile._id),
+                    IsOwner = User.Identity.IsAuthenticated && post.ProfileId.Equals(profile._id),
                     IsVoted = postsVotes.Count > 0 && postsVotes.Any(x => x.PostId.Equals(post._id)),
                     PostId = post._id.ToString(),
                     Text = post.Text.Length > 1000 ? post.Text.Substring(0, 1000) + "..." : post.Text,
