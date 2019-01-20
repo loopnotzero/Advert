@@ -36,4 +36,8 @@
     @await Html.PartialAsync("AddPostModal")
     @await Html.PartialAsync("EditPostModal")
     @await Html.PartialAsync("DeletePostModal")
+    @if (Model.Profile != null)
+    {
+        @await Html.PartialAsync("EditProfileModal", Model.Profile)
+    }
 </section>

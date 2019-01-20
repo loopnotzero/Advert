@@ -438,7 +438,7 @@
                 <div class="row mt-3">
                     <div class="col-12">   
                         <input type="button" class="btn btn-light waves-effect waves-light btn-sm mr-2" value="Cancel" onclick="removeReplyForm('reply-form')"/>     
-                        <input id="add-comment__reply" type="button" class="btn btn-primary__advert waves-effect waves-light btn-sm" value="Reply"/>
+                        <input id="add-comment__reply" type="button" class="btn btn-primary waves-effect waves-light btn-sm" value="Reply"/>
                     </div>    
                 </div>
             </div>`
@@ -563,7 +563,16 @@
                 alert("Error");
             });
     }
-
+   
+    $(window).on('load',
+        function() {
+            $('#body').fadeIn(200);
+        });
+    
+    $(document).on('shown.bs.modal', '.modal', function () {
+        console.log("On show any modal window");   
+    });  
+    
     $(document).ready(function() {
         var body = $('body');
 
@@ -571,49 +580,6 @@
             '.search__text',
             function() {
                 $(this).closest('.search').addClass('search--focus');
-            });
-
-        $("#add-post__text--editor, #edit-post__text--editor, #add-comment__text--editor, #edit-comment__text--editor")
-            .each(function(index, element) {
-                console.log(`Text editor element id: ${element.id}`);
-
-                textEditor[element.id] = new SimpleMDE({
-                    status: false,
-                    element: element,
-                    placeholder: "Write something...",
-                    fullScreen: false,
-                    withPreview: false,
-                    spellChecker: false
-                });
-
-                //Fix for empty editors until it has no focus
-                $('#add-post__modal').on('shown.bs.modal',
-                    function() {
-                        console.log("Add post shown.bs.modal");
-                        textEditor["add-post__text--editor"].codemirror.refresh();
-                    });
-
-                $('#edit-post__modal').on('shown.bs.modal',
-                    function() {
-                        console.log("Edit post shown.bs.modal");
-                        textEditor["edit-post__text--editor"].codemirror.refresh();
-                    });
-
-                $("#edit-comment__modal").on('shown.bs.modal',
-                    function() {
-                        console.log("Edit comment shown.bs.modal");
-                        textEditor["edit-comment__text--editor"].codemirror.refresh();
-                    });
-                               
-                //Fix for side by side & fullscreen
-                textEditor[element.id].codemirror.on('refresh',
-                    function() {
-                        if (textEditor[element.id].isFullscreenActive()) {
-                            $('body').addClass('simplemde-fullscreen');
-                        } else {
-                            $('body').removeClass('simplemde-fullscreen');
-                        }
-                    });
             });
 
         body.on('blur',
@@ -639,29 +605,6 @@
                 }
             });
 
-        $(".search").submit(function(event) {
-            event.preventDefault();
-            window.location.replace(window.location.href + "?page=1&keyword=" + $(".search__text").val());
-        });
-        
-        $("#sign-out__dropdown").click(function(e) {
-            e.preventDefault();
-            $.ajax({
-                url: "/Account/SignOut?returnUrl=/",
-                type: "GET",
-                contentType: "application/json",
-                error: function(jqXhr, textStatus, errorThrown) {
-                    console.log("jqXhr: " + jqXhr);
-                    console.log("textStatus: " + textStatus);
-                    console.log("errorThrown: " + errorThrown);
-                },
-                success: function(response) {
-                    window.location.replace(response.returnUrl);
-                }
-            });
-            return false;
-        });
-
         $("#add-comment").click(function() {
             var postId = $("section").attr('id');
             var text = textEditor["add-comment__text--editor"].options.previewRender(
@@ -684,21 +627,88 @@
                 });
             textEditor["add-comment__text--editor"].value("");
         });
+   
+        $("#sign-out__dropdown").click(function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: "/Account/SignOut?returnUrl=/",
+                type: "GET",
+                contentType: "application/json",
+                error: function(jqXhr, textStatus, errorThrown) {
+                    console.log("jqXhr: " + jqXhr);
+                    console.log("textStatus: " + textStatus);
+                    console.log("errorThrown: " + errorThrown);
+                },
+                success: function(response) {
+                    window.location.replace(response.returnUrl);
+                }
+            });
+            return false;
+        });
+
+        $("#add-post__text--editor, #edit-post__text--editor, #add-comment__text--editor, #edit-comment__text--editor")
+            .each(function(index, element) {
+                console.log(`Text editor element id: ${element.id}`);
+
+                textEditor[element.id] = new SimpleMDE({
+                    status: false,
+                    element: element,
+                    placeholder: "Write something...",
+                    fullScreen: false,
+                    withPreview: false,
+                    spellChecker: false
+                });
+
+                //Fix for empty editors until it has no focus
+                $('#add-post__modal').on('shown.bs.modal',
+                    function() {
+                        console.log("Add post shown.bs.modal");
+                        textEditor["add-post__text--editor"].codemirror.refresh();
+                    });
+
+                $('#edit-post__modal').on('shown.bs.modal',
+                    function() {
+                        console.log("Edit post shown.bs.modal");
+                        $('#scroll-fix').focus();
+                        textEditor["edit-post__text--editor"].codemirror.refresh();
+                    });
+
+                $("#edit-comment__modal").on('shown.bs.modal',
+                    function() {
+                        console.log("Edit comment shown.bs.modal");
+                        textEditor["edit-comment__text--editor"].codemirror.refresh();
+                    });
+
+                //Fix for side by side & fullscreen
+                textEditor[element.id].codemirror.on('refresh',
+                    function() {
+                        if (textEditor[element.id].isFullscreenActive()) {
+                            $('body').addClass('simplemde-fullscreen');
+                        } else {
+                            $('body').removeClass('simplemde-fullscreen');
+                        }
+                    });
+            });
+        
+        if ($("#edit-profile__modal").length) {
+            birthdayPicker = flatpickr($("#birthday-date")[0],
+                {
+                    static: true,
+                    altInput: true,
+                    enableTime: false,
+                    dateFormat: "Y-m-d"
+                }); 
+        }
+        
+        $(".search").submit(function(event) {
+            event.preventDefault();
+            window.location.replace(window.location.href + "?page=1&keyword=" + $(".search__text").val());
+        });
 
         $(".CodeMirror, .CodeMirror-scroll").css('min-height', '150px');
-        
-        birthdayPicker = flatpickr($("#birthday-date")[0], {
-            static: true,
-            altInput: true,
-            enableTime: false,
-            dateFormat: "Y-m-d"
-        });
-    });
-
-    $(window).on('load',
-        function() {
-            $('#body').fadeIn(200);
-        });
+    }); 
+    
+   
 </script>
 
 <script src="https://maps.googleapis.com/maps/api/js?key=@Model.PlacesApi&libraries=places&callback=initMap" async defer></script>

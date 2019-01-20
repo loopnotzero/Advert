@@ -18,32 +18,36 @@
                     @await Html.PartialAsync("ProfilePartial", Model.Profile)
                 </div>
             </div>
+            <div class="col-md-6 p-1">
+                @{
+                    <div class="card">
+                        <ul class="nav nav-tabs">
+                            <li class="nav-item">
+                                <a class="nav-link" href="/@Model.Profile.Name/Posts">Posts</a>
+                            </li>
+                            @if (Model.IsProfileOwner)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link active" href="/@Model.Profile.Name/Hidden">Hidden</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/@Model.Profile.Name/Favorites">Favorites</a>
+                                </li>
+                            }
+                        </ul>
+                        @await Html.PartialAsync("PostsPartial", Model.Posts)
+                    </div>
+                }
+            </div>
+            <div class="col-md-3 p-1">
+            </div>
         }
-        <div class="col-md-6 p-1">
-            @{
-                <div class="card">
-                    <ul class="nav nav-tabs">
-                        <li class="nav-item">
-                            <a class="nav-link" href="/@Model.Profile.Name/Posts">Posts</a>
-                        </li>      
-                        @if (Model.IsProfileOwner)
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link active" href="/@Model.Profile.Name/Hidden">Hidden</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="/@Model.Profile.Name/Favorites">Favorites</a>
-                            </li>
-                        }
-                    </ul>
-                    @await Html.PartialAsync("PostsPartial", Model.Posts)
-                </div>
-            }
-        </div>
-        <div class="col-md-3 p-1">
-        </div>
     </div>
     @await Html.PartialAsync("AddPostModal")
     @await Html.PartialAsync("EditPostModal")
     @await Html.PartialAsync("DeletePostModal")
+    @if (Model.Profile != null)
+    {
+        @await Html.PartialAsync("EditProfileModal", Model.Profile)
+    }
 </section>

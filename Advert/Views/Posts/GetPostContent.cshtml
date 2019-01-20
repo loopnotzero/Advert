@@ -33,7 +33,7 @@
                     <textarea id="add-comment__text--editor" style="display: none"></textarea>
                     <div class="row mt-3">
                         <div class="col-12">
-                            <button id="add-comment" class="btn btn-primary__advert waves-effect waves-light btn-sm">COMMENT</button>
+                            <button id="add-comment" class="btn btn-primary waves-effect waves-light btn-sm">COMMENT</button>
                         </div>
                     </div>
                 </div>
@@ -49,4 +49,8 @@
     @await Html.PartialAsync("AddPostModal")
     @await Html.PartialAsync("EditPostModal")
     @await Html.PartialAsync("DeletePostModal")
+    @if (Model.Profile != null)
+    {
+        @await Html.PartialAsync("EditProfileModal", Model.Profile)
+    }
 </section>

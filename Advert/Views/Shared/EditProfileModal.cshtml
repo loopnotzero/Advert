@@ -1,3 +1,4 @@
+@using Advert.Common.Profiles
 @using Advert.Models.Profiles
 @model ProfileModel
 
@@ -6,7 +7,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <span class="font-weight-bold">Edit profile</span>
-                <button id="add-post__close" type="button" class="btn btn-link" data-dismiss="modal">
+                <button id="edit-profile__close" type="button" class="btn btn-link" data-dismiss="modal">
                     <span>
                         <i class="zmdi zmdi-close zmdi-hc-fw"></i>
                     </span>
@@ -40,30 +41,17 @@
                 </div>
                 <div class="form-group">
                     <select id="edit-profile__gender" class="form-control select2-pt">
-                        @if (Model.Gender.ToUpper().Equals("MALE"))
+                        @foreach (var gender in Enum.GetNames(typeof(Gender)))
                         {
-                            <option selected="selected">Male</option>
-                        }
-                        else
-                        {
-                            <option>Male</option>
-                        }
-                        @if (Model.Gender.ToUpper().Equals("FEMALE"))
-                        {
-                            <option selected="selected">Male</option>
-                        }
-                        else
-                        {
-                            <option>Female</option>
-                        }
-                        @if (Model.Gender.ToUpper().Equals("NOT SPECIFIED"))
-                        {
-                            <option selected="selected">Not specified</option>
-                        }
-                        else
-                        {
-                            <option>Not specified</option>
-                        }
+                            if (Model.Gender.ToUpper().Equals(gender.ToUpper()))
+                            {
+                                <option selected="selected">@gender</option>
+                            }
+                            else
+                            {
+                                <option>@gender</option>
+                            }
+                        }                      
                     </select>
                     <i class="form-group__bar"></i>
                 </div>
@@ -108,7 +96,7 @@
                 <button id="edit-profile__cancel" type="button" class="btn btn-light" data-dismiss="modal">
                     Cancel
                 </button>
-                <button id="edit-profile__save" type="button" class="btn btn-primary__advert" onclick="onEditProfileSaveChangesClick()">
+                <button id="edit-profile__save" type="button" class="btn btn-primary" onclick="onEditProfileSaveChangesClick()">
                     Save changes
                 </button>
             </div>

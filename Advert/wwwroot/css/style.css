@@ -1205,7 +1205,6 @@ select.form-control-lg:not([size]):not([multiple]) {
 .btn:not([class*=btn-outline-]) {
   border-color: transparent !important;
 }
-
 .btn--raised {
   box-shadow: 0 4px 3px -2px rgba(0, 0, 0, 0.15), 0 2px 2px 0 rgba(0, 0, 0, 0.04), 0 1px 5px 0 rgba(0, 0, 0, 0.02) !important;
 }
@@ -1254,7 +1253,7 @@ select.form-control-lg:not([size]):not([multiple]) {
   box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2), 0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 10px 2px rgba(0, 0, 0, 0.12) !important;
 }
 .btn--action, .btn--action:hover, .btn--action:focus {
-  color: #FFFFFF;
+  color: black;
 }
 
 .btn-group-justified {
@@ -1330,10 +1329,29 @@ select.form-control-lg:not([size]):not([multiple]) {
   opacity: 1;
 }
 
-.btn-primary__advert {
+.btn-link {
+  color: #4267b2;
+}
+.btn-link:hover {
+  color: #2e43b2;
+}
+
+.btn-light {
+  border-color: #adb5bd;
+  background-color: #e9ecef;
+}
+.btn-light:hover {
+  color: #000000;
+  background-color: #dee2e6;
+}
+
+.btn-primary {
   color: #fff;
+  border-color: #2e43b2;
   background-color: #4267b2;
-  border-color: #4267b2;
+}
+.btn-primary:hover {
+  background-color: #2e43b2;
 }
 
 .form-control {
@@ -3558,26 +3576,6 @@ File: Responsive
   width: 33.333%;
 }
 
-.modal-dialog {
-  position: relative;
-  width: auto;
-  margin: 0.5rem;
-  pointer-events: none;
-}
-
-.modal.fade .modal-dialog {
-  transition: -webkit-transform 0.1s ease-out;
-  transition: transform 0.1s ease-out;
-  transition: transform 0.1s ease-out, -webkit-transform 0.1s ease-out;
-  -webkit-transform: translate(0, -25%);
-  transform: translate(0, -25%);
-}
-
-@media screen and (prefers-reduced-motion: reduce) {
-  .modal.fade .modal-dialog {
-    transition: none;
-  }
-}
 .modal.show .modal-dialog {
   -webkit-transform: translate(0, 0);
   transform: translate(0, 0);
@@ -3676,33 +3674,6 @@ File: Responsive
   margin-right: 0.25rem;
 }
 
-.modal-scrollbar-measure {
-  position: absolute;
-  top: -9999px;
-  width: 50px;
-  height: 50px;
-  overflow: scroll;
-}
-
-@media (min-width: 576px) {
-  .modal-dialog {
-    max-width: 500px;
-    margin: 1.75rem auto;
-  }
-
-  .modal-dialog-centered {
-    min-height: calc(100% - (1.75rem * 2));
-  }
-
-  .modal-sm {
-    max-width: 300px;
-  }
-}
-@media (min-width: 992px) {
-  .modal-lg {
-    max-width: 1000px;
-  }
-}
 .dropzone {
   border: 2px dashed #dddfe2;
   border-radius: 5px;
