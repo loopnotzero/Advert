@@ -14,82 +14,96 @@
                 </button>
             </div>
             <div class="modal-body">
-                <h5 class="float-left">
-                    Email
-                </h5>
-                <div class="form-group">
-                    <input id="edit-profile__email" type="text" class="form-control" placeholder="Email" value="@Model.Email" readonly="readonly">
-                    <i class="form-group__bar"></i>
-                </div>
-                <h5 class="float-left">
-                    Common
-                </h5>
-                <div class="form-group">
-                    <input id="edit-profile__name" type="text" class="form-control" placeholder="Name" value="@Model.Name" readonly="readonly">
-                    <i class="form-group__bar"></i>
-                </div>
-                <div class="form-group">
-                    @if (string.IsNullOrEmpty(Model.Birthday))
-                    {
-                        <input id="birthday-date" class="form-control flatpickr flatpickr-input" style="display: block !important; color: #C0C0C0;" type="text" placeholder="Birthday">
-                    }
-                    else
-                    {
-                        <input id="birthday-date" class="form-control flatpickr flatpickr-input" style="display: block !important; color: #C0C0C0;" type="text" placeholder="Birthday" value="@Model.Birthday">
-                    }
-                    <i class="form-group__bar"></i>
-                </div>
-                <div class="form-group">
-                    <select id="edit-profile__gender" class="form-control select2-pt">
-                        @foreach (var gender in Enum.GetNames(typeof(Gender)))
-                        {
-                            if (Model.Gender.ToUpper().Equals(gender.ToUpper()))
-                            {
-                                <option selected="selected">@gender</option>
-                            }
-                            else
-                            {
-                                <option>@gender</option>
-                            }
-                        }                      
-                    </select>
-                    <i class="form-group__bar"></i>
-                </div>
-                <div class="form-group">
-                    @if (string.IsNullOrEmpty(Model.Birthday))
-                    {
-                        <input id="edit-profile__location" type="text" class="form-control" placeholder="Enter a location">
-                    }
-                    else
-                    {
-                        <input id="edit-profile__location" type="text" class="form-control" placeholder="Enter a location" value="@Model.Location">
-                    }
-                    <i class="form-group__bar"></i>
-                </div>
-                <h5 class="float-left">
-                    Add photo
-                </h5>
-                <div class="form-group">
-                    <form asp-controller="Posts" asp-action="AddPostPhotos" class="dropzone needsclick dz-clickable" id="profile-dropzone">
-                        <div class="dz-message needsclick">
-                            <img src="~/images/add-photos.png"/>
+                <div class="tab-container">
+                    <ul class="nav nav-tabs nav-fill" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link show active" data-toggle="tab" href="#edit-profile-tab" role="tab" aria-selected="false">Edit Profile</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link show" data-toggle="tab" href="#change-password-tab" role="tab" aria-selected="false">Change Password</a>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="edit-profile-tab" role="tabpanel">
+                            <div class="form-group">
+                                <label class="font-weight-bold">Email</label>
+                                <input id="edit-profile__email" type="text" class="form-control" value="@Model.Email" readonly="readonly">
+                                <i class="form-group__bar"></i>
+                            </div>
+                            <div class="form-group">
+                                <label class="font-weight-bold">Name</label>
+                                <input id="edit-profile__name" type="text" class="form-control" value="@Model.Name" readonly="readonly">
+                                <i class="form-group__bar"></i>
+                            </div>
+                            <div class="form-group">
+                                <label class="font-weight-bold">Birthday</label>
+                                @if (string.IsNullOrEmpty(Model.Birthday))
+                                {
+                                    <input id="birthday-date" class="form-control flatpickr flatpickr-input" style="display: block !important; color: #C0C0C0;" type="text" placeholder="Enter you birthday">
+                                }
+                                else
+                                {
+                                    <input id="birthday-date" class="form-control flatpickr flatpickr-input" style="display: block !important; color: #C0C0C0;" type="text" placeholder="Enter you birthday" value="@Model.Birthday">
+                                }
+                                <i class="form-group__bar"></i>
+                            </div>
+                            <div class="form-group">
+                                <label class="font-weight-bold">Gender</label>
+                                <select id="edit-profile__gender" class="form-control select2-pt">
+                                    @foreach (var gender in Enum.GetNames(typeof(Gender)))
+                                    {
+                                        if (Model.Gender.ToUpper().Equals(gender.ToUpper()))
+                                        {
+                                            <option selected="selected">@gender</option>
+                                        }
+                                        else
+                                        {
+                                            <option>@gender</option>
+                                        }
+                                    }
+                                </select>
+                                <i class="form-group__bar"></i>
+                            </div>
+                            <div class="form-group">
+                                <label class="font-weight-bold">Location</label>
+                                @if (string.IsNullOrEmpty(Model.Birthday))
+                                {
+                                    <input id="edit-profile__location" type="text" class="form-control">
+                                }
+                                else
+                                {
+                                    <input id="edit-profile__location" type="text" class="form-control" value="@Model.Location">
+                                }
+                                <i class="form-group__bar"></i>
+                            </div>
+                            <div class="form-group">
+                                <label class="font-weight-bold">Add profile photo</label>
+                                <form asp-controller="Posts" asp-action="AddPostPhotos" class="dropzone needsclick dz-clickable" id="profile-dropzone">
+                                    <div class="dz-message needsclick">
+                                        <img src="~/images/add-photos.png"/>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
-                    </form>
-                </div>
-                <h5 class="float-left">
-                    Change password
-                </h5>
-                <div class="form-group">
-                    <input id="edit-profile__new--password" type="password" class="form-control" placeholder="New password">
-                    <i class="form-group__bar"></i>
-                </div>
-                <div class="form-group">
-                    <input id="edit-profile__confirm--password" type="password" class="form-control" placeholder="Confirm new password">
-                    <i class="form-group__bar"></i>
-                </div>
-                <div class="form-group">
-                    <input id="edit-profile__current--password" type="password" class="form-control" placeholder="Current password">
-                    <i class="form-group__bar"></i>
+                        <div class="tab-pane fade show" id="change-password-tab" role="tabpanel">
+                            <div class="form-group">
+                                <label class="font-weight-bold">Old password</label>
+                                <input id="edit-profile__old--password" type="password" class="form-control" placeholder="Enter old password">
+                                <i class="form-group__bar"></i>
+                            </div>
+                            <div class="form-group">
+                                <label class="font-weight-bold">New password</label>
+                                <input id="edit-profile__new--password" type="password" class="form-control" placeholder="Enter new password">
+                                <i class="form-group__bar"></i>
+                            </div>
+                            <div class="form-group">
+                                <label class="font-weight-bold">Confirm password</label>
+                                <input id="edit-profile__confirm--password" type="password" class="form-control" placeholder="Confirm new password">
+                                <i class="form-group__bar"></i>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
