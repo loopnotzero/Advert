@@ -449,11 +449,13 @@
                             "July", "August", "September",
                             "October", "November", "December"
                         ];
-
+                        
+                        $("#profile-location").text(`${profile.location}`);
+                        
                         var date = new Date(profile.birthday);
 
                         var birthday = `${date.getDate()} ${monthNames[date.getMonth()]} ${date.getFullYear()}`;
-                        
+                    
                         $("#profile-birthday").text(`Birthday ${birthday}`);
                         
                         $("#edit__profile--modal").modal('toggle');

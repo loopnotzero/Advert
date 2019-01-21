@@ -20,10 +20,16 @@ else
     </a> 
     <div style="border-bottom: 1px solid #d5d5d5; margin-bottom: 10px;">
     </div>
+    <p id="profile-location">
+        @if (!string.IsNullOrEmpty(Model.Location) && !string.IsNullOrWhiteSpace(Model.Location))
+        {
+            @Model.Location
+        }
+    </p>
     <p>
         Joined @Model.CreatedAt
     </p>
-    @if (Model.Birthday != null)
+    @if (!string.IsNullOrEmpty(Model.Birthday) && !string.IsNullOrWhiteSpace(Model.Birthday))
     {
         <p id="profile-birthday">      
             Birthday @Model.Birthday

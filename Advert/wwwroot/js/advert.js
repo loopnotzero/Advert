@@ -136,7 +136,7 @@ function updateProfileByIdAsync(profileId, profile, successCallback, errorCallba
     console.log(`Update profile by id: ${profileId}`);
     $.ajax({
         url: `/Profile/UpdateProfileByIdAsync?profileId=${profileId}`,
-        type: "POST",
+        type: "PUT",
         data: JSON.stringify(profile),
         contentType: "application/json",
         error: function(jqXhr, textStatus, errorThrown) {
