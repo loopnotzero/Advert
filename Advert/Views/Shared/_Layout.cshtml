@@ -40,24 +40,24 @@
     var birthdayPicker;
 
     function initMap() {
-        if ($("#add-post__location").length) {
-            new google.maps.places.Autocomplete($("#add-post__location")[0])
+        if ($("#add__post--location").length) {
+            new google.maps.places.Autocomplete($("#add__post--location")[0])
                 .addListener('place_changed',
                     function() {
 
                     });
         }
 
-        if ($("#edit-post__location").length) {
-            new google.maps.places.Autocomplete($("#edit-post__location")[0])
+        if ($("#edit__post--location").length) {
+            new google.maps.places.Autocomplete($("#edit__post--location")[0])
                 .addListener('place_changed',
                     function() {
 
                     });
         }
 
-        if ($("#edit-profile__location").length) {
-            new google.maps.places.Autocomplete($("#edit-profile__location")[0])
+        if ($("#edit__profile--location").length) {
+            new google.maps.places.Autocomplete($("#edit__profile--location")[0])
                 .addListener('place_changed',
                     function() {
 
@@ -193,7 +193,7 @@
                     .value()),
                 title: $("#add-post__title").val(),
                 price: $("#add-post__price").val(),
-                location: $("#add-post__location").val(),
+                location: $("#add__post--location").val(),
                 currency: $('#add-post__currency :selected').text()
             };
             createPostAsync(post,
@@ -243,7 +243,7 @@
             function(response) {
                 $("#edit-post__title").val(response.title);
                 $("#edit-post__price").val(response.price);
-                $("#edit-post__location").val(response.location);
+                $("#edit__post--location").val(response.location);
                 $('#edit-post__currency').val(response.currency).trigger('change');
                 textEditor["edit-post__text--editor"].value(turndown.turndown(response.text));
             },
@@ -256,7 +256,7 @@
                     .value()),
                 title: $("#edit-post__title").val(),
                 price: $("#edit-post__price").val(),
-                location: $("#edit-post__location").val(),
+                location: $("#edit__post--location").val(),
                 currency: $('#edit-post__currency :selected').text()
             };
             updatePostByIdAsync(postId,
@@ -409,7 +409,6 @@
                         `MatchedCount: ${response.matchedCount} ModifiedCount: ${response.matchedCount
                         } IsAcknowledged: ${response.isAcknowledged} IsModifiedCountAvailable: ${response
                         .isModifiedCountAvailable}`);
-
                     var comment = $(`#media-comment__${commentId}`);
                     comment.empty();
                     comment.append(postComment.text);
@@ -424,9 +423,51 @@
                 textEditor["edit-comment__text--editor"].toggleFullScreen();
         });
     }
-    
-    function onEditProfileSaveChangesClick() {
-        alert(birthdayPicker.altInput.value);
+
+    function onEditProfileSaveChangesClick(profileId) {
+        var tabId = $(".tab-content").find(".active").attr('id');
+        switch (tabId) {
+        case "edit__profile--tab":
+            {
+                var profile = {
+                    gender: $("#edit__profile--gender :selected").text(),
+                    birthday: $("#edit__profile--birthday").val(),
+                    location: $("#edit__profile--location").val()
+                }
+                updateProfileByIdAsync(profileId,
+                    profile,
+                    function(response) {
+                        console.log(
+                            `MatchedCount: ${response.matchedCount} ModifiedCount: ${response.matchedCount
+                            } IsAcknowledged: ${response.isAcknowledged} IsModifiedCountAvailable: ${response
+                            .isModifiedCountAvailable}`);
+                        console.log(`Birthday: ${profile.birthday}`);
+                        
+                        var monthNames = [
+                            "January", "February", "March",
+                            "April", "May", "June",
+                            "July", "August", "September",
+                            "October", "November", "December"
+                        ];
+
+                        var date = new Date(profile.birthday);
+
+                        var birthday = `${date.getDate()} ${monthNames[date.getMonth()]} ${date.getFullYear()}`;
+                        
+                        $("#profile-birthday").text(`Birthday ${birthday}`);
+                        
+                        $("#edit__profile--modal").modal('toggle');
+                    },
+                    function(jqXhr, textStatus, errorThrown) {
+                        alert("Error");
+                    });
+            }
+            break;
+        case "change__password--tab":
+            {
+            }
+            break;
+        }
     }
  
     function onReplyCommentClick(postId, replyTo, commentId) {
@@ -568,11 +609,7 @@
         function() {
             $('#body').fadeIn(200);
         });
-    
-    $(document).on('shown.bs.modal', '.modal', function () {
-        console.log("On show any modal window");   
-    });  
-    
+
     $(document).ready(function() {
         var body = $('body');
 
@@ -690,8 +727,8 @@
                     });
             });
         
-        if ($("#edit-profile__modal").length) {
-            birthdayPicker = flatpickr($("#birthday-date")[0],
+        if ($("#edit__profile--modal").length) {
+            birthdayPicker = flatpickr($("#edit__profile--birthday")[0],
                 {
                     static: true,
                     altInput: true,
@@ -699,7 +736,7 @@
                     dateFormat: "Y-m-d"
                 }); 
         }
-        
+
         $(".search").submit(function(event) {
             event.preventDefault();
             window.location.replace(window.location.href + "?page=1&keyword=" + $(".search__text").val());
@@ -707,8 +744,6 @@
 
         $(".CodeMirror, .CodeMirror-scroll").css('min-height', '150px');
     }); 
-    
-   
 </script>
 
 <script src="https://maps.googleapis.com/maps/api/js?key=@Model.PlacesApi&libraries=places&callback=initMap" async defer></script>

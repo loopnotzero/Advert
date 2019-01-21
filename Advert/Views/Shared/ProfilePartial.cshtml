@@ -1,8 +1,8 @@
 @using Advert.Models.Profiles
-@model ProfileModel
+@model ProfileViewModel
 
 <div class="profile-header">
-    <a href="#" class="zmdi zmdi-edit float-right" data-toggle="modal" data-target="#edit-profile__modal" >
+    <a href="#" class="zmdi zmdi-edit float-right" data-toggle="modal" data-target="#edit__profile--modal" >
     </a>
 </div>
 
@@ -25,8 +25,8 @@ else
     </p>
     @if (Model.Birthday != null)
     {
-        <p>      
-            Born @Model.Birthday
+        <p id="profile-birthday">      
+            Birthday @Model.Birthday
         </p> 
     } 
 </div>

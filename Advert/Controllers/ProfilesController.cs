@@ -11,10 +11,13 @@ using Advert.Models.Profiles;
 using Advert.MongoDbStorage.Posts;
 using Advert.MongoDbStorage.Profiles;
 using Humanizer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using MongoDB.Bson;
 
 namespace Advert.Controllers
 {
@@ -100,14 +103,14 @@ namespace Advert.Controllers
                             Tags = post.Tags,
                         }),
                         
-                        Profile = new ProfileModel
+                        Profile = new ProfileViewModel
                         {
                             Id = profile._id.ToString(),
                             Name = profile.Name,
                             Email = profile.Email,
                             Gender = profile.Gender.ToString(),
                             Location = profile.Location,
-                            Birthday = profile.Birthday?.ToString(CultureInfo.CreateSpecificCulture("ru-RU")),
+                            Birthday = profile.Birthday?.ToString("dd MMMM yyyy"),
                             CreatedAt = profile.CreatedAt.Humanize(),
                             ImagePath = profile.ImagePath,
                             PhoneNumber = profile.PhoneNumber,
@@ -157,14 +160,14 @@ namespace Advert.Controllers
                         Tags = post.Tags,
                     }),
                     
-                    Profile = new ProfileModel
+                    Profile = new ProfileViewModel
                     {
                         Id = profile._id.ToString(),
                         Name = profile.Name,
                         Email = profile.Email,
                         Gender = profile.Gender.Humanize(),
                         Location = profile.Location,
-                        Birthday = profile.Birthday?.ToString(CultureInfo.CreateSpecificCulture("ru-RU")),
+                        Birthday = profile.Birthday?.ToString("dd MMMM yyyy"),
                         CreatedAt = profile.CreatedAt.Humanize(),
                         ImagePath = profile.ImagePath,
                         PhoneNumber = profile.PhoneNumber
@@ -219,14 +222,14 @@ namespace Advert.Controllers
                             Tags = post.Tags,
                         }),
                         
-                        Profile = new ProfileModel
+                        Profile = new ProfileViewModel
                         {
                             Id = profile._id.ToString(),
                             Name = profile.Name,
                             Email = profile.Email,
                             Gender = profile.Gender.Humanize(),
                             Location = profile.Location,
-                            Birthday = profile.Birthday?.ToString(CultureInfo.CreateSpecificCulture("ru-RU")),
+                            Birthday = profile.Birthday?.ToString("dd MMMM yyyy"),
                             CreatedAt = profile.CreatedAt.Humanize(),
                             ImagePath = profile.ImagePath,
                             PhoneNumber = profile.PhoneNumber
@@ -276,14 +279,14 @@ namespace Advert.Controllers
                         Tags = post.Tags,
                     }),
                     
-                    Profile = new ProfileModel
+                    Profile = new ProfileViewModel
                     {
                         Id = profile._id.ToString(),
                         Name = profile.Name,
                         Email = profile.Email,
                         Gender = profile.Gender.Humanize(),
                         Location = profile.Location,
-                        Birthday = profile.Birthday?.ToString(CultureInfo.CreateSpecificCulture("ru-RU")),
+                        Birthday = profile.Birthday?.ToString("dd MMMM yyyy"),
                         CreatedAt = profile.CreatedAt.Humanize(),
                         ImagePath = profile.ImagePath,
                         PhoneNumber = profile.PhoneNumber
@@ -354,14 +357,14 @@ namespace Advert.Controllers
                         Tags = post.Tags,
                     }),
                     
-                    Profile = new ProfileModel
+                    Profile = new ProfileViewModel
                     {
                         Id = profile._id.ToString(),
                         Name = profile.Name,
                         Email = profile.Email,
                         Gender = profile.Gender.Humanize(),
                         Location = profile.Location,
-                        Birthday = profile.Birthday?.ToString(CultureInfo.CreateSpecificCulture("ru-RU")),
+                        Birthday = profile.Birthday?.ToString("dd MMMM yyyy"),
                         CreatedAt = profile.CreatedAt.Humanize(),
                         ImagePath = profile.ImagePath,
                         PhoneNumber = profile.PhoneNumber
@@ -378,5 +381,46 @@ namespace Advert.Controllers
                 return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
             }
         }  
+        
+        [HttpPut]
+        [Authorize]
+        [Route("/Profile/UpdateProfileByIdAsync")]
+        public async Task<IActionResult> UpdateProfileByIdAsync([FromQuery(Name = "profileId")] string profileId, [FromBody] ProfileViewModel model)
+        {
+            try
+            {
+                var profile = await _profilesManager.FindProfileByIdAsync(ObjectId.Parse(profileId));
+
+                if (Enum.TryParse(model.Gender, out Gender gender))
+                {
+                    profile.Gender = gender;
+                }
+
+                if (!string.IsNullOrEmpty(model.Location) && !string.IsNullOrWhiteSpace(model.Location))
+                {
+                    profile.Location = model.Location;
+                }
+
+                if (!string.IsNullOrEmpty(model.Birthday) && !string.IsNullOrWhiteSpace(model.Birthday))
+                {
+                    profile.Birthday = DateTime.ParseExact(model.Birthday, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                }
+
+                var result = await _profilesManager.UpdateProfileAsync(profile);
+                
+                return Ok(new UpdateResultModel
+                {
+                    MatchedCount = result.MatchedCount,
+                    ModifiedCount = result.ModifiedCount,
+                    IsAcknowledged = result.IsAcknowledged,
+                    IsModifiedCountAvailable = result.IsModifiedCountAvailable
+                });
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
+            }
+        }
     }
 }

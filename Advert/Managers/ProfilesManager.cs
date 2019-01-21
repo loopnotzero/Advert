@@ -3,10 +3,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using Advert.Common.Posts;
 using Advert.Common.Profiles;
+using Advert.Common.Stores;
 using Advert.MongoDbStorage.Profiles;
 using Advert.MongoDbStorage.Stores;
 using Microsoft.AspNetCore.Identity;
 using MongoDB.Bson;
+using MongoDB.Driver;
 
 namespace Advert.Managers
 {
@@ -51,7 +53,7 @@ namespace Advert.Managers
             await Store.CreateProfileAsync(entity, CancellationToken);
         }
         
-        public async Task UpdateProfileAsync(T entity)
+        public async Task<ReplaceOneResult> UpdateProfileAsync(T entity)
         {
             ThrowIfDisposed();
 
@@ -60,7 +62,7 @@ namespace Advert.Managers
                 throw new ArgumentNullException(nameof(entity));
             }
 
-            await Store.UpdateProfileAsync(entity, CancellationToken);
+            return await Store.UpdateProfileAsync(entity, CancellationToken);
         }
 
         public async Task<T> FindProfileByIdAsync(ObjectId id)

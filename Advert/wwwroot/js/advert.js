@@ -132,6 +132,25 @@ function updatePostCommentAsync(postId, commentId, postComment, successCallback,
     });
 }
 
+function updateProfileByIdAsync(profileId, profile, successCallback, errorCallback) {
+    console.log(`Update profile by id: ${profileId}`);
+    $.ajax({
+        url: `/Profile/UpdateProfileByIdAsync?profileId=${profileId}`,
+        type: "POST",
+        data: JSON.stringify(profile),
+        contentType: "application/json",
+        error: function(jqXhr, textStatus, errorThrown) {
+            console.log("jqXhr: " + jqXhr);
+            console.log("textStatus: " + textStatus);
+            console.log("errorThrown: " + errorThrown);
+            errorCallback(jqXhr, textStatus, errorThrown);
+        },
+        success: function(response) {
+            successCallback(response);
+        }
+    });
+}
+
 function deletePostByIdAsync(postId, successCallback, errorCallback) {
     console.log(`Delete post by id: ${postId}`);
     $.ajax({

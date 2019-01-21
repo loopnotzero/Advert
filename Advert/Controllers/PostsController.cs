@@ -154,14 +154,14 @@ namespace Advert.Controllers
                             Tags = post.Tags,
                         }),
                         
-                        Profile = profile == null ? null : new ProfileModel
+                        Profile = profile == null ? null : new ProfileViewModel
                         {
                             Id = profile._id.ToString(),
                             Name = profile.Name,
                             Email = profile.Email,
                             Gender = profile.Gender.Humanize(),
                             Location = profile.Location,
-                            Birthday = profile.Birthday?.ToString(CultureInfo.CreateSpecificCulture("ru-RU")),
+                            Birthday = profile.Birthday?.ToString("dd MMMM yyyy"),
                             CreatedAt = profile.CreatedAt.Humanize(),
                             ImagePath = profile.ImagePath ?? EmptyProfileImage,     
                             PhoneNumber = profile.PhoneNumber,
@@ -315,14 +315,14 @@ namespace Advert.Controllers
                         }
                     },
                     
-                    Profile = profile == null ? null : new ProfileModel
+                    Profile = profile == null ? null : new ProfileViewModel
                     {
                         Id = profile._id.ToString(),
                         Name = profile.Name,
                         Email = profile.Email,
                         Gender = profile.Gender.Humanize(),
                         Location = profile.Location,
-                        Birthday = profile.Birthday?.ToString(CultureInfo.CreateSpecificCulture("ru-RU")),
+                        Birthday = profile.Birthday?.ToString("dd MMMM yyyy"),
                         CreatedAt = profile.CreatedAt.Humanize(),
                         ImagePath = profile.ImagePath ?? EmptyProfileImage,
                         PhoneNumber = profile.PhoneNumber,
