@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Advert.Common.Posts;
 using Advert.Common.Profiles;
+using Advert.Common.Stores;
 using Advert.MongoDbStorage.Common;
 using Advert.MongoDbStorage.Profiles;
 using MongoDB.Bson;
@@ -44,10 +45,10 @@ namespace Advert.MongoDbStorage.Stores
             }, cancellationToken);
         }
 
-        public async Task UpdateProfileAsync(T entity, CancellationToken cancellationToken)
+        public async Task<ReplaceOneResult> UpdateProfileAsync(T entity, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            await _collection.ReplaceOneAsync(Builders<T>.Filter.Eq(x => x._id, entity._id), entity, new UpdateOptions
+            return await _collection.ReplaceOneAsync(Builders<T>.Filter.Eq(x => x._id, entity._id), entity, new UpdateOptions
             {
                 BypassDocumentValidation = false
             }, cancellationToken);

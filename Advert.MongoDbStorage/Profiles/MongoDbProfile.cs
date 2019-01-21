@@ -35,6 +35,8 @@ namespace Advert.MongoDbStorage.Profiles
         public DateTime? UpdatedAt { get; set; }  
         
         public DateTime? DeletedAt { get; set; }   
+        
+        [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
         public DateTime? Birthday { get; set; }
     }
 }
