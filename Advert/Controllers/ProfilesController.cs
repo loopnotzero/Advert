@@ -396,12 +396,13 @@ namespace Advert.Controllers
                     profile.Gender = gender;
                 }
 
-                if (!string.IsNullOrEmpty(model.Location) && !string.IsNullOrWhiteSpace(model.Location))
-                {
-                    profile.Location = model.Location;
-                }
+                profile.Location = model.Location;
 
-                if (!string.IsNullOrEmpty(model.Birthday) && !string.IsNullOrWhiteSpace(model.Birthday))
+                if (string.IsNullOrEmpty(model.Birthday) || string.IsNullOrWhiteSpace(model.Birthday))
+                {
+                    profile.Birthday = null;
+                }
+                else
                 {
                     profile.Birthday = DateTime.ParseExact(model.Birthday, "yyyy-MM-dd", CultureInfo.InvariantCulture);
                 }

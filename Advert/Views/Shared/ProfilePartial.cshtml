@@ -29,10 +29,11 @@ else
     <p>
         <i class="zmdi zmdi-calendar zmdi-hc-fw"></i>Joined @Model.CreatedAt
     </p>
-    @if (!string.IsNullOrEmpty(Model.Birthday) && !string.IsNullOrWhiteSpace(Model.Birthday))
-    {
-        <p id="profile-birthday">
-            <i class="zmdi zmdi-brightness-5 zmdi-hc-fw"></i>Birthday @Model.Birthday
-        </p> 
-    } 
+    <p id="profile-birthday">
+        @if (!string.IsNullOrEmpty(Model.Birthday) && !string.IsNullOrWhiteSpace(Model.Birthday))
+        {
+            @:<span>Birthday</span> @Model.Birthday
+        } 
+    </p> 
+    
 </div>
