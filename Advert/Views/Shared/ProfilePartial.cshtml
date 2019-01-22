@@ -23,16 +23,16 @@ else
     <p id="profile-location">
         @if (!string.IsNullOrEmpty(Model.Location) && !string.IsNullOrWhiteSpace(Model.Location))
         {
-            @Model.Location
+            <i class="zmdi zmdi-pin zmdi-hc-fw"></i>@Model.Location
         }
     </p>
     <p>
-        Joined @Model.CreatedAt
+        <i class="zmdi zmdi-calendar zmdi-hc-fw"></i>Joined @Model.CreatedAt
     </p>
     @if (!string.IsNullOrEmpty(Model.Birthday) && !string.IsNullOrWhiteSpace(Model.Birthday))
     {
-        <p id="profile-birthday">      
-            Birthday @Model.Birthday
+        <p id="profile-birthday">
+            <i class="zmdi zmdi-brightness-5 zmdi-hc-fw"></i>Birthday @Model.Birthday
         </p> 
     } 
 </div>
