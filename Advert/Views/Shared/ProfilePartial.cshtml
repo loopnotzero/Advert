@@ -2,8 +2,11 @@
 @model ProfileViewModel
 
 <div class="profile-header">
-    <a href="#" class="zmdi zmdi-edit float-right" data-toggle="modal" data-target="#edit__profile--modal" >
-    </a>
+    @if (Model != null && Model.Owner)
+    {
+        <a href="#" class="zmdi zmdi-edit float-right" data-toggle="modal" data-target="#edit__profile--modal">
+        </a>
+    }
 </div>
 
 @if (string.IsNullOrEmpty(Model.ImagePath))

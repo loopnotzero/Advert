@@ -25,7 +25,7 @@
                             <li class="nav-item">
                                 <a class="nav-link active" href="/@Model.Profile.Name/Posts">Posts</a>
                             </li>
-                            @if (Model.IsProfileOwner)
+                            @if (Model.Profile != null && Model.Profile.Owner)
                             {
                                 <li class="nav-item">
                                     <a class="nav-link" href="/@Model.Profile.Name/Hidden">Hidden</a>

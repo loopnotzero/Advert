@@ -14,7 +14,6 @@ using Humanizer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
@@ -78,7 +77,7 @@ namespace Advert.Controllers
                 {
                     return BadRequest();
                 }
-                
+                 
                 var posts = await _postsManager.FindPostsByProfileIdAsync(profile._id, 0, null);
 
                 if (!HttpContext.User.Identity.IsAuthenticated)
@@ -105,6 +104,7 @@ namespace Advert.Controllers
                         
                         Profile = new ProfileViewModel
                         {
+                            Owner = false,
                             Id = profile._id.ToString(),
                             Name = profile.Name,
                             Email = profile.Email,
@@ -117,8 +117,6 @@ namespace Advert.Controllers
                         },
                         
                         PlacesApi = _configuration.GetSection("GoogleApiServices").GetValue<string>("PlacesApi"),
-                        
-                        IsProfileOwner = false
                     });
                 }
 
@@ -162,6 +160,7 @@ namespace Advert.Controllers
                     
                     Profile = new ProfileViewModel
                     {
+                        Owner = myProfile != null && profile._id.Equals(myProfile._id),
                         Id = profile._id.ToString(),
                         Name = profile.Name,
                         Email = profile.Email,
@@ -173,9 +172,7 @@ namespace Advert.Controllers
                         PhoneNumber = profile.PhoneNumber
                     },
                     
-                    PlacesApi = _configuration.GetSection("GoogleApiServices").GetValue<string>("PlacesApi"),
-                    
-                    IsProfileOwner = myProfile != null && profile._id.Equals(myProfile._id)
+                    PlacesApi = _configuration.GetSection("GoogleApiServices").GetValue<string>("PlacesApi"),                 
                 });
             }
             catch (Exception e)
@@ -224,6 +221,7 @@ namespace Advert.Controllers
                         
                         Profile = new ProfileViewModel
                         {
+                            Owner = false,
                             Id = profile._id.ToString(),
                             Name = profile.Name,
                             Email = profile.Email,
@@ -235,9 +233,7 @@ namespace Advert.Controllers
                             PhoneNumber = profile.PhoneNumber
                         },
                         
-                        PlacesApi = _configuration.GetSection("GoogleApiServices").GetValue<string>("PlacesApi"),
-                        
-                        IsProfileOwner = false
+                        PlacesApi = _configuration.GetSection("GoogleApiServices").GetValue<string>("PlacesApi"),  
                     });
                 }
 
@@ -281,6 +277,7 @@ namespace Advert.Controllers
                     
                     Profile = new ProfileViewModel
                     {
+                        Owner = myProfile != null && profile._id.Equals(myProfile._id),
                         Id = profile._id.ToString(),
                         Name = profile.Name,
                         Email = profile.Email,
@@ -292,9 +289,7 @@ namespace Advert.Controllers
                         PhoneNumber = profile.PhoneNumber
                     },
                     
-                    PlacesApi = _configuration.GetSection("GoogleApiServices").GetValue<string>("PlacesApi"),
-                    
-                    IsProfileOwner = myProfile != null && profile._id.Equals(myProfile._id)
+                    PlacesApi = _configuration.GetSection("GoogleApiServices").GetValue<string>("PlacesApi"),                    
                 });
             }
             catch (Exception e)
@@ -359,6 +354,7 @@ namespace Advert.Controllers
                     
                     Profile = new ProfileViewModel
                     {
+                        Owner = myProfile != null && profile.NormalizedEmail.Equals(HttpContext.User.Identity.Name.ToUpper()),
                         Id = profile._id.ToString(),
                         Name = profile.Name,
                         Email = profile.Email,
@@ -370,9 +366,7 @@ namespace Advert.Controllers
                         PhoneNumber = profile.PhoneNumber
                     },
                     
-                    PlacesApi = _configuration.GetSection("GoogleApiServices").GetValue<string>("PlacesApi"),
-                    
-                    IsProfileOwner = myProfile != null && profile.NormalizedEmail.Equals(HttpContext.User.Identity.Name.ToUpper())
+                    PlacesApi = _configuration.GetSection("GoogleApiServices").GetValue<string>("PlacesApi"),                   
                 });
             }
             catch (Exception e)

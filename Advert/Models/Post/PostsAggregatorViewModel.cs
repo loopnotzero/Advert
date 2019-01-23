@@ -5,7 +5,6 @@ namespace Advert.Models.Post
 {
     public class PostsAggregatorViewModel
     {
-        public bool IsProfileOwner { get; set; }
         public long BeginPage { get; set; }
         public long EndPage { get; set; }
         public long CurrentPage { get; set; }

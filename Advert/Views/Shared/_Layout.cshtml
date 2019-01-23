@@ -450,14 +450,14 @@
                             "October", "November", "December"
                         ];
                         
-                        $("#profile-location").text(`${profile.location}`);
+                        $("#profile-location").html(`<i class="zmdi zmdi-pin zmdi-hc-fw"></i>${profile.location}`);
                         
                         if (profile.birthday === "" || profile.birthday === null) {
                             $("#profile-birthday").empty();
                         } else {
                             var date = new Date(profile.birthday);
                             var birthday = `${date.getDate()} ${monthNames[date.getMonth()]} ${date.getFullYear()}`;                    
-                            $("#profile-birthday").text(`Birthday ${birthday}`);
+                            $("#profile-birthday").html(`<i class="zmdi zmdi-brightness-5 zmdi-hc-fw"></i> Birthday ${birthday}`);
                         }
          
                         $("#edit__profile--modal").modal('toggle');
