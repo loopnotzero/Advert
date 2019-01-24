@@ -191,15 +191,15 @@
             var post = {
                 text: textEditor["add-post__text--editor"].options.previewRender(textEditor["add-post__text--editor"]
                     .value()),
-                title: $("#add-post__title").val(),
-                price: $("#add-post__price").val(),
+                title: $("#add__post--title").val(),
+                price: $("#add__post--price").val(),
                 location: $("#add__post--location").val(),
-                currency: $('#add-post__currency :selected').text()
+                currency: $('#add__post--currency option:selected').text()
             };
             createPostAsync(post,
                 function(response) {
                     console.log("Close add post modal window");
-                    $("#add-post__modal").modal('toggle');
+                    $("#add__post--modal").modal('toggle');
                     console.log(`Redirect to URL: ${response.returnUrl}`);
                     window.location.replace(response.returnUrl);
                 },
@@ -244,7 +244,7 @@
                 $("#edit-post__title").val(response.title);
                 $("#edit-post__price").val(response.price);
                 $("#edit__post--location").val(response.location);
-                $('#edit-post__currency').val(response.currency).trigger('change');
+                $('#edit__post--currency').val(response.currency).trigger('change');
                 textEditor["edit-post__text--editor"].value(turndown.turndown(response.text));
             },
             function(jqXhr, textStatus, errorThrown) {
@@ -252,20 +252,22 @@
             });
         $("#edit-post__save").off("click").click(function() {
             var post = {
-                text: textEditor["edit-post__text--editor"].options.previewRender(textEditor["edit-post__text--editor"]
-                    .value()),
+                text: textEditor["edit-post__text--editor"].options.previewRender(textEditor["edit-post__text--editor"].value()),
                 title: $("#edit-post__title").val(),
                 price: $("#edit-post__price").val(),
                 location: $("#edit__post--location").val(),
-                currency: $('#edit-post__currency :selected').text()
+                currency: $('#edit__post--currency option:selected').text()
             };
+
+            console.log("Currency: " + post.currency);
+            
             updatePostByIdAsync(postId,
                 post,
                 function(response) {
                     console.log("Close edit post modal window");
                     $("#edit-post__modal").modal('toggle');
-                    $(`#post-title__${postId}`).html(post.title);
-                    $(`#post-price__${postId}`).html(`${post.price}${post.currency}`);
+                    $(`#post-title__${postId}`).text(post.title);
+                    $(`#post-price__${postId}`).text(`${post.price}${post.currency}`);
                     $(`#post-location__${postId}`).text(post.location);
                     $(`#post-text__${postId}`).html(post.text);
                     console.log(
@@ -701,7 +703,7 @@
                 });
 
                 //Fix for empty editors until it has no focus
-                $('#add-post__modal').on('shown.bs.modal',
+                $('#add__post--modal').on('shown.bs.modal',
                     function() {
                         console.log("Add post shown.bs.modal");
                         textEditor["add-post__text--editor"].codemirror.refresh();
