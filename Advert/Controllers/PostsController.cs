@@ -120,7 +120,7 @@ namespace Advert.Controllers
 
                 var postsVotes = new List<IPostVote>();
 
-                if (User.Identity.IsAuthenticated)
+                if (profile != null)
                 {
                     postsVotes.AddRange(await _postsVotesManager.FindPostsVotesAsync(profile._id));
                 }
@@ -156,6 +156,7 @@ namespace Advert.Controllers
                         
                         Profile = profile == null ? null : new ProfileViewModel
                         {
+                            Owner = profile.NormalizedEmail.Equals(HttpContext.User.Identity.Name.ToUpper()),
                             Id = profile._id.ToString(),
                             Name = profile.Name,
                             Email = profile.Email,
@@ -317,6 +318,7 @@ namespace Advert.Controllers
                     
                     Profile = profile == null ? null : new ProfileViewModel
                     {
+                        Owner = profile.NormalizedEmail.Equals(HttpContext.User.Identity.Name.ToUpper()),
                         Id = profile._id.ToString(),
                         Name = profile.Name,
                         Email = profile.Email,

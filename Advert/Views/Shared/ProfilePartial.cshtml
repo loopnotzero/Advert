@@ -1,42 +1,51 @@
 @using Advert.Models.Profiles
 @model ProfileViewModel
 
-<div class="profile-header">
-    @if (Model != null && Model.Owner)
-    {
-        <a href="#" class="zmdi zmdi-edit float-right" data-toggle="modal" data-target="#edit__profile--modal">
-        </a>
-    }
-</div>
-
-@if (string.IsNullOrEmpty(Model.ImagePath))
+@if (Model != null)
 {
-    <img id="profile-image" src="~/images/no-image.png" class="team__img" alt="">
-}
-else
-{
-    <img id="profile-image" src="@Model.ImagePath" class="team__img" alt="">
-}
-<div class="card-body">
-    <a href="/@Model.Name">
-        <h5 class="card-title">@Model.Name</h5>
-    </a> 
-    <div style="border-bottom: 1px solid #d5d5d5; margin-bottom: 10px;">
-    </div>
-    <p id="profile-location">
-        @if (!string.IsNullOrEmpty(Model.Location) && !string.IsNullOrWhiteSpace(Model.Location))
+    <div class="profile-header">
+        @if (Model.Owner)
         {
-            <i class="zmdi zmdi-pin zmdi-hc-fw"></i>@Model.Location
+            <a href="#" class="zmdi zmdi-edit float-right" data-toggle="modal" data-target="#edit__profile--modal">
+            </a>
         }
-    </p>
-    <p>
-        <i class="zmdi zmdi-calendar zmdi-hc-fw"></i>Joined @Model.CreatedAt
-    </p>
-    <p id="profile-birthday">
-        @if (!string.IsNullOrEmpty(Model.Birthday) && !string.IsNullOrWhiteSpace(Model.Birthday))
-        {
-            <i class="zmdi zmdi-brightness-5 zmdi-hc-fw"></i> @:<span>Birthday</span> @Model.Birthday
-        } 
-    </p> 
+    </div>
+
+    if (string.IsNullOrEmpty(Model.ImagePath))
+    {
+        <img id="profile-image" src="~/images/no-image.png" class="team__img" alt="">
+    }
+    else
+    {
+        <img id="profile-image" src="@Model.ImagePath" class="team__img" alt="">
+    }
     
-</div>
+    <div class="card-body">
+        @if (Model != null)
+        {
+            <a href="/@Model.Name">
+                <h5 class="card-title">@Model.Name</h5>
+            </a>
+            <div style="border-bottom: 1px solid #d5d5d5; margin-bottom: 10px;">
+            </div>
+            <p id="profile-location">
+                @if (!string.IsNullOrEmpty(Model.Location) && !string.IsNullOrWhiteSpace(Model.Location))
+                {
+                    <i class="zmdi zmdi-pin zmdi-hc-fw"></i>@Model.Location
+                }
+            </p>
+            <p>
+                <i class="zmdi zmdi-calendar zmdi-hc-fw"></i>Joined @Model.CreatedAt
+            </p>
+            <p id="profile-birthday">
+                @if (!string.IsNullOrEmpty(Model.Birthday) && !string.IsNullOrWhiteSpace(Model.Birthday))
+                {
+                    <i class="zmdi zmdi-brightness-5 zmdi-hc-fw"></i>
+                    @:<span>Birthday</span> @Model.Birthday
+                }
+            </p>
+        }
+    </div>
+}
+
+
