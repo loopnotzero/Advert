@@ -26,24 +26,39 @@
             <a href="/@Model.Name">
                 <h5 class="card-title">@Model.Name</h5>
             </a>
+            
             <div style="border-bottom: 1px solid #d5d5d5; margin-bottom: 10px;">
             </div>
-            <p id="profile-location">
+            
+            <div id="profile-phone__number" class="pl-4 row">               
+                @if (!string.IsNullOrEmpty(Model.PhoneNumber) && !string.IsNullOrWhiteSpace(Model.PhoneNumber))
+                {
+                    <span>
+                        <i class="zmdi zmdi-smartphone-iphone zmdi-hc-fw"></i>@Model.CallingCode @Model.PhoneNumber
+                    </span>
+                }
+            </div> 
+            <div id="profile-location" class="pl-4 row">
                 @if (!string.IsNullOrEmpty(Model.Location) && !string.IsNullOrWhiteSpace(Model.Location))
                 {
-                    <i class="zmdi zmdi-pin zmdi-hc-fw"></i>@Model.Location
+                    <span>
+                        <i class="zmdi zmdi-pin zmdi-hc-fw"></i>@Model.Location  
+                    </span>
                 }
-            </p>
-            <p>
-                <i class="zmdi zmdi-calendar zmdi-hc-fw"></i>Joined @Model.CreatedAt
-            </p>
-            <p id="profile-birthday">
+            </div> 
+            <div id="profile-joined__time" class="pl-4 row">
+                <span>
+                    <i class="zmdi zmdi-calendar zmdi-hc-fw"></i>Joined @Model.CreatedAt
+                </span>
+            </div> 
+            <div id="profile-birthday" class="pl-4 row">
                 @if (!string.IsNullOrEmpty(Model.Birthday) && !string.IsNullOrWhiteSpace(Model.Birthday))
                 {
-                    <i class="zmdi zmdi-brightness-5 zmdi-hc-fw"></i>
-                    @:<span>Birthday</span> @Model.Birthday
+                    <span>
+                        <i class="zmdi zmdi-brightness-5 zmdi-hc-fw"></i>Birthday @Model.Birthday
+                    </span>
                 }
-            </p>
+            </div>
         }
     </div>
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -11,6 +10,7 @@ using Advert.Exceptions;
 using Advert.Managers;
 using Advert.Models.Post;
 using Advert.Models.Profiles;
+using Advert.Models.Settings;
 using Advert.MongoDbStorage.Posts;
 using Advert.MongoDbStorage.Profiles;
 using Advert.MongoDbStorage.Users;
@@ -65,7 +65,8 @@ namespace Advert.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetPosts([FromQuery(Name = "page")] int page = 1, [FromQuery(Name = "keyword")] string keyword = null)
+        public async Task<IActionResult> GetPosts([FromQuery(Name = "page")] int page = 1,
+            [FromQuery(Name = "keyword")] string keyword = null)
         {
             try
             {
@@ -84,7 +85,8 @@ namespace Advert.Controllers
                     posts = await _postsManager.FindPostsByKeywordAsync(offset, postsPerPage, keyword);
                 }
 
-                var lastPage = (long) Math.Ceiling((double) await _postsManager.EstimatedPostsCountAsync() / postsPerPage);
+                var lastPage =
+                    (long) Math.Ceiling((double) await _postsManager.EstimatedPostsCountAsync() / postsPerPage);
 
                 var maxPages = _configuration.GetSection("AdvertOptions").GetValue<int>("MaxPages");
 
@@ -125,36 +127,41 @@ namespace Advert.Controllers
                     postsVotes.AddRange(await _postsVotesManager.FindPostsVotesAsync(profile._id));
                 }
 
+                var countryCodes = _configuration.GetSection("CountryCodes").Get<List<CountryCode>>();
+
                 return View(new PostsAggregatorViewModel
+                {
+                    BeginPage = beginPage,
+                    EndPage = endPage,
+                    CurrentPage = page,
+                    LastPage = lastPage,
+
+                    Posts = posts.Select(post => new PostViewModel
                     {
-                        BeginPage = beginPage,
-                        EndPage = endPage,
-                        CurrentPage = page,
-                        LastPage = lastPage,
-                        
-                        Posts = posts.Select(post => new PostViewModel
-                        {
-                            Hidden = post.Hidden,
-                            IsOwner = User.Identity.IsAuthenticated && profile != null && post.ProfileId.Equals(profile._id),
-                            IsVoted = postsVotes.Count > 0 && postsVotes.Any(x => x.PostId.Equals(post._id)),
-                            PostId = post._id.ToString(),
-                            Text = post.Text.Length > 1000 ? post.Text.Substring(0, 1000) + "..." : post.Text,
-                            Title = post.Title,
-                            Currency = post.Currency,
-                            Location = post.Location,
-                            CreatedAt = post.CreatedAt.Humanize(),
-                            ViewsCount = ((double) post.ViewsCount).ToMetric(),
-                            LikesCount = ((double) post.LikesCount).ToMetric(),
-                            SharesCount = ((double) 0).ToMetric(),
-                            CommentsCount = ((double) post.CommentsCount).ToMetric(),
-                            ProfileId = post.ProfileId.ToString(),
-                            ProfileName = post.ProfileName,
-                            ProfileImagePath = post.ProfileImagePath ?? EmptyProfileImage,
-                            Price = post.Price,
-                            Tags = post.Tags,
-                        }),
-                        
-                        Profile = profile == null ? null : new ProfileViewModel
+                        Hidden = post.Hidden,
+                        IsOwner =
+                            User.Identity.IsAuthenticated && profile != null && post.ProfileId.Equals(profile._id),
+                        IsVoted = postsVotes.Count > 0 && postsVotes.Any(x => x.PostId.Equals(post._id)),
+                        PostId = post._id.ToString(),
+                        Text = post.Text.Length > 1000 ? post.Text.Substring(0, 1000) + "..." : post.Text,
+                        Title = post.Title,
+                        Currency = post.Currency,
+                        Location = post.Location,
+                        CreatedAt = post.CreatedAt.Humanize(),
+                        ViewsCount = ((double) post.ViewsCount).ToMetric(),
+                        LikesCount = ((double) post.LikesCount).ToMetric(),
+                        SharesCount = ((double) 0).ToMetric(),
+                        CommentsCount = ((double) post.CommentsCount).ToMetric(),
+                        ProfileId = post.ProfileId.ToString(),
+                        ProfileName = post.ProfileName,
+                        ProfileImagePath = post.ProfileImagePath ?? EmptyProfileImage,
+                        Price = post.Price,
+                        Tags = post.Tags,
+                    }),
+
+                    Profile = profile == null
+                        ? null
+                        : new ProfileViewModel
                         {
                             Owner = profile.NormalizedEmail.Equals(HttpContext.User.Identity.Name.ToUpper()),
                             Id = profile._id.ToString(),
@@ -164,12 +171,18 @@ namespace Advert.Controllers
                             Location = profile.Location,
                             Birthday = profile.Birthday?.ToString("dd MMMM yyyy"),
                             CreatedAt = profile.CreatedAt.Humanize(),
-                            ImagePath = profile.ImagePath ?? EmptyProfileImage,     
+                            ImagePath = profile.ImagePath ?? EmptyProfileImage,
+                            CallingCode = profile.CallingCode,
                             PhoneNumber = profile.PhoneNumber,
-                        },  
-                        
-                        PlacesApi = _configuration.GetSection("GoogleApiServices").GetValue<string>("PlacesApi"),
-                    });  
+                            CountryCodes = countryCodes.Select(x => new CountryCode
+                            {
+                                CountryName = x.CountryName,
+                                CallingCode = x.CallingCode
+                            })
+                        },
+
+                    PlacesApi = _configuration.GetSection("GoogleApiServices").GetValue<string>("PlacesApi"),
+                });
             }
             catch (Exception e)
             {
@@ -180,16 +193,17 @@ namespace Advert.Controllers
 
         [HttpGet]
         [Route("/Posts")]
-        public async Task<IActionResult> GetPostContent([FromQuery(Name = "postId")] string postId, [FromQuery(Name = "page")] int page = 1)
+        public async Task<IActionResult> GetPostContent([FromQuery(Name = "postId")] string postId,
+            [FromQuery(Name = "page")] int page = 1)
         {
             try
-            {     
+            {
                 var post = await _postsManager.FindPostByIdAsync(ObjectId.Parse(postId));
 
                 var postsVotes = new List<IPostVote>();
 
                 var postsCommentsVotes = new List<IPostCommentVote>();
-                
+
                 IProfile profile = null;
 
                 if (HttpContext.User.Identity.IsAuthenticated)
@@ -208,12 +222,14 @@ namespace Advert.Controllers
                     await _postsManager.UpdatePostAsync(post);
 
                     postsVotes.AddRange(await _postsVotesManager.FindPostsVotesAsync(profile._id));
-                    
-                    postsCommentsVotes.AddRange(await _postCommentsVotesManager.FindPostsCommentsVotesAsync(profile._id));
+
+                    postsCommentsVotes.AddRange(
+                        await _postCommentsVotesManager.FindPostsCommentsVotesAsync(profile._id));
                 }
 
-                var postComments = await _postCommentsManager.FindPostCommentsAsync(postId, 0, null, SortDefinition.Descending);
-   
+                var postComments =
+                    await _postCommentsManager.FindPostCommentsAsync(postId, 0, null, SortDefinition.Descending);
+
                 var commentsReplies = new Dictionary<ObjectId, PostCommentViewModel>();
 
                 foreach (var comments in postComments.OrderBy(x => x.ReplyTo).GroupBy(comment => comment.ReplyTo))
@@ -225,7 +241,8 @@ namespace Advert.Controllers
                             commentsReplies.Add(comment._id, new PostCommentViewModel
                             {
                                 IsOwner = profile != null && comment.ProfileId.Equals(profile._id),
-                                IsVoted = postsCommentsVotes.Count > 0 && postsCommentsVotes.Any(x => x.CommentId.Equals(comment._id) && x.ProfileId.Equals(profile._id)),
+                                IsVoted = postsCommentsVotes.Count > 0 && postsCommentsVotes.Any(x =>
+                                              x.CommentId.Equals(comment._id) && x.ProfileId.Equals(profile._id)),
                                 PostId = comment.PostId.ToString(),
                                 Text = comment.Text,
                                 ReplyTo = comment.ReplyTo.ToString(),
@@ -251,7 +268,9 @@ namespace Advert.Controllers
                                         return new PostCommentViewModel
                                         {
                                             IsOwner = profile != null && comment.ProfileId.Equals(profile._id),
-                                            IsVoted = postsCommentsVotes.Count > 0 && postsCommentsVotes.Any(x => x.CommentId.Equals(comment._id) && x.ProfileId.Equals(profile._id)),
+                                            IsVoted = postsCommentsVotes.Count > 0 && postsCommentsVotes.Any(x =>
+                                                          x.CommentId.Equals(comment._id) &&
+                                                          x.ProfileId.Equals(profile._id)),
                                             PostId = comment.PostId.ToString(),
                                             Text = comment.Text,
                                             ReplyTo = comment.ReplyTo.ToString(),
@@ -261,18 +280,20 @@ namespace Advert.Controllers
                                             ProfileId = comment.ProfileId.ToString(),
                                             ProfileName = comment.ProfileName,
                                             ProfileImagePath = comment.ProfileImagePath ?? EmptyProfileImage,
-                                        };       
+                                        };
                                     }).ToList();
                                 }
                             }
                             else
                             {
                                 postComment.Comments.AddRange(comments.OrderBy(x => x.CreatedAt).Select(comment =>
-                                {                             
+                                {
                                     return new PostCommentViewModel
                                     {
                                         IsOwner = profile != null && comment.ProfileId.Equals(profile._id),
-                                        IsVoted = postsCommentsVotes.Count > 0 && postsCommentsVotes.Any(x => x.CommentId.Equals(comment._id) && x.ProfileId.Equals(profile._id)),
+                                        IsVoted = postsCommentsVotes.Count > 0 && postsCommentsVotes.Any(x =>
+                                                      x.CommentId.Equals(comment._id) &&
+                                                      x.ProfileId.Equals(profile._id)),
                                         PostId = comment.PostId.ToString(),
                                         Text = comment.Text,
                                         ReplyTo = comment.ReplyTo.ToString(),
@@ -289,14 +310,17 @@ namespace Advert.Controllers
                     }
                 }
 
+                var countryCodes = _configuration.GetSection("CountryCodes").Get<List<CountryCode>>();
+
                 return View(new PostsAggregatorViewModel
-                {                                               
+                {
                     Posts = new List<PostViewModel>
                     {
                         new PostViewModel
                         {
                             Hidden = post.Hidden,
-                            IsOwner = User.Identity.IsAuthenticated && profile != null && post.ProfileId.Equals(profile._id),
+                            IsOwner = User.Identity.IsAuthenticated && profile != null &&
+                                      post.ProfileId.Equals(profile._id),
                             IsVoted = postsVotes.Count > 0 && postsVotes.Any(x => x.PostId.Equals(post._id)),
                             PostId = post._id.ToString(),
                             Text = post.Text,
@@ -315,23 +339,31 @@ namespace Advert.Controllers
                             Tags = post.Tags,
                         }
                     },
-                    
-                    Profile = profile == null ? null : new ProfileViewModel
-                    {
-                        Owner = profile.NormalizedEmail.Equals(HttpContext.User.Identity.Name.ToUpper()),
-                        Id = profile._id.ToString(),
-                        Name = profile.Name,
-                        Email = profile.Email,
-                        Gender = profile.Gender.Humanize(),
-                        Location = profile.Location,
-                        Birthday = profile.Birthday?.ToString("dd MMMM yyyy"),
-                        CreatedAt = profile.CreatedAt.Humanize(),
-                        ImagePath = profile.ImagePath ?? EmptyProfileImage,
-                        PhoneNumber = profile.PhoneNumber,
-                    },
-                    
+
+                    Profile = profile == null
+                        ? null
+                        : new ProfileViewModel
+                        {
+                            Owner = profile.NormalizedEmail.Equals(HttpContext.User.Identity.Name.ToUpper()),
+                            Id = profile._id.ToString(),
+                            Name = profile.Name,
+                            Email = profile.Email,
+                            Gender = profile.Gender.Humanize(),
+                            Location = profile.Location,
+                            Birthday = profile.Birthday?.ToString("dd MMMM yyyy"),
+                            CreatedAt = profile.CreatedAt.Humanize(),
+                            ImagePath = profile.ImagePath ?? EmptyProfileImage,
+                            CallingCode = profile.CallingCode,
+                            PhoneNumber = profile.PhoneNumber,
+                            CountryCodes = countryCodes.Select(x => new CountryCode
+                            {
+                                CountryName = x.CountryName,
+                                CallingCode = x.CallingCode
+                            })
+                        },
+
                     PlacesApi = _configuration.GetSection("GoogleApiServices").GetValue<string>("PlacesApi"),
-                    
+
                     PostComments = commentsReplies.Values.ToList(),
                 });
             }

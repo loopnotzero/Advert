@@ -431,10 +431,14 @@
         switch (tabId) {
         case "edit__profile--tab":
             {
+                var callingCode = $("#edit__profile--calling__code option:selected").text();
+                
                 var profile = {
                     gender: $("#edit__profile--gender :selected").text(),
                     birthday: $("#edit__profile--birthday").val(),
-                    location: $("#edit__profile--location").val()
+                    location: $("#edit__profile--location").val(),
+                    callingCode: callingCode.match("(\\+\\d+)")[0],
+                    phoneNumber: $("#edit__profile--phone__number").val()
                 }
                 updateProfileByIdAsync(profileId,
                     profile,
@@ -444,7 +448,7 @@
                             } IsAcknowledged: ${response.isAcknowledged} IsModifiedCountAvailable: ${response
                             .isModifiedCountAvailable}`);
                         console.log(`Birthday: ${profile.birthday}`);
-                        
+
                         var monthNames = [
                             "January", "February", "March",
                             "April", "May", "June",
@@ -452,16 +456,23 @@
                             "October", "November", "December"
                         ];
                         
-                        $("#profile-location").html(`<i class="zmdi zmdi-pin zmdi-hc-fw"></i>${profile.location}`);
+                        $("#profile-location").html(`<span><i class="zmdi zmdi-pin zmdi-hc-fw"></i>${profile.location}</span>`);
                         
                         if (profile.birthday === "" || profile.birthday === null) {
                             $("#profile-birthday").empty();
                         } else {
-                            var date = new Date(profile.birthday);
-                            var birthday = `${date.getDate()} ${monthNames[date.getMonth()]} ${date.getFullYear()}`;                    
-                            $("#profile-birthday").html(`<i class="zmdi zmdi-brightness-5 zmdi-hc-fw"></i> Birthday ${birthday}`);
+                            var date = new Date(profile.birthday);          
+                            $("#profile-birthday").html(`<span><i class="zmdi zmdi-brightness-5 zmdi-hc-fw"></i>Birthday ${`${date.getDate()} ${monthNames[date.getMonth()]} ${date.getFullYear()}`}</span>`);
                         }
-         
+                        
+                        if (profile.phoneNumber === "" || profile.phoneNumber === null) {
+                            $("#profile-phone__number").empty();
+                        } else {
+                            if ($("#edit__profile--phone__number").length) {                        
+                                $("#profile-phone__number").html(`<span><i class="zmdi zmdi-smartphone-iphone zmdi-hc-fw"></i>${profile.callingCode} ${profile.phoneNumber}</span>`);
+                            }
+                        }
+                        
                         $("#edit__profile--modal").modal('toggle');
                     },
                     function(jqXhr, textStatus, errorThrown) {

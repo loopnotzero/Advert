@@ -8,6 +8,7 @@ using Advert.Common.Profiles;
 using Advert.Managers;
 using Advert.Models.Post;
 using Advert.Models.Profiles;
+using Advert.Models.Settings;
 using Advert.MongoDbStorage.Posts;
 using Advert.MongoDbStorage.Profiles;
 using Humanizer;
@@ -77,8 +78,10 @@ namespace Advert.Controllers
                 {
                     return BadRequest();
                 }
-                 
+
                 var posts = await _postsManager.FindPostsByProfileIdAsync(profile._id, 0, null);
+
+                var countryCodes = _configuration.GetSection("CountryCodes").Get<List<CountryCode>>();
 
                 if (!HttpContext.User.Identity.IsAuthenticated)
                 {
@@ -101,7 +104,7 @@ namespace Advert.Controllers
                             Price = post.Price,
                             Tags = post.Tags,
                         }),
-                        
+
                         Profile = new ProfileViewModel
                         {
                             Owner = false,
@@ -113,9 +116,15 @@ namespace Advert.Controllers
                             Birthday = profile.Birthday?.ToString("dd MMMM yyyy"),
                             CreatedAt = profile.CreatedAt.Humanize(),
                             ImagePath = profile.ImagePath,
+                            CallingCode = profile.CallingCode,
                             PhoneNumber = profile.PhoneNumber,
+                            CountryCodes = countryCodes.Select(x => new CountryCode
+                            {
+                                CountryName = x.CountryName,
+                                CallingCode = x.CallingCode
+                            })
                         },
-                        
+
                         PlacesApi = _configuration.GetSection("GoogleApiServices").GetValue<string>("PlacesApi"),
                     });
                 }
@@ -124,7 +133,9 @@ namespace Advert.Controllers
 
                 if (HttpContext.User.Identity.IsAuthenticated)
                 {
-                    myProfile = await _profilesManager.FindProfileByNormalizedEmailOrDefaultAsync(HttpContext.User.Identity.Name, null);
+                    myProfile =
+                        await _profilesManager.FindProfileByNormalizedEmailOrDefaultAsync(
+                            HttpContext.User.Identity.Name, null);
                 }
 
                 List<MongoDbPostVote> postsVotes = null;
@@ -139,7 +150,8 @@ namespace Advert.Controllers
                     Posts = posts.Select(post => new PostViewModel
                     {
                         Hidden = post.Hidden,
-                        IsOwner = myProfile != null && post.ProfileId.Equals(profile._id) && profile._id.Equals(myProfile._id),
+                        IsOwner = myProfile != null && post.ProfileId.Equals(profile._id) &&
+                                  profile._id.Equals(myProfile._id),
                         IsVoted = postsVotes != null && postsVotes.Any(x => x.PostId.Equals(post._id)),
                         PostId = post._id.ToString(),
                         Text = post.Text.Length > 1000 ? post.Text.Substring(0, 1000) + "..." : post.Text,
@@ -157,7 +169,7 @@ namespace Advert.Controllers
                         Price = post.Price,
                         Tags = post.Tags,
                     }),
-                    
+
                     Profile = new ProfileViewModel
                     {
                         Owner = myProfile != null && profile._id.Equals(myProfile._id),
@@ -169,10 +181,16 @@ namespace Advert.Controllers
                         Birthday = profile.Birthday?.ToString("dd MMMM yyyy"),
                         CreatedAt = profile.CreatedAt.Humanize(),
                         ImagePath = profile.ImagePath,
-                        PhoneNumber = profile.PhoneNumber
+                        CallingCode = profile.CallingCode,
+                        PhoneNumber = profile.PhoneNumber,
+                        CountryCodes = countryCodes.Select(x => new CountryCode
+                        {
+                            CountryName = x.CountryName,
+                            CallingCode = x.CallingCode
+                        })
                     },
-                    
-                    PlacesApi = _configuration.GetSection("GoogleApiServices").GetValue<string>("PlacesApi"),                 
+
+                    PlacesApi = _configuration.GetSection("GoogleApiServices").GetValue<string>("PlacesApi"),
                 });
             }
             catch (Exception e)
@@ -181,7 +199,7 @@ namespace Advert.Controllers
                 return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
             }
         }
-        
+
         [HttpGet]
         [Route("/{profileName}/Hidden")]
         public async Task<IActionResult> GetProfileHiddenPosts(string profileName)
@@ -194,8 +212,10 @@ namespace Advert.Controllers
                 {
                     return BadRequest();
                 }
-                
+
                 var posts = await _postsManager.FindHiddenPostsByProfileIdAsync(profile._id, 0, null);
+
+                var countryCodes = _configuration.GetSection("CountryCodes").Get<List<CountryCode>>();
 
                 if (!HttpContext.User.Identity.IsAuthenticated)
                 {
@@ -218,7 +238,7 @@ namespace Advert.Controllers
                             Price = post.Price,
                             Tags = post.Tags,
                         }),
-                        
+
                         Profile = new ProfileViewModel
                         {
                             Owner = false,
@@ -230,10 +250,16 @@ namespace Advert.Controllers
                             Birthday = profile.Birthday?.ToString("dd MMMM yyyy"),
                             CreatedAt = profile.CreatedAt.Humanize(),
                             ImagePath = profile.ImagePath,
-                            PhoneNumber = profile.PhoneNumber
+                            CallingCode = profile.CallingCode,
+                            PhoneNumber = profile.PhoneNumber,
+                            CountryCodes = countryCodes.Select(x => new CountryCode
+                            {
+                                CountryName = x.CountryName,
+                                CallingCode = x.CallingCode
+                            })
                         },
-                        
-                        PlacesApi = _configuration.GetSection("GoogleApiServices").GetValue<string>("PlacesApi"),  
+
+                        PlacesApi = _configuration.GetSection("GoogleApiServices").GetValue<string>("PlacesApi"),
                     });
                 }
 
@@ -241,7 +267,9 @@ namespace Advert.Controllers
 
                 if (HttpContext.User.Identity.IsAuthenticated)
                 {
-                    myProfile = await _profilesManager.FindProfileByNormalizedEmailOrDefaultAsync(HttpContext.User.Identity.Name, null);
+                    myProfile =
+                        await _profilesManager.FindProfileByNormalizedEmailOrDefaultAsync(
+                            HttpContext.User.Identity.Name, null);
                 }
 
                 List<MongoDbPostVote> postsVotes = null;
@@ -256,8 +284,10 @@ namespace Advert.Controllers
                     Posts = posts.Select(post => new PostViewModel
                     {
                         Hidden = post.Hidden,
-                        IsOwner = myProfile != null && post.ProfileId.Equals(profile._id) && profile._id.Equals(myProfile._id),
-                        IsVoted = postsVotes != null && postsVotes.Count > 0 && postsVotes.Any(x => x.PostId.Equals(post._id)),
+                        IsOwner = myProfile != null && post.ProfileId.Equals(profile._id) &&
+                                  profile._id.Equals(myProfile._id),
+                        IsVoted = postsVotes != null && postsVotes.Count > 0 &&
+                                  postsVotes.Any(x => x.PostId.Equals(post._id)),
                         PostId = post._id.ToString(),
                         Text = post.Text.Length > 1000 ? post.Text.Substring(0, 1000) + "..." : post.Text,
                         Title = post.Title,
@@ -274,7 +304,7 @@ namespace Advert.Controllers
                         Price = post.Price,
                         Tags = post.Tags,
                     }),
-                    
+
                     Profile = new ProfileViewModel
                     {
                         Owner = myProfile != null && profile._id.Equals(myProfile._id),
@@ -286,10 +316,16 @@ namespace Advert.Controllers
                         Birthday = profile.Birthday?.ToString("dd MMMM yyyy"),
                         CreatedAt = profile.CreatedAt.Humanize(),
                         ImagePath = profile.ImagePath,
-                        PhoneNumber = profile.PhoneNumber
+                        CallingCode = profile.CallingCode,
+                        PhoneNumber = profile.PhoneNumber,
+                        CountryCodes = countryCodes.Select(x => new CountryCode
+                        {
+                            CountryName = x.CountryName,
+                            CallingCode = x.CallingCode
+                        })
                     },
-                    
-                    PlacesApi = _configuration.GetSection("GoogleApiServices").GetValue<string>("PlacesApi"),                    
+
+                    PlacesApi = _configuration.GetSection("GoogleApiServices").GetValue<string>("PlacesApi"),
                 });
             }
             catch (Exception e)
@@ -309,25 +345,31 @@ namespace Advert.Controllers
                 {
                     return Unauthorized();
                 }
-                
+
                 IProfile profile = await _profilesManager.FindProfileByNormalizedNameAsync(profileName);
 
                 if (profile == null)
                 {
                     return BadRequest();
                 }
-                
+
                 var postsVotes = await _postsVotesManager.FindPostsVotesAsync(profile._id);
 
-                var posts = postsVotes.Count > 0 ? await _postsManager.FindPostsAsync(postsVotes.Select(x => x.PostId).ToList()) : null;
+                var posts = postsVotes.Count > 0
+                    ? await _postsManager.FindPostsAsync(postsVotes.Select(x => x.PostId).ToList())
+                    : null;
 
                 IProfile myProfile = null;
 
                 if (HttpContext.User.Identity.IsAuthenticated)
                 {
-                    myProfile = await _profilesManager.FindProfileByNormalizedEmailOrDefaultAsync(HttpContext.User.Identity.Name, null);
+                    myProfile =
+                        await _profilesManager.FindProfileByNormalizedEmailOrDefaultAsync(
+                            HttpContext.User.Identity.Name, null);
                 }
-                     
+
+                var countryCodes = _configuration.GetSection("CountryCodes").Get<List<CountryCode>>();
+
                 return View(new PostsAggregatorViewModel
                 {
                     Posts = posts?.Select(post => new PostViewModel
@@ -351,10 +393,11 @@ namespace Advert.Controllers
                         Price = post.Price,
                         Tags = post.Tags,
                     }),
-                    
+
                     Profile = new ProfileViewModel
                     {
-                        Owner = myProfile != null && profile.NormalizedEmail.Equals(HttpContext.User.Identity.Name.ToUpper()),
+                        Owner = myProfile != null &&
+                                profile.NormalizedEmail.Equals(HttpContext.User.Identity.Name.ToUpper()),
                         Id = profile._id.ToString(),
                         Name = profile.Name,
                         Email = profile.Email,
@@ -363,10 +406,16 @@ namespace Advert.Controllers
                         Birthday = profile.Birthday?.ToString("dd MMMM yyyy"),
                         CreatedAt = profile.CreatedAt.Humanize(),
                         ImagePath = profile.ImagePath,
-                        PhoneNumber = profile.PhoneNumber
+                        CallingCode = profile.CallingCode,
+                        PhoneNumber = profile.PhoneNumber,
+                        CountryCodes = countryCodes.Select(x => new CountryCode
+                        {
+                            CountryName = x.CountryName,
+                            CallingCode = x.CallingCode
+                        })
                     },
-                    
-                    PlacesApi = _configuration.GetSection("GoogleApiServices").GetValue<string>("PlacesApi"),                   
+
+                    PlacesApi = _configuration.GetSection("GoogleApiServices").GetValue<string>("PlacesApi"),
                 });
             }
             catch (Exception e)
@@ -374,8 +423,8 @@ namespace Advert.Controllers
                 _logger.LogError(e.Message, e);
                 return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
             }
-        }  
-        
+        }
+
         [HttpPut]
         [Authorize]
         [Route("/Profile/UpdateProfileByIdAsync")]
@@ -391,6 +440,7 @@ namespace Advert.Controllers
                 }
 
                 profile.Location = model.Location;
+                profile.CallingCode = model.CallingCode;
 
                 if (string.IsNullOrEmpty(model.Birthday) || string.IsNullOrWhiteSpace(model.Birthday))
                 {
@@ -399,6 +449,15 @@ namespace Advert.Controllers
                 else
                 {
                     profile.Birthday = DateTime.ParseExact(model.Birthday, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                }
+
+                if (string.IsNullOrEmpty(model.PhoneNumber) || string.IsNullOrWhiteSpace(model.PhoneNumber))
+                {
+                    profile.PhoneNumber = null;
+                }
+                else
+                {
+                    profile.PhoneNumber = model.PhoneNumber;
                 }
 
                 var result = await _profilesManager.UpdateProfileAsync(profile);

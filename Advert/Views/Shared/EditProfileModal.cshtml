@@ -77,6 +77,41 @@
                                     <input id="edit__profile--location" type="text" class="form-control" placeholder="Enter a location" value="@Model.Location">
                                 }
                                 <i class="form-group__bar"></i>
+                            </div>                           
+                            <div class="row">
+                                <div class="col-5">
+                                    <div class="form-group">
+                                        <label class="font-weight-bold">Code</label>
+                                        <select id="edit__profile--calling__code" class="form-control select2-pt">
+                                            @foreach (var countryCode in Model.CountryCodes)
+                                            {
+                                                if (countryCode.CallingCode.ToUpper().Equals(Model.CallingCode))
+                                                {
+                                                    @:<option selected="selected">@countryCode.CountryName (@countryCode.CallingCode)</option>
+                                                }
+                                                else
+                                                {
+                                                    @:<option>@countryCode.CountryName (@countryCode.CallingCode)</option>
+                                                }
+                                            }
+                                        </select>
+                                        <i class="form-group__bar"></i>
+                                    </div>
+                                </div>
+                                <div class="col-7">
+                                    <div class="form-group">
+                                        <label class="font-weight-bold">Phone number</label>
+                                        @if (string.IsNullOrEmpty(Model.PhoneNumber) || string.IsNullOrWhiteSpace(Model.PhoneNumber))
+                                        {
+                                            <input id="edit__profile--phone__number" type="number" class="form-control">
+                                        }
+                                        else
+                                        {
+                                            <input id="edit__profile--phone__number" type="number" class="form-control" value="@Model.PhoneNumber">
+                                        }
+                                        <i class="form-group__bar"></i>
+                                    </div>
+                                </div>
                             </div>
                             <div class="form-group">
                                 <label class="font-weight-bold">Add profile photo</label>
