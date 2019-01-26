@@ -83,6 +83,7 @@
                                     <div class="form-group">
                                         <label class="font-weight-bold">Code</label>
                                         <select id="edit__profile--calling__code" class="form-control select2-pt">
+                                            <option></option>
                                             @foreach (var countryCode in Model.CountryCodes)
                                             {
                                                 if (countryCode.CallingCode.ToUpper().Equals(Model.CallingCode))

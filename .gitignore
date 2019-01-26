@@ -61,3 +61,5 @@ Advert/obj/
 Advert\.MongoDbStorage/obj/
 
 Advert/wwwroot/images/
+
+Advert/appsettings\.json

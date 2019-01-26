@@ -437,7 +437,7 @@
                     gender: $("#edit__profile--gender :selected").text(),
                     birthday: $("#edit__profile--birthday").val(),
                     location: $("#edit__profile--location").val(),
-                    callingCode: callingCode.match("(\\+\\d+)")[0],
+                    callingCode: (callingCode === null || callingCode === "" || callingCode === undefined) ? null : callingCode.match("(\\+\\d+)")[0],
                     phoneNumber: $("#edit__profile--phone__number").val()
                 }
                 updateProfileByIdAsync(profileId,
@@ -458,19 +458,17 @@
                         
                         $("#profile-location").html(`<span><i class="zmdi zmdi-pin zmdi-hc-fw"></i>${profile.location}</span>`);
                         
-                        if (profile.birthday === "" || profile.birthday === null) {
+                        if (profile.birthday === null || profile.birthday === "") {
                             $("#profile-birthday").empty();
                         } else {
                             var date = new Date(profile.birthday);          
                             $("#profile-birthday").html(`<span><i class="zmdi zmdi-brightness-5 zmdi-hc-fw"></i>Birthday ${`${date.getDate()} ${monthNames[date.getMonth()]} ${date.getFullYear()}`}</span>`);
                         }
                         
-                        if (profile.phoneNumber === "" || profile.phoneNumber === null) {
+                        if (profile.callingCode === null || profile.callingCode === "" || profile.phoneNumber === null || profile.phoneNumber === "") {
                             $("#profile-phone__number").empty();
                         } else {
-                            if ($("#edit__profile--phone__number").length) {                        
-                                $("#profile-phone__number").html(`<span><i class="zmdi zmdi-smartphone-iphone zmdi-hc-fw"></i>${profile.callingCode} ${profile.phoneNumber}</span>`);
-                            }
+                            $("#profile-phone__number").html(`<span><i class="zmdi zmdi-smartphone-iphone zmdi-hc-fw"></i>${profile.callingCode} ${profile.phoneNumber}</span>`);
                         }
                         
                         $("#edit__profile--modal").modal('toggle');
@@ -763,4 +761,4 @@
     }); 
 </script>
 
-<script src="https://maps.googleapis.com/maps/api/js?key=@Model.PlacesApi&libraries=places&callback=initMap" async defer></script>
+@* <script src="https://maps.googleapis.com/maps/api/js?key=@Model.PlacesApi&libraries=places&callback=initMap" async defer></script> *@
