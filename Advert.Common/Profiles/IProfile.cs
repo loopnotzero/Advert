@@ -12,6 +12,7 @@ namespace Advert.Common.Profiles
         string Culture { get; set; }
         string Location { get; set; }
         string ImagePath { get; set; }
+        string CallingCode { get; set; }
         string PhoneNumber { get; set; }  
         string NormalizedName { get; set; }
         string NormalizedEmail { get; set; }
