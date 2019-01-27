@@ -49,7 +49,7 @@ namespace Advert.Controllers
             {
                 await _signInManager.SignOutAsync();
      
-                return Ok(new IdentityResultModel
+                return Ok(new ErrorModel
                 {
                     ReturnUrl = returnUrl
                 });
@@ -57,7 +57,7 @@ namespace Advert.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e.Message, e);
-                return Ok(new IdentityResultModel
+                return Ok(new ErrorModel
                 {
                     Errors = new List<IdentityError>
                     {
@@ -80,7 +80,7 @@ namespace Advert.Controllers
             {
                 if (!ModelState.IsValid)
                 {
-                    return Ok(new IdentityResultModel
+                    return Ok(new ErrorModel
                     {
                         Errors = new List<IdentityError>
                         {
@@ -96,7 +96,7 @@ namespace Advert.Controllers
 
                 if (!emailAddressAttr.IsValid(model.Email))
                 {
-                    return Ok(new IdentityResultModel
+                    return Ok(new ErrorModel
                     {
                         Errors = new List<IdentityError>
                         {
@@ -111,14 +111,14 @@ namespace Advert.Controllers
                 var signInResult = await _signInManager.PasswordSignInAsync(model.Email, model.Password, false, false);
 
                 if (signInResult.Succeeded)
-                    return Ok(new IdentityResultModel
+                    return Ok(new ErrorModel
                     {
                         ReturnUrl = returnUrl
                     });
                 
                 if (signInResult.IsLockedOut)
                 {
-                    return Ok(new IdentityResultModel
+                    return Ok(new ErrorModel
                     {
                         Errors = new List<IdentityError>
                         {
@@ -133,7 +133,7 @@ namespace Advert.Controllers
 
                 if (signInResult.IsNotAllowed)
                 {
-                    return Ok(new IdentityResultModel
+                    return Ok(new ErrorModel
                     {
                         Errors = new List<IdentityError>
                         {
@@ -148,7 +148,7 @@ namespace Advert.Controllers
 
                 if (signInResult.RequiresTwoFactor)
                 {
-                    return Ok(new IdentityResultModel
+                    return Ok(new ErrorModel
                     {
                         Errors = new List<IdentityError>
                         {
@@ -161,7 +161,7 @@ namespace Advert.Controllers
                     });
                 }
 
-                return Ok(new IdentityResultModel
+                return Ok(new ErrorModel
                 {
                     Errors = new List<IdentityError>
                     {
@@ -175,7 +175,7 @@ namespace Advert.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e.Message, e);
-                return Ok(new IdentityResultModel
+                return Ok(new ErrorModel
                 {
                     Errors = new List<IdentityError>
                     {
@@ -198,7 +198,7 @@ namespace Advert.Controllers
             {
                 if (!ModelState.IsValid)
                 {
-                    return Ok(new IdentityResultModel
+                    return Ok(new ErrorModel
                     {
                         Errors = new List<IdentityError>
                         {
@@ -214,7 +214,7 @@ namespace Advert.Controllers
 
                 if (!emailAddressAttr.IsValid(model.Email))
                 {
-                    return Ok(new IdentityResultModel
+                    return Ok(new ErrorModel
                     {
                         Errors = new List<IdentityError>
                         {
@@ -230,7 +230,7 @@ namespace Advert.Controllers
 
                 if (profile != null)
                 {
-                    return Ok(new IdentityResultModel
+                    return Ok(new ErrorModel
                     {
                         Errors = new List<IdentityError>
                         {
@@ -251,7 +251,7 @@ namespace Advert.Controllers
                 var identityResult = await _userManager.CreateAsync(user, model.Password);
 
                 if (!identityResult.Succeeded)
-                    return Ok(new IdentityResultModel
+                    return Ok(new ErrorModel
                     {
                         Errors = identityResult.Errors.ToList(),
                     });
@@ -265,7 +265,7 @@ namespace Advert.Controllers
                     CreatedAt = DateTime.UtcNow,
                 });
 
-                return Ok(new IdentityResultModel
+                return Ok(new ErrorModel
                 {
                     ReturnUrl = returnUrl
                 });
@@ -274,7 +274,7 @@ namespace Advert.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e.Message, e);
-                return Ok(new IdentityResultModel
+                return Ok(new ErrorModel
                 {
                     Errors = new List<IdentityError>
                     {

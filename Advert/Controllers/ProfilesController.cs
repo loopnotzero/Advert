@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Advert.Common.Profiles;
 using Advert.Managers;
+using Advert.Models.Account;
 using Advert.Models.Post;
 using Advert.Models.Profiles;
 using Advert.Models.Settings;
@@ -14,6 +16,7 @@ using Advert.MongoDbStorage.Profiles;
 using Humanizer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -25,18 +28,20 @@ namespace Advert.Controllers
     {
         private readonly ILogger _logger;
         private readonly IConfiguration _configuration;
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IHostingEnvironment _hostEnv;
         private readonly PostsManager<MongoDbPost> _postsManager;
         private readonly ProfilesManager<MongoDbProfile> _profilesManager;
         private readonly PostsVotesManager<MongoDbPostVote> _postsVotesManager;
         private readonly ProfilesImagesManager<MongoDbProfileImage> _profilesImagesManager;
 
+        private readonly IProfile _myProfile;
+        
         private const string EmptyProfileImage = "/images/no-image.png";
 
         public ProfilesController(
             ILoggerFactory loggerFactory,
             IConfiguration configuration,
-            IHostingEnvironment hostingEnvironment,
+            IHostingEnvironment hostEnv,
             PostsManager<MongoDbPost> postsManager,
             ProfilesManager<MongoDbProfile> profilesManager,
             PostsVotesManager<MongoDbPostVote> postsVotesManager,
@@ -44,7 +49,7 @@ namespace Advert.Controllers
         {
             _logger = loggerFactory.CreateLogger<ProfilesController>();
             _configuration = configuration;
-            _hostingEnvironment = hostingEnvironment;
+            _hostEnv = hostEnv;
             _postsManager = postsManager;
             _profilesManager = profilesManager;
             _postsVotesManager = postsVotesManager;
@@ -336,16 +341,12 @@ namespace Advert.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         [Route("/{profileName}/Favorites")]
         public async Task<IActionResult> GetProfileFavoritesPosts(string profileName)
         {
             try
             {
-                if (!HttpContext.User.Identity.IsAuthenticated)
-                {
-                    return Unauthorized();
-                }
-
                 IProfile profile = await _profilesManager.FindProfileByNormalizedNameAsync(profileName);
 
                 if (profile == null)
@@ -434,7 +435,7 @@ namespace Advert.Controllers
             {
                 var profile = await _profilesManager.FindProfileByIdAsync(ObjectId.Parse(profileId));
 
-                if (Enum.TryParse(model.Gender, out Gender gender))
+                if (Enum.TryParse(model.Gender.Trim(), out Gender gender))
                 {
                     profile.Gender = gender;
                 }
@@ -475,6 +476,60 @@ namespace Advert.Controllers
                 _logger.LogError(e.Message, e);
                 return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
             }
+        }
+        
+        [HttpPost]
+        [Authorize]
+        [Route("/Profile/AddProfilePhotoAsync")]
+        public async Task<IActionResult> AddProfilePhotoAsync([FromQuery(Name = "profileId")] string profileId, IFormFile file)
+        {
+            var profile = await _profilesManager.FindProfileByIdAsync(ObjectId.Parse(profileId));
+
+            if (!profile.Email.ToUpper().Equals(HttpContext.User.Identity.Name.ToUpper()))
+            {
+                return Ok(new ProfileErrorModel
+                {
+                    Errors = new List<ProfileError>
+                    {
+                        new ProfileError
+                        {
+                            Description = "You don't have permission to upload profile photo"
+                        }
+                    },
+                });  
+            }
+
+            var photoDir = $"{_hostEnv.WebRootPath}/images/profiles/{profile._id.ToString()}/photo/";
+
+            if (!Directory.Exists(photoDir))
+            {
+                Directory.CreateDirectory(photoDir);
+            }
+
+            using (var stream = new FileStream($"{photoDir}{file.FileName}", FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            var profileImage = new MongoDbProfileImage
+            {
+                ProfileId = profile._id,
+                ImagePath = $"/images/profiles/{profile._id.ToString()}/photo/{file.FileName}",
+                CreatedAt = DateTime.UtcNow
+            };
+                
+            await _profilesImagesManager.CreateProfileImageAsync(profileImage);
+
+            return Ok(profileImage);
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("/Profile/RemoveProfilePhotoAsync")]
+        public async Task<IActionResult> RemoveProfilePhotoAsync([FromQuery(Name = "fileName")] string fileName,
+            IFormFile file)
+        {
+            throw new NotImplementedException();
         }
     }
 }

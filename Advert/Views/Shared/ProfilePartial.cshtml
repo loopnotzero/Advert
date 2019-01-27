@@ -31,7 +31,7 @@
             </div>
             
             <div id="profile-phone__number" class="pl-4 row">               
-                @if (!string.IsNullOrEmpty(Model.PhoneNumber) && !string.IsNullOrWhiteSpace(Model.PhoneNumber))
+                @if (!string.IsNullOrEmpty(Model.CallingCode) && !string.IsNullOrWhiteSpace(Model.CallingCode) && !string.IsNullOrEmpty(Model.PhoneNumber) && !string.IsNullOrWhiteSpace(Model.PhoneNumber))
                 {
                     <span>
                         <i class="zmdi zmdi-smartphone-iphone zmdi-hc-fw"></i>@Model.CallingCode @Model.PhoneNumber

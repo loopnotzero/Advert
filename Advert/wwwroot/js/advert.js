@@ -16,7 +16,25 @@ function logInByEmailAsync(login, headers, successCallback, errorCallback) {
             successCallback(response);
         }
     });
+}
 
+function createPostAsync(post, successCallback, errorCallback) {
+    console.log(`Create post title: ${post.title} text: ${post.text} price: ${post.price}${post.currency} location: ${post.location}`);
+    $.ajax({
+        url: "/Posts/CreatePostAsync",
+        type: "POST",
+        data: JSON.stringify(post),
+        contentType: "application/json",
+        error: function(jqXhr, textStatus, errorThrown) {
+            console.log("jqXhr: " + jqXhr);
+            console.log("textStatus: " + textStatus);
+            console.log("errorThrown: " + errorThrown);
+            errorCallback(jqXhr, textStatus, errorThrown);
+        },
+        success: function(response) {
+            successCallback(response);
+        }
+    });
 }
 
 function createNewAccountAsync(account, headers, successCallback, errorCallback) {
@@ -39,12 +57,12 @@ function createNewAccountAsync(account, headers, successCallback, errorCallback)
     });
 }
 
-function createPostAsync(post, successCallback, errorCallback) {
-    console.log(`Create post title: ${post.title} text: ${post.text} price: ${post.price}${post.currency} location: ${post.location}`);
+function createPostVoteIdAsync(postId, vote, successCallback, errorCallback) {
+    console.log(`Create post vote by post id: ${postId} vote type: ${vote.voteType}`);
     $.ajax({
-        url: "/Posts/CreatePostAsync",
+        url: `/Posts/CreatePostVoteAsync?postId=${postId}`,
         type: "POST",
-        data: JSON.stringify(post),
+        data: JSON.stringify(vote),
         contentType: "application/json",
         error: function(jqXhr, textStatus, errorThrown) {
             console.log("jqXhr: " + jqXhr);
@@ -57,6 +75,62 @@ function createPostAsync(post, successCallback, errorCallback) {
         }
     });
 }
+
+function createPostCommentAsync(comment, successCallback, errorCallback) {
+    $.ajax({
+        url: `/Posts/CreatePostCommentAsync`,
+        type: "POST",
+        data: JSON.stringify(comment),
+        contentType: "application/json",
+        error: function(jqXhr, textStatus, errorThrown) {
+            console.log("jqXhr: " + jqXhr);
+            console.log("textStatus: " + textStatus);
+            console.log("errorThrown: " + errorThrown);
+            errorCallback(jqXhr, textStatus, errorThrown);
+        },
+        success: function(response) {
+            successCallback(response);
+        }
+    });
+}
+
+function createPostCommentVoteAsync(postId, commentId, vote, successCallback, errorCallback) {
+    $.ajax({
+        url: `/Posts/CreatePostCommentVoteAsync?postId=${postId}&commentId=${commentId}`,
+        type: "POST",
+        data: JSON.stringify(vote),
+        contentType: "application/json",
+        error: function(jqXhr, textStatus, errorThrown) {
+            console.log("jqXhr: " + jqXhr);
+            console.log("textStatus: " + textStatus);
+            console.log("errorThrown: " + errorThrown);
+            errorCallback(jqXhr, textStatus, errorThrown);
+        },
+        success: function(response) {
+            successCallback(response);
+        }
+    });
+}
+
+function createPostTagsByPostIdAsync(postId, postTags, successCallback, errorCallback) {
+    console.log(`Create post tags: ${postTags.tags}`);
+    $.ajax({
+        url: `/Posts/CreatePostTagsByPostIdAsync?postId=${postId}`,
+        type: "POST",
+        data: JSON.stringify(postTags),
+        contentType: "application/json",
+        error: function(jqXhr, textStatus, errorThrown) {
+            console.log("jqXhr: " + jqXhr);
+            console.log("textStatus: " + textStatus);
+            console.log("errorThrown: " + errorThrown);
+            errorCallback(jqXhr, textStatus, errorThrown);
+        },
+        success: function(response) {
+            successCallback(response);
+        }
+    });
+}
+
 
 function getPostByIdAsync(postId, successCallback, errorCallback) {
     console.log(`Get post by id: ${postId}`);
@@ -93,6 +167,25 @@ function getPostCommentAsync(postId, commentId, successCallback, errorCallback) 
         }
     });
 }
+
+function getPostTagsByPostIdAsync(postId, successCallback, errorCallback) {
+    console.log(`Get post tags by post id: ${postId}`);
+    $.ajax({
+        url: `/Posts/GetPostTagsByPostIdAsync?postId=${postId}`,
+        type: "GET",
+        contentType: "application/json",
+        error: function(jqXhr, textStatus, errorThrown) {
+            console.log("jqXhr: " + jqXhr);
+            console.log("textStatus: " + textStatus);
+            console.log("errorThrown: " + errorThrown);
+            errorCallback(jqXhr, textStatus, errorThrown);
+        },
+        success: function(response) {
+            successCallback(response);
+        }
+    });
+}
+
 
 function updatePostByIdAsync(postId, post, successCallback, errorCallback) {
     console.log(`Update post by id: ${postId}`);
@@ -151,6 +244,7 @@ function updateProfileByIdAsync(profileId, profile, successCallback, errorCallba
     });
 }
 
+
 function deletePostByIdAsync(postId, successCallback, errorCallback) {
     console.log(`Delete post by id: ${postId}`);
     $.ajax({
@@ -187,22 +281,8 @@ function deletePostCommentAsync(postId, commentId, successCallback, errorCallbac
     }); 
 }
 
-function createPostCommentAsync(comment, successCallback, errorCallback) {
-    $.ajax({
-        url: `/Posts/CreatePostCommentAsync`,
-        type: "POST",
-        data: JSON.stringify(comment),
-        contentType: "application/json",
-        error: function(jqXhr, textStatus, errorThrown) {
-            console.log("jqXhr: " + jqXhr);
-            console.log("textStatus: " + textStatus);
-            console.log("errorThrown: " + errorThrown);
-            errorCallback(jqXhr, textStatus, errorThrown);
-        },
-        success: function(response) {
-            successCallback(response);
-        }
-    });
+function deleteProfilePhotoAsync(profileId, imagePath, successCallback, errorCallback) {
+    
 }
 
 function countPostCommentsByPostIdAsync(postId, successCallback, errorCallback) {
@@ -222,77 +302,8 @@ function countPostCommentsByPostIdAsync(postId, successCallback, errorCallback) 
     });
 }
 
-function createPostVoteIdAsync(postId, vote, successCallback, errorCallback) {
-    console.log(`Create post vote by post id: ${postId} vote type: ${vote.voteType}`);
-    $.ajax({
-        url: `/Posts/CreatePostVoteAsync?postId=${postId}`,
-        type: "POST",
-        data: JSON.stringify(vote),
-        contentType: "application/json",
-        error: function(jqXhr, textStatus, errorThrown) {
-            console.log("jqXhr: " + jqXhr);
-            console.log("textStatus: " + textStatus);
-            console.log("errorThrown: " + errorThrown);
-            errorCallback(jqXhr, textStatus, errorThrown);
-        },
-        success: function(response) {
-            successCallback(response);
-        }
-    });
-}
 
-function createPostCommentVoteAsync(postId, commentId, vote, successCallback, errorCallback) {
-    $.ajax({
-        url: `/Posts/CreatePostCommentVoteAsync?postId=${postId}&commentId=${commentId}`,
-        type: "POST",
-        data: JSON.stringify(vote),
-        contentType: "application/json",
-        error: function(jqXhr, textStatus, errorThrown) {
-            console.log("jqXhr: " + jqXhr);
-            console.log("textStatus: " + textStatus);
-            console.log("errorThrown: " + errorThrown);
-            errorCallback(jqXhr, textStatus, errorThrown);
-        },
-        success: function(response) {
-            successCallback(response);
-        }
-    });
-}
 
-function getPostTagsByPostIdAsync(postId, successCallback, errorCallback) {
-    console.log(`Get post tags by post id: ${postId}`);
-    $.ajax({
-        url: `/Posts/GetPostTagsByPostIdAsync?postId=${postId}`,
-        type: "GET",
-        contentType: "application/json",
-        error: function(jqXhr, textStatus, errorThrown) {
-            console.log("jqXhr: " + jqXhr);
-            console.log("textStatus: " + textStatus);
-            console.log("errorThrown: " + errorThrown);
-            errorCallback(jqXhr, textStatus, errorThrown);
-        },
-        success: function(response) {
-            successCallback(response);
-        }
-    });
-}
 
-function createPostTagsByPostIdAsync(postId, postTags, successCallback, errorCallback) {
-    console.log(`Create post tags: ${postTags.tags}`);
-    $.ajax({
-        url: `/Posts/CreatePostTagsByPostIdAsync?postId=${postId}`,
-        type: "POST",
-        data: JSON.stringify(postTags),
-        contentType: "application/json",
-        error: function(jqXhr, textStatus, errorThrown) {
-            console.log("jqXhr: " + jqXhr);
-            console.log("textStatus: " + textStatus);
-            console.log("errorThrown: " + errorThrown);
-            errorCallback(jqXhr, textStatus, errorThrown);
-        },
-        success: function(response) {
-            successCallback(response);
-        }
-    });
-}
+
 

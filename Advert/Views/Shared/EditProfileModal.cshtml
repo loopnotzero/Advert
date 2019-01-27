@@ -1,6 +1,7 @@
 @using System.Globalization
 @using Advert.Common.Profiles
 @using Advert.Models.Profiles
+@using Humanizer
 @model ProfileViewModel
 
 <div id="edit__profile--modal" class="modal fade" data-backdrop="static" tabindex="-1">
@@ -24,7 +25,6 @@
                             <a class="nav-link show" data-toggle="tab" href="#change__password--tab" role="tab" aria-selected="false">Change Password</a>
                         </li>
                     </ul>
-
                     <div class="tab-content">
                         <div id="edit__profile--tab" class="tab-pane fade show active" role="tabpanel">                         
                             <div class="form-group">
@@ -56,11 +56,11 @@
                                     {
                                         if (Model.Gender.ToUpper().Equals(gender.ToUpper()))
                                         {
-                                            <option selected="selected">@gender</option>
+                                            <option selected="selected">@gender.Humanize()</option>
                                         }
                                         else
                                         {
-                                            <option>@gender</option>
+                                            <option>@gender.Humanize()</option>
                                         }
                                     }
                                 </select>
@@ -115,12 +115,16 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="font-weight-bold">Add profile photo</label>
-                                <form asp-controller="Posts" asp-action="AddPostPhotos" class="dropzone needsclick dz-clickable" id="profile-dropzone">
+                                <label class="font-weight-bold">Add profile photo</label>                            
+                                <form id="edit__profile-dropzone" class="dropzone needsclick dz-clickable">
+                                    <input id="edit__profile--profile_id" type="hidden" value="@Model.Id">
                                     <div class="dz-message needsclick">
                                         <img src="~/images/add-photos.png"/>
                                     </div>
                                 </form>
+                                <div id="edit__profile--crop-editor">
+                                    
+                                </div>`
                             </div>
                         </div>
                         <div id="change__password--tab" class="tab-pane fade show" role="tabpanel">

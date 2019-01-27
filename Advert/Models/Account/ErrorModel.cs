@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Advert.Models.Account
 {
-    public class IdentityResultModel
+    public class ErrorModel
     {
         public string ReturnUrl { get; set; }
         

@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <title>Advert.md</title>
+    <title>Bazaar.md</title>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description"/>
@@ -32,12 +32,15 @@
 <script src="~/js/advert.js"></script>
 <script src="~/js/jquery.tagify.js"></script>
 <script src="~/js/cropper.js"></script>
+<script src="~/js/jquery-cropper.js"></script>
 <script src="~/js/flatpickr.js"></script>
 
 <script>
     var turndown = new TurndownService();
     var textEditor = {};
     var birthdayPicker;
+    
+    Dropzone.autoDiscover = false;
 
     function initMap() {
         if ($("#add__post--location").length) {
@@ -741,6 +744,47 @@
                         }
                     });
             });
+
+        var dropzone = $("#edit__profile-dropzone").dropzone({
+            url: `/Profile/AddProfilePhotoAsync?profileId=${$("#edit__profile--profile_id").val()}`,
+            maxFiles: 1,           
+            init: function() {
+                this.on("success",
+                    function(file, response) {
+                        console.log(response);
+                        $("#edit__profile--crop-editor").html(`<img id="edit__profile--photo" src="${response.imagePath}">`);
+                        
+                        var $image = $('#edit__profile--photo');
+
+                        $image.cropper({
+                            aspectRatio: 16 / 9,
+                            crop: function(event) {
+                                console.log(event.detail.x);
+                                console.log(event.detail.y);
+                                console.log(event.detail.width);
+                                console.log(event.detail.height);
+                                console.log(event.detail.rotate);
+                                console.log(event.detail.scaleX);
+                                console.log(event.detail.scaleY);
+                            }
+                        });
+                    });
+//                this.on("addedfile",
+//                    function(file) {
+//                        console.log(file);
+//                    });
+                this.on("removedfile",
+                    function(file) {
+                        $("#edit__profile--crop-editor").empty();
+                    });          
+                this.on("maxfilesexceeded",
+                    function(file) {
+                        this.removeFile(file);
+                    });
+            }
+        });
+
+        
         
         if ($("#edit__profile--modal").length) {
             birthdayPicker = flatpickr($("#edit__profile--birthday")[0],
@@ -751,7 +795,7 @@
                     dateFormat: "Y-m-d"
                 }); 
         }
-
+       
         $(".search").submit(function(event) {
             event.preventDefault();
             window.location.replace(window.location.href + "?page=1&keyword=" + $(".search__text").val());
