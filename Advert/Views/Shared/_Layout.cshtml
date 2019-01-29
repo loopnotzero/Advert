@@ -38,6 +38,7 @@
 <script>
     var turndown = new TurndownService();
     var textEditor = {};
+    var imageCropper;
     var birthdayPicker;
     
     Dropzone.autoDiscover = false;
@@ -475,6 +476,8 @@
                         }
                         
                         $("#edit__profile--modal").modal('toggle');
+
+                        console.log(`Image cropped: ${imageCropper}`);
                     },
                     function(jqXhr, textStatus, errorThrown) {
                         alert("Error");
@@ -752,27 +755,19 @@
                 this.on("success",
                     function(file, response) {
                         console.log(response);
-                        $("#edit__profile--crop-editor").html(`<img id="edit__profile--photo" src="${response.imagePath}">`);
+                        $("#edit__profile--crop-editor").html(`<img id="edit__profile--photo" src="${response.imagePath}" style="max-width: 100%">`);
                         
                         var $image = $('#edit__profile--photo');
 
-                        $image.cropper({
-                            aspectRatio: 16 / 9,
-                            crop: function(event) {
-                                console.log(event.detail.x);
-                                console.log(event.detail.y);
-                                console.log(event.detail.width);
-                                console.log(event.detail.height);
-                                console.log(event.detail.rotate);
-                                console.log(event.detail.scaleX);
-                                console.log(event.detail.scaleY);
-                            }
+                        imageCropper = $image.cropper({
+                            aspectRatio: 1,
+                            dragMode: 'move',
+                            cropBoxMovable: false,
+                            cropBoxResizable: false,
+                            minCropBoxWidth: 150,
+                            minCropBoxHeight: 150
                         });
                     });
-//                this.on("addedfile",
-//                    function(file) {
-//                        console.log(file);
-//                    });
                 this.on("removedfile",
                     function(file) {
                         $("#edit__profile--crop-editor").empty();
@@ -784,8 +779,6 @@
             }
         });
 
-        
-        
         if ($("#edit__profile--modal").length) {
             birthdayPicker = flatpickr($("#edit__profile--birthday")[0],
                 {

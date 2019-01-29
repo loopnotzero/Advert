@@ -1714,7 +1714,7 @@ select.form-control {
 }
 
 .tab-content {
-  padding: 1.5rem 0;
+  padding-top: 1.5rem;
 }
 
 .nav-tabs--red .nav-link.active {
