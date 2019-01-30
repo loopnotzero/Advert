@@ -38,11 +38,61 @@
 <script>
     var turndown = new TurndownService();
     var textEditor = {};
-    var imageCropper;
     var birthdayPicker;
-    
-    Dropzone.autoDiscover = false;
 
+    if (document.getElementById("edit__profile-dropzone")) {
+        Dropzone.autoDiscover = false;
+
+        var dropzone = new Dropzone("#edit__profile-dropzone",
+            {
+                url: `/Profile/AddProfilePhotoAsync?profileId=${$("#edit__profile--profile_id").val()}`,
+                maxFiles: 1,
+                acceptedFiles: "image/*",
+                autoProcessQueue: false,
+                init: function() {
+                    this.on("success",
+                        function(file, response) {
+                            console.log(response.imagePath);
+                            console.log("RESPONSE OK");
+                            $("#profile-image").attr("src", response.imagePath);
+                            $("#edit__profile--modal").modal('toggle');
+                        });
+                    this.on("addedfile",
+                        function(file) {
+                            $("#edit__profile--avatar").attr('src', URL.createObjectURL(file)).cropper({
+                                aspectRatio: 1,
+                                dragMode: 'move',
+                                cropBoxMovable: false,
+                                cropBoxResizable: false,
+                                minCropBoxWidth: 175,
+                                minCropBoxHeight: 175
+                            });
+                            $("#avatar-form__group").show();
+                        });
+                    this.on("removedfile",
+                        function(file) {
+                            $("#edit__profile--avatar").removeAttr("src").cropper("destroy");
+                            $("#avatar-form__group").hide();
+
+                        });
+                    this.on("maxfilesexceeded",
+                        function(file) {
+                            this.removeFile(file);
+                        });
+                }
+            });
+    }
+
+    function toBlob(uri) {
+        var byteString = atob(uri.split(',')[1]);
+        var arrayBuffer = new ArrayBuffer(byteString.length);
+        var byteArray = new Uint8Array(arrayBuffer);
+        for (var i = 0; i < byteString.length; i++) {
+            byteArray[i] = byteString.charCodeAt(i);
+        }
+        return new Blob([arrayBuffer], { type: 'image/jpeg' });
+    }
+  
     function initMap() {
         if ($("#add__post--location").length) {
             new google.maps.places.Autocomplete($("#add__post--location")[0])
@@ -68,6 +118,7 @@
                     });
         }
     }
+      
 
     function removeReplyForm(commentId) {
         var form = $(`#${commentId}`);
@@ -430,7 +481,8 @@
         });
     }
 
-    function onEditProfileSaveChangesClick(profileId) {
+    function onEditProfileSaveChangesClick
+        (profileId) {
         var tabId = $(".tab-content").find(".active").attr('id');
         switch (tabId) {
         case "edit__profile--tab":
@@ -462,7 +514,7 @@
                         
                         $("#profile-location").html(`<span><i class="zmdi zmdi-pin zmdi-hc-fw"></i>${profile.location}</span>`);
                         
-                        if (profile.birthday === null || profile.birthday === "") {
+                        if (profile.birthday === null || profile.birthday === "" || profile.birthday === undefined) {
                             $("#profile-birthday").empty();
                         } else {
                             var date = new Date(profile.birthday);          
@@ -474,10 +526,14 @@
                         } else {
                             $("#profile-phone__number").html(`<span><i class="zmdi zmdi-smartphone-iphone zmdi-hc-fw"></i>${profile.callingCode} ${profile.phoneNumber}</span>`);
                         }
-                        
-                        $("#edit__profile--modal").modal('toggle');
 
-                        console.log(`Image cropped: ${imageCropper}`);
+                        var target = toBlob($("#edit__profile--avatar").cropper('getCroppedCanvas').toDataURL());
+                        var source = dropzone.getAcceptedFiles()[0];
+                        var extension = /^.+\.([^.]+)$/.exec(source.name);
+                        target.name = (extension == null ? "avatar" : `avatar.${extension[1]}`);
+                        dropzone.removeFile(source);
+                        dropzone.addFile(target);
+                        dropzone.processQueue();
                     },
                     function(jqXhr, textStatus, errorThrown) {
                         alert("Error");
@@ -747,38 +803,7 @@
                         }
                     });
             });
-
-        var dropzone = $("#edit__profile-dropzone").dropzone({
-            url: `/Profile/AddProfilePhotoAsync?profileId=${$("#edit__profile--profile_id").val()}`,
-            maxFiles: 1,           
-            init: function() {
-                this.on("success",
-                    function(file, response) {
-                        console.log(response);
-                        $("#edit__profile--crop-editor").html(`<img id="edit__profile--photo" src="${response.imagePath}" style="max-width: 100%">`);
-                        
-                        var $image = $('#edit__profile--photo');
-
-                        imageCropper = $image.cropper({
-                            aspectRatio: 1,
-                            dragMode: 'move',
-                            cropBoxMovable: false,
-                            cropBoxResizable: false,
-                            minCropBoxWidth: 150,
-                            minCropBoxHeight: 150
-                        });
-                    });
-                this.on("removedfile",
-                    function(file) {
-                        $("#edit__profile--crop-editor").empty();
-                    });          
-                this.on("maxfilesexceeded",
-                    function(file) {
-                        this.removeFile(file);
-                    });
-            }
-        });
-
+        
         if ($("#edit__profile--modal").length) {
             birthdayPicker = flatpickr($("#edit__profile--birthday")[0],
                 {

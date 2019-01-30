@@ -30,6 +30,7 @@ namespace Advert.Controllers
         private readonly IConfiguration _configuration;
         private readonly IHostingEnvironment _hostEnv;
         private readonly PostsManager<MongoDbPost> _postsManager;
+        private readonly PostCommentsManager<MongoDbPostComment> _postCommentsManager;
         private readonly ProfilesManager<MongoDbProfile> _profilesManager;
         private readonly PostsVotesManager<MongoDbPostVote> _postsVotesManager;
         private readonly ProfilesImagesManager<MongoDbProfileImage> _profilesImagesManager;
@@ -45,6 +46,7 @@ namespace Advert.Controllers
             PostsManager<MongoDbPost> postsManager,
             ProfilesManager<MongoDbProfile> profilesManager,
             PostsVotesManager<MongoDbPostVote> postsVotesManager,
+            PostCommentsManager<MongoDbPostComment> postCommentsManager,
             ProfilesImagesManager<MongoDbProfileImage> profilesImagesManager)
         {
             _logger = loggerFactory.CreateLogger<ProfilesController>();
@@ -53,6 +55,7 @@ namespace Advert.Controllers
             _postsManager = postsManager;
             _profilesManager = profilesManager;
             _postsVotesManager = postsVotesManager;
+            _postCommentsManager = postCommentsManager;
             _profilesImagesManager = profilesImagesManager;
         }
 
@@ -519,6 +522,26 @@ namespace Advert.Controllers
             };
                 
             await _profilesImagesManager.CreateProfileImageAsync(profileImage);
+
+            profile.ImagePath = profileImage.ImagePath;
+
+            await _profilesManager.UpdateProfileAsync(profile);
+
+            var posts = await _postsManager.FindPostsByProfileIdAsync(profile._id, 0, null);
+
+            foreach (var post in posts)
+            {
+                var collectionName = post._id.ToString();              
+                var comments = await _postCommentsManager.FindPostCommentsByProfileIdAsync(collectionName, post.ProfileId);
+                foreach (var comment in comments)
+                {
+                    if (comment.ProfileId.Equals(profile._id))
+                    {
+                        comment.ProfileImagePath = profile.ImagePath;
+                        await _postCommentsManager.ReplacePostCommentAsync(collectionName, comment._id, comment);
+                    }
+                }
+            }
 
             return Ok(profileImage);
         }
