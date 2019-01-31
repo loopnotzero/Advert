@@ -525,15 +525,17 @@
                             $("#profile-phone__number").html(`<span><i class="zmdi zmdi-smartphone-iphone zmdi-hc-fw"></i>${profile.callingCode} ${profile.phoneNumber}</span>`);
                         }
 
-                        var target = toBlob($("#edit__profile--avatar").cropper('getCroppedCanvas').toDataURL());
-                        var source = dropzone.getAcceptedFiles()[0];
-                        var extension = /^.+\.([^.]+)$/.exec(source.name);
-                        
-                        target.name = (extension == null ? "avatar" : `avatar.${extension[1]}`);
-                        
-                        dropzone.removeFile(source);
-                        dropzone.addFile(target);
-                        dropzone.processQueue();
+                        if (dropzone.files) {
+                            $("#edit__profile--modal").modal('toggle');                            
+                        } else {
+                            var target = toBlob($("#edit__profile--avatar").cropper('getCroppedCanvas').toDataURL());
+                            target.name = (extension == null ? "avatar.jpg" : `avatar.${extension[1]}`);
+                            var source = dropzone.getAcceptedFiles()[0];
+                            var extension = /^.+\.([^.]+)$/.exec(source.name);
+                            dropzone.removeFile(source);
+                            dropzone.addFile(target);
+                            dropzone.processQueue();
+                        }        
                     },
                     function(jqXhr, textStatus, errorThrown) {
                         alert("Error");
