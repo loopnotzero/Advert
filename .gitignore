@@ -71,3 +71,9 @@ Bazaar\.MongoDbStorage/obj/
 Bazaar\.Common/obj/
 
 Bazaar\.sln\.DotSettings\.user
+
+Bazaar\.Common/bin/Debug/netcoreapp2\.1/
+
+Bazaar\.MongoDbStorage/bin/Debug/netcoreapp2\.1/
+
+Bazaar/bin/Debug/netcoreapp2\.1/
