@@ -40,7 +40,7 @@ namespace Bazaar.Controllers
         private readonly PostsViewsCountManager<MongoDbPostViewsCount> _postsViewsCountManager;
         private readonly PostCommentsVotesManager<MongoDbPostCommentVote> _postCommentsVotesManager;
         
-        private const string EmptyProfileImage = "/images/no-image.png";
+        private const string EmptyProfileImage = "/images/profile__empty.png";
 
         public PostsController(ILoggerFactory loggerFactory,
             IConfiguration configuration,

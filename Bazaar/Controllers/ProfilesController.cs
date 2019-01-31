@@ -37,7 +37,7 @@ namespace Bazaar.Controllers
 
         private readonly IProfile _myProfile;
         
-        private const string EmptyProfileImage = "/images/no-image.png";
+        private const string EmptyProfileImage = "/images/profile__empty.png";
 
         public ProfilesController(
             ILoggerFactory loggerFactory,
@@ -532,7 +532,9 @@ namespace Bazaar.Controllers
             foreach (var post in posts)
             {
                 var collectionName = post._id.ToString();              
+                
                 var comments = await _postCommentsManager.FindPostCommentsByProfileIdAsync(collectionName, post.ProfileId);
+                
                 foreach (var comment in comments)
                 {
                     if (comment.ProfileId.Equals(profile._id))
@@ -541,6 +543,10 @@ namespace Bazaar.Controllers
                         await _postCommentsManager.ReplacePostCommentAsync(collectionName, comment._id, comment);
                     }
                 }
+
+                post.ProfileImagePath = profile.ImagePath;
+
+                await _postsManager.UpdatePostAsync(post);
             }
 
             return Ok(profileImage);
