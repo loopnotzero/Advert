@@ -1,0 +1,66 @@
+@using Bazaar.Models.Profiles
+@model ProfileViewModel
+
+@if (Model != null)
+{
+    <div class="profile-header">
+        @if (Model.Owner)
+        {
+            <a href="#" class="zmdi zmdi-edit float-right" data-toggle="modal" data-target="#edit__profile--modal">
+            </a>
+        }
+    </div>
+
+    if (string.IsNullOrEmpty(Model.ImagePath))
+    {
+        <img id="profile-image" src="~/images/no-image.png" class="team__img" alt="">
+    }
+    else
+    {
+        <img id="profile-image" src="@Model.ImagePath" class="team__img" alt="">
+    }
+    
+    <div class="card-body">
+        @if (Model != null)
+        {
+            <a href="/@Model.Name">
+                <h5 class="card-title">@Model.Name</h5>
+            </a>
+            
+            <div style="border-bottom: 1px solid #d5d5d5; margin-bottom: 10px;">
+            </div>
+            
+            <div id="profile-phone__number" class="pl-4 row">               
+                @if (!string.IsNullOrEmpty(Model.CallingCode) && !string.IsNullOrWhiteSpace(Model.CallingCode) && !string.IsNullOrEmpty(Model.PhoneNumber) && !string.IsNullOrWhiteSpace(Model.PhoneNumber))
+                {
+                    <span>
+                        <i class="zmdi zmdi-smartphone-iphone zmdi-hc-fw"></i>@Model.CallingCode @Model.PhoneNumber
+                    </span>
+                }
+            </div> 
+            <div id="profile-location" class="pl-4 row">
+                @if (!string.IsNullOrEmpty(Model.Location) && !string.IsNullOrWhiteSpace(Model.Location))
+                {
+                    <span>
+                        <i class="zmdi zmdi-pin zmdi-hc-fw"></i>@Model.Location  
+                    </span>
+                }
+            </div> 
+            <div id="profile-joined__time" class="pl-4 row">
+                <span>
+                    <i class="zmdi zmdi-calendar zmdi-hc-fw"></i>Joined @Model.CreatedAt
+                </span>
+            </div> 
+            <div id="profile-birthday" class="pl-4 row">
+                @if (!string.IsNullOrEmpty(Model.Birthday) && !string.IsNullOrWhiteSpace(Model.Birthday))
+                {
+                    <span>
+                        <i class="zmdi zmdi-brightness-5 zmdi-hc-fw"></i>Birthday @Model.Birthday
+                    </span>
+                }
+            </div>
+        }
+    </div>
+}
+
+

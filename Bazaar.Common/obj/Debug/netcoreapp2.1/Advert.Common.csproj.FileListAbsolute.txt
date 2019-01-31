@@ -1,0 +1,9 @@
+/home/briankernighan/IdeaProjects/Advert/Advert.Common/bin/Debug/netcoreapp2.1/Advert.Common.deps.json
+/home/briankernighan/IdeaProjects/Advert/Advert.Common/bin/Debug/netcoreapp2.1/Advert.Common.dll
+/home/briankernighan/IdeaProjects/Advert/Advert.Common/bin/Debug/netcoreapp2.1/Advert.Common.pdb
+/home/briankernighan/IdeaProjects/Advert/Advert.Common/obj/Debug/netcoreapp2.1/Advert.Common.csprojAssemblyReference.cache
+/home/briankernighan/IdeaProjects/Advert/Advert.Common/obj/Debug/netcoreapp2.1/Advert.Common.csproj.CoreCompileInputs.cache
+/home/briankernighan/IdeaProjects/Advert/Advert.Common/obj/Debug/netcoreapp2.1/Advert.Common.AssemblyInfoInputs.cache
+/home/briankernighan/IdeaProjects/Advert/Advert.Common/obj/Debug/netcoreapp2.1/Advert.Common.AssemblyInfo.cs
+/home/briankernighan/IdeaProjects/Advert/Advert.Common/obj/Debug/netcoreapp2.1/Advert.Common.dll
+/home/briankernighan/IdeaProjects/Advert/Advert.Common/obj/Debug/netcoreapp2.1/Advert.Common.pdb

@@ -1,0 +1,137 @@
+@using Bazaar.Models.Post
+@model IEnumerable<PostCommentViewModel>
+
+@if (Model != null)
+{
+    foreach (var comment in Model)
+    {
+        <div id="@comment.CommentId" class="media p-2">
+            @if (!string.IsNullOrEmpty(comment.ProfileImagePath))
+            {
+                <img class="card-user__img" src="@comment.ProfileImagePath" width="48" height="48" alt="profile-image">
+            }
+            else
+            {
+                <img class="card-user__img" src="/images/no-image.png" width="48" height="48" alt="profile-image">
+            }
+            <div class="media-body media__img content__break">
+                <div class="col-auto">
+                    <span class="font-weight-bold" style="font-size: 0.9rem">
+                        <a href="/@comment.ProfileName">@comment.ProfileName</a>
+                    </span>
+                    <span class="time" style="font-size: 0.9rem"> @comment.CreatedAt</span>
+                </div>
+                <div class="col-auto media__border">
+                    <div id="media-comment__@comment.CommentId" class="media__comment">
+                        @Html.Raw(comment.Text)
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <div class="row">
+                        <div class="col-md-12 p-1">
+                            <div class="r-btn r-btn-light r-btn--icon waves-effect ml-4" onclick="onPostCommentVoteClick('@comment.PostId', '@comment.CommentId', 1)">
+                                @if (comment.IsVoted)
+                                {
+                                    <i id="vote-icon__@comment.CommentId" class="zmdi zmdi-favorite zmdi-hc-fw"></i>
+                                }
+                                else
+                                {
+                                    <i id="vote-icon__@comment.CommentId" class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
+                                }
+                            </div>
+                            <small id="votes-count__@comment.CommentId">@comment.VotesCount</small>
+                            <span class="dot-separator"></span>
+                            <a href="#reply" onclick="onReplyCommentClick('@comment.PostId', null, '@comment.CommentId')" style="font-size: 0.9rem">
+                                Reply
+                            </a>
+                            @if (comment.IsOwner)
+                            {
+                                <span class="dot-separator"></span>
+                                <div class="dropdown comments__item">
+                                    <i data-toggle="dropdown" class="zmdi zmdi-chevron-down zmdi-hc-fw" aria-expanded="false"></i>
+                                    <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-end" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(30px, 26px, 0px);">
+                                        <a href="" class="dropdown-item" data-placement="top" data-target="#edit-comment__modal" data-toggle="modal" onclick="onEditCommentClick('@comment.PostId', '@comment.CommentId')">
+                                            <i class="zmdi zmdi-edit zmdi-hc-fw"></i> Edit...
+                                        </a>
+                                        <a href="" class="dropdown-item" data-placement="top" data-target="#delete-comment__modal" data-toggle="modal" onclick="onDeleteCommentClick('@comment.PostId', '@comment.CommentId')">
+                                            <i class="zmdi zmdi-delete zmdi-hc-fw"></i> Delete...
+                                        </a>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div id="reply-placeholder"></div>
+                @if (comment.Comments != null)
+                {
+                    foreach (var reply in comment.Comments)
+                    {
+                        <div id="@reply.CommentId" class="media p-2">
+                            @if (!string.IsNullOrEmpty(reply.ProfileImagePath))
+                            {
+                                <img class="card-user__img" src="@reply.ProfileImagePath" width="48" height="48" alt="profile-image">
+                            }
+                            else
+                            {
+                                <img class="card-user__img" src="/images/no-image.png" width="48" height="48" alt="profile-image">
+                            }
+                            <div class="media-body media__img content__break">
+                                <div class="col-auto">
+                                    <span class="font-weight-bold" style="font-size: 0.9rem">
+                                        <a href="/@reply.ProfileName">@reply.ProfileName</a>
+                                    </span>
+                                    <span class="time" style="font-size: 0.9rem"> @reply.CreatedAt</span>
+                                </div>
+                                <div class="col-auto media__border">
+                                    <div id="media-comment__@reply.CommentId" class="media__comment">
+                                        @Html.Raw(reply.Text)
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="row">
+                                        <div class="col-md-12 p-1">
+                                            <div class="r-btn r-btn-light r-btn--icon waves-effect ml-4" onclick="onPostCommentVoteClick('@reply.PostId', '@reply.CommentId', 1)">
+                                                @if (reply.IsVoted)
+                                                {
+                                                    <i id="vote-icon__@reply.CommentId" class="zmdi zmdi-favorite zmdi-hc-fw"></i>
+                                                }
+                                                else
+                                                {
+                                                    <i id="vote-icon__@reply.CommentId" class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
+                                                }
+                                            </div>
+                                            <small id="votes-count__@reply.CommentId">@reply.VotesCount</small>
+                                            <span class="dot-separator"></span>
+                                            <a href="#reply" onclick="onReplyCommentClick('@reply.PostId', '@reply.ReplyTo', '@reply.CommentId')" style="font-size: 0.9rem">
+                                                Reply
+                                            </a>
+                                            @if (reply.IsOwner)
+                                            {
+                                                <span class="dot-separator"></span>
+                                                <div class="dropdown comments__item">
+                                                    <i data-toggle="dropdown" class="zmdi zmdi-chevron-down zmdi-hc-fw" aria-expanded="false"></i>
+                                                    <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-end" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(30px, 26px, 0px);">
+                                                        <a href="" class="dropdown-item" data-placement="top" data-target="#edit-comment__modal" data-toggle="modal" onclick="onEditCommentClick('@reply.PostId', '@reply.CommentId')">
+                                                            <i class="zmdi zmdi-edit zmdi-hc-fw"></i> Edit...
+                                                        </a>
+                                                        <a href="" class="dropdown-item" data-placement="top" data-target="#delete-comment__modal" data-toggle="modal" onclick="onDeleteCommentClick('@reply.PostId', '@reply.CommentId')">
+                                                            <i class="zmdi zmdi-delete zmdi-hc-fw"></i> Delete...
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="reply-placeholder"></div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    }
+    @await Html.PartialAsync("EditCommentModal")
+    @await Html.PartialAsync("DeleteCommentModal")
+}

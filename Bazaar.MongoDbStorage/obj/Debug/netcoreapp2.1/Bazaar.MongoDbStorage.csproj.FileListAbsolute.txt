@@ -1,0 +1,14 @@
+/home/briankernighan/IdeaProjects/Advert/Bazaar.MongoDbStorage/bin/Debug/netcoreapp2.1/Bazaar.MongoDbStorage.deps.json
+/home/briankernighan/IdeaProjects/Advert/Bazaar.MongoDbStorage/bin/Debug/netcoreapp2.1/Bazaar.MongoDbStorage.dll
+/home/briankernighan/IdeaProjects/Advert/Bazaar.MongoDbStorage/bin/Debug/netcoreapp2.1/Bazaar.MongoDbStorage.pdb
+/home/briankernighan/IdeaProjects/Advert/Bazaar.MongoDbStorage/bin/Debug/netcoreapp2.1/Bazaar.Common.dll
+/home/briankernighan/IdeaProjects/Advert/Bazaar.MongoDbStorage/bin/Debug/netcoreapp2.1/Microsoft.Extensions.Identity.Core.dll
+/home/briankernighan/IdeaProjects/Advert/Bazaar.MongoDbStorage/bin/Debug/netcoreapp2.1/Bazaar.Common.pdb
+/home/briankernighan/IdeaProjects/Advert/Bazaar.MongoDbStorage/bin/Debug/netcoreapp2.1/Microsoft.Extensions.Identity.Core.xml
+/home/briankernighan/IdeaProjects/Advert/Bazaar.MongoDbStorage/obj/Debug/netcoreapp2.1/Bazaar.MongoDbStorage.csprojAssemblyReference.cache
+/home/briankernighan/IdeaProjects/Advert/Bazaar.MongoDbStorage/obj/Debug/netcoreapp2.1/Bazaar.MongoDbStorage.csproj.CoreCompileInputs.cache
+/home/briankernighan/IdeaProjects/Advert/Bazaar.MongoDbStorage/obj/Debug/netcoreapp2.1/Bazaar.MongoDbStorage.AssemblyInfoInputs.cache
+/home/briankernighan/IdeaProjects/Advert/Bazaar.MongoDbStorage/obj/Debug/netcoreapp2.1/Bazaar.MongoDbStorage.AssemblyInfo.cs
+/home/briankernighan/IdeaProjects/Advert/Bazaar.MongoDbStorage/obj/Debug/netcoreapp2.1/Bazaar.MongoDbStorage.csproj.CopyComplete
+/home/briankernighan/IdeaProjects/Advert/Bazaar.MongoDbStorage/obj/Debug/netcoreapp2.1/Bazaar.MongoDbStorage.dll
+/home/briankernighan/IdeaProjects/Advert/Bazaar.MongoDbStorage/obj/Debug/netcoreapp2.1/Bazaar.MongoDbStorage.pdb

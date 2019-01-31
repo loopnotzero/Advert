@@ -1,0 +1,57 @@
+@using Bazaar.Models.Profiles
+@model ProfileViewModel
+
+<div class="card p-3">
+    <h3 class="font-weight-bold" style="text-align: center">BAZAAR</h3>
+    <span style="text-align: center; margin-bottom: 10px">
+        The easiest way to sell or buy things.
+    </span>
+    <div class="form-group">
+        <input id="sign-up__name" type="text" class="form-control" placeholder="Name" required="">
+        @* <div id="invalid-feedback__name" class="invalid-feedback" style="display: none"></div> *@
+        @* <i class="form-group__feedback zmdi zmdi-check-circle"></i> *@
+        <i class="form-group__bar"></i>
+    </div>
+    <div class="form-group">
+        <input id="sign-up__email" type="email" class="form-control" placeholder="Email" required="">
+        @* <div id="invalid-feedback__email" class="invalid-feedback" style="display: none"></div> *@
+        @* <i class="form-group__feedback zmdi zmdi-check-circle"></i> *@
+        <i class="form-group__bar"></i>
+    </div>
+    <div class="form-group">
+        <input id="sign-up__password" type="password" class="form-control" placeholder="Password" required="">
+        @* <div id="invalid-feedback__password" class="invalid-feedback" style="display: none"></div> *@
+        @* <i class="form-group__feedback zmdi zmdi-check-circle"></i> *@
+        <i class="form-group__bar"></i>
+    </div>
+    <button class="btn btn-primary btn--icon-text" onclick="onSignUpClick()"><i class="zmdi zmdi-account-add zmdi-hc-fw"></i> Sign up</button>
+    <p style="text-align: center">
+        <span>
+            By signing up, you agree to our <a href="#">Terms</a>, <a href="#">Data Policy</a> and <a href="#">Cookies Policy</a>.
+        </span>
+    </p>
+    <div id="sign-up__alert" class="alert alert-danger" role="alert" style="display: none; margin-bottom: 0">
+    </div>
+</div>
+<div style="border-bottom: 1px solid #d5d5d5; margin: 0.5rem">
+</div>
+<div class="card p-3">
+    <div class="form-group">
+        <input id="log-in__email" type="email" class="form-control" placeholder="Email" required="">
+        @* <i class="form-group__feedback zmdi zmdi-check-circle"></i> *@
+        <i class="form-group__bar"></i>
+    </div>
+    <div class="form-group">
+        <input id="log-in__password" type="password" class="form-control" placeholder="Password" required="">
+        @* <i class="form-group__feedback zmdi zmdi-check-circle"></i> *@
+        <i class="form-group__bar"></i>
+    </div>
+    <button class="btn btn-primary btn--icon-text" onclick="onLogInClick()"><i class="zmdi zmdi-sign-in zmdi-hc-fw"></i> Log in</button>
+    <p style="text-align: center">
+        <span>
+            <a href="#">Forgot password?</a>
+        </span>
+    </p>
+    <div id="log-in__alert" class="alert alert-danger" role="alert" style="display: none; margin-top: 1rem; margin-bottom: 0">
+    </div>
+</div>

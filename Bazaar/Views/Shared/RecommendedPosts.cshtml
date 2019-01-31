@@ -1,0 +1,47 @@
+@using Bazaar.Models.Post;
+
+@model IEnumerable<RecommendedPostViewModel>
+
+@if (Model != null)
+{
+    <div class="listview">
+        @foreach (var post in Model)
+        {
+            <div class="recommended-post">
+                <div class="recommended-post__info">
+                    <a href="/@post.ProfileName">
+                        <img src="@post.ProfileImagePath" class="recommended-post__profile--img" alt="">
+                    </a>
+                    <div style="width: 80%">
+                        <a href="/Posts?postId=@post.PostId">
+                            <div class="recommended-post__title font-weight-bold cut-long-text">@post.Title</div>
+                        </a>
+                        <div style="display: flex">
+                            <a href="/@post.ProfileName">
+                                @post.ProfileName
+                            </a>
+                            <span class="dot-separator"></span>
+                            <div class="post-header__time--notags">@post.CreatedAt</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+@*             <div class="listview__item"> *@
+@*                 <div class="mr-2" style="width: 50px; height: 50px"> *@
+@*                     <img src="@advert.ProfileImagePath" class="listview__img" alt=""> *@
+@*                 </div> *@
+@*                 <div class="listview__content"> *@
+@*                     <div class="listview__heading"> *@
+@*                         <p> *@
+@*                             <a class="font-weight-bold" href="/Posts?postId=@advert.PostId">@advert.Title</a> *@
+@*                         </p> *@
+@*                     </div> *@
+@*                     <p> *@
+@*                         <a href="/@advert.ProfileName" style="font-size: 0.8rem">@advert.ProfileName</a> *@
+@*                         <small class="time"> @advert.CreatedAt</small> *@
+@*                     </p> *@
+@*                 </div> *@
+@*             </div> *@
+        }
+    </div>
+}
