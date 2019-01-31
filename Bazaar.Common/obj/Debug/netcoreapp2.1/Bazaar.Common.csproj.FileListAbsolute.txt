@@ -1,9 +1,0 @@
-/home/briankernighan/IdeaProjects/Advert/Bazaar.Common/bin/Debug/netcoreapp2.1/Bazaar.Common.deps.json
-/home/briankernighan/IdeaProjects/Advert/Bazaar.Common/bin/Debug/netcoreapp2.1/Bazaar.Common.dll
-/home/briankernighan/IdeaProjects/Advert/Bazaar.Common/bin/Debug/netcoreapp2.1/Bazaar.Common.pdb
-/home/briankernighan/IdeaProjects/Advert/Bazaar.Common/obj/Debug/netcoreapp2.1/Bazaar.Common.csprojAssemblyReference.cache
-/home/briankernighan/IdeaProjects/Advert/Bazaar.Common/obj/Debug/netcoreapp2.1/Bazaar.Common.csproj.CoreCompileInputs.cache
-/home/briankernighan/IdeaProjects/Advert/Bazaar.Common/obj/Debug/netcoreapp2.1/Bazaar.Common.AssemblyInfoInputs.cache
-/home/briankernighan/IdeaProjects/Advert/Bazaar.Common/obj/Debug/netcoreapp2.1/Bazaar.Common.AssemblyInfo.cs
-/home/briankernighan/IdeaProjects/Advert/Bazaar.Common/obj/Debug/netcoreapp2.1/Bazaar.Common.dll
-/home/briankernighan/IdeaProjects/Advert/Bazaar.Common/obj/Debug/netcoreapp2.1/Bazaar.Common.pdb

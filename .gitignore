@@ -63,3 +63,11 @@ Advert\.MongoDbStorage/obj/
 Advert/wwwroot/images/
 
 Advert/appsettings\.json
+
+Bazaar/obj/
+
+Bazaar\.MongoDbStorage/obj/
+
+Bazaar\.Common/obj/
+
+Bazaar\.sln\.DotSettings\.user
