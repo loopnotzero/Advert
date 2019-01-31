@@ -53,6 +53,7 @@
                     this.on("success",
                         function(file, response) {
                             $("#profile-image").attr("src", `${response.imagePath}?${new Date().getTime()}`);
+                            $(`img[avatar-id='${response.profileId}']`).attr("src", `${response.imagePath}?${new Date().getTime()}`);
                             $("#edit__profile--modal").modal('toggle');
                         });
                     this.on("addedfile",
@@ -117,7 +118,6 @@
         }
     }
       
-
     function removeReplyForm(commentId) {
         var form = $(`#${commentId}`);
         if (form.length !== 0) {
@@ -479,8 +479,7 @@
         });
     }
 
-    function onEditProfileSaveChangesClick
-        (profileId) {
+    function onEditProfileSaveChangesClick(profileId) {
         var tabId = $(".tab-content").find(".active").attr('id');
         switch (tabId) {
         case "edit__profile--tab":
@@ -494,6 +493,7 @@
                     callingCode: (callingCode === null || callingCode === "" || callingCode === undefined) ? null : callingCode.match("(\\+\\d+)")[0],
                     phoneNumber: $("#edit__profile--phone__number").val()
                 }
+                
                 updateProfileByIdAsync(profileId,
                     profile,
                     function(response) {
@@ -528,7 +528,9 @@
                         var target = toBlob($("#edit__profile--avatar").cropper('getCroppedCanvas').toDataURL());
                         var source = dropzone.getAcceptedFiles()[0];
                         var extension = /^.+\.([^.]+)$/.exec(source.name);
+                        
                         target.name = (extension == null ? "avatar" : `avatar.${extension[1]}`);
+                        
                         dropzone.removeFile(source);
                         dropzone.addFile(target);
                         dropzone.processQueue();
@@ -545,6 +547,32 @@
         }
     }
  
+    function onPostShowHideClick(postId) {
+        console.log(`Update post: ${postId} item availability`);
+        getPostByIdAsync(postId,
+            function(post) {
+                console.log(`Current hidden state is: ${post.hidden}`);
+                post.hidden = !post.hidden;
+                console.log(`Set current hidden state as: ${post.hidden}`);
+                updatePostByIdAsync(postId,
+                    post,
+                    function(response) {
+                        if (!post.hidden) {
+                            $(`#post-availability__${postId}`).text("Hide post");
+                        } else {
+                            $(`#post-availability__${postId}`).text("Show post");
+                        }
+                        console.log(
+                            `MatchedCount: ${response.matchedCount} ModifiedCount: ${response.matchedCount
+                            } IsAcknowledged: ${response.isAcknowledged} IsModifiedCountAvailable: ${response
+                            .isModifiedCountAvailable}`);
+                    });
+            },
+            function(jqXhr, textStatus, errorThrown) {
+                alert("Error");
+            });
+    }
+
     function onReplyCommentClick(postId, replyTo, commentId) {
         removeReplyForm("reply-form");
 
@@ -653,35 +681,8 @@
                 alert("Error");
             });
     }
-
-    function onUpdatePostItemAvailability(postId) {
-        console.log(`Update post: ${postId} item availability`);
-        getPostByIdAsync(postId,
-            function(post) {
-                console.log(`Current hidden state is: ${post.hidden}`);
-                post.hidden = !post.hidden;
-                console.log(`Set current hidden state as: ${post.hidden}`);
-                updatePostByIdAsync(postId,
-                    post,
-                    function(response) {
-                        if (!post.hidden) {
-                            $(`#post-availability__${postId}`).text("Hide post");
-                        } else {
-                            $(`#post-availability__${postId}`).text("Show post");
-                        }
-                        console.log(
-                            `MatchedCount: ${response.matchedCount} ModifiedCount: ${response.matchedCount
-                            } IsAcknowledged: ${response.isAcknowledged} IsModifiedCountAvailable: ${response
-                            .isModifiedCountAvailable}`);
-                    });
-            },
-            function(jqXhr, textStatus, errorThrown) {
-                alert("Error");
-            });
-    }
-   
-    $(window).on('load',
-        function() {
+ 
+    $(window).on('load', function() {
             $('#body').fadeIn(200);
         });
 
