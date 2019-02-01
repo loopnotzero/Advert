@@ -38,7 +38,6 @@
 <script>
     var turndown = new TurndownService();
     var textEditor = {};
-    var birthdayPicker;
 
     if (document.getElementById("edit__profile-dropzone")) {
         Dropzone.autoDiscover = false;
@@ -806,7 +805,7 @@
             });
         
         if ($("#edit__profile--modal").length) {
-            birthdayPicker = flatpickr($("#edit__profile--birthday")[0],
+            flatpickr($("#edit__profile--birthday")[0],
                 {
                     static: true,
                     altInput: true,
