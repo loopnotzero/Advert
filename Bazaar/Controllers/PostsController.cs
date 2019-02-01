@@ -32,30 +32,21 @@ namespace Bazaar.Controllers
         private readonly ILogger _logger;
         private readonly IConfiguration _configuration;
         private readonly IHostingEnvironment _hostingEnvironment;
-        
+
         private readonly PostsManager<MongoDbPost> _postsManager;
         private readonly ProfilesManager<MongoDbProfile> _profilesManager;
         private readonly PostsVotesManager<MongoDbPostVote> _postsVotesManager;
         private readonly PostCommentsManager<MongoDbPostComment> _postCommentsManager;
         private readonly PostsViewsCountManager<MongoDbPostViewsCount> _postsViewsCountManager;
         private readonly PostCommentsVotesManager<MongoDbPostCommentVote> _postCommentsVotesManager;
-        
+
         private const string EmptyProfileImage = "/images/profile__empty.png";
 
-        public PostsController(ILoggerFactory loggerFactory,
-            IConfiguration configuration,
-            IHostingEnvironment hostingEnvironment,
-            UserManager<MongoDbUser> userManager,
-            ProfilesManager<MongoDbProfile> profilesManager,
-            PostsManager<MongoDbPost> postsManager,
-            PostsVotesManager<MongoDbPostVote> postsVotesManager,
-            PostCommentsManager<MongoDbPostComment> postCommentsManager,
-            PostsViewsCountManager<MongoDbPostViewsCount> postsViewsCountManager,
-            PostCommentsVotesManager<MongoDbPostCommentVote> postCommentsVotesManager)
+        public PostsController(ILoggerFactory loggerFactory, IConfiguration configuration, IHostingEnvironment hostingEnvironment, UserManager<MongoDbUser> userManager, ProfilesManager<MongoDbProfile> profilesManager, PostsManager<MongoDbPost> postsManager, PostsVotesManager<MongoDbPostVote> postsVotesManager, PostCommentsManager<MongoDbPostComment> postCommentsManager, PostsViewsCountManager<MongoDbPostViewsCount> postsViewsCountManager, PostCommentsVotesManager<MongoDbPostCommentVote> postCommentsVotesManager)
         {
             _logger = loggerFactory.CreateLogger<AccountController>();
             _configuration = configuration;
-            _hostingEnvironment = hostingEnvironment;         
+            _hostingEnvironment = hostingEnvironment;
 
             _postsManager = postsManager;
             _profilesManager = profilesManager;
@@ -66,12 +57,11 @@ namespace Bazaar.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetPosts([FromQuery(Name = "page")] int page = 1,
-            [FromQuery(Name = "keyword")] string keyword = null)
+        public async Task<IActionResult> GetPosts([FromQuery(Name = "page")] int page = 1, [FromQuery(Name = "keyword")] string keyword = null)
         {
             try
             {
-                var postsPerPage = _configuration.GetSection("AdvertOptions").GetValue<int>("PostsPerPage");
+                var postsPerPage = _configuration.GetSection("BazaarOptions").GetValue<int>("PostsPerPage");
 
                 var offset = (page - 1) * postsPerPage;
 
@@ -86,10 +76,9 @@ namespace Bazaar.Controllers
                     posts = await _postsManager.FindPostsByKeywordAsync(offset, postsPerPage, keyword);
                 }
 
-                var lastPage =
-                    (long) Math.Ceiling((double) await _postsManager.EstimatedPostsCountAsync() / postsPerPage);
+                var lastPage = (long) Math.Ceiling((double) await _postsManager.EstimatedPostsCountAsync() / postsPerPage);
 
-                var maxPages = _configuration.GetSection("AdvertOptions").GetValue<int>("MaxPages");
+                var maxPages = _configuration.GetSection("BazaarOptions").GetValue<int>("MaxPages");
 
                 var middlePosition = (long) Math.Ceiling((double) maxPages / 2);
 
@@ -140,8 +129,7 @@ namespace Bazaar.Controllers
                     Posts = posts.Select(post => new PostViewModel
                     {
                         Hidden = post.Hidden,
-                        IsOwner =
-                            User.Identity.IsAuthenticated && profile != null && post.ProfileId.Equals(profile._id),
+                        IsOwner = User.Identity.IsAuthenticated && profile != null && post.ProfileId.Equals(profile._id),
                         IsVoted = postsVotes.Count > 0 && postsVotes.Any(x => x.PostId.Equals(post._id)),
                         PostId = post._id.ToString(),
                         Text = post.Text.Length > 1000 ? post.Text.Substring(0, 1000) + "..." : post.Text,
@@ -194,8 +182,7 @@ namespace Bazaar.Controllers
 
         [HttpGet]
         [Route("/Posts")]
-        public async Task<IActionResult> GetPostContent([FromQuery(Name = "postId")] string postId,
-            [FromQuery(Name = "page")] int page = 1)
+        public async Task<IActionResult> GetPostContent([FromQuery(Name = "postId")] string postId, [FromQuery(Name = "page")] int page = 1)
         {
             try
             {
@@ -224,12 +211,10 @@ namespace Bazaar.Controllers
 
                     postsVotes.AddRange(await _postsVotesManager.FindPostsVotesAsync(profile._id));
 
-                    postsCommentsVotes.AddRange(
-                        await _postCommentsVotesManager.FindPostsCommentsVotesAsync(profile._id));
+                    postsCommentsVotes.AddRange(await _postCommentsVotesManager.FindPostsCommentsVotesAsync(profile._id));
                 }
 
-                var postComments =
-                    await _postCommentsManager.FindPostCommentsAsync(postId, 0, null, SortDefinition.Descending);
+                var postComments = await _postCommentsManager.FindPostCommentsAsync(postId, 0, null, SortDefinition.Descending);
 
                 var commentsReplies = new Dictionary<ObjectId, PostCommentViewModel>();
 
@@ -242,8 +227,7 @@ namespace Bazaar.Controllers
                             commentsReplies.Add(comment._id, new PostCommentViewModel
                             {
                                 IsOwner = profile != null && comment.ProfileId.Equals(profile._id),
-                                IsVoted = postsCommentsVotes.Count > 0 && postsCommentsVotes.Any(x =>
-                                              x.CommentId.Equals(comment._id) && x.ProfileId.Equals(profile._id)),
+                                IsVoted = postsCommentsVotes.Count > 0 && postsCommentsVotes.Any(x => x.CommentId.Equals(comment._id) && x.ProfileId.Equals(profile._id)),
                                 PostId = comment.PostId.ToString(),
                                 Text = comment.Text,
                                 ReplyTo = comment.ReplyTo.ToString(),
@@ -269,9 +253,7 @@ namespace Bazaar.Controllers
                                         return new PostCommentViewModel
                                         {
                                             IsOwner = profile != null && comment.ProfileId.Equals(profile._id),
-                                            IsVoted = postsCommentsVotes.Count > 0 && postsCommentsVotes.Any(x =>
-                                                          x.CommentId.Equals(comment._id) &&
-                                                          x.ProfileId.Equals(profile._id)),
+                                            IsVoted = postsCommentsVotes.Count > 0 && postsCommentsVotes.Any(x => x.CommentId.Equals(comment._id) && x.ProfileId.Equals(profile._id)),
                                             PostId = comment.PostId.ToString(),
                                             Text = comment.Text,
                                             ReplyTo = comment.ReplyTo.ToString(),
@@ -292,9 +274,7 @@ namespace Bazaar.Controllers
                                     return new PostCommentViewModel
                                     {
                                         IsOwner = profile != null && comment.ProfileId.Equals(profile._id),
-                                        IsVoted = postsCommentsVotes.Count > 0 && postsCommentsVotes.Any(x =>
-                                                      x.CommentId.Equals(comment._id) &&
-                                                      x.ProfileId.Equals(profile._id)),
+                                        IsVoted = postsCommentsVotes.Count > 0 && postsCommentsVotes.Any(x => x.CommentId.Equals(comment._id) && x.ProfileId.Equals(profile._id)),
                                         PostId = comment.PostId.ToString(),
                                         Text = comment.Text,
                                         ReplyTo = comment.ReplyTo.ToString(),
@@ -320,8 +300,7 @@ namespace Bazaar.Controllers
                         new PostViewModel
                         {
                             Hidden = post.Hidden,
-                            IsOwner = User.Identity.IsAuthenticated && profile != null &&
-                                      post.ProfileId.Equals(profile._id),
+                            IsOwner = User.Identity.IsAuthenticated && profile != null && post.ProfileId.Equals(profile._id),
                             IsVoted = postsVotes.Count > 0 && postsVotes.Any(x => x.PostId.Equals(post._id)),
                             PostId = post._id.ToString(),
                             Text = post.Text,
@@ -386,11 +365,11 @@ namespace Bazaar.Controllers
                 {
                     return Unauthorized();
                 }
-                
+
                 var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
 
                 var post = new MongoDbPost
-                {     
+                {
                     Text = viewModel.Text,
                     Title = viewModel.Title,
                     Location = viewModel.Location,
@@ -416,7 +395,7 @@ namespace Bazaar.Controllers
                 return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
             }
         }
-        
+
         [HttpPost]
         [Authorize]
         [Route("/Posts/UpdatePostByIdAsync")]
@@ -461,9 +440,9 @@ namespace Bazaar.Controllers
                 var postComment = await _postCommentsManager.FindPostComment(postId, ObjectId.Parse(commentId));
 
                 postComment.Text = viewModel.Text;
-     
+
                 var result = await _postCommentsManager.ReplacePostCommentAsync(postId, postComment._id, postComment);
-               
+
                 return Ok(new ReplaceResultModel
                 {
                     MatchedCount = result.MatchedCount,
@@ -478,7 +457,7 @@ namespace Bazaar.Controllers
                 return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
             }
         }
-        
+
         [HttpGet]
         [Authorize]
         [Route("/Posts/GetPostByIdAsync")]
@@ -490,7 +469,7 @@ namespace Bazaar.Controllers
                 {
                     return Unauthorized();
                 }
-                
+
                 var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
 
                 var post = await _postsManager.FindPostByIdAsync(ObjectId.Parse(postId));
@@ -536,7 +515,7 @@ namespace Bazaar.Controllers
                 var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
 
                 var postComment = await _postCommentsManager.FindPostComment(postId, ObjectId.Parse(commentId));
-  
+
                 var postsCommentsVotes = await _postCommentsVotesManager.FindPostsCommentsVotesAsync(profile._id);
 
                 return Ok(new PostCommentViewModel
@@ -613,7 +592,7 @@ namespace Bazaar.Controllers
             try
             {
                 var post = await _postsManager.FindPostByIdAsync(ObjectId.Parse(postId));
-                
+
                 return Ok(new PostTagsViewModel
                 {
                     Tags = post.Tags ?? new List<string>()
@@ -625,7 +604,7 @@ namespace Bazaar.Controllers
                 return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
             }
         }
-   
+
         [HttpPost]
         [Authorize]
         [Route("/Posts/CreatePostTagsByPostIdAsync")]
@@ -636,11 +615,11 @@ namespace Bazaar.Controllers
                 var post = await _postsManager.FindPostByIdAsync(ObjectId.Parse(postId));
 
                 post.Tags = new List<string>();
-                
+
                 post.Tags.AddRange(viewModel.Tags);
-                
-                await _postsManager.UpdatePostAsync(post);                           
-                
+
+                await _postsManager.UpdatePostAsync(post);
+
                 return Ok(new
                 {
                     returnUrl = Url.Action("GetPostContent", "Posts", new {postId = post._id})
@@ -661,7 +640,7 @@ namespace Bazaar.Controllers
             try
             {
                 var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
-                  
+
                 var vote = await _postsVotesManager.FindPostVoteAsync(ObjectId.Parse(postId), profile._id);
 
                 if (vote == null)
@@ -694,11 +673,11 @@ namespace Bazaar.Controllers
                     var votesCount = await _postsVotesManager.CountPostVotesAsync(ObjectId.Parse(postId), VoteType.Like);
 
                     await _postsManager.UpdatePostLikesCountByPostId(ObjectId.Parse(postId), votesCount);
-         
+
                     return Ok(new PostVoteViewModel
                     {
                         VoteType = viewModel.VoteType,
-                        VotesCount = ((double)  long.Parse(viewModel.VotesCount) - 1).ToMetric()
+                        VotesCount = ((double) long.Parse(viewModel.VotesCount) - 1).ToMetric()
                     });
                 }
             }
@@ -722,7 +701,7 @@ namespace Bazaar.Controllers
             try
             {
                 var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
-                
+
                 var postId = ObjectId.Parse(viewModel.PostId);
 
                 var postComment = new MongoDbPostComment
@@ -736,15 +715,15 @@ namespace Bazaar.Controllers
                     ProfileImagePath = profile.ImagePath ?? EmptyProfileImage,
                     VotesCount = 0,
                 };
-              
+
                 await _postCommentsManager.CreatePostComment(viewModel.PostId, postComment);
-                
+
                 var comment = await _postCommentsManager.FindPostComment(viewModel.PostId, postComment._id);
-                
+
                 var post = await _postsManager.FindPostByIdAsync(comment.PostId);
-                
+
                 post.CommentsCount = await _postCommentsManager.CountPostCommentsAsync(viewModel.PostId);
-                
+
                 await _postsManager.UpdatePostAsync(post);
 
                 return Ok(new PostCommentViewModel
@@ -756,8 +735,8 @@ namespace Bazaar.Controllers
                     PostId = viewModel.PostId,
                     ProfileId = comment.ProfileId.ToString(),
                     ProfileName = comment.ProfileName,
-                    ProfileImagePath = comment.ProfileImagePath ?? EmptyProfileImage,     
-                    VotesCount = ((double)comment.VotesCount).ToMetric()
+                    ProfileImagePath = comment.ProfileImagePath ?? EmptyProfileImage,
+                    VotesCount = ((double) comment.VotesCount).ToMetric()
                 });
             }
             catch (Exception e)
@@ -788,17 +767,17 @@ namespace Bazaar.Controllers
                         ProfileId = profile._id,
                         CreatedAt = DateTime.UtcNow,
                     };
-                        
+
                     await _postCommentsVotesManager.CreatePostCommentVoteAsync(postCommentVote);
-                    
+
                     var votesCount = await _postCommentsVotesManager.CountPostCommentVotesByCommentIdAsync(postCommentVote.CommentId);
-                   
+
                     var postComment = await _postCommentsManager.FindPostComment(postId, postCommentVote.CommentId);
-                    
+
                     postComment.VotesCount = votesCount;
-                    
+
                     await _postCommentsManager.ReplacePostCommentAsync(postId, postCommentVote.CommentId, postComment);
-                    
+
                     return Ok(new PostCommentVoteViewModel
                     {
                         VoteType = viewModel.VoteType,
@@ -810,13 +789,13 @@ namespace Bazaar.Controllers
                     await _postCommentsVotesManager.DeletePostCommentVoteByIdAsync(commentVote._id);
 
                     var votesCount = await _postCommentsVotesManager.CountPostCommentVotesByCommentIdAsync(commentVote.CommentId);
-                   
+
                     var postComment = await _postCommentsManager.FindPostComment(postId, commentVote.CommentId);
-                    
+
                     postComment.VotesCount = votesCount;
-                    
+
                     await _postCommentsManager.ReplacePostCommentAsync(postId, postComment._id, postComment);
-                    
+
                     return Ok(new PostCommentVoteViewModel
                     {
                         VoteType = viewModel.VoteType,
@@ -842,7 +821,7 @@ namespace Bazaar.Controllers
                 return Ok(new PostCommentsCountModel
                 {
                     PostId = postId,
-                    CommentsCount = ((double)commentsCount).ToMetric()
+                    CommentsCount = ((double) commentsCount).ToMetric()
                 });
             }
             catch (Exception e)
@@ -851,19 +830,19 @@ namespace Bazaar.Controllers
                 return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
             }
         }
-        
+
         [HttpPost("AddImage")]
         [Route("/Posts/AddPostPhotos")]
         public async Task<IActionResult> AddPostPhotos(string returnUrl, IFormFile file)
         {
             ViewData["ReturnUrl"] = returnUrl;
-                 
+
             if (file.Length <= 0)
             {
                 //todo: return View with ModelErrors
                 return BadRequest();
             }
-            
+
             var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
 
             var profilePhotosDir = $"{_hostingEnvironment.WebRootPath}/images/profiles/{profile._id.ToString()}/photos";
@@ -872,7 +851,7 @@ namespace Bazaar.Controllers
             {
                 Directory.CreateDirectory(profilePhotosDir);
             }
-            
+
             var profilePhotosDirFullPath = Path.Combine(profilePhotosDir, file.FileName);
 
             using (var stream = new FileStream(profilePhotosDirFullPath, FileMode.Create))
@@ -881,7 +860,7 @@ namespace Bazaar.Controllers
             }
 
             //todo: Create profile post photo
-            
+
 //            await _profilesImagesManager.CreateProfileImageAsync(new MongoDbProfileImage
 //            {
 //                ProfileId = profile.Id,
