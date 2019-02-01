@@ -16,3 +16,5 @@ Bazaar\.MongoDbStorage/bin/Debug/netcoreapp2\.1/
 Bazaar/bin/Debug/netcoreapp2\.1/
 
 Bazaar/wwwroot/images/
+
+Bazaar/appsettings\.json
