@@ -37,7 +37,11 @@ namespace Bazaar.Controllers
 
         private const string EmptyProfileImage = "/images/profile__empty.png";
 
-        public ProfilesController(ILoggerFactory loggerFactory, IConfiguration configuration, IHostingEnvironment hostEnv, PostsManager<MongoDbPost> postsManager, ProfilesManager<MongoDbProfile> profilesManager, PostsVotesManager<MongoDbPostVote> postsVotesManager, PostCommentsManager<MongoDbPostComment> postCommentsManager, ProfilesImagesManager<MongoDbProfileImage> profilesImagesManager)
+        public ProfilesController(ILoggerFactory loggerFactory, IConfiguration configuration,
+            IHostingEnvironment hostEnv, PostsManager<MongoDbPost> postsManager,
+            ProfilesManager<MongoDbProfile> profilesManager, PostsVotesManager<MongoDbPostVote> postsVotesManager,
+            PostCommentsManager<MongoDbPostComment> postCommentsManager,
+            ProfilesImagesManager<MongoDbProfileImage> profilesImagesManager)
         {
             _logger = loggerFactory.CreateLogger<ProfilesController>();
             _configuration = configuration;
@@ -131,7 +135,9 @@ namespace Bazaar.Controllers
 
                 if (HttpContext.User.Identity.IsAuthenticated)
                 {
-                    myProfile = await _profilesManager.FindProfileByNormalizedEmailOrDefaultAsync(HttpContext.User.Identity.Name, null);
+                    myProfile =
+                        await _profilesManager.FindProfileByNormalizedEmailOrDefaultAsync(
+                            HttpContext.User.Identity.Name, null);
                 }
 
                 List<MongoDbPostVote> postsVotes = null;
@@ -146,7 +152,8 @@ namespace Bazaar.Controllers
                     Posts = posts.Select(post => new PostViewModel
                     {
                         Hidden = post.Hidden,
-                        IsOwner = myProfile != null && post.ProfileId.Equals(profile._id) && profile._id.Equals(myProfile._id),
+                        IsOwner = myProfile != null && post.ProfileId.Equals(profile._id) &&
+                                  profile._id.Equals(myProfile._id),
                         IsVoted = postsVotes != null && postsVotes.Any(x => x.PostId.Equals(post._id)),
                         PostId = post._id.ToString(),
                         Text = post.Text.Length > 1000 ? post.Text.Substring(0, 1000) + "..." : post.Text,
@@ -262,7 +269,9 @@ namespace Bazaar.Controllers
 
                 if (HttpContext.User.Identity.IsAuthenticated)
                 {
-                    myProfile = await _profilesManager.FindProfileByNormalizedEmailOrDefaultAsync(HttpContext.User.Identity.Name, null);
+                    myProfile =
+                        await _profilesManager.FindProfileByNormalizedEmailOrDefaultAsync(
+                            HttpContext.User.Identity.Name, null);
                 }
 
                 List<MongoDbPostVote> postsVotes = null;
@@ -277,8 +286,10 @@ namespace Bazaar.Controllers
                     Posts = posts.Select(post => new PostViewModel
                     {
                         Hidden = post.Hidden,
-                        IsOwner = myProfile != null && post.ProfileId.Equals(profile._id) && profile._id.Equals(myProfile._id),
-                        IsVoted = postsVotes != null && postsVotes.Count > 0 && postsVotes.Any(x => x.PostId.Equals(post._id)),
+                        IsOwner = myProfile != null && post.ProfileId.Equals(profile._id) &&
+                                  profile._id.Equals(myProfile._id),
+                        IsVoted = postsVotes != null && postsVotes.Count > 0 &&
+                                  postsVotes.Any(x => x.PostId.Equals(post._id)),
                         PostId = post._id.ToString(),
                         Text = post.Text.Length > 1000 ? post.Text.Substring(0, 1000) + "..." : post.Text,
                         Title = post.Title,
@@ -342,13 +353,17 @@ namespace Bazaar.Controllers
 
                 var postsVotes = await _postsVotesManager.FindPostsVotesAsync(profile._id);
 
-                var posts = postsVotes.Count > 0 ? await _postsManager.FindPostsAsync(postsVotes.Select(x => x.PostId).ToList()) : null;
+                var posts = postsVotes.Count > 0
+                    ? await _postsManager.FindPostsAsync(postsVotes.Select(x => x.PostId).ToList())
+                    : null;
 
                 IProfile myProfile = null;
 
                 if (HttpContext.User.Identity.IsAuthenticated)
                 {
-                    myProfile = await _profilesManager.FindProfileByNormalizedEmailOrDefaultAsync(HttpContext.User.Identity.Name, null);
+                    myProfile =
+                        await _profilesManager.FindProfileByNormalizedEmailOrDefaultAsync(
+                            HttpContext.User.Identity.Name, null);
                 }
 
                 var countryCodes = _configuration.GetSection("CountryCodes").Get<List<CountryCode>>();
@@ -379,7 +394,8 @@ namespace Bazaar.Controllers
 
                     Profile = new ProfileViewModel
                     {
-                        Owner = myProfile != null && profile.NormalizedEmail.Equals(HttpContext.User.Identity.Name.ToUpper()),
+                        Owner = myProfile != null &&
+                                profile.NormalizedEmail.Equals(HttpContext.User.Identity.Name.ToUpper()),
                         Id = profile._id.ToString(),
                         Name = profile.Name,
                         Email = profile.Email,
@@ -410,7 +426,8 @@ namespace Bazaar.Controllers
         [HttpPut]
         [Authorize]
         [Route("/Profile/UpdateProfileByIdAsync")]
-        public async Task<IActionResult> UpdateProfileByIdAsync([FromQuery(Name = "profileId")] string profileId, [FromBody] ProfileViewModel model)
+        public async Task<IActionResult> UpdateProfileByIdAsync([FromQuery(Name = "profileId")] string profileId,
+            [FromBody] ProfileViewModel model)
         {
             try
             {
@@ -462,7 +479,8 @@ namespace Bazaar.Controllers
         [HttpPost]
         [Authorize]
         [Route("/Profile/AddProfilePhotoAsync")]
-        public async Task<IActionResult> AddProfilePhotoAsync([FromQuery(Name = "profileId")] string profileId, IFormFile file)
+        public async Task<IActionResult> AddProfilePhotoAsync([FromQuery(Name = "profileId")] string profileId,
+            IFormFile file)
         {
             var profile = await _profilesManager.FindProfileByIdAsync(ObjectId.Parse(profileId));
 
@@ -511,7 +529,8 @@ namespace Bazaar.Controllers
             {
                 var collectionName = post._id.ToString();
 
-                var comments = await _postCommentsManager.FindPostCommentsByProfileIdAsync(collectionName, post.ProfileId);
+                var comments =
+                    await _postCommentsManager.FindPostCommentsByProfileIdAsync(collectionName, post.ProfileId);
 
                 foreach (var comment in comments)
                 {
@@ -533,7 +552,8 @@ namespace Bazaar.Controllers
         [HttpPost]
         [Authorize]
         [Route("/Profile/RemoveProfilePhotoAsync")]
-        public async Task<IActionResult> RemoveProfilePhotoAsync([FromQuery(Name = "fileName")] string fileName, IFormFile file)
+        public async Task<IActionResult> RemoveProfilePhotoAsync([FromQuery(Name = "fileName")] string fileName,
+            IFormFile file)
         {
             throw new NotImplementedException();
         }
