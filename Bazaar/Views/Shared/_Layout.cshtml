@@ -29,7 +29,7 @@
 <script src="~/js/turndown.js"></script>
 <script src="~/js/simplemde.js"></script>
 <script src="~/js/dropzone.js"></script>
-<script src="~/js/advert.js"></script>
+<script src="~/js/bazaar.js"></script>
 <script src="~/js/jquery.tagify.js"></script>
 <script src="~/js/cropper.js"></script>
 <script src="~/js/jquery-cropper.js"></script>
@@ -523,15 +523,16 @@
                             $("#profile-phone__number").html(`<span><i class="zmdi zmdi-smartphone-iphone zmdi-hc-fw"></i>${profile.callingCode} ${profile.phoneNumber}</span>`);
                         }
 
-                        if (!dropzone.files) {
-                            $("#edit__profile--modal").modal('toggle');                            
-                        } else {
+                        console.log();
+
+                        if (dropzone.getAcceptedFiles().length) {
                             var target = toBlob($("#edit__profile--photo").cropper('getCroppedCanvas').toDataURL());
-                            var source = dropzone.getAcceptedFiles()[0];
                             target.name = "profile__photo.jpg";
-                            dropzone.removeFile(source);
+                            dropzone.removeFile(dropzone.getAcceptedFiles()[0]);
                             dropzone.addFile(target);
                             dropzone.processQueue();
+                        } else {
+                            $("#edit__profile--modal").modal('toggle');
                         }        
                     },
                     function(jqXhr, textStatus, errorThrown) {

@@ -48,15 +48,15 @@
                             </div>
                             <div class="form-group">
                                 <select id="edit__profile--gender" class="form-control select2-pt">
-                                    @foreach (var gender in Enum.GetNames(typeof(Gender)))
+                                    @foreach (Gender gender in Enum.GetValues(typeof(Gender)))
                                     {
-                                        if (Model.Gender.ToUpper().Equals(gender.ToUpper()))
+                                        if (!Model.Gender.ToUpper().Equals(gender.Humanize()))
                                         {
-                                            <option selected="selected">@gender.Humanize()</option>
+                                            <option>@gender.Humanize()</option>
                                         }
                                         else
                                         {
-                                            <option>@gender.Humanize()</option>
+                                            <option selected="selected">@gender.Humanize()</option>
                                         }
                                     }
                                 </select>
