@@ -1588,9 +1588,7 @@
     <_ContentIncludedByDefault Remove="wwwroot\images\profiles\5c27ea98eb64801aec9f3e5b\photos\photo_2018-10-08_10-13-56.jpg" />
     <_ContentIncludedByDefault Remove="wwwroot\images\profiles\5c27ea98eb64801aec9f3e5b\photos\photo_2018-10-08_10-45-07.jpg" />
     <_ContentIncludedByDefault Remove="wwwroot\images\profiles\5c27ea98eb64801aec9f3e5b\photos\photo_2018-10-15_10-00-26.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="wwwroot\images\profiles" />
+    <_ContentIncludedByDefault Remove="wwwroot\images\profiles\5c54dec3ececf42ccbbe59b6\photo\avatar.jpg" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Bazaar.Common\Bazaar.Common.csproj" />

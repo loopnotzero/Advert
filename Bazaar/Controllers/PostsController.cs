@@ -40,8 +40,6 @@ namespace Bazaar.Controllers
         private readonly PostsViewsCountManager<MongoDbPostViewsCount> _postsViewsCountManager;
         private readonly PostCommentsVotesManager<MongoDbPostCommentVote> _postCommentsVotesManager;
 
-        private const string EmptyProfileImage = "/images/profile__empty.png";
-
         public PostsController(ILoggerFactory loggerFactory, IConfiguration configuration,
             IHostingEnvironment hostingEnvironment, UserManager<MongoDbUser> userManager,
             ProfilesManager<MongoDbProfile> profilesManager, PostsManager<MongoDbPost> postsManager,
@@ -100,8 +98,7 @@ namespace Bazaar.Controllers
                     Posts = posts.Select(post => new PostViewModel
                     {
                         Hidden = post.Hidden,
-                        IsOwner =
-                            User.Identity.IsAuthenticated && profile != null && post.ProfileId.Equals(profile._id),
+                        IsOwner = User.Identity.IsAuthenticated && profile != null && post.ProfileId.Equals(profile._id),
                         IsVoted = postsVotes.Count > 0 && postsVotes.Any(x => x.PostId.Equals(post._id)),
                         PostId = post._id.ToString(),
                         Text = post.Text.Length > 1000 ? post.Text.Substring(0, 1000) + "..." : post.Text,
@@ -115,7 +112,7 @@ namespace Bazaar.Controllers
                         CommentsCount = ((double) post.CommentsCount).ToMetric(),
                         ProfileId = post.ProfileId.ToString(),
                         ProfileName = post.ProfileName,
-                        ProfileImagePath = post.ProfileImagePath ?? EmptyProfileImage,
+                        ProfileImagePath = post.ProfileImagePath,
                         Price = post.Price,
                         Tags = post.Tags,
                     }),
@@ -132,7 +129,7 @@ namespace Bazaar.Controllers
                             Location = profile.Location,
                             Birthday = profile.Birthday?.ToString("dd MMMM yyyy"),
                             CreatedAt = profile.CreatedAt.Humanize(),
-                            ImagePath = profile.ImagePath ?? EmptyProfileImage,
+                            ImagePath = profile.ImagePath,
                             CallingCode = profile.CallingCode,
                             PhoneNumber = profile.PhoneNumber,
                             CountryCodes = countryCodes.Select(x => new CountryCode
@@ -212,7 +209,7 @@ namespace Bazaar.Controllers
                                 VotesCount = ((double) comment.VotesCount).ToMetric(),
                                 ProfileId = comment.ProfileId.ToString(),
                                 ProfileName = comment.ProfileName,
-                                ProfileImagePath = comment.ProfileImagePath ?? EmptyProfileImage,
+                                ProfileImagePath = comment.ProfileImagePath
                             });
                         }
                     }
@@ -240,7 +237,7 @@ namespace Bazaar.Controllers
                                             VotesCount = ((double) comment.VotesCount).ToMetric(),
                                             ProfileId = comment.ProfileId.ToString(),
                                             ProfileName = comment.ProfileName,
-                                            ProfileImagePath = comment.ProfileImagePath ?? EmptyProfileImage,
+                                            ProfileImagePath = comment.ProfileImagePath
                                         };
                                     }).ToList();
                                 }
@@ -263,7 +260,7 @@ namespace Bazaar.Controllers
                                         VotesCount = ((double) comment.VotesCount).ToMetric(),
                                         ProfileId = comment.ProfileId.ToString(),
                                         ProfileName = comment.ProfileName,
-                                        ProfileImagePath = comment.ProfileImagePath ?? EmptyProfileImage,
+                                        ProfileImagePath = comment.ProfileImagePath
                                     };
                                 }));
                             }
@@ -295,7 +292,7 @@ namespace Bazaar.Controllers
                             CommentsCount = ((double) post.CommentsCount).ToMetric(),
                             ProfileId = post.ProfileId.ToString(),
                             ProfileName = post.ProfileName,
-                            ProfileImagePath = post.ProfileImagePath ?? EmptyProfileImage,
+                            ProfileImagePath = post.ProfileImagePath,
                             Price = post.Price,
                             Tags = post.Tags,
                         }
@@ -313,7 +310,7 @@ namespace Bazaar.Controllers
                             Location = profile.Location,
                             Birthday = profile.Birthday?.ToString("dd MMMM yyyy"),
                             CreatedAt = profile.CreatedAt.Humanize(),
-                            ImagePath = profile.ImagePath ?? EmptyProfileImage,
+                            ImagePath = profile.ImagePath,
                             CallingCode = profile.CallingCode,
                             PhoneNumber = profile.PhoneNumber,
                             CountryCodes = countryCodes.Select(x => new CountryCode
@@ -476,7 +473,7 @@ namespace Bazaar.Controllers
                     CommentsCount = ((double) post.CommentsCount).ToMetric(),
                     ProfileId = post.ProfileId.ToString(),
                     ProfileName = post.ProfileName,
-                    ProfileImagePath = post.ProfileImagePath ?? EmptyProfileImage,
+                    ProfileImagePath = post.ProfileImagePath,
                     Price = post.Price,
                     Tags = post.Tags,
                 });
@@ -515,7 +512,7 @@ namespace Bazaar.Controllers
                     VotesCount = ((double) postComment.VotesCount).ToMetric(),
                     ProfileId = postComment.ProfileId.ToString(),
                     ProfileName = postComment.ProfileName,
-                    ProfileImagePath = postComment.ProfileImagePath ?? EmptyProfileImage,
+                    ProfileImagePath = postComment.ProfileImagePath,
                 });
             }
             catch (Exception e)
@@ -702,7 +699,7 @@ namespace Bazaar.Controllers
                     PostId = postId,
                     ProfileId = profile._id,
                     ProfileName = profile.Name,
-                    ProfileImagePath = profile.ImagePath ?? EmptyProfileImage,
+                    ProfileImagePath = profile.ImagePath,
                     VotesCount = 0,
                 };
 
@@ -725,7 +722,7 @@ namespace Bazaar.Controllers
                     PostId = viewModel.PostId,
                     ProfileId = comment.ProfileId.ToString(),
                     ProfileName = comment.ProfileName,
-                    ProfileImagePath = comment.ProfileImagePath ?? EmptyProfileImage,
+                    ProfileImagePath = comment.ProfileImagePath,
                     VotesCount = ((double) comment.VotesCount).ToMetric()
                 });
             }

@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Mime;
 using System.Threading.Tasks;
 using Advert.Managers;
 using Bazaar.Common.Profiles;
@@ -35,10 +36,11 @@ namespace Bazaar.Controllers
         private readonly PostsVotesManager<MongoDbPostVote> _postsVotesManager;
         private readonly ProfilesImagesManager<MongoDbProfileImage> _profilesImagesManager;
 
-        private const string EmptyProfileImage = "/images/profile__empty.png";
-
-        public ProfilesController(ILoggerFactory loggerFactory, IConfiguration configuration,
-            IHostingEnvironment hostEnv, PostsManager<MongoDbPost> postsManager,
+        public ProfilesController(
+            ILoggerFactory loggerFactory, 
+            IConfiguration configuration,
+            IHostingEnvironment hostEnv, 
+            PostsManager<MongoDbPost> postsManager,
             ProfilesManager<MongoDbProfile> profilesManager, PostsVotesManager<MongoDbPostVote> postsVotesManager,
             PostCommentsManager<MongoDbPostComment> postCommentsManager,
             ProfilesImagesManager<MongoDbProfileImage> profilesImagesManager)
@@ -102,7 +104,7 @@ namespace Bazaar.Controllers
                             LikesCount = ((double) post.LikesCount).ToMetric(),
                             SharesCount = ((double) 0).ToMetric(),
                             CommentsCount = ((double) post.CommentsCount).ToMetric(),
-                            ProfileImagePath = EmptyProfileImage,
+                            ProfileImagePath = post.ProfileImagePath,
                             Price = post.Price,
                             Tags = post.Tags,
                         }),
@@ -167,7 +169,7 @@ namespace Bazaar.Controllers
                         CommentsCount = ((double) post.CommentsCount).ToMetric(),
                         ProfileId = post.ProfileId.ToString(),
                         ProfileName = post.ProfileName,
-                        ProfileImagePath = post.ProfileImagePath ?? EmptyProfileImage,
+                        ProfileImagePath = post.ProfileImagePath,
                         Price = post.Price,
                         Tags = post.Tags,
                     }),
@@ -236,7 +238,7 @@ namespace Bazaar.Controllers
                             LikesCount = ((double) post.LikesCount).ToMetric(),
                             SharesCount = ((double) 0).ToMetric(),
                             CommentsCount = ((double) post.CommentsCount).ToMetric(),
-                            ProfileImagePath = EmptyProfileImage,
+                            ProfileImagePath = post.ProfileImagePath,
                             Price = post.Price,
                             Tags = post.Tags,
                         }),
@@ -302,7 +304,7 @@ namespace Bazaar.Controllers
                         CommentsCount = ((double) post.CommentsCount).ToMetric(),
                         ProfileId = post.ProfileId.ToString(),
                         ProfileName = post.ProfileName,
-                        ProfileImagePath = post.ProfileImagePath ?? EmptyProfileImage,
+                        ProfileImagePath = post.ProfileImagePath,
                         Price = post.Price,
                         Tags = post.Tags,
                     }),
@@ -387,7 +389,7 @@ namespace Bazaar.Controllers
                         CommentsCount = ((double) post.CommentsCount).ToMetric(),
                         ProfileId = post.ProfileId.ToString(),
                         ProfileName = post.ProfileName,
-                        ProfileImagePath = post.ProfileImagePath ?? EmptyProfileImage,
+                        ProfileImagePath = post.ProfileImagePath,
                         Price = post.Price,
                         Tags = post.Tags,
                     }),
@@ -505,15 +507,15 @@ namespace Bazaar.Controllers
                 Directory.CreateDirectory(photoDir);
             }
 
-            using (var stream = new FileStream($"{photoDir}{file.FileName}", FileMode.Create))
+            using (var stream = new FileStream($"{photoDir}{Path.GetFileNameWithoutExtension(file.FileName)}.jpg", FileMode.Create))
             {
                 await file.CopyToAsync(stream);
             }
-
+            
             var profileImage = new MongoDbProfileImage
             {
                 ProfileId = profile._id,
-                ImagePath = $"/images/profiles/{profile._id.ToString()}/photo/{file.FileName}",
+                ImagePath = $"/images/profiles/{profile._id.ToString()}/photo/{Path.GetFileNameWithoutExtension(file.FileName)}.jpg",
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -522,29 +524,6 @@ namespace Bazaar.Controllers
             profile.ImagePath = profileImage.ImagePath;
 
             await _profilesManager.UpdateProfileAsync(profile);
-
-            var posts = await _postsManager.FindPostsByProfileIdAsync(profile._id, 0, null);
-
-            foreach (var post in posts)
-            {
-                var collectionName = post._id.ToString();
-
-                var comments =
-                    await _postCommentsManager.FindPostCommentsByProfileIdAsync(collectionName, post.ProfileId);
-
-                foreach (var comment in comments)
-                {
-                    if (comment.ProfileId.Equals(profile._id))
-                    {
-                        comment.ProfileImagePath = profile.ImagePath;
-                        await _postCommentsManager.ReplacePostCommentAsync(collectionName, comment._id, comment);
-                    }
-                }
-
-                post.ProfileImagePath = profile.ImagePath;
-
-                await _postsManager.UpdatePostAsync(post);
-            }
 
             return Ok(profileImage);
         }

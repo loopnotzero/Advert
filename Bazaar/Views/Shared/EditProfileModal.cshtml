@@ -4,7 +4,7 @@
 @using Humanizer
 @model ProfileViewModel
 
-<div id="edit__profile--modal" class="modal fade" data-backdrop="static" tabindex="-1">
+<div id="edit__profile--modal" class="modal fade" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -28,17 +28,14 @@
                     <div class="tab-content">
                         <div id="edit__profile--tab" class="tab-pane fade show active" role="tabpanel">                         
                             <div class="form-group">
-                                <label class="font-weight-bold">Email</label>
                                 <input id="edit__profile--email" type="text" class="form-control" value="@Model.Email" readonly="readonly">
                                 <i class="form-group__bar"></i>
                             </div>
                             <div class="form-group">
-                                <label class="font-weight-bold">Name</label>
                                 <input id="edit__profile--name" type="text" class="form-control" value="@Model.Name" readonly="readonly">
                                 <i class="form-group__bar"></i>
                             </div>
                             <div class="form-group">
-                                <label class="font-weight-bold">Birthday</label>
                                 @if (string.IsNullOrEmpty(Model.Birthday))
                                 {
                                     <input id="edit__profile--birthday" class="form-control flatpickr flatpickr-input" style="display: block !important; color: #C0C0C0;" type="text" placeholder="Enter you birthday">
@@ -50,7 +47,6 @@
                                 <i class="form-group__bar"></i>
                             </div>
                             <div class="form-group">
-                                <label class="font-weight-bold">Gender</label>
                                 <select id="edit__profile--gender" class="form-control select2-pt">
                                     @foreach (var gender in Enum.GetNames(typeof(Gender)))
                                     {
@@ -67,23 +63,21 @@
                                 <i class="form-group__bar"></i>
                             </div>
                             <div class="form-group">
-                                <label class="font-weight-bold">Location</label>
                                 @if (string.IsNullOrEmpty(Model.Location))
                                 {
-                                    <input id="edit__profile--location" type="text" class="form-control" placeholder="Enter a location">
+                                    <input id="edit__profile--location" type="text" class="form-control" placeholder="Enter a location" autocomplete="off">
                                 }
                                 else
                                 {
-                                    <input id="edit__profile--location" type="text" class="form-control" placeholder="Enter a location" value="@Model.Location">
+                                    <input id="edit__profile--location" type="text" class="form-control" placeholder="Enter a location" value="@Model.Location" autocomplete="off">
                                 }
                                 <i class="form-group__bar"></i>
                             </div>                           
                             <div class="row">
                                 <div class="col-5">
                                     <div class="form-group">
-                                        <label class="font-weight-bold">Code</label>
                                         <select id="edit__profile--calling__code" class="form-control select2-pt">
-                                            <option></option>
+                                            <option>Calling code</option>
                                             @foreach (var countryCode in Model.CountryCodes)
                                             {
                                                 if (countryCode.CallingCode.ToUpper().Equals(Model.CallingCode))
@@ -101,45 +95,41 @@
                                 </div>
                                 <div class="col-7">
                                     <div class="form-group">
-                                        <label class="font-weight-bold">Phone number</label>
                                         @if (string.IsNullOrEmpty(Model.PhoneNumber) || string.IsNullOrWhiteSpace(Model.PhoneNumber))
                                         {
-                                            <input id="edit__profile--phone__number" type="number" class="form-control">
+                                            <input id="edit__profile--phone__number" type="tel" class="form-control" placeholder="Enter your phone number" autocomplete="off">
                                         }
                                         else
                                         {
-                                            <input id="edit__profile--phone__number" type="number" class="form-control" value="@Model.PhoneNumber">
+                                            <input id="edit__profile--phone__number" type="tel" class="form-control" placeholder="Enter your phone number" value="@Model.PhoneNumber" autocomplete="off">
                                         }
                                         <i class="form-group__bar"></i>
                                     </div>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="font-weight-bold">Add profile photo</label>                            
                                 <form id="edit__profile-dropzone" class="dropzone needsclick dz-clickable">
                                     <input id="edit__profile--profile_id" type="hidden" value="@Model.Id">
                                     <div class="dz-message needsclick">
-                                        <img src="~/images/add-photos.png"/>
+                                        <img src="~/images/add__photos.jpg"/>
+                                        <p>Add profile photo</p>
                                     </div>
                                 </form>                                                              
                             </div>
-                            <div id="avatar-form__group" class="form-group" style="height: 175px; display: none">
-                                <img id="edit__profile--avatar" style="max-height: 325px" alt="Profile image"/>
+                            <div id="profile__photo-form__group" class="form-group" style="height: 175px; display: none">
+                                <img id="edit__profile--photo" style="max-height: 325px" alt="Profile image"/>
                             </div>
                         </div>
                         <div id="change__password--tab" class="tab-pane fade show" role="tabpanel">
                             <div class="form-group">
-                                <label class="font-weight-bold">Old password</label>
                                 <input id="change__password--old" type="password" class="form-control" placeholder="Enter old password">
                                 <i class="form-group__bar"></i>
                             </div>
                             <div class="form-group">
-                                <label class="font-weight-bold">New password</label>
                                 <input id="change__password--new" type="password" class="form-control" placeholder="Enter new password">
                                 <i class="form-group__bar"></i>
                             </div>
                             <div class="form-group">
-                                <label class="font-weight-bold">Confirm password</label>
                                 <input id="change__password--confirm" type="password" class="form-control" placeholder="Confirm new password">
                                 <i class="form-group__bar"></i>
                             </div>

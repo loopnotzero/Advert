@@ -1,41 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Mail;
 using System.Threading.Tasks;
 using Advert.Managers;
-using Bazaar.Common.Posts;
 using Bazaar.MongoDbStorage.Profiles;
 using Bazaar.MongoDbStorage.Users;
-using Bazaar.Managers;
 using Bazaar.Models.Account;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using SignInResult = Microsoft.AspNetCore.Mvc.SignInResult;
 
 namespace Bazaar.Controllers
 {
     public class AccountController : Controller
     {
         private readonly ILogger _logger;
+        private readonly IHostingEnvironment _hostEnv;
         private readonly UserManager<MongoDbUser> _userManager;
         private readonly SignInManager<MongoDbUser> _signInManager;
         private readonly ProfilesManager<MongoDbProfile> _profilesManager;
         
         public AccountController(
             ILoggerFactory loggerFactory, 
-            ILookupNormalizer keyNormalizer, 
-            IConfiguration configuration, 
+            IHostingEnvironment hostEnv, 
             UserManager<MongoDbUser> userManager, 
             SignInManager<MongoDbUser> signInManager,
             ProfilesManager<MongoDbProfile> profilesManager)
         {
             _logger = loggerFactory.CreateLogger<AccountController>();
+            _hostEnv = hostEnv;
             _userManager = userManager;
             _signInManager = signInManager;
             _profilesManager = profilesManager;
@@ -241,7 +238,7 @@ namespace Bazaar.Controllers
                             }
                         },
                     });
-                }
+                }  
                 
                 var user = new MongoDbUser
                 {              
@@ -259,12 +256,25 @@ namespace Bazaar.Controllers
                 
                 await _signInManager.SignInAsync(user, false);
 
-                await _profilesManager.CreateProfileAsync(new MongoDbProfile
+                var myProfile = new MongoDbProfile
                 {
                     Name = model.Name,
                     Email = model.Email,
                     CreatedAt = DateTime.UtcNow,
-                });
+                };
+                
+                myProfile.ImagePath = $"/images/profiles/{myProfile._id.ToString()}/photo/profile__photo.jpg";
+
+                var photoDir = $"{_hostEnv.WebRootPath}/images/profiles/{myProfile._id.ToString()}/photo/";
+
+                if (!Directory.Exists(photoDir))
+                {
+                    Directory.CreateDirectory(photoDir);
+                }
+
+                System.IO.File.Copy($"{_hostEnv.WebRootPath}/images/profile__photo.jpg", photoDir);
+  
+                await _profilesManager.CreateProfileAsync(myProfile);
 
                 return Ok(new ErrorModel
                 {

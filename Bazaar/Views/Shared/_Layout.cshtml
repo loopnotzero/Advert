@@ -41,7 +41,6 @@
 
     if (document.getElementById("edit__profile-dropzone")) {
         Dropzone.autoDiscover = false;
-
         var dropzone = new Dropzone("#edit__profile-dropzone",
             {
                 url: `/Profile/AddProfilePhotoAsync?profileId=${$("#edit__profile--profile_id").val()}`,
@@ -52,12 +51,12 @@
                     this.on("success",
                         function(file, response) {
                             $("#profile-image").attr("src", `${response.imagePath}?${new Date().getTime()}`);
-                            $(`img[avatar-id='${response.profileId}']`).attr("src", `${response.imagePath}?${new Date().getTime()}`);
+                            $(`img[photo-id='${response.profileId}']`).attr("src", `${response.imagePath}?${new Date().getTime()}`);
                             $("#edit__profile--modal").modal('toggle');
                         });
                     this.on("addedfile",
                         function(file) {
-                            $("#edit__profile--avatar").attr('src', URL.createObjectURL(file)).cropper({
+                            $("#edit__profile--photo").attr('src', URL.createObjectURL(file)).cropper({
                                 aspectRatio: 1,
                                 dragMode: 'move',
                                 cropBoxMovable: false,
@@ -65,13 +64,14 @@
                                 minCropBoxWidth: 175,
                                 minCropBoxHeight: 175
                             });
-                            $("#avatar-form__group").show();
+                            $("#profile__photo-form__group").show();
                         });
                     this.on("removedfile",
                         function(file) {
-                            $("#edit__profile--avatar").removeAttr("src").cropper("destroy");
-                            $("#avatar-form__group").hide();
-
+                            if (this.getAcceptedFiles().length === 0) {
+                                $("#edit__profile--photo").removeAttr("src").cropper("destroy");
+                                $("#profile__photo-form__group").hide();
+                            }
                         });
                     this.on("maxfilesexceeded",
                         function(file) {
@@ -483,13 +483,13 @@
         switch (tabId) {
         case "edit__profile--tab":
             {
-                var callingCode = $("#edit__profile--calling__code option:selected").text();
+                var callingCode = $("#edit__profile--calling__code option:selected");
                 
                 var profile = {
                     gender: $("#edit__profile--gender :selected").text(),
                     birthday: $("#edit__profile--birthday").val(),
                     location: $("#edit__profile--location").val(),
-                    callingCode: (callingCode === null || callingCode === "" || callingCode === undefined) ? null : callingCode.match("(\\+\\d+)")[0],
+                    callingCode: callingCode.index() == 0 ? null : callingCode.text().match("(\\+\\d+)")[0],
                     phoneNumber: $("#edit__profile--phone__number").val()
                 }
                 
@@ -500,8 +500,7 @@
                             `MatchedCount: ${response.matchedCount} ModifiedCount: ${response.matchedCount
                             } IsAcknowledged: ${response.isAcknowledged} IsModifiedCountAvailable: ${response
                             .isModifiedCountAvailable}`);
-                        console.log(`Birthday: ${profile.birthday}`);
-
+                            
                         var monthNames = [
                             "January", "February", "March",
                             "April", "May", "June",
@@ -527,10 +526,9 @@
                         if (!dropzone.files) {
                             $("#edit__profile--modal").modal('toggle');                            
                         } else {
-                            var target = toBlob($("#edit__profile--avatar").cropper('getCroppedCanvas').toDataURL());
+                            var target = toBlob($("#edit__profile--photo").cropper('getCroppedCanvas').toDataURL());
                             var source = dropzone.getAcceptedFiles()[0];
-                            var extension = /^.+\.([^.]+)$/.exec(source.name);
-                            target.name = (extension == null ? "avatar.jpg" : `avatar.${extension[1]}`);
+                            target.name = "profile__photo.jpg";
                             dropzone.removeFile(source);
                             dropzone.addFile(target);
                             dropzone.processQueue();
