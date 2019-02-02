@@ -15,7 +15,7 @@ namespace Bazaar.Common.Profiles
             switch (gender)
             {
                 case Gender.NotSpecified:
-                    return "Not specified";
+                    return "What is your gender?";
                 case Gender.Male:
                     return "Male";
                 case Gender.Female:
