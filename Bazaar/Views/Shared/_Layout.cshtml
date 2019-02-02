@@ -483,13 +483,15 @@
         switch (tabId) {
         case "edit__profile--tab":
             {
+                var birthday = $("#edit__profile--birthday").val();
+                var genderType = $("#edit__profile--gender :selected");
                 var callingCode = $("#edit__profile--calling__code option:selected");
-                
+
                 var profile = {
-                    gender: $("#edit__profile--gender :selected").text(),
-                    birthday: $("#edit__profile--birthday").val(),
+                    gender: genderType.index() === 0 ? null : genderType.text(),
+                    birthday: birthday === "" ? null : birthday,
                     location: $("#edit__profile--location").val(),
-                    callingCode: callingCode.index() == 0 ? null : callingCode.text().match("(\\+\\d+)")[0],
+                    callingCode: callingCode.index() === 0 ? null : callingCode.text().match("(\\+\\d+)")[0],
                     phoneNumber: $("#edit__profile--phone__number").val()
                 }
                 
@@ -508,9 +510,13 @@
                             "October", "November", "December"
                         ];
                         
-                        $("#profile-location").html(`<span><i class="zmdi zmdi-pin zmdi-hc-fw"></i>${profile.location}</span>`);
+                        if (profile.location === null || profile.location === "") {
+                            $("#profile-location").empty();
+                        } else {
+                            $("#profile-location").html(`<span><i class="zmdi zmdi-pin zmdi-hc-fw"></i>${profile.location}</span>`);
+                        }
                         
-                        if (profile.birthday === null || profile.birthday === "" || profile.birthday === undefined) {
+                        if (profile.birthday === null || profile.birthday === "") {
                             $("#profile-birthday").empty();
                         } else {
                             var date = new Date(profile.birthday);          
@@ -522,8 +528,6 @@
                         } else {
                             $("#profile-phone__number").html(`<span><i class="zmdi zmdi-smartphone-iphone zmdi-hc-fw"></i>${profile.callingCode} ${profile.phoneNumber}</span>`);
                         }
-
-                        console.log();
 
                         if (dropzone.getAcceptedFiles().length) {
                             var target = toBlob($("#edit__profile--photo").cropper('getCroppedCanvas').toDataURL());

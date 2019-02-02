@@ -28,14 +28,6 @@
                     <div class="tab-content">
                         <div id="edit__profile--tab" class="tab-pane fade show active" role="tabpanel">                         
                             <div class="form-group">
-                                <input id="edit__profile--email" type="text" class="form-control" value="@Model.Email" readonly="readonly">
-                                <i class="form-group__bar"></i>
-                            </div>
-                            <div class="form-group">
-                                <input id="edit__profile--name" type="text" class="form-control" value="@Model.Name" readonly="readonly">
-                                <i class="form-group__bar"></i>
-                            </div>
-                            <div class="form-group">
                                 @if (string.IsNullOrEmpty(Model.Birthday))
                                 {
                                     <input id="edit__profile--birthday" class="form-control flatpickr flatpickr-input" style="display: block !important; color: #C0C0C0;" type="text" placeholder="Enter you birthday">

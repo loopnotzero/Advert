@@ -435,31 +435,24 @@ namespace Bazaar.Controllers
             {
                 var profile = await _profilesManager.FindProfileByIdAsync(ObjectId.Parse(profileId));
 
-                if (Enum.TryParse(model.Gender.Trim(), out Gender gender))
+                if (model.Gender != null)
                 {
-                    profile.Gender = gender;
+                    if (Enum.TryParse(model.Gender.Trim(), out Gender gender))
+                    {
+                        profile.Gender = gender;
+                    }
                 }
 
                 profile.Location = model.Location;
-                profile.CallingCode = model.CallingCode;
-
-                if (string.IsNullOrEmpty(model.Birthday) || string.IsNullOrWhiteSpace(model.Birthday))
-                {
-                    profile.Birthday = null;
-                }
-                else
+                
+                if (model.Birthday != null)
                 {
                     profile.Birthday = DateTime.ParseExact(model.Birthday, "yyyy-MM-dd", CultureInfo.InvariantCulture);
                 }
+                
+                profile.CallingCode = model.CallingCode;
 
-                if (string.IsNullOrEmpty(model.PhoneNumber) || string.IsNullOrWhiteSpace(model.PhoneNumber))
-                {
-                    profile.PhoneNumber = null;
-                }
-                else
-                {
-                    profile.PhoneNumber = model.PhoneNumber;
-                }
+                profile.PhoneNumber = model.PhoneNumber;
 
                 var result = await _profilesManager.UpdateProfileAsync(profile);
 
