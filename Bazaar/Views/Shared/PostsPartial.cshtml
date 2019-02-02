@@ -17,31 +17,31 @@ else
                         <div class="actions">
                             <div class="dropdown actions__item">
                                 <i data-toggle="dropdown" class="zmdi zmdi-chevron-down zmdi-hc-fw" aria-expanded="false"></i>
-                                <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-end" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(30px, 26px, 0px);">   
+                                <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-end" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(30px, 26px, 0px);">
+                                    <a href="" class="dropdown-item" data-placement="top" data-target="#edit-tags__modal--@post.PostId" data-toggle="modal" onclick="onEditPostTagsClick('@post.PostId')">
+                                        <i class="zmdi zmdi-tag-more zmdi-hc-fw"></i> Edit tags
+                                    </a>
+                                    <div class="dropdown-separator"></div>
                                     <a href="" class="dropdown-item" data-placement="top" data-target="#edit-post__modal" data-toggle="modal" onclick="onEditPostClick('@post.PostId')">
                                         <i class="zmdi zmdi-edit zmdi-hc-fw"></i> Edit post
                                     </a>
                                     @if (!post.Hidden)
                                     {
                                         <span class="dropdown-item" onclick="onPostShowHideClick('@post.PostId')">
-                                            <i class="zmdi zmdi-check zmdi-hc-fw"></i> 
+                                            <i class="zmdi zmdi-check zmdi-hc-fw"></i>
                                             <span id="post-availability__@post.PostId">Hide post</span>
                                         </span>
                                     }
                                     else
                                     {
                                         <span href="" class="dropdown-item" onclick="onPostShowHideClick('@post.PostId')">
-                                            <i class="zmdi zmdi-check zmdi-hc-fw"></i> 
+                                            <i class="zmdi zmdi-check zmdi-hc-fw"></i>
                                             <span id="post-availability__@post.PostId">Show post</span>
                                         </span>
                                     }
                                     <a href="" class="dropdown-item" data-placement="top" data-target="#delete-post__modal" data-toggle="modal" onclick="onDeletePostClick('@post.PostId')">
                                         <i class="zmdi zmdi-delete zmdi-hc-fw"></i> Delete post
                                     </a>
-                                    <div class="dropdown-separator"></div> 
-                                    <a href="" class="dropdown-item" data-placement="top" data-target="#edit-tags__modal--@post.PostId" data-toggle="modal" onclick="onEditPostTagsClick('@post.PostId')">
-                                        <i class="zmdi zmdi-tag-more zmdi-hc-fw"></i> Edit tags
-                                    </a>    
                                 </div>
                             </div>
                         </div>
@@ -132,6 +132,12 @@ else
                 }
                 <div id="post-text__@post.PostId">
                     @Html.Raw(post.Text)
+                </div>
+                <div data-nanogallery2>
+                    <a href="https://images.pexels.com/photos/531880/pexels-photo-531880.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500" data-ngThumb="https://images.pexels.com/photos/531880/pexels-photo-531880.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"> Title photo 1 </a>
+                    <a href="https://userscontent2.emaze.com/images/e7994a0e-e8b9-4d2c-be0d-5105d20295fb/16336feef73a889316080afc744f109f.png" data-ngThumb="https://userscontent2.emaze.com/images/e7994a0e-e8b9-4d2c-be0d-5105d20295fb/16336feef73a889316080afc744f109f.png"> Title photo 2 </a>
+                    <a href="https://images.pexels.com/photos/949587/pexels-photo-949587.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500" data-ngThumb="https://images.pexels.com/photos/949587/pexels-photo-949587.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"> Title photo 3 </a>
+                    <a href="https://images.unsplash.com/photo-1502657877623-f66bf489d236?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80" data-ngThumb="https://images.unsplash.com/photo-1502657877623-f66bf489d236?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80"> Title photo 3 </a>
                 </div>
             </div>
             <div class="card-footer">

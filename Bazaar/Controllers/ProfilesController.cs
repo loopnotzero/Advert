@@ -425,52 +425,6 @@ namespace Bazaar.Controllers
             }
         }
 
-        [HttpPut]
-        [Authorize]
-        [Route("/Profile/UpdateProfileByIdAsync")]
-        public async Task<IActionResult> UpdateProfileByIdAsync([FromQuery(Name = "profileId")] string profileId,
-            [FromBody] ProfileViewModel model)
-        {
-            try
-            {
-                var profile = await _profilesManager.FindProfileByIdAsync(ObjectId.Parse(profileId));
-
-                if (model.Gender != null)
-                {
-                    if (Enum.TryParse(model.Gender.Trim(), out Gender gender))
-                    {
-                        profile.Gender = gender;
-                    }
-                }
-
-                profile.Location = model.Location;
-                
-                if (model.Birthday != null)
-                {
-                    profile.Birthday = DateTime.ParseExact(model.Birthday, "yyyy-MM-dd", CultureInfo.InvariantCulture);
-                }
-                
-                profile.CallingCode = model.CallingCode;
-
-                profile.PhoneNumber = model.PhoneNumber;
-
-                var result = await _profilesManager.UpdateProfileAsync(profile);
-
-                return Ok(new UpdateResultModel
-                {
-                    MatchedCount = result.MatchedCount,
-                    ModifiedCount = result.ModifiedCount,
-                    IsAcknowledged = result.IsAcknowledged,
-                    IsModifiedCountAvailable = result.IsModifiedCountAvailable
-                });
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e.Message, e);
-                return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
-            }
-        }
-
         [HttpPost]
         [Authorize]
         [Route("/Profile/AddProfilePhotoAsync")]
@@ -529,5 +483,51 @@ namespace Bazaar.Controllers
         {
             throw new NotImplementedException();
         }
+        
+        [HttpPut]
+        [Authorize]
+        [Route("/Profile/UpdateProfileByIdAsync")]
+        public async Task<IActionResult> UpdateProfileByIdAsync([FromQuery(Name = "profileId")] string profileId,
+            [FromBody] ProfileViewModel model)
+        {
+            try
+            {
+                var profile = await _profilesManager.FindProfileByIdAsync(ObjectId.Parse(profileId));
+
+                if (model.Gender != null)
+                {
+                    if (Enum.TryParse(model.Gender.Trim(), out Gender gender))
+                    {
+                        profile.Gender = gender;
+                    }
+                }
+
+                profile.Location = model.Location;
+                
+                if (model.Birthday != null)
+                {
+                    profile.Birthday = DateTime.ParseExact(model.Birthday, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                }
+                
+                profile.CallingCode = model.CallingCode;
+
+                profile.PhoneNumber = model.PhoneNumber;
+
+                var result = await _profilesManager.UpdateProfileAsync(profile);
+
+                return Ok(new UpdateResultModel
+                {
+                    MatchedCount = result.MatchedCount,
+                    ModifiedCount = result.ModifiedCount,
+                    IsAcknowledged = result.IsAcknowledged,
+                    IsModifiedCountAvailable = result.IsModifiedCountAvailable
+                });
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
+            }
+        }  
     }
 }

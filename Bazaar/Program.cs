@@ -1,6 +1,4 @@
-﻿using System;
-using System.Net;
-using Microsoft.AspNetCore;
+﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 
 namespace Bazaar
@@ -18,7 +16,7 @@ namespace Bazaar
                 .UseStartup<Startup>()
 //                .UseKestrel(options =>
 //                {
-//                    options.Listen(IPAddress.Parse("192.168.42.154"), 5000);
+//                    options.Listen(IPAddress.Parse("192.168.0.32"), 5000);
 //                })
                 .Build();
             return builder;

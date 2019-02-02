@@ -17,6 +17,7 @@
     <link href="~/css/tagify.css" rel="stylesheet" type="text/css"/>
     <link href="~/css/cropper.css" rel="stylesheet" type="text/css"/>
     <link href="~/css/flatpickr.css" rel="stylesheet" type="text/css"/>
+    <link href="~/css/nanogallery2.css" rel="stylesheet" type="text/css"/>
 </head>
 <body id="body" data-ma-theme="advert" style="display: none">
 @RenderBody()
@@ -34,6 +35,7 @@
 <script src="~/js/cropper.js"></script>
 <script src="~/js/jquery-cropper.js"></script>
 <script src="~/js/flatpickr.js"></script>
+<script src="~/js/jquery.nanogallery2.js"></script>
 
 <script>
     var turndown = new TurndownService();
@@ -484,7 +486,7 @@
         case "edit__profile--tab":
             {
                 var birthday = $("#edit__profile--birthday").val();
-                var genderType = $("#edit__profile--gender :selected");
+                var genderType = $("#edit__profile--gender:selected");
                 var callingCode = $("#edit__profile--calling__code option:selected");
 
                 var profile = {
@@ -529,14 +531,14 @@
                             $("#profile-phone__number").html(`<span><i class="zmdi zmdi-smartphone-iphone zmdi-hc-fw"></i>${profile.callingCode} ${profile.phoneNumber}</span>`);
                         }
 
-                        if (dropzone.getAcceptedFiles().length) {
+                        if (!dropzone.getAcceptedFiles().length) {
+                            $("#edit__profile--modal").modal('toggle');                           
+                        } else {
                             var target = toBlob($("#edit__profile--photo").cropper('getCroppedCanvas').toDataURL());
                             target.name = "profile__photo.jpg";
                             dropzone.removeFile(dropzone.getAcceptedFiles()[0]);
                             dropzone.addFile(target);
                             dropzone.processQueue();
-                        } else {
-                            $("#edit__profile--modal").modal('toggle');
                         }        
                     },
                     function(jqXhr, textStatus, errorThrown) {
@@ -687,7 +689,7 @@
     }
  
     $(window).on('load', function() {
-            $('#body').fadeIn(200);
+            $('#body').fadeIn(500);
         });
 
     $(document).ready(function() {

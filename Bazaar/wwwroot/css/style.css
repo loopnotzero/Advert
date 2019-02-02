@@ -3696,7 +3696,7 @@ File: Responsive
 .dropzone .dz-message {
   font-weight: 400;
   text-align: center;
-  margin: 3.7em 0;
+  margin-top: 2.5rem;
 }
 
 .dropzone .dz-message .note {
@@ -3708,6 +3708,10 @@ File: Responsive
 
 .select2-pt {
   margin-top: 0.15rem !important;
+}
+
+.flatpickr-input {
+  color: black !important;
 }
 
 /*# sourceMappingURL=style.css.map */

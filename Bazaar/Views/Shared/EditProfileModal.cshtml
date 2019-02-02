@@ -30,11 +30,11 @@
                             <div class="form-group">
                                 @if (string.IsNullOrEmpty(Model.Birthday))
                                 {
-                                    <input id="edit__profile--birthday" class="form-control flatpickr flatpickr-input" style="display: block !important; color: #C0C0C0;" type="text" placeholder="Enter you birthday">
+                                    <input id="edit__profile--birthday" class="form-control flatpickr flatpickr-input" style="color: black !important;" type="text" placeholder="Enter you birthday">
                                 }
                                 else
                                 {
-                                    <input id="edit__profile--birthday" class="form-control flatpickr flatpickr-input" style="display: block !important; color: #C0C0C0;" type="text" placeholder="Enter you birthday" value="@DateTime.ParseExact(Model.Birthday, "dd MMMM yyyy", CultureInfo.InvariantCulture).ToString("yyyy-MM-dd")">
+                                    <input id="edit__profile--birthday" class="form-control flatpickr flatpickr-input" style="color: black !important;" type="text" placeholder="Enter you birthday" value="@DateTime.ParseExact(Model.Birthday, "dd MMMM yyyy", CultureInfo.InvariantCulture).ToString("yyyy-MM-dd")">
                                 }
                                 <i class="form-group__bar"></i>
                             </div>
@@ -42,7 +42,7 @@
                                 <select id="edit__profile--gender" class="form-control select2-pt">
                                     @foreach (Gender gender in Enum.GetValues(typeof(Gender)))
                                     {
-                                        if (!Model.Gender.ToUpper().Equals(gender.Humanize()))
+                                        if (!Model.Gender.ToUpper().Equals(gender.Humanize().ToUpper()))
                                         {
                                             <option>@gender.Humanize()</option>
                                         }
@@ -69,7 +69,7 @@
                                 <div class="col-5">
                                     <div class="form-group">
                                         <select id="edit__profile--calling__code" class="form-control select2-pt">
-                                            <option>Calling code</option>
+                                            <option></option>
                                             @foreach (var countryCode in Model.CountryCodes)
                                             {
                                                 if (countryCode.CallingCode.ToUpper().Equals(Model.CallingCode))
