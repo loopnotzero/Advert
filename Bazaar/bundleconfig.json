@@ -1,11 +1,191 @@
 ﻿[
   {
+    "outputFileName": "wwwroot/css/animate.min.css",
+    "inputFiles": [
+      "wwwroot/css/animate.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/bootstrap.min.css",
+    "inputFiles": [
+      "wwwroot/css/bootstrap.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/cropper.min.css",
+    "inputFiles": [
+      "wwwroot/css/cropper.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/dropzone.min.css",
+    "inputFiles": [
+      "wwwroot/css/dropzone.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/flatpickr.min.css",
+    "inputFiles": [
+      "wwwroot/css/flatpickr.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/font.min.css",
+    "inputFiles": [
+      "wwwroot/css/font.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/nanogallery2.min.css",
+    "inputFiles": [
+      "wwwroot/css/nanogallery2.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/simplemde.min.css",
+    "inputFiles": [
+      "wwwroot/css/simplemde.css"
+    ]
+  },
+  {
     "outputFileName": "wwwroot/css/style.min.css",
     "inputFiles": [
       "wwwroot/css/style.css"
     ]
   },
   {
+    "outputFileName": "wwwroot/css/tagify.min.css",
+    "inputFiles": [
+      "wwwroot/css/tagify.css"
+    ]
+  },
+  
+  {
+    "outputFileName": "wwwroot/js/bazaar.min.js",
+    "inputFiles": [
+      "wwwroot/js/bazaar.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/bootstrap.min.js",
+    "inputFiles": [
+      "wwwroot/js/bootstrap.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/cropper.min.js",
+    "inputFiles": [
+      "wwwroot/js/cropper.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/dropzone.min.js",
+    "inputFiles": [
+      "wwwroot/js/dropzone.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/flatpickr.min.js",
+    "inputFiles": [
+      "wwwroot/js/flatpickr.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/jquery-cropper.min.js",
+    "inputFiles": [
+      "wwwroot/js/jquery-cropper.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/jquery.nanogallery2.min.js",
+    "inputFiles": [
+      "wwwroot/js/jquery.nanogallery2.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/jquery.tagify.min.js",
+    "inputFiles": [
+      "wwwroot/js/jquery.tagify.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/popper.min.js",
+    "inputFiles": [
+      "wwwroot/js/popper.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/simplemde.min.js",
+    "inputFiles": [
+      "wwwroot/js/simplemde.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/turndown.min.js",
+    "inputFiles": [
+      "wwwroot/js/turndown.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/waves.min.js",
+    "inputFiles": [
+      "wwwroot/js/waves.js"
+    ],
     "minify": {
       "enabled": true,
       "renameLocals": true

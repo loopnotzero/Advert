@@ -8,34 +8,34 @@
     <meta content="Advert" name="author"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <link rel="shortcut icon" href="~/images/favicon.ico">
-    <link href="~/css/dropzone.css" rel="stylesheet" type="text/css"/>
-    <link href="~/css/font.css" rel="stylesheet" type="text/css"/>
-    <link href="~/css/bootstrap.css" rel="stylesheet" type="text/css"/>
-    <link href="~/css/style.css" rel="stylesheet" type="text/css"/>
-    <link href="~/css/simplemde.css" rel="stylesheet" type="text/css">
-    <link href="~/css/animate.css" rel="stylesheet" type="text/css">
-    <link href="~/css/tagify.css" rel="stylesheet" type="text/css"/>
-    <link href="~/css/cropper.css" rel="stylesheet" type="text/css"/>
-    <link href="~/css/flatpickr.css" rel="stylesheet" type="text/css"/>
-    <link href="~/css/nanogallery2.css" rel="stylesheet" type="text/css"/>
+    <link href="~/css/dropzone.min.css" rel="stylesheet" type="text/css"/>
+    <link href="~/css/font.min.css" rel="stylesheet" type="text/css"/>
+    <link href="~/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <link href="~/css/style.min.css" rel="stylesheet" type="text/css"/>
+    <link href="~/css/simplemde.min.css" rel="stylesheet" type="text/css">
+    <link href="~/css/animate.min.css" rel="stylesheet" type="text/css">
+    <link href="~/css/tagify.min.css" rel="stylesheet" type="text/css"/>
+    <link href="~/css/cropper.min.css" rel="stylesheet" type="text/css"/>
+    <link href="~/css/flatpickr.min.css" rel="stylesheet" type="text/css"/>
+    <link href="~/css/nanogallery2.min.css" rel="stylesheet" type="text/css"/>
 </head>
 <body id="body" data-ma-theme="advert" style="display: none">
 @RenderBody()
 </body>
 </html>
-<script src="~/js/popper.js"></script>
+<script src="~/js/popper.min.js"></script>
 <script src="~/js/jquery.min.js"></script>
-<script src="~/js/bootstrap.js"></script>
-<script src="~/js/waves.js"></script>
-<script src="~/js/turndown.js"></script>
-<script src="~/js/simplemde.js"></script>
-<script src="~/js/dropzone.js"></script>
-<script src="~/js/bazaar.js"></script>
-<script src="~/js/jquery.tagify.js"></script>
-<script src="~/js/cropper.js"></script>
-<script src="~/js/jquery-cropper.js"></script>
-<script src="~/js/flatpickr.js"></script>
-<script src="~/js/jquery.nanogallery2.js"></script>
+<script src="~/js/bootstrap.min.js"></script>
+<script src="~/js/waves.min.js"></script>
+<script src="~/js/turndown.min.js"></script>
+<script src="~/js/simplemde.min.js"></script>
+<script src="~/js/dropzone.min.js"></script>
+<script src="~/js/bazaar.min.js"></script>
+<script src="~/js/jquery.tagify.min.js"></script>
+<script src="~/js/cropper.min.js"></script>
+<script src="~/js/jquery-cropper.min.js"></script>
+<script src="~/js/flatpickr.min.js"></script>
+<script src="~/js/jquery.nanogallery2.min.js"></script>
 
 <script>
     var turndown = new TurndownService();
@@ -53,7 +53,8 @@
                     this.on("success",
                         function(file, response) {
                             $("#profile-image").attr("src", `${response.imagePath}?${new Date().getTime()}`);
-                            $(`img[photo-id='${response.profileId}']`).attr("src", `${response.imagePath}?${new Date().getTime()}`);
+                            $(`img[photo-id='${response.profileId}']`)
+                                .attr("src", `${response.imagePath}?${new Date().getTime()}`);
                             $("#edit__profile--modal").modal('toggle');
                         });
                     this.on("addedfile",
@@ -92,7 +93,7 @@
         }
         return new Blob([arrayBuffer], { type: 'image/jpeg' });
     }
-  
+
     function initMap() {
         if ($("#add__post--location").length) {
             new google.maps.places.Autocomplete($("#add__post--location")[0])
@@ -118,7 +119,7 @@
                     });
         }
     }
-      
+
     function removeReplyForm(commentId) {
         var form = $(`#${commentId}`);
         if (form.length !== 0) {
@@ -128,7 +129,8 @@
 
     function renderCommentForm(response) {
         var html = `<div id="${response.commentId}" class="media p-2">
-                    <img class="card-user__img" src="${response.profileImagePath}" width="48" height="48" alt="profile-image">
+                    <img class="card-user__img" src="${response.profileImagePath
+            }" width="48" height="48" alt="profile-image">
                     <div class="media-body media__img content__break">
                         <div class="col-auto">
                             <span class="font-weight-bold" style="font-size: 0.9rem">
@@ -143,22 +145,28 @@
                         <div class="col-auto">
                             <div class="row">
                                 <div class="col-md-12 p-1">
-                                    <div class="r-btn r-btn-light r-btn--icon waves-effect ml-4" onclick="onPostCommentVoteClick('${response.postId}', '${response.commentId}', 1)" >
-                                        <i id="vote-icon__${response.commentId}" class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
+                                    <div class="r-btn r-btn-light r-btn--icon waves-effect ml-4" onclick="onPostCommentVoteClick('${
+            response.postId}', '${response.commentId}', 1)" >
+                                        <i id="vote-icon__${response.commentId
+            }" class="zmdi zmdi-favorite-outline zmdi-hc-fw"></i>
                                     </div>
                                     <small id='votes-count__${response.commentId}'>${response.votesCount}</small>
                                     <span class="dot-separator"></span>        
-                                    <a href="#reply" onclick="onReplyCommentClick('${response.postId}', ${response.replyTo === null ? null : `'${response.replyTo}'`}, '${response.commentId}')" style="font-size: 0.9rem">
+                                    <a href="#reply" onclick="onReplyCommentClick('${response.postId}', ${
+            response.replyTo === null ? null : `'${response.replyTo}'`}, '${response.commentId
+            }')" style="font-size: 0.9rem">
                                         Reply
                                     </a>      
                                     <span class="dot-separator"></span>
                                     <div class="dropdown comments__item">
                                         <i data-toggle="dropdown" class="zmdi zmdi-chevron-down zmdi-hc-fw" aria-expanded="false"></i>
                                         <div class="dropdown-menu dropdown-menu-right" x-placement="bottom-end" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(30px, 26px, 0px);">
-                                            <a href="" class="dropdown-item" data-placement="top" data-target="#edit-comment__modal" data-toggle="modal" onclick="onEditCommentClick('${response.postId}', '${response.commentId}')">
+                                            <a href="" class="dropdown-item" data-placement="top" data-target="#edit-comment__modal" data-toggle="modal" onclick="onEditCommentClick('${
+            response.postId}', '${response.commentId}')">
                                                 <i class="zmdi zmdi-edit zmdi-hc-fw"></i> Edit...
                                             </a> 
-                                            <a href="" class="dropdown-item" data-placement="top" data-target="#delete-comment__modal" data-toggle="modal" onclick="onDeleteCommentClick('${response.postId}', '${response.commentId}')">
+                                            <a href="" class="dropdown-item" data-placement="top" data-target="#delete-comment__modal" data-toggle="modal" onclick="onDeleteCommentClick('${
+            response.postId}', '${response.commentId}')">
                                                 <i class="zmdi zmdi-delete zmdi-hc-fw"></i> Delete...
                                             </a>
                                         </div>
@@ -194,9 +202,6 @@
                         return element.description;
                     }).join(","));
                 } else {
-                    console.log("Close log in modal");
-                    $("#log-in__modal").modal('toggle');
-                    console.log(`Redirect to URL: ${response.returnUrl}`);
                     window.location.replace(response.returnUrl);
                 }
             },
@@ -306,7 +311,8 @@
             });
         $("#edit-post__save").off("click").click(function() {
             var post = {
-                text: textEditor["edit-post__text--editor"].options.previewRender(textEditor["edit-post__text--editor"].value()),
+                text: textEditor["edit-post__text--editor"].options.previewRender(textEditor["edit-post__text--editor"]
+                    .value()),
                 title: $("#edit-post__title").val(),
                 price: $("#edit-post__price").val(),
                 location: $("#edit__post--location").val(),
@@ -314,7 +320,7 @@
             };
 
             console.log("Currency: " + post.currency);
-            
+
             updatePostByIdAsync(postId,
                 post,
                 function(response) {
@@ -397,13 +403,15 @@
 
                     if (postTags.tags === null || postTags.tags.length == 0) {
                         tagsElement.append(`
-                        <a href="" title="" data-placement="top" data-target="#edit-tags__modal--${postId}" data-toggle="modal" onclick="onEditPostTagsClick('${postId}')">
+                        <a href="" title="" data-placement="top" data-target="#edit-tags__modal--${postId
+                            }" data-toggle="modal" onclick="onEditPostTagsClick('${postId}')">
                             <i class="zmdi zmdi-tag-more zmdi-hc-fw post-tag__icon"></i>Add tags
                         </a>
                         `);
                     } else {
                         tagsElement.append(`
-                            <a href="" title="" data-placement="top" data-target="#edit-tags__modal--${postId}" data-toggle="modal" onclick="onEditPostTagsClick('${postId}')">
+                            <a href="" title="" data-placement="top" data-target="#edit-tags__modal--${postId
+                            }" data-toggle="modal" onclick="onEditPostTagsClick('${postId}')">
                                 <i class="zmdi zmdi-tag-more zmdi-hc-fw post-tag__icon"></i>
                             </a>
                         `);
@@ -496,7 +504,7 @@
                     callingCode: callingCode.index() === 0 ? null : callingCode.text().match("(\\+\\d+)")[0],
                     phoneNumber: $("#edit__profile--phone__number").val()
                 }
-                
+
                 updateProfileByIdAsync(profileId,
                     profile,
                     function(response) {
@@ -504,42 +512,50 @@
                             `MatchedCount: ${response.matchedCount} ModifiedCount: ${response.matchedCount
                             } IsAcknowledged: ${response.isAcknowledged} IsModifiedCountAvailable: ${response
                             .isModifiedCountAvailable}`);
-                            
+
                         var monthNames = [
                             "January", "February", "March",
                             "April", "May", "June",
                             "July", "August", "September",
                             "October", "November", "December"
                         ];
-                        
+
                         if (profile.location === null || profile.location === "") {
                             $("#profile-location").empty();
                         } else {
-                            $("#profile-location").html(`<span><i class="zmdi zmdi-pin zmdi-hc-fw"></i>${profile.location}</span>`);
+                            $("#profile-location")
+                                .html(`<span><i class="zmdi zmdi-pin zmdi-hc-fw"></i>${profile.location}</span>`);
                         }
-                        
+
                         if (profile.birthday === null || profile.birthday === "") {
                             $("#profile-birthday").empty();
                         } else {
-                            var date = new Date(profile.birthday);          
-                            $("#profile-birthday").html(`<span><i class="zmdi zmdi-brightness-5 zmdi-hc-fw"></i>Birthday ${`${date.getDate()} ${monthNames[date.getMonth()]} ${date.getFullYear()}`}</span>`);
+                            var date = new Date(profile.birthday);
+                            $("#profile-birthday")
+                                .html(`<span><i class="zmdi zmdi-brightness-5 zmdi-hc-fw"></i>Birthday ${`${
+                                    date.getDate()} ${monthNames[date.getMonth()]} ${date.getFullYear()}`}</span>`);
                         }
-                        
-                        if (profile.callingCode === null || profile.callingCode === "" || profile.phoneNumber === null || profile.phoneNumber === "") {
+
+                        if (profile.callingCode === null ||
+                            profile.callingCode === "" ||
+                            profile.phoneNumber === null ||
+                            profile.phoneNumber === "") {
                             $("#profile-phone__number").empty();
                         } else {
-                            $("#profile-phone__number").html(`<span><i class="zmdi zmdi-smartphone-iphone zmdi-hc-fw"></i>${profile.callingCode} ${profile.phoneNumber}</span>`);
+                            $("#profile-phone__number")
+                                .html(`<span><i class="zmdi zmdi-smartphone-iphone zmdi-hc-fw"></i>${profile.callingCode
+                                    } ${profile.phoneNumber}</span>`);
                         }
 
                         if (!dropzone.getAcceptedFiles().length) {
-                            $("#edit__profile--modal").modal('toggle');                           
+                            $("#edit__profile--modal").modal('toggle');
                         } else {
                             var target = toBlob($("#edit__profile--photo").cropper('getCroppedCanvas').toDataURL());
                             target.name = "profile__photo.jpg";
                             dropzone.removeFile(dropzone.getAcceptedFiles()[0]);
                             dropzone.addFile(target);
                             dropzone.processQueue();
-                        }        
+                        }
                     },
                     function(jqXhr, textStatus, errorThrown) {
                         alert("Error");
@@ -552,7 +568,7 @@
             break;
         }
     }
- 
+
     function onPostShowHideClick(postId) {
         console.log(`Update post: ${postId} item availability`);
         getPostByIdAsync(postId,
@@ -610,7 +626,7 @@
             var text = writeReplyEditor.options.previewRender(writeReplyEditor.value());
 
             var parentId = null;
-            
+
             if (replyTo != null) {
                 parentId = replyTo;
             } else {
@@ -628,7 +644,7 @@
             createPostCommentAsync(comment,
                 function(response) {
                     $(`#${comment.replyTo} .media-body:first`).append(renderCommentForm(response));
-                    
+
                     $([document.documentElement, document.body]).animate({
                             scrollTop: $(`#media-comment__${response.commentId}`).offset().top - 250
                         },
@@ -687,8 +703,9 @@
                 alert("Error");
             });
     }
- 
-    $(window).on('load', function() {
+
+    $(window).on('load',
+        function() {
             $('#body').fadeIn(500);
         });
 
@@ -746,7 +763,7 @@
                 });
             textEditor["add-comment__text--editor"].value("");
         });
-   
+
         $("#sign-out__dropdown").click(function(e) {
             e.preventDefault();
             $.ajax({
@@ -808,7 +825,7 @@
                         }
                     });
             });
-        
+
         if ($("#edit__profile--modal").length) {
             flatpickr($("#edit__profile--birthday")[0],
                 {
@@ -816,16 +833,52 @@
                     altInput: true,
                     enableTime: false,
                     dateFormat: "Y-m-d"
-                }); 
+                });
         }
-       
+
         $(".search").submit(function(event) {
             event.preventDefault();
             window.location.replace(window.location.href + "?page=1&keyword=" + $(".search__text").val());
         });
 
         $(".CodeMirror, .CodeMirror-scroll").css('min-height', '150px');
-    }); 
+
+        $("div[gallery-id='nanogallery2']").nanogallery2({
+            kind: 'flickr',
+            userID: '149035168@N08', // nano studio
+            photoset: 'NONE',
+            thumbnailDisplayTransition: 'randomScale',
+            thumbnailHeight: '150',
+            thumbnailWidth: 'auto',
+            galleryDisplayMode: 'rows',
+            galleryPaginationMode: 'rectangles',
+            galleryMaxRows: 2,
+            thumbnailToolbarImage: {
+                topRight: '',
+                bottomRight: ''
+            },
+            thumbnailLabel: {
+                display: false,
+                position: 'overImageOnBottom',
+                hideIcons: true,
+                titleFontSize: '1em',
+                align: 'left',
+                titleMultiLine: true
+            },          
+            thumbnailBorderHorizontal: 0,
+            thumbnailBorderVertical: 0,
+            navigationFontSize: '1.0em',
+            gallerySorting: 'random',
+            galleryTheme: {
+                thumbnail: {
+                    titleShadow: 'none',
+                    descriptionShadow: 'none'
+                }
+            },
+            galleryLastRowFull: true,
+            locationHash: false
+        });
+    });
 </script>
 
 @* <script src="https://maps.googleapis.com/maps/api/js?key=@Model.PlacesApi&libraries=places&callback=initMap" async defer></script> *@

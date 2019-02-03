@@ -3,6 +3,7 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="BuildBundlerMinifier" Version="2.8.391" />
     <PackageReference Include="Humanizer" Version="2.5.1" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.1.1" />
   </ItemGroup>
@@ -1589,6 +1590,19 @@
     <_ContentIncludedByDefault Remove="wwwroot\images\profiles\5c27ea98eb64801aec9f3e5b\photos\photo_2018-10-08_10-45-07.jpg" />
     <_ContentIncludedByDefault Remove="wwwroot\images\profiles\5c27ea98eb64801aec9f3e5b\photos\photo_2018-10-15_10-00-26.jpg" />
     <_ContentIncludedByDefault Remove="wwwroot\images\profiles\5c54dec3ececf42ccbbe59b6\photo\avatar.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\scss\vendors\material-design-iconic-font\_aliases.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\scss\vendors\material-design-iconic-font\_border.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\scss\vendors\material-design-iconic-font\_core.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\scss\vendors\material-design-iconic-font\_fixed-width.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\scss\vendors\material-design-iconic-font\_icons.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\scss\vendors\material-design-iconic-font\_list.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\scss\vendors\material-design-iconic-font\_path.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\scss\vendors\material-design-iconic-font\_pulled.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\scss\vendors\material-design-iconic-font\_rotated.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\scss\vendors\material-design-iconic-font\_sizes.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\scss\vendors\material-design-iconic-font\_spinned.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\scss\vendors\material-design-iconic-font\_stacked.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\scss\vendors\material-design-iconic-font\_variables.scss" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Bazaar.Common\Bazaar.Common.csproj" />

@@ -61,8 +61,7 @@ namespace Bazaar.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetPosts([FromQuery(Name = "page")] int page = 1,
-            [FromQuery(Name = "keyword")] string keyword = null)
+        public async Task<IActionResult> GetPosts([FromQuery(Name = "keyword")] string keyword = null)
         {
             try
             {
@@ -151,8 +150,7 @@ namespace Bazaar.Controllers
 
         [HttpGet]
         [Route("/Posts")]
-        public async Task<IActionResult> GetPostContent([FromQuery(Name = "postId")] string postId,
-            [FromQuery(Name = "page")] int page = 1)
+        public async Task<IActionResult> GetPostContent([FromQuery(Name = "postId")] string postId)
         {
             try
             {

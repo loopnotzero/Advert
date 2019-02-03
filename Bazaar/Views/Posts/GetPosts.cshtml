@@ -13,7 +13,7 @@
         {
             <div class="col-md-3 p-1">
                 @await Html.PartialAsync("SignUpOrLoginPartial", Model.Profile)
-            </div>        
+            </div>
         }
         else
         {
@@ -21,15 +21,15 @@
                 <div class="card team__item">
                     @await Html.PartialAsync("ProfilePartial", Model.Profile)
                 </div>
-            </div> 
+            </div>
         }
         <div class="col-md-6 p-1">
             <div class="card">
-                @await Html.PartialAsync("PostsPartial", Model.Posts)              
+                @await Html.PartialAsync("PostsPartial", Model.Posts)
             </div>
         </div>
         <div class="col-md-3 p-1">
-            
+
         </div>
     </div>
     @await Html.PartialAsync("AddPostModal")

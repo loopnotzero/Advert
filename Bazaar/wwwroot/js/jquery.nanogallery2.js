@@ -5141,7 +5141,7 @@
           G.GOM.lastRandomValue = r;
           var f = scales[r];
           // item.$elt.css({ 'z-index': G.GOM.lastZIndex+zi[r], 'box-shadow': '-1px 2px 5px 1px rgba(0, 0, 0, 0.7)' });
-          item.$elt.css({ 'z-index': G.GOM.lastZIndex+zi[r], 'box-shadow': '0px 0px 5px 3px rgba(0,0,0,0.74)' });
+          item.$elt.css({ 'z-index': G.GOM.lastZIndex+zi[r], 'box-shadow': '0px 0px 3px 1px rgba(0,0,0,0.74)' });
           
           oFrom = { scale: 0.5, opacity:0 };
           oTo =   { scale: f,   opacity:1 };

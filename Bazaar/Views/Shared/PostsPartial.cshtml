@@ -133,14 +133,10 @@ else
                 <div id="post-text__@post.PostId">
                     @Html.Raw(post.Text)
                 </div>
-                <div data-nanogallery2>
-                    <a href="https://images.pexels.com/photos/531880/pexels-photo-531880.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500" data-ngThumb="https://images.pexels.com/photos/531880/pexels-photo-531880.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"> Title photo 1 </a>
-                    <a href="https://userscontent2.emaze.com/images/e7994a0e-e8b9-4d2c-be0d-5105d20295fb/16336feef73a889316080afc744f109f.png" data-ngThumb="https://userscontent2.emaze.com/images/e7994a0e-e8b9-4d2c-be0d-5105d20295fb/16336feef73a889316080afc744f109f.png"> Title photo 2 </a>
-                    <a href="https://images.pexels.com/photos/949587/pexels-photo-949587.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500" data-ngThumb="https://images.pexels.com/photos/949587/pexels-photo-949587.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"> Title photo 3 </a>
-                    <a href="https://images.unsplash.com/photo-1502657877623-f66bf489d236?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80" data-ngThumb="https://images.unsplash.com/photo-1502657877623-f66bf489d236?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80"> Title photo 3 </a>
-                </div>
-            </div>
+            </div>          
             <div class="card-footer">
+                <div gallery-id="nanogallery2" class="mb-2"></div>
+
                 <div class="r-btn r-btn-light r-btn--icon waves-effect" onclick="onVotePostClick('@post.PostId', 1)">
                     @if (post.IsVoted)
                     {
@@ -164,7 +160,6 @@ else
                 <span id="post-views__count--@post.PostId">@post.ViewsCount</span>
             </div>
             <div style="border-bottom: 1px solid #d5d5d5;"></div>
-
             @await Html.PartialAsync("EditPostTagsModal", post)
         </article>
     }
