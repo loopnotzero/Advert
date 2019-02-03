@@ -601,7 +601,7 @@
         $(`#${commentId} #reply-placeholder:first`).append(
             `<div id="reply-form">   
                 <textarea id="write-reply__editor" style="display: none"></textarea>    
-                <div class="row mt-3">
+                <div class="row mt-2">
                     <div class="col-12">   
                         <input type="button" class="btn btn-light waves-effect waves-light btn-sm mr-2" value="Cancel" onclick="removeReplyForm('reply-form')"/>     
                         <input id="add-comment__reply" type="button" class="btn btn-primary waves-effect waves-light btn-sm" value="Reply"/>
@@ -844,15 +844,22 @@
         $(".CodeMirror, .CodeMirror-scroll").css('min-height', '150px');
 
         $("div[gallery-id='nanogallery2']").nanogallery2({
-            kind: 'flickr',
-            userID: '149035168@N08', // nano studio
-            photoset: 'NONE',
+            items:[
+                { src: 'http://192.168.0.50:5000/images/test/1.jpeg', srct: 'http://192.168.0.50:5000/images/test/1.jpeg', title: 'Berlin 2' },
+                { src: 'http://192.168.0.50:5000/images/test/2.jpg', srct: 'http://192.168.0.50:5000/images/test/2.jpg', title: 'Berlin 2' },
+                { src: 'http://192.168.0.50:5000/images/test/3.jpg', srct: 'http://192.168.0.50:5000/images/test/3.jpg', title: 'Berlin 2' },
+                { src: 'http://192.168.0.50:5000/images/test/4.jpg', srct: 'http://192.168.0.50:5000/images/test/4.jpg', title: 'Berlin 3' }
+            ],
+            itemsBaseURL: 'http://192.168.0.50:5000/images/test/',
+//            kind: 'flickr',
+//            userID: '149035168@N08', // nano studio
+//            photoset: 'NONE',
             thumbnailDisplayTransition: 'randomScale',
             thumbnailHeight: '150',
             thumbnailWidth: 'auto',
             galleryDisplayMode: 'rows',
             galleryPaginationMode: 'rectangles',
-            galleryMaxRows: 2,
+            galleryMaxRows: 1,
             thumbnailToolbarImage: {
                 topRight: '',
                 bottomRight: ''
