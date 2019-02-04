@@ -827,38 +827,6 @@ namespace Bazaar.Controllers
         public async Task<IActionResult> AddPostPhotos(string returnUrl, IFormFile file)
         {
             ViewData["ReturnUrl"] = returnUrl;
-
-            if (file.Length <= 0)
-            {
-                //todo: return View with ModelErrors
-                return BadRequest();
-            }
-
-            var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
-
-            var profilePhotosDir = $"{_hostingEnvironment.WebRootPath}/images/profiles/{profile._id.ToString()}/photos";
-
-            if (!Directory.Exists(profilePhotosDir))
-            {
-                Directory.CreateDirectory(profilePhotosDir);
-            }
-
-            var profilePhotosDirFullPath = Path.Combine(profilePhotosDir, file.FileName);
-
-            using (var stream = new FileStream(profilePhotosDirFullPath, FileMode.Create))
-            {
-                await file.CopyToAsync(stream);
-            }
-
-            //todo: Create profile post photo
-
-//            await _profilesImagesManager.CreateProfileImageAsync(new MongoDbProfileImage
-//            {
-//                ProfileId = profile.Id,
-//                ImagePath = $"/images/profiles/{profile.Id}/{file.FileName}",
-//                CreatedAt = DateTime.UtcNow
-//            });
-//
             return Ok();
         }
     }

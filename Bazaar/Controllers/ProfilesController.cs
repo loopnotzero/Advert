@@ -34,7 +34,7 @@ namespace Bazaar.Controllers
         private readonly PostCommentsManager<MongoDbPostComment> _postCommentsManager;
         private readonly ProfilesManager<MongoDbProfile> _profilesManager;
         private readonly PostsVotesManager<MongoDbPostVote> _postsVotesManager;
-        private readonly ProfilesImagesManager<MongoDbProfileImage> _profilesImagesManager;
+        private readonly ProfilesPhotosManager<MongoDbProfileImage> _profilesPhotosManager;
 
         public ProfilesController(
             ILoggerFactory loggerFactory, 
@@ -43,7 +43,7 @@ namespace Bazaar.Controllers
             PostsManager<MongoDbPost> postsManager,
             ProfilesManager<MongoDbProfile> profilesManager, PostsVotesManager<MongoDbPostVote> postsVotesManager,
             PostCommentsManager<MongoDbPostComment> postCommentsManager,
-            ProfilesImagesManager<MongoDbProfileImage> profilesImagesManager)
+            ProfilesPhotosManager<MongoDbProfileImage> profilesPhotosManager)
         {
             _logger = loggerFactory.CreateLogger<ProfilesController>();
             _configuration = configuration;
@@ -52,7 +52,7 @@ namespace Bazaar.Controllers
             _profilesManager = profilesManager;
             _postsVotesManager = postsVotesManager;
             _postCommentsManager = postCommentsManager;
-            _profilesImagesManager = profilesImagesManager;
+            _profilesPhotosManager = profilesPhotosManager;
         }
 
         [HttpGet]
@@ -466,7 +466,7 @@ namespace Bazaar.Controllers
                 CreatedAt = DateTime.UtcNow
             };
 
-            await _profilesImagesManager.CreateProfileImageAsync(profileImage);
+            await _profilesPhotosManager.CreateProfileImageAsync(profileImage);
 
             profile.ImagePath = profileImage.ImagePath;
 

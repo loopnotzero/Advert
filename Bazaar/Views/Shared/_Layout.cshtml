@@ -845,24 +845,18 @@
 
         $("div[gallery-id='nanogallery2']").nanogallery2({
             items:[
-                { src: 'http://192.168.0.50:5000/images/test/1.jpeg', srct: 'http://192.168.0.50:5000/images/test/1.jpeg', title: 'Berlin 2' },
-                { src: 'http://192.168.0.50:5000/images/test/2.jpg', srct: 'http://192.168.0.50:5000/images/test/2.jpg', title: 'Berlin 2' },
-                { src: 'http://192.168.0.50:5000/images/test/3.jpg', srct: 'http://192.168.0.50:5000/images/test/3.jpg', title: 'Berlin 2' },
-                { src: 'http://192.168.0.50:5000/images/test/4.jpg', srct: 'http://192.168.0.50:5000/images/test/4.jpg', title: 'Berlin 3' }
+                { src: 'http://192.168.0.50:5000/images/test/1.jpeg', srct: 'http://192.168.0.50:5000/images/test/1.jpeg' },
+                { src: 'http://192.168.0.50:5000/images/test/2.jpg', srct: 'http://192.168.0.50:5000/images/test/2.jpg' },
+                { src: 'http://192.168.0.50:5000/images/test/3.jpg', srct: 'http://192.168.0.50:5000/images/test/3.jpg' },
+                { src: 'http://192.168.0.50:5000/images/test/4.jpg', srct: 'http://192.168.0.50:5000/images/test/4.jpg' }
             ],
             itemsBaseURL: 'http://192.168.0.50:5000/images/test/',
-//            kind: 'flickr',
-//            userID: '149035168@N08', // nano studio
-//            photoset: 'NONE',
-            thumbnailDisplayTransition: 'randomScale',
-            thumbnailHeight: '150',
-            thumbnailWidth: 'auto',
-            galleryDisplayMode: 'rows',
-            galleryPaginationMode: 'rectangles',
-            galleryMaxRows: 1,
-            thumbnailToolbarImage: {
-                topRight: '',
-                bottomRight: ''
+            locationHash: false,
+            galleryTheme: {
+                thumbnail: {
+                    titleShadow: 'none',
+                    descriptionShadow: 'none'
+                }
             },
             thumbnailLabel: {
                 display: false,
@@ -871,19 +865,22 @@
                 titleFontSize: '1em',
                 align: 'left',
                 titleMultiLine: true
-            },          
-            thumbnailBorderHorizontal: 0,
-            thumbnailBorderVertical: 0,
-            navigationFontSize: '1.0em',
+            }, 
+            galleryMaxRows: 1,
             gallerySorting: 'random',
-            galleryTheme: {
-                thumbnail: {
-                    titleShadow: 'none',
-                    descriptionShadow: 'none'
-                }
-            },
+            thumbnailWidth: 'auto',
+            thumbnailHeight: '150',
+            galleryDisplayMode: 'rows',
             galleryLastRowFull: true,
-            locationHash: false
+            navigationFontSize: '1.0em',
+            galleryPaginationMode: 'rectangles',
+            thumbnailToolbarImage: {
+                topRight: '',
+                bottomRight: ''
+            },
+            thumbnailBorderVertical: 0,       
+            thumbnailBorderHorizontal: 0,
+            thumbnailDisplayTransition: 'randomScale'
         });
     });
 </script>

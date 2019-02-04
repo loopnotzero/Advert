@@ -8,11 +8,11 @@ using MongoDB.Driver;
 
 namespace Bazaar.MongoDbStorage.Stores
 {
-    public class MongoDbProfilesImagesStore<T> : IProfilesImagesStore<T> where T : IProfileImage
+    public class MongoDbProfilesPhotosStore<T> : IProfilesPhotosStore<T> where T : IProfileImage
     {
         private readonly IMongoCollection<T> _collection;
       
-        public MongoDbProfilesImagesStore()
+        public MongoDbProfilesPhotosStore()
         {
 //            BsonClassMap.RegisterClassMap<MongoDbProfileImage>(bsonClassMap =>
 //            {
@@ -21,9 +21,9 @@ namespace Bazaar.MongoDbStorage.Stores
 //            });
         }
         
-        public MongoDbProfilesImagesStore(IMongoDatabase mongoDatabase) : this()
+        public MongoDbProfilesPhotosStore(IMongoDatabase mongoDatabase) : this()
         {          
-            _collection = mongoDatabase.GetCollection<T>(MongoDbCollections.ProfilesImages);          
+            _collection = mongoDatabase.GetCollection<T>(MongoDbCollections.ProfilesPhotos);          
             //todo: Create indices
         }
       

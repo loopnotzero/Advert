@@ -11,7 +11,7 @@ using MongoDB.Bson;
 
 namespace Bazaar.Managers
 {
-    public class ProfilesImagesManager<T> : IDisposable where T : IProfileImage
+    public class ProfilesPhotosManager<T> : IDisposable where T : IProfileImage
     {
         private bool _disposed;
         
@@ -24,11 +24,11 @@ namespace Bazaar.Managers
         /// Gets or sets the persistence store the manager operates over.
         /// </summary>
         /// <value>The persistence store the manager operates over.</value>
-        protected internal IProfilesImagesStore<T> Store { get; set; }
+        protected internal IProfilesPhotosStore<T> Store { get; set; }
 
         protected virtual CancellationToken CancellationToken => CancellationToken.None;
                
-        public ProfilesImagesManager(IProfilesImagesStore<T> store, ILookupNormalizer keyNormalizer)
+        public ProfilesPhotosManager(IProfilesPhotosStore<T> store, ILookupNormalizer keyNormalizer)
         {
             Store = store ?? throw new ArgumentNullException(nameof(store));
             KeyNormalizer = keyNormalizer;
