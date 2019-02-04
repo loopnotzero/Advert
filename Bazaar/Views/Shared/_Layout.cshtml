@@ -842,46 +842,6 @@
         });
 
         $(".CodeMirror, .CodeMirror-scroll").css('min-height', '150px');
-
-        $("div[gallery-id='nanogallery2']").nanogallery2({
-            items:[
-                { src: 'http://192.168.0.50:5000/images/test/1.jpeg', srct: 'http://192.168.0.50:5000/images/test/1.jpeg' },
-                { src: 'http://192.168.0.50:5000/images/test/2.jpg', srct: 'http://192.168.0.50:5000/images/test/2.jpg' },
-                { src: 'http://192.168.0.50:5000/images/test/3.jpg', srct: 'http://192.168.0.50:5000/images/test/3.jpg' },
-                { src: 'http://192.168.0.50:5000/images/test/4.jpg', srct: 'http://192.168.0.50:5000/images/test/4.jpg' }
-            ],
-            itemsBaseURL: 'http://192.168.0.50:5000/images/test/',
-            locationHash: false,
-            galleryTheme: {
-                thumbnail: {
-                    titleShadow: 'none',
-                    descriptionShadow: 'none'
-                }
-            },
-            thumbnailLabel: {
-                display: false,
-                position: 'overImageOnBottom',
-                hideIcons: true,
-                titleFontSize: '1em',
-                align: 'left',
-                titleMultiLine: true
-            }, 
-            galleryMaxRows: 1,
-            gallerySorting: 'random',
-            thumbnailWidth: 'auto',
-            thumbnailHeight: '150',
-            galleryDisplayMode: 'rows',
-            galleryLastRowFull: true,
-            navigationFontSize: '1.0em',
-            galleryPaginationMode: 'rectangles',
-            thumbnailToolbarImage: {
-                topRight: '',
-                bottomRight: ''
-            },
-            thumbnailBorderVertical: 0,       
-            thumbnailBorderHorizontal: 0,
-            thumbnailDisplayTransition: 'randomScale'
-        });
     });
 </script>
 

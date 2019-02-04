@@ -15,10 +15,10 @@ namespace Bazaar
         {
             var builder = WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
-                .UseKestrel(options =>
-                {
-                    options.Listen(IPAddress.Parse("192.168.0.50"), 5000);
-                })
+//                .UseKestrel(options =>
+//                {
+//                    options.Listen(IPAddress.Parse("192.168.0.50"), 5000);
+//                })
                 .Build();
             return builder;
         }
