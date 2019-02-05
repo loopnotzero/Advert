@@ -360,9 +360,25 @@ namespace Bazaar.Controllers
 
                 await _postsManager.CreatePostAsync(post);
 
-                return Ok(new
+                return Ok(new PostViewModel
                 {
-                    returnUrl = Url.Action("GetPostContent", "Posts", new {postId = post._id})
+                    Hidden = post.Hidden,
+                    IsOwner = post.ProfileId.Equals(profile._id),
+                    PostId = post._id.ToString(),
+                    Text = post.Text,
+                    Title = post.Title,
+                    Currency = post.Currency,
+                    Location = post.Location,
+                    CreatedAt = post.CreatedAt.Humanize(),
+                    ViewsCount = ((double) post.ViewsCount).ToMetric(),
+                    LikesCount = ((double) post.LikesCount).ToMetric(),
+                    SharesCount = ((double) 0).ToMetric(),
+                    CommentsCount = ((double) post.CommentsCount).ToMetric(),
+                    ProfileId = post.ProfileId.ToString(),
+                    ProfileName = post.ProfileName,
+                    ProfileImagePath = post.ProfileImagePath,
+                    Price = post.Price,
+                    Tags = post.Tags,
                 });
             }
             catch (Exception e)
@@ -825,8 +841,32 @@ namespace Bazaar.Controllers
         [HttpPost]
         [Authorize]
         [Route("/Posts/AddPostPhotosAsync")]
-        public async Task<IActionResult> AddProfilePhotoAsync(IFormFile[] file)
+        public async Task<IActionResult> AddPostPhotosAsync([FromQuery(Name = "postId")] string postId, IFormFile[] files)
         {
+            if (!HttpContext.User.Identity.IsAuthenticated)
+            {
+                return Unauthorized();
+            }
+            
+            var profile = await _profilesManager.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
+
+            var photoDir = $"{_hostingEnvironment.WebRootPath}/images/profiles/{profile._id.ToString()}/post/{postId}/photos/";
+
+            if (!Directory.Exists(photoDir))
+            {
+                Directory.CreateDirectory(photoDir);
+            }
+
+            foreach (var file in files)
+            {
+                using (var stream = new FileStream($"{photoDir}{Path.GetFileNameWithoutExtension(file.FileName)}.jpg", FileMode.Create))
+                {
+                    await file.CopyToAsync(stream);
+                } 
+            }
+            
+            
+            
             return Ok();
         }
     }

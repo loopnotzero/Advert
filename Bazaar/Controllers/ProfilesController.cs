@@ -29,7 +29,7 @@ namespace Bazaar.Controllers
     {
         private readonly ILogger _logger;
         private readonly IConfiguration _configuration;
-        private readonly IHostingEnvironment _hostEnv;
+        private readonly IHostingEnvironment _hostingEnvironment;
         private readonly PostsManager<MongoDbPost> _postsManager;
         private readonly PostCommentsManager<MongoDbPostComment> _postCommentsManager;
         private readonly ProfilesManager<MongoDbProfile> _profilesManager;
@@ -39,7 +39,7 @@ namespace Bazaar.Controllers
         public ProfilesController(
             ILoggerFactory loggerFactory, 
             IConfiguration configuration,
-            IHostingEnvironment hostEnv, 
+            IHostingEnvironment hostingEnvironment, 
             PostsManager<MongoDbPost> postsManager,
             ProfilesManager<MongoDbProfile> profilesManager, PostsVotesManager<MongoDbPostVote> postsVotesManager,
             PostCommentsManager<MongoDbPostComment> postCommentsManager,
@@ -47,7 +47,7 @@ namespace Bazaar.Controllers
         {
             _logger = loggerFactory.CreateLogger<ProfilesController>();
             _configuration = configuration;
-            _hostEnv = hostEnv;
+            _hostingEnvironment = hostingEnvironment;
             _postsManager = postsManager;
             _profilesManager = profilesManager;
             _postsVotesManager = postsVotesManager;
@@ -428,8 +428,7 @@ namespace Bazaar.Controllers
         [HttpPost]
         [Authorize]
         [Route("/Profile/AddProfilePhotoAsync")]
-        public async Task<IActionResult> AddProfilePhotoAsync([FromQuery(Name = "profileId")] string profileId,
-            IFormFile file)
+        public async Task<IActionResult> AddProfilePhotoAsync([FromQuery(Name = "profileId")] string profileId, IFormFile file)
         {
             var profile = await _profilesManager.FindProfileByIdAsync(ObjectId.Parse(profileId));
 
@@ -447,7 +446,7 @@ namespace Bazaar.Controllers
                 });
             }
 
-            var photoDir = $"{_hostEnv.WebRootPath}/images/profiles/{profile._id.ToString()}/photo/";
+            var photoDir = $"{_hostingEnvironment.WebRootPath}/images/profiles/{profile._id.ToString()}/photo/";
 
             if (!Directory.Exists(photoDir))
             {

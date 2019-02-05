@@ -21,6 +21,7 @@
 </head>
 <body id="body" data-ma-theme="advert" style="display: none">
 @RenderBody()
+@Html.AntiForgeryToken()
 </body>
 </html>
 <script src="~/js/popper.min.js"></script>
@@ -40,10 +41,11 @@
 <script>
     var turndown = new TurndownService();
     var textEditor = {};
-
-    if (document.getElementById("edit__profile-dropzone")) {
-        Dropzone.autoDiscover = false;
-        var dropzone = new Dropzone("#edit__profile-dropzone",
+    
+    Dropzone.autoDiscover = false;
+    
+    if (document.getElementById("edit__profile--add__photo")) {
+        var addProfilePhoto = new Dropzone("#edit__profile--add__photo",
             {
                 url: `/Profile/AddProfilePhotoAsync?profileId=${$("#edit__profile--profile_id").val()}`,
                 maxFiles: 1,
@@ -187,6 +189,7 @@
         };
 
         var token = $("input[name=__RequestVerificationToken]").val();
+        console.log(`Token: ${token}`);
 
         var headers = {};
 
@@ -246,35 +249,9 @@
     }
 
     function onAddPostClick() {
-        $("#add-post__post").off("click").click(function() {
-            var post = {
-                text: textEditor["add-post__text--editor"].options.previewRender(textEditor["add-post__text--editor"]
-                    .value()),
-                title: $("#add__post--title").val(),
-                price: $("#add__post--price").val(),
-                location: $("#add__post--location").val(),
-                currency: $('#add__post--currency option:selected').text()
-            };
-            createPostAsync(post,
-                function(response) {
-                    console.log("Close add post modal window");
-                    $("#add__post--modal").modal('toggle');
-                    console.log(`Redirect to URL: ${response.returnUrl}`);
-                    window.location.replace(response.returnUrl);
-                },
-                function(jqXhr, textStatus, errorThrown) {
-                    alert("Error");
-                });
-        });
-        $("#add-post__close").off("click").click(function() {
-            if (textEditor["add-post__text--editor"].isFullscreenActive()) {
-                textEditor["add-post__text--editor"].toggleFullScreen();
-            }
-        });
-
-        var dz = new Dropzone("#add__post-photos",
+        var addPostPhotos = new Dropzone("#add__post--add__photos",
             {
-                url: `/Posts/AddPostPhotosAsync`,
+                url: "/Posts/AddPostPhotosAsync",
                 maxFiles: 10,
                 acceptedFiles: "image/*",
                 autoProcessQueue: false,
@@ -297,6 +274,32 @@
                         });
                 }
             });
+        
+        $("#add__post--post").off("click").click(function() {
+            var post = {
+                text: textEditor["add__post--text__editor"].options.previewRender(textEditor["add__post--text__editor"].value()),
+                title: $("#add__post--title").val(),
+                price: $("#add__post--price").val(),
+                location: $("#add__post--location").val(),
+                currency: $('#add__post--currency option:selected').text()
+            };
+            createPostAsync(post,
+                function(response) {
+                    addPostPhotos.url = `/Posts/AddPostPhotosAsync?postId=${response.postId}`;
+                    addPostPhotos.processQueue();
+                    $("#add__post--modal").modal('toggle');
+                    window.location.replace(`/Posts?postId=${response.postId}`);
+                },
+                function(jqXhr, textStatus, errorThrown) {
+                    alert("Error");
+                });
+        });
+        
+        $("#add-post__close").off("click").click(function() {
+            if (textEditor["add__post--text__editor"].isFullscreenActive()) {
+                textEditor["add__post--text__editor"].toggleFullScreen();
+            }
+        });        
     }
 
     function onVotePostClick(postId, voteType) {
@@ -330,14 +333,14 @@
                 $("#edit-post__price").val(response.price);
                 $("#edit__post--location").val(response.location);
                 $('#edit__post--currency').val(response.currency).trigger('change');
-                textEditor["edit-post__text--editor"].value(turndown.turndown(response.text));
+                textEditor["edit__post--text__editor"].value(turndown.turndown(response.text));
             },
             function(jqXhr, textStatus, errorThrown) {
                 alert("Error");
             });
         $("#edit-post__save").off("click").click(function() {
             var post = {
-                text: textEditor["edit-post__text--editor"].options.previewRender(textEditor["edit-post__text--editor"]
+                text: textEditor["edit__post--text__editor"].options.previewRender(textEditor["edit__post--text__editor"]
                     .value()),
                 title: $("#edit-post__title").val(),
                 price: $("#edit-post__price").val(),
@@ -366,8 +369,8 @@
                 });
         });
         $("#edit-post__close").off("click").click(function() {
-            if (textEditor["edit-post__text--editor"].isFullscreenActive()) {
-                textEditor["edit-post__text--editor"].toggleFullScreen();
+            if (textEditor["edit__post--text__editor"].isFullscreenActive()) {
+                textEditor["edit__post--text__editor"].toggleFullScreen();
             }
         });
     }
@@ -478,7 +481,7 @@
             commentId,
             function(response) {
                 console.log(`Set comment text: ${response.text}`);
-                textEditor["edit-comment__text--editor"].value(turndown.turndown(response.text));
+                textEditor["edit__comment--text__editor"].value(turndown.turndown(response.text));
             },
             function(jqXhr, textStatus, errorThrown) {
                 alert("Error");
@@ -486,8 +489,7 @@
 
         $(`#edit-comment__save`).off("click").click(function() {
             var postComment = {
-                text: textEditor["edit-comment__text--editor"].options.previewRender(
-                    textEditor["edit-comment__text--editor"].value()),
+                text: textEditor["edit__comment--text__editor"].options.previewRender(textEditor["edit__comment--text__editor"].value())
             };
             updatePostCommentAsync(postId,
                 commentId,
@@ -509,8 +511,9 @@
             $("#edit-comment__modal").modal('toggle');
         });
         $("#edit-comment__close").off("click").click(function() {
-            if (textEditor["edit-comment__text--editor"].isFullscreenActive())
-                textEditor["edit-comment__text--editor"].toggleFullScreen();
+            if (textEditor["edit__comment--text__editor"].isFullscreenActive()) {
+                textEditor["edit__comment--text__editor"].toggleFullScreen();
+            }
         });
     }
 
@@ -573,14 +576,14 @@
                                     } ${profile.phoneNumber}</span>`);
                         }
 
-                        if (!dropzone.getAcceptedFiles().length) {
+                        if (!addProfilePhoto.getAcceptedFiles().length) {
                             $("#edit__profile--modal").modal('toggle');
                         } else {
                             var target = toBlob($("#edit__profile--photo").cropper('getCroppedCanvas').toDataURL());
                             target.name = "profile__photo.jpg";
-                            dropzone.removeFile(dropzone.getAcceptedFiles()[0]);
-                            dropzone.addFile(target);
-                            dropzone.processQueue();
+                            addProfilePhoto.removeFile(addProfilePhoto.getAcceptedFiles()[0]);
+                            addProfilePhoto.addFile(target);
+                            addProfilePhoto.processQueue();
                         }
                     },
                     function(jqXhr, textStatus, errorThrown) {
@@ -769,8 +772,8 @@
 
         $("#add-comment").click(function() {
             var postId = $("section").attr('id');
-            var text = textEditor["add-comment__text--editor"].options.previewRender(
-                textEditor["add-comment__text--editor"].value());
+            var text = textEditor["add__comment--text__editor"].options.previewRender(
+                textEditor["add__comment--text__editor"].value());
             var comment = {
                 postId: postId,
                 text: text
@@ -787,7 +790,7 @@
                 function(jqXhr, textStatus, errorThrown) {
                     alert("Error");
                 });
-            textEditor["add-comment__text--editor"].value("");
+            textEditor["add__comment--text__editor"].value("");
         });
 
         $("#sign-out__dropdown").click(function(e) {
@@ -808,7 +811,7 @@
             return false;
         });
 
-        $("#add-post__text--editor, #edit-post__text--editor, #add-comment__text--editor, #edit-comment__text--editor")
+        $("#add__post--text__editor, #edit__post--text__editor, #add__comment--text__editor, #edit__comment--text__editor")
             .each(function(index, element) {
                 console.log(`Text editor element id: ${element.id}`);
 
@@ -825,20 +828,20 @@
                 $('#add__post--modal').on('shown.bs.modal',
                     function() {
                         console.log("Add post shown.bs.modal");
-                        textEditor["add-post__text--editor"].codemirror.refresh();
+                        textEditor["add__post--text__editor"].codemirror.refresh();
                     });
 
                 $('#edit-post__modal').on('shown.bs.modal',
                     function() {
                         console.log("Edit post shown.bs.modal");
                         $('#scroll-fix').focus();
-                        textEditor["edit-post__text--editor"].codemirror.refresh();
+                        textEditor["edit__post--text__editor"].codemirror.refresh();
                     });
 
                 $("#edit-comment__modal").on('shown.bs.modal',
                     function() {
                         console.log("Edit comment shown.bs.modal");
-                        textEditor["edit-comment__text--editor"].codemirror.refresh();
+                        textEditor["edit__comment--text__editor"].codemirror.refresh();
                     });
 
                 //Fix for side by side & fullscreen
