@@ -43,16 +43,12 @@
                     <textarea id="add-post__text--editor" class="form-control" style="display: none"></textarea>
                 </div>
 
-                <div class="form-group">
-                    <div id="dropzone">
-                        <form asp-controller="Posts" asp-action="AddPostPhotos" class="form-control dropzone needsclick dz-clickable" id="demo-upload">
-                            <div class="dz-message needsclick">
-                                <img src="~/images/add__photos.jpg"/>
-                                <p>Add up to 10 photos</p>
-                            </div>
-                        </form>
+                <form id="add__post-photos" class="dropzone needsclick dz-clickable">
+                    <div class="dz-message needsclick">
+                        <img src="~/images/add__photos.jpg"/>
+                        <p>Add up to 10 photos</p>
                     </div>
-                </div>
+                </form>
             </div>
             <div class="modal-footer">
                 <button id="add-post__post" type="button" class="btn btn-primary">

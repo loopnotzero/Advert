@@ -822,11 +822,11 @@ namespace Bazaar.Controllers
             }
         }
 
-        [HttpPost("AddImage")]
-        [Route("/Posts/AddPostPhotos")]
-        public async Task<IActionResult> AddPostPhotos(string returnUrl, IFormFile file)
+        [HttpPost]
+        [Authorize]
+        [Route("/Posts/AddPostPhotosAsync")]
+        public async Task<IActionResult> AddProfilePhotoAsync(IFormFile[] file)
         {
-            ViewData["ReturnUrl"] = returnUrl;
             return Ok();
         }
     }
