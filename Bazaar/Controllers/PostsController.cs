@@ -39,11 +39,13 @@ namespace Bazaar.Controllers
         private readonly PostCommentsManager<MongoDbPostComment> _postCommentsManager;
         private readonly PostsViewsCountManager<MongoDbPostViewsCount> _postsViewsCountManager;
         private readonly PostCommentsVotesManager<MongoDbPostCommentVote> _postCommentsVotesManager;
+        private readonly PostsPhotosManager<MongoDbPostPhotos> _postsPhotosManager;
 
         public PostsController(ILoggerFactory loggerFactory, IConfiguration configuration,
             IHostingEnvironment hostingEnvironment, UserManager<MongoDbUser> userManager,
             ProfilesManager<MongoDbProfile> profilesManager, PostsManager<MongoDbPost> postsManager,
             PostsVotesManager<MongoDbPostVote> postsVotesManager,
+            PostsPhotosManager<MongoDbPostPhotos> postsPhotosManager,
             PostCommentsManager<MongoDbPostComment> postCommentsManager,
             PostsViewsCountManager<MongoDbPostViewsCount> postsViewsCountManager,
             PostCommentsVotesManager<MongoDbPostCommentVote> postCommentsVotesManager)
@@ -55,6 +57,7 @@ namespace Bazaar.Controllers
             _postsManager = postsManager;
             _profilesManager = profilesManager;
             _postsVotesManager = postsVotesManager;
+            _postsPhotosManager = postsPhotosManager;
             _postCommentsManager = postCommentsManager;
             _postsViewsCountManager = postsViewsCountManager;
             _postCommentsVotesManager = postCommentsVotesManager;
@@ -857,15 +860,15 @@ namespace Bazaar.Controllers
                 Directory.CreateDirectory(photoDir);
             }
 
+            
+
             foreach (var file in files)
             {
                 using (var stream = new FileStream($"{photoDir}{Path.GetFileNameWithoutExtension(file.FileName)}.jpg", FileMode.Create))
                 {
                     await file.CopyToAsync(stream);
                 } 
-            }
-            
-            
+            }            
             
             return Ok();
         }

@@ -65,7 +65,7 @@ namespace Bazaar
             services.AddScoped<PostsViewsCountManager<MongoDbPostViewsCount>>();
             services.AddScoped<PostCommentsVotesManager<MongoDbPostCommentVote>>(); 
             services.AddScoped<ProfilesManager<MongoDbProfile>>();
-            services.AddScoped<ProfilesPhotosManager<MongoDbProfileImage>>();
+            services.AddScoped<ProfilesPhotosManager<MongoDbProfilePhoto>>();
             
             #endregion
 
@@ -120,10 +120,10 @@ namespace Bazaar
                 return new MongoDbProfilesStore<MongoDbProfile>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
             });
             
-            services.AddTransient<IProfilesPhotosStore<MongoDbProfileImage>>(provider =>
+            services.AddTransient<IProfilesPhotosStore<MongoDbProfilePhoto>>(provider =>
             {
                 var options = provider.GetService<IOptions<MongoDbOptions>>();
-                return new MongoDbProfilesPhotosStore<MongoDbProfileImage>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+                return new MongoDbProfilesPhotosStore<MongoDbProfilePhoto>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
             });
 
             

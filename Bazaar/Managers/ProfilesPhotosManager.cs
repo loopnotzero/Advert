@@ -11,7 +11,7 @@ using MongoDB.Bson;
 
 namespace Bazaar.Managers
 {
-    public class ProfilesPhotosManager<T> : IDisposable where T : IProfileImage
+    public class ProfilesPhotosManager<T> : IDisposable where T : IProfilePhoto
     {
         private bool _disposed;
         

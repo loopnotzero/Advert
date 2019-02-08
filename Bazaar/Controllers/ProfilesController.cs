@@ -34,7 +34,7 @@ namespace Bazaar.Controllers
         private readonly PostCommentsManager<MongoDbPostComment> _postCommentsManager;
         private readonly ProfilesManager<MongoDbProfile> _profilesManager;
         private readonly PostsVotesManager<MongoDbPostVote> _postsVotesManager;
-        private readonly ProfilesPhotosManager<MongoDbProfileImage> _profilesPhotosManager;
+        private readonly ProfilesPhotosManager<MongoDbProfilePhoto> _profilesPhotosManager;
 
         public ProfilesController(
             ILoggerFactory loggerFactory, 
@@ -43,7 +43,7 @@ namespace Bazaar.Controllers
             PostsManager<MongoDbPost> postsManager,
             ProfilesManager<MongoDbProfile> profilesManager, PostsVotesManager<MongoDbPostVote> postsVotesManager,
             PostCommentsManager<MongoDbPostComment> postCommentsManager,
-            ProfilesPhotosManager<MongoDbProfileImage> profilesPhotosManager)
+            ProfilesPhotosManager<MongoDbProfilePhoto> profilesPhotosManager)
         {
             _logger = loggerFactory.CreateLogger<ProfilesController>();
             _configuration = configuration;
@@ -458,7 +458,7 @@ namespace Bazaar.Controllers
                 await file.CopyToAsync(stream);
             }
             
-            var profileImage = new MongoDbProfileImage
+            var profileImage = new MongoDbProfilePhoto
             {
                 ProfileId = profile._id,
                 ImagePath = $"/images/profiles/{profile._id.ToString()}/photo/{Path.GetFileNameWithoutExtension(file.FileName)}.jpg",
