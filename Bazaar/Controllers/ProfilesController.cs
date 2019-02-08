@@ -6,7 +6,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Mime;
 using System.Threading.Tasks;
-using Advert.Managers;
 using Bazaar.Common.Profiles;
 using Bazaar.Managers;
 using Bazaar.Models.Post;
@@ -89,9 +88,9 @@ namespace Bazaar.Controllers
 
                 if (!HttpContext.User.Identity.IsAuthenticated)
                 {
-                    return View(new PostsAggregatorViewModel
+                    return View(new PostsAggregatorModel
                     {
-                        Posts = posts.Select(post => new PostViewModel
+                        Posts = posts.Select(post => new PostModel
                         {
                             Hidden = post.Hidden,
                             PostId = post._id.ToString(),
@@ -109,7 +108,7 @@ namespace Bazaar.Controllers
                             Tags = post.Tags,
                         }),
 
-                        Profile = new ProfileViewModel
+                        Profile = new ProfileModel
                         {
                             Owner = false,
                             Id = profile._id.ToString(),
@@ -149,9 +148,9 @@ namespace Bazaar.Controllers
                     postsVotes = await _postsVotesManager.FindPostsVotesAsync(myProfile._id);
                 }
 
-                return View(new PostsAggregatorViewModel
+                return View(new PostsAggregatorModel
                 {
-                    Posts = posts.Select(post => new PostViewModel
+                    Posts = posts.Select(post => new PostModel
                     {
                         Hidden = post.Hidden,
                         IsOwner = myProfile != null && post.ProfileId.Equals(profile._id) &&
@@ -174,7 +173,7 @@ namespace Bazaar.Controllers
                         Tags = post.Tags,
                     }),
 
-                    Profile = new ProfileViewModel
+                    Profile = new ProfileModel
                     {
                         Owner = myProfile != null && profile._id.Equals(myProfile._id),
                         Id = profile._id.ToString(),
@@ -223,9 +222,9 @@ namespace Bazaar.Controllers
 
                 if (!HttpContext.User.Identity.IsAuthenticated)
                 {
-                    return View(new PostsAggregatorViewModel
+                    return View(new PostsAggregatorModel
                     {
-                        Posts = posts.Select(post => new PostViewModel
+                        Posts = posts.Select(post => new PostModel
                         {
                             Hidden = post.Hidden,
                             PostId = post._id.ToString(),
@@ -243,7 +242,7 @@ namespace Bazaar.Controllers
                             Tags = post.Tags,
                         }),
 
-                        Profile = new ProfileViewModel
+                        Profile = new ProfileModel
                         {
                             Owner = false,
                             Id = profile._id.ToString(),
@@ -283,9 +282,9 @@ namespace Bazaar.Controllers
                     postsVotes = await _postsVotesManager.FindPostsVotesAsync(myProfile._id);
                 }
 
-                return View(new PostsAggregatorViewModel
+                return View(new PostsAggregatorModel
                 {
-                    Posts = posts.Select(post => new PostViewModel
+                    Posts = posts.Select(post => new PostModel
                     {
                         Hidden = post.Hidden,
                         IsOwner = myProfile != null && post.ProfileId.Equals(profile._id) &&
@@ -309,7 +308,7 @@ namespace Bazaar.Controllers
                         Tags = post.Tags,
                     }),
 
-                    Profile = new ProfileViewModel
+                    Profile = new ProfileModel
                     {
                         Owner = myProfile != null && profile._id.Equals(myProfile._id),
                         Id = profile._id.ToString(),
@@ -370,9 +369,9 @@ namespace Bazaar.Controllers
 
                 var countryCodes = _configuration.GetSection("CountryCodes").Get<List<CountryCode>>();
 
-                return View(new PostsAggregatorViewModel
+                return View(new PostsAggregatorModel
                 {
-                    Posts = posts?.Select(post => new PostViewModel
+                    Posts = posts?.Select(post => new PostModel
                     {
                         Hidden = post.Hidden,
                         IsOwner = post.ProfileId.Equals(profile._id),
@@ -394,7 +393,7 @@ namespace Bazaar.Controllers
                         Tags = post.Tags,
                     }),
 
-                    Profile = new ProfileViewModel
+                    Profile = new ProfileModel
                     {
                         Owner = myProfile != null &&
                                 profile.NormalizedEmail.Equals(HttpContext.User.Identity.Name.ToUpper()),
@@ -458,20 +457,20 @@ namespace Bazaar.Controllers
                 await file.CopyToAsync(stream);
             }
             
-            var profileImage = new MongoDbProfilePhoto
+            var profilePhoto = new MongoDbProfilePhoto
             {
                 ProfileId = profile._id,
                 ImagePath = $"/images/profiles/{profile._id.ToString()}/photo/{Path.GetFileNameWithoutExtension(file.FileName)}.jpg",
                 CreatedAt = DateTime.UtcNow
             };
 
-            await _profilesPhotosManager.CreateProfileImageAsync(profileImage);
+            await _profilesPhotosManager.CreateProfilePhotoAsync(profilePhoto);
 
-            profile.ImagePath = profileImage.ImagePath;
+            profile.ImagePath = profilePhoto.ImagePath;
 
             await _profilesManager.UpdateProfileAsync(profile);
 
-            return Ok(profileImage);
+            return Ok(profilePhoto);
         }
 
         [HttpPost]
@@ -487,7 +486,7 @@ namespace Bazaar.Controllers
         [Authorize]
         [Route("/Profile/UpdateProfileByIdAsync")]
         public async Task<IActionResult> UpdateProfileByIdAsync([FromQuery(Name = "profileId")] string profileId,
-            [FromBody] ProfileViewModel model)
+            [FromBody] ProfileModel model)
         {
             try
             {

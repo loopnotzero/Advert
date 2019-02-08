@@ -33,6 +33,12 @@ namespace Bazaar.Managers
             Dispose(true);
             GC.SuppressFinalize(this);
         }
+        
+        public async Task CreatePostPhotosAsync(T entity)
+        {
+            ThrowIfDisposed();
+            await _store.CreatePostPhotosAsync(entity, CancellationToken);
+        }    
 
         private void Dispose(bool disposing)
         {

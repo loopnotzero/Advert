@@ -1,6 +1,6 @@
 ﻿namespace Bazaar.Models.Post
 {
-    public class PostViewsCountViewModel
+    public class PostViewsCountModel
     {
         
     }

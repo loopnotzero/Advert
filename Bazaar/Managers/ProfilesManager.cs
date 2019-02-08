@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Bazaar.Common.Posts;
 using Bazaar.Common.Profiles;
 using Bazaar.Common.Stores;
-using Bazaar.MongoDbStorage.Profiles;
-using Bazaar.MongoDbStorage.Stores;
 using Microsoft.AspNetCore.Identity;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
-namespace Advert.Managers
+namespace Bazaar.Managers
 {
     public class ProfilesManager<T> : IDisposable where T : IProfile
     {

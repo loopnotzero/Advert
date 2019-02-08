@@ -1,5 +1,4 @@
-﻿using Advert.Managers;
-using Bazaar.Common.Stores;
+﻿using Bazaar.Common.Stores;
 using Bazaar.MongoDbStorage.Posts;
 using Bazaar.MongoDbStorage.Common;
 using Bazaar.MongoDbStorage.Profiles;
@@ -59,17 +58,67 @@ namespace Bazaar
             
             #region Scoped services
             
-            services.AddScoped<PostsManager<MongoDbPost>>();
-            services.AddScoped<PostsVotesManager<MongoDbPostVote>>();
             services.AddScoped<PostCommentsManager<MongoDbPostComment>>();
-            services.AddScoped<PostsViewsCountManager<MongoDbPostViewsCount>>();
             services.AddScoped<PostCommentsVotesManager<MongoDbPostCommentVote>>(); 
+            services.AddScoped<PostsManager<MongoDbPost>>();
+            services.AddScoped<PostsPhotosManager<MongoDbPostPhotos>>();
+            services.AddScoped<PostsViewsCountManager<MongoDbPostViewsCount>>();
+            services.AddScoped<PostsVotesManager<MongoDbPostVote>>();
             services.AddScoped<ProfilesManager<MongoDbProfile>>();
             services.AddScoped<ProfilesPhotosManager<MongoDbProfilePhoto>>();
             
             #endregion
 
             #region Transient services
+            
+
+            services.AddTransient<IPostCommentsVotesStore<MongoDbPostCommentVote>>(provider =>
+            {
+                var options = provider.GetService<IOptions<MongoDbOptions>>();
+                return new MongoDbPostCommentsVotesStore<MongoDbPostCommentVote>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+            });
+                       
+            services.AddTransient<IPostsCommentsStore<MongoDbPostComment>>(provider =>
+            {
+                var options = provider.GetService<IOptions<MongoDbOptions>>();
+                return new MongoDbPostsCommentsStore<MongoDbPostComment>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+            });
+            
+            services.AddTransient<IPostsPhotosStore<MongoDbPostPhotos>>(provider =>
+            {
+                var options = provider.GetService<IOptions<MongoDbOptions>>();
+                return new MongoDbPostsPhotosStore<MongoDbPostPhotos>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+            });
+            
+            services.AddTransient<IPostsStore<MongoDbPost>>(provider =>
+            {
+                var options = provider.GetService<IOptions<MongoDbOptions>>();
+                return new MongoDbPostsStore<MongoDbPost>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+            });
+                       
+            services.AddTransient<IPostsViewCountStore<MongoDbPostViewsCount>>(provider =>
+            {
+                var options = provider.GetService<IOptions<MongoDbOptions>>();
+                return new MongoDbPostsViewCountStore<MongoDbPostViewsCount>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+            });
+              
+            services.AddTransient<IPostsVotesStore<MongoDbPostVote>>(provider =>
+            {
+                var options = provider.GetService<IOptions<MongoDbOptions>>();
+                return new MongoDbPostsVotesStore<MongoDbPostVote>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+            });
+            
+            services.AddTransient<IProfilesPhotosStore<MongoDbProfilePhoto>>(provider =>
+            {
+                var options = provider.GetService<IOptions<MongoDbOptions>>();
+                return new MongoDbProfilesPhotosStore<MongoDbProfilePhoto>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+            });
+  
+            services.AddTransient<IProfilesStore<MongoDbProfile>>(provider =>
+            {
+                var options = provider.GetService<IOptions<MongoDbOptions>>();
+                return new MongoDbProfilesStore<MongoDbProfile>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+            });
             
             services.AddTransient<IRoleStore<MongoDbRole>>(provider =>
             {
@@ -82,54 +131,9 @@ namespace Bazaar
                 var options = provider.GetService<IOptions<MongoDbOptions>>();
                 return new MongoDbUserStore<MongoDbUser>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
             });
-          
-            services.AddTransient<IPostsStore<MongoDbPost>>(provider =>
-            {
-                var options = provider.GetService<IOptions<MongoDbOptions>>();
-                return new MongoDbPostsStore<MongoDbPost>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
-            });
-             
-            services.AddTransient<IPostsVotesStore<MongoDbPostVote>>(provider =>
-            {
-                var options = provider.GetService<IOptions<MongoDbOptions>>();
-                return new MongoDbPostsVotesStore<MongoDbPostVote>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
-            });
-            
-            
-            services.AddTransient<IPostsCommentsStore<MongoDbPostComment>>(provider =>
-            {
-                var options = provider.GetService<IOptions<MongoDbOptions>>();
-                return new MongoDbPostsCommentsStore<MongoDbPostComment>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
-            });
-
-            services.AddTransient<IPostsViewCountStore<MongoDbPostViewsCount>>(provider =>
-            {
-                var options = provider.GetService<IOptions<MongoDbOptions>>();
-                return new MongoDbPostsViewCountStore<MongoDbPostViewsCount>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
-            });
-            
-            services.AddTransient<IPostCommentsVotesStore<MongoDbPostCommentVote>>(provider =>
-            {
-                var options = provider.GetService<IOptions<MongoDbOptions>>();
-                return new MongoDbPostCommentsVotesStore<MongoDbPostCommentVote>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
-            });
-  
-            services.AddTransient<IProfilesStore<MongoDbProfile>>(provider =>
-            {
-                var options = provider.GetService<IOptions<MongoDbOptions>>();
-                return new MongoDbProfilesStore<MongoDbProfile>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
-            });
-            
-            services.AddTransient<IProfilesPhotosStore<MongoDbProfilePhoto>>(provider =>
-            {
-                var options = provider.GetService<IOptions<MongoDbOptions>>();
-                return new MongoDbProfilesPhotosStore<MongoDbProfilePhoto>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
-            });
-
             
             services.AddTransient<IUserValidator<MongoDbUser>, AdvertUserValidator<MongoDbUser>>();
-               
-            
+       
             #endregion
             
             #region Identity services

@@ -40,16 +40,16 @@ namespace Bazaar.Managers
             GC.SuppressFinalize(this);
         }
 
-        public async Task CreateProfileImageAsync(T entity)
+        public async Task CreateProfilePhotoAsync(T entity)
         {
             ThrowIfDisposed();
-            await Store.CreateProfileImageAsync(entity, CancellationToken);
+            await Store.CreateProfilePhotoAsync(entity, CancellationToken);
         }      
 
-        public async Task<T> GetProfileImageByProfileIdAsync(ObjectId profileId)
+        public async Task<T> GetProfilePhotoByProfileIdAsync(ObjectId profileId)
         {
             ThrowIfDisposed();          
-            return await Store.GetProfileImageByProfileIdAsync(profileId, CancellationToken);
+            return await Store.GetProfilePhotoByProfileIdAsync(profileId, CancellationToken);
         }
         
         private void Dispose(bool disposing)

@@ -2,7 +2,7 @@
 
 namespace Bazaar.Models.Post
 {
-    public class PostViewModel
+    public class PostModel
     {     
         public bool Hidden { get; set; }
         public bool IsOwner { get; set; }

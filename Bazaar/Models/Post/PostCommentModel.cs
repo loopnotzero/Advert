@@ -2,7 +2,7 @@
 
 namespace Bazaar.Models.Post
 {
-    public class PostCommentViewModel
+    public class PostCommentModel
     {
         public bool IsVoted { get; set; }
         public bool IsOwner { get; set; }
@@ -15,6 +15,6 @@ namespace Bazaar.Models.Post
         public string ProfileId { get; set; }
         public string ProfileName { get; set; }
         public string ProfileImagePath { get; set; }
-        public List<PostCommentViewModel> Comments { get; set; }
+        public List<PostCommentModel> Comments { get; set; }
     }
 }

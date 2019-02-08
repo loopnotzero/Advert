@@ -5,7 +5,7 @@ using Bazaar.Models.Settings;
 
 namespace Bazaar.Models.Profiles
 {
-    public class ProfileViewModel
+    public class ProfileModel
     {
         public bool Owner { get; set; }
         public string Id { get; set; }
