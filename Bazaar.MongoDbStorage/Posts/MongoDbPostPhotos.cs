@@ -1,6 +1,8 @@
+using Bazaar.Common.Posts;
+
 namespace Bazaar.MongoDbStorage.Posts
 {
-    public class MongoDbPostPhotos
+    public class MongoDbPostPhotos : IPostPhotos
     {
         
     }

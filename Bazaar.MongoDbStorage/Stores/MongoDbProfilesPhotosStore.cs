@@ -8,7 +8,7 @@ using MongoDB.Driver;
 
 namespace Bazaar.MongoDbStorage.Stores
 {
-    public class MongoDbProfilesPhotosStore<T> : IProfilesPhotosStore<T> where T : IProfileImage
+    public class MongoDbProfilesPhotosStore<T> : IProfilesPhotosStore<T> where T : IProfilePhoto
     {
         private readonly IMongoCollection<T> _collection;
       

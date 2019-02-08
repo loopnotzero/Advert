@@ -6,9 +6,9 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Bazaar.MongoDbStorage.Profiles
 {
-    public class MongoDbProfileImage : IProfileImage
+    public class MongoDbProfilePhoto : IProfilePhoto
     {
-        public MongoDbProfileImage()
+        public MongoDbProfilePhoto()
         {
             Id = ObjectId.GenerateNewId();
             //Create indeces
