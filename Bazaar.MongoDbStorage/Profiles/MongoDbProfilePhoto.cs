@@ -10,11 +10,11 @@ namespace Bazaar.MongoDbStorage.Profiles
     {
         public MongoDbProfilePhoto()
         {
-            Id = ObjectId.GenerateNewId();
+            _id = ObjectId.GenerateNewId();
             //Create indeces
         }
         
-        public ObjectId Id { get; set; }
+        public ObjectId _id { get; set; }
         public ObjectId ProfileId { get; set; }  
         public string ImagePath { get; set; }
         public DateTime CreatedAt { get; set; }

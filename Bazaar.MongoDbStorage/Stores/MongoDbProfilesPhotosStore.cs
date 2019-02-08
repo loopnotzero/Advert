@@ -32,7 +32,7 @@ namespace Bazaar.MongoDbStorage.Stores
             
         }
         
-        public async Task CreateProfileImageAsync(T entity, CancellationToken cancellationToken)
+        public async Task CreateProfilePhotoAsync(T entity, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
  
@@ -42,15 +42,14 @@ namespace Bazaar.MongoDbStorage.Stores
             }, cancellationToken);
         }
 
-        public async Task<T> GetProfileImageById(ObjectId imageId, CancellationToken cancellationToken)
+        public async Task<T> GetProfilePhotoById(ObjectId imageId, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.Id, imageId), cancellationToken: cancellationToken);
+            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x._id, imageId), cancellationToken: cancellationToken);
             return await cursor.FirstAsync(cancellationToken);
         }
 
-
-        public async Task<T> GetProfileImageByProfileIdAsync(ObjectId profileId, CancellationToken cancellationToken)
+        public async Task<T> GetProfilePhotoByProfileIdAsync(ObjectId profileId, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.ProfileId, profileId), cancellationToken: cancellationToken);

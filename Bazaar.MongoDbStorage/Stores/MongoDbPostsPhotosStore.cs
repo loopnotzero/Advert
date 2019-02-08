@@ -1,3 +1,5 @@
+using System.Threading;
+using System.Threading.Tasks;
 using Bazaar.Common.Posts;
 using Bazaar.Common.Stores;
 using Bazaar.MongoDbStorage.Common;
@@ -21,6 +23,11 @@ namespace Bazaar.MongoDbStorage.Stores
 //                bsonClassMap.AutoMap();
 //                bsonClassMap.MapCreator(x => new MongoDbPost());
 //            });
+        }
+
+        public Task CreatePostPhotosAsync(T entity, CancellationToken cancellationToken)
+        {
+            throw new System.NotImplementedException();
         }
 
         public void Dispose()
