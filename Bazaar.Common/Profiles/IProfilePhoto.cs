@@ -5,7 +5,7 @@ namespace Bazaar.Common.Profiles
 {
     public interface IProfilePhoto
     {
-        ObjectId Id { get; set; }
+        ObjectId _id { get; set; }
         ObjectId ProfileId { get; set; }  
         string ImagePath { get; set; }
         DateTime CreatedAt { get; set; }
