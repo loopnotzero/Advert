@@ -3,7 +3,7 @@ using MongoDB.Bson;
 
 namespace Bazaar.Common.Profiles
 {
-    public interface IProfileImage
+    public interface IProfilePhoto
     {
         ObjectId Id { get; set; }
         ObjectId ProfileId { get; set; }  

@@ -7,7 +7,7 @@ using MongoDB.Bson;
 
 namespace Bazaar.Common.Stores
 {
-    public interface IProfilesPhotosStore<T> : IDisposable where T : IProfileImage
+    public interface IProfilesPhotosStore<T> : IDisposable where T : IProfilePhoto
     {
         Task CreateProfileImageAsync(T entity, CancellationToken cancellationToken);
         Task<T> GetProfileImageById(ObjectId imageId, CancellationToken cancellationToken);
