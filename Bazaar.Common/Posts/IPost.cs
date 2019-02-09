@@ -20,7 +20,6 @@ namespace Bazaar.Common.Posts
         string Currency { get; set; }
         string ProfileName { get; set; }
         string ProfileImagePath { get; set; }
-        string NormalizedProfileName { get; set; }
         decimal Price { get; set; }
         ObjectId ProfileId { get; set; }
         DateTime CreatedAt { get; set; }

@@ -11,9 +11,9 @@ namespace Bazaar.Common.Posts
         string Text { get; set; }  
         string ProfileName { get; set; }
         string ProfileImagePath { get; set; }
+        ObjectId PostId { get; set; }
         ObjectId ReplyTo { get; set; }
         ObjectId ProfileId { get; set; }
-        ObjectId PostId { get; set; }
         DateTime CreatedAt { get; set; }
         DateTime? UpdatedAt { get; set; }
         DateTime? DeletedAt { get; set; }

@@ -33,8 +33,6 @@ namespace Bazaar.MongoDbStorage.Stores
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            entity.NormalizedProfileName = entity.NormalizedProfileName ?? entity.ProfileName.ToUpper();
-            
             await _collection.InsertOneAsync(entity, new InsertOneOptions
             {
                 BypassDocumentValidation = false
