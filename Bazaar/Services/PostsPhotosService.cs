@@ -1,17 +1,14 @@
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Bazaar.Common.Posts;
 using Bazaar.Common.Stores;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
-using MongoDB.Bson;
-using MongoDB.Driver;
 
-namespace Bazaar.Managers
+namespace Bazaar.Services
 {
-    public class PostsPhotosManager<T> : IDisposable where T : IPostPhotos
+    public class PostsPhotosService<T> : IDisposable where T : IPostPhoto
     {      
         private bool _disposed;    
         
@@ -21,10 +18,10 @@ namespace Bazaar.Managers
 
         protected virtual CancellationToken CancellationToken => CancellationToken.None;
 
-        public PostsPhotosManager(IPostsPhotosStore<T> store, ILoggerFactory loggerFactory, ILookupNormalizer keyNormalizer)
+        public PostsPhotosService(IPostsPhotosStore<T> store, ILoggerFactory loggerFactory, ILookupNormalizer keyNormalizer)
         {
             _store = store ?? throw new ArgumentNullException(nameof(store));
-            _logger = loggerFactory.CreateLogger<PostsPhotosManager<T>>();
+            _logger = loggerFactory.CreateLogger<PostsPhotosService<T>>();
             _keyNormalizer = keyNormalizer;
         }
      
@@ -37,7 +34,7 @@ namespace Bazaar.Managers
         public async Task CreatePostPhotosAsync(T entity)
         {
             ThrowIfDisposed();
-            await _store.CreatePostPhotosAsync(entity, CancellationToken);
+            await _store.CreatePostPhotoAsync(entity, CancellationToken);
         }    
 
         private void Dispose(bool disposing)

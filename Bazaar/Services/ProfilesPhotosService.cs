@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Bazaar.Common;
-using Bazaar.Common.Posts;
 using Bazaar.Common.Profiles;
 using Bazaar.Common.Stores;
-using Bazaar.MongoDbStorage.Stores;
 using Microsoft.AspNetCore.Identity;
 using MongoDB.Bson;
 
-namespace Bazaar.Managers
+namespace Bazaar.Services
 {
-    public class ProfilesPhotosManager<T> : IDisposable where T : IProfilePhoto
+    public class ProfilesPhotosService<T> : IDisposable where T : IProfilePhoto
     {
         private bool _disposed;
         
@@ -28,7 +25,7 @@ namespace Bazaar.Managers
 
         protected virtual CancellationToken CancellationToken => CancellationToken.None;
                
-        public ProfilesPhotosManager(IProfilesPhotosStore<T> store, ILookupNormalizer keyNormalizer)
+        public ProfilesPhotosService(IProfilesPhotosStore<T> store, ILookupNormalizer keyNormalizer)
         {
             Store = store ?? throw new ArgumentNullException(nameof(store));
             KeyNormalizer = keyNormalizer;

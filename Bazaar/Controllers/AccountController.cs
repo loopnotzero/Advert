@@ -4,10 +4,10 @@ using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Bazaar.Managers;
 using Bazaar.MongoDbStorage.Profiles;
 using Bazaar.MongoDbStorage.Users;
 using Bazaar.Models.Account;
+using Bazaar.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -22,20 +22,20 @@ namespace Bazaar.Controllers
         private readonly IHostingEnvironment _hostEnv;
         private readonly UserManager<MongoDbUser> _userManager;
         private readonly SignInManager<MongoDbUser> _signInManager;
-        private readonly ProfilesManager<MongoDbProfile> _profilesManager;
+        private readonly ProfilesService<MongoDbProfile> _profilesService;
         
         public AccountController(
             ILoggerFactory loggerFactory, 
             IHostingEnvironment hostEnv, 
             UserManager<MongoDbUser> userManager, 
             SignInManager<MongoDbUser> signInManager,
-            ProfilesManager<MongoDbProfile> profilesManager)
+            ProfilesService<MongoDbProfile> profilesService)
         {
             _logger = loggerFactory.CreateLogger<AccountController>();
             _hostEnv = hostEnv;
             _userManager = userManager;
             _signInManager = signInManager;
-            _profilesManager = profilesManager;
+            _profilesService = profilesService;
         }
 
         [HttpGet]
@@ -224,7 +224,7 @@ namespace Bazaar.Controllers
                     });
                 }
                 
-                var profile = await _profilesManager.FindProfileByNormalizedEmailOrDefaultAsync(model.Email, null);
+                var profile = await _profilesService.FindProfileByNormalizedEmailOrDefaultAsync(model.Email, null);
 
                 if (profile != null)
                 {
@@ -274,7 +274,7 @@ namespace Bazaar.Controllers
 
                 System.IO.File.Copy($"{_hostEnv.WebRootPath}/images/profile__photo.jpg", photoDir);
   
-                await _profilesManager.CreateProfileAsync(myProfile);
+                await _profilesService.CreateProfileAsync(myProfile);
 
                 return Ok(new ErrorModel
                 {

@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Bazaar.Common;
 using Bazaar.Common.Posts;
 using Bazaar.Common.Stores;
-using Bazaar.MongoDbStorage.Stores;
 using MongoDB.Bson;
 
-namespace Bazaar.Managers
+namespace Bazaar.Services
 {
-    public class PostsViewsCountManager<T> : IDisposable where T : IPostViewsCount
+    public class PostsViewsCountService<T> : IDisposable where T : IPostViewsCount
     {
         private bool _disposed;
 
@@ -21,7 +19,7 @@ namespace Bazaar.Managers
         /// <value>The persistence store the manager operates over.</value>
         protected internal IPostsViewCountStore<T> Store { get; set; }
 
-        public PostsViewsCountManager(IPostsViewCountStore<T> store)
+        public PostsViewsCountService(IPostsViewCountStore<T> store)
         {
             Store = store ?? throw new ArgumentNullException(nameof(store));
         }

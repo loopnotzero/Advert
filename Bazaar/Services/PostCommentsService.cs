@@ -7,9 +7,9 @@ using Bazaar.Common.Stores;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
-namespace Bazaar.Managers
+namespace Bazaar.Services
 {
-    public class PostCommentsManager<T> : IDisposable where T : IPostComment
+    public class PostCommentsService<T> : IDisposable where T : IPostComment
     {
         private bool _disposed;
         
@@ -21,7 +21,7 @@ namespace Bazaar.Managers
         /// <value>The persistence store the manager operates over.</value>
         protected internal IPostsCommentsStore<T> Store { get; set; }
         
-        public PostCommentsManager(IPostsCommentsStore<T> store)
+        public PostCommentsService(IPostsCommentsStore<T> store)
         {
             Store = store ?? throw new ArgumentNullException(nameof(store));
         }

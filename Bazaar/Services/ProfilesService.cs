@@ -7,9 +7,9 @@ using Microsoft.AspNetCore.Identity;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
-namespace Bazaar.Managers
+namespace Bazaar.Services
 {
-    public class ProfilesManager<T> : IDisposable where T : IProfile
+    public class ProfilesService<T> : IDisposable where T : IProfile
     {
         private bool _disposed;
 
@@ -26,7 +26,7 @@ namespace Bazaar.Managers
 
         protected virtual CancellationToken CancellationToken => CancellationToken.None;
         
-        public ProfilesManager(IProfilesStore<T> store, ILookupNormalizer keyNormalizer)
+        public ProfilesService(IProfilesStore<T> store, ILookupNormalizer keyNormalizer)
         {
             Store = store ?? throw new ArgumentNullException(nameof(store));
             _keyNormalizer = keyNormalizer;

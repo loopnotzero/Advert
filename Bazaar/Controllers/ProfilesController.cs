@@ -7,12 +7,12 @@ using System.Net;
 using System.Net.Mime;
 using System.Threading.Tasks;
 using Bazaar.Common.Profiles;
-using Bazaar.Managers;
 using Bazaar.Models.Post;
 using Bazaar.Models.Profiles;
 using Bazaar.Models.Settings;
 using Bazaar.MongoDbStorage.Posts;
 using Bazaar.MongoDbStorage.Profiles;
+using Bazaar.Services;
 using Humanizer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -29,29 +29,29 @@ namespace Bazaar.Controllers
         private readonly ILogger _logger;
         private readonly IConfiguration _configuration;
         private readonly IHostingEnvironment _hostingEnvironment;
-        private readonly PostsManager<MongoDbPost> _postsManager;
-        private readonly PostCommentsManager<MongoDbPostComment> _postCommentsManager;
-        private readonly ProfilesManager<MongoDbProfile> _profilesManager;
-        private readonly PostsVotesManager<MongoDbPostVote> _postsVotesManager;
-        private readonly ProfilesPhotosManager<MongoDbProfilePhoto> _profilesPhotosManager;
+        private readonly PostsService<MongoDbPost> _postsService;
+        private readonly PostCommentsService<MongoDbPostComment> _postCommentsService;
+        private readonly ProfilesService<MongoDbProfile> _profilesService;
+        private readonly PostsVotesService<MongoDbPostVote> _postsVotesService;
+        private readonly ProfilesPhotosService<MongoDbProfilePhoto> _profilesPhotosService;
 
         public ProfilesController(
             ILoggerFactory loggerFactory, 
             IConfiguration configuration,
             IHostingEnvironment hostingEnvironment, 
-            PostsManager<MongoDbPost> postsManager,
-            ProfilesManager<MongoDbProfile> profilesManager, PostsVotesManager<MongoDbPostVote> postsVotesManager,
-            PostCommentsManager<MongoDbPostComment> postCommentsManager,
-            ProfilesPhotosManager<MongoDbProfilePhoto> profilesPhotosManager)
+            PostsService<MongoDbPost> postsService,
+            ProfilesService<MongoDbProfile> profilesService, PostsVotesService<MongoDbPostVote> postsVotesService,
+            PostCommentsService<MongoDbPostComment> postCommentsService,
+            ProfilesPhotosService<MongoDbProfilePhoto> profilesPhotosService)
         {
             _logger = loggerFactory.CreateLogger<ProfilesController>();
             _configuration = configuration;
             _hostingEnvironment = hostingEnvironment;
-            _postsManager = postsManager;
-            _profilesManager = profilesManager;
-            _postsVotesManager = postsVotesManager;
-            _postCommentsManager = postCommentsManager;
-            _profilesPhotosManager = profilesPhotosManager;
+            _postsService = postsService;
+            _profilesService = profilesService;
+            _postsVotesService = postsVotesService;
+            _postCommentsService = postCommentsService;
+            _profilesPhotosService = profilesPhotosService;
         }
 
         [HttpGet]
@@ -75,14 +75,14 @@ namespace Bazaar.Controllers
         {
             try
             {
-                IProfile profile = await _profilesManager.FindProfileByNormalizedNameAsync(profileName);
+                IProfile profile = await _profilesService.FindProfileByNormalizedNameAsync(profileName);
 
                 if (profile == null)
                 {
                     return BadRequest();
                 }
 
-                var posts = await _postsManager.FindPostsByProfileIdAsync(profile._id, 0, 100);
+                var posts = await _postsService.FindPostsByProfileIdAsync(profile._id, 0, 100);
 
                 var countryCodes = _configuration.GetSection("CountryCodes").Get<List<CountryCode>>();
 
@@ -137,7 +137,7 @@ namespace Bazaar.Controllers
                 if (HttpContext.User.Identity.IsAuthenticated)
                 {
                     myProfile =
-                        await _profilesManager.FindProfileByNormalizedEmailOrDefaultAsync(
+                        await _profilesService.FindProfileByNormalizedEmailOrDefaultAsync(
                             HttpContext.User.Identity.Name, null);
                 }
 
@@ -145,7 +145,7 @@ namespace Bazaar.Controllers
 
                 if (myProfile != null)
                 {
-                    postsVotes = await _postsVotesManager.FindPostsVotesAsync(myProfile._id);
+                    postsVotes = await _postsVotesService.FindPostsVotesAsync(myProfile._id);
                 }
 
                 return View(new PostsAggregatorModel
@@ -209,14 +209,14 @@ namespace Bazaar.Controllers
         {
             try
             {
-                IProfile profile = await _profilesManager.FindProfileByNormalizedNameAsync(profileName);
+                IProfile profile = await _profilesService.FindProfileByNormalizedNameAsync(profileName);
 
                 if (profile == null)
                 {
                     return BadRequest();
                 }
 
-                var posts = await _postsManager.FindHiddenPostsByProfileIdAsync(profile._id, 0, 100);
+                var posts = await _postsService.FindHiddenPostsByProfileIdAsync(profile._id, 0, 100);
 
                 var countryCodes = _configuration.GetSection("CountryCodes").Get<List<CountryCode>>();
 
@@ -271,7 +271,7 @@ namespace Bazaar.Controllers
                 if (HttpContext.User.Identity.IsAuthenticated)
                 {
                     myProfile =
-                        await _profilesManager.FindProfileByNormalizedEmailOrDefaultAsync(
+                        await _profilesService.FindProfileByNormalizedEmailOrDefaultAsync(
                             HttpContext.User.Identity.Name, null);
                 }
 
@@ -279,7 +279,7 @@ namespace Bazaar.Controllers
 
                 if (myProfile != null)
                 {
-                    postsVotes = await _postsVotesManager.FindPostsVotesAsync(myProfile._id);
+                    postsVotes = await _postsVotesService.FindPostsVotesAsync(myProfile._id);
                 }
 
                 return View(new PostsAggregatorModel
@@ -345,17 +345,17 @@ namespace Bazaar.Controllers
         {
             try
             {
-                IProfile profile = await _profilesManager.FindProfileByNormalizedNameAsync(profileName);
+                IProfile profile = await _profilesService.FindProfileByNormalizedNameAsync(profileName);
 
                 if (profile == null)
                 {
                     return BadRequest();
                 }
 
-                var postsVotes = await _postsVotesManager.FindPostsVotesAsync(profile._id);
+                var postsVotes = await _postsVotesService.FindPostsVotesAsync(profile._id);
 
                 var posts = postsVotes.Count > 0
-                    ? await _postsManager.FindPostsAsync(postsVotes.Select(x => x.PostId).ToList())
+                    ? await _postsService.FindPostsAsync(postsVotes.Select(x => x.PostId).ToList())
                     : null;
 
                 IProfile myProfile = null;
@@ -363,7 +363,7 @@ namespace Bazaar.Controllers
                 if (HttpContext.User.Identity.IsAuthenticated)
                 {
                     myProfile =
-                        await _profilesManager.FindProfileByNormalizedEmailOrDefaultAsync(
+                        await _profilesService.FindProfileByNormalizedEmailOrDefaultAsync(
                             HttpContext.User.Identity.Name, null);
                 }
 
@@ -429,7 +429,7 @@ namespace Bazaar.Controllers
         [Route("/Profile/AddProfilePhotoAsync")]
         public async Task<IActionResult> AddProfilePhotoAsync([FromQuery(Name = "profileId")] string profileId, IFormFile file)
         {
-            var profile = await _profilesManager.FindProfileByIdAsync(ObjectId.Parse(profileId));
+            var profile = await _profilesService.FindProfileByIdAsync(ObjectId.Parse(profileId));
 
             if (!profile.Email.ToUpper().Equals(HttpContext.User.Identity.Name.ToUpper()))
             {
@@ -464,11 +464,11 @@ namespace Bazaar.Controllers
                 CreatedAt = DateTime.UtcNow
             };
 
-            await _profilesPhotosManager.CreateProfilePhotoAsync(profilePhoto);
+            await _profilesPhotosService.CreateProfilePhotoAsync(profilePhoto);
 
             profile.ImagePath = profilePhoto.ImagePath;
 
-            await _profilesManager.UpdateProfileAsync(profile);
+            await _profilesService.UpdateProfileAsync(profile);
 
             return Ok(profilePhoto);
         }
@@ -490,7 +490,7 @@ namespace Bazaar.Controllers
         {
             try
             {
-                var profile = await _profilesManager.FindProfileByIdAsync(ObjectId.Parse(profileId));
+                var profile = await _profilesService.FindProfileByIdAsync(ObjectId.Parse(profileId));
 
                 if (model.Gender != null)
                 {
@@ -511,7 +511,7 @@ namespace Bazaar.Controllers
 
                 profile.PhoneNumber = model.PhoneNumber;
 
-                var result = await _profilesManager.UpdateProfileAsync(profile);
+                var result = await _profilesService.UpdateProfileAsync(profile);
 
                 return Ok(new UpdateResultModel
                 {

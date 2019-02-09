@@ -2,16 +2,14 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Bazaar.Common;
 using Bazaar.Common.Posts;
 using Bazaar.Common.Stores;
-using Bazaar.MongoDbStorage.Stores;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
-namespace Bazaar.Managers
+namespace Bazaar.Services
 {
-    public class PostCommentsVotesManager<T> : IDisposable where T : IPostCommentVote
+    public class PostCommentsVotesService<T> : IDisposable where T : IPostCommentVote
     {
         private bool _disposed;
 
@@ -23,7 +21,7 @@ namespace Bazaar.Managers
         /// <value>The persistence store the manager operates over.</value>
         protected internal IPostCommentsVotesStore<T> Store { get; set; }
 
-        public PostCommentsVotesManager(IPostCommentsVotesStore<T> store)
+        public PostCommentsVotesService(IPostCommentsVotesStore<T> store)
         {
             Store = store ?? throw new ArgumentNullException(nameof(store));
         }

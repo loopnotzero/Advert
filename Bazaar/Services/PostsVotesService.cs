@@ -2,17 +2,15 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Bazaar.Common;
 using Bazaar.Common.Posts;
 using Bazaar.Common.Stores;
-using Bazaar.MongoDbStorage.Stores;
 using Microsoft.AspNetCore.Identity;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
-namespace Bazaar.Managers
+namespace Bazaar.Services
 {
-    public class PostsVotesManager<T> : IDisposable where T : IPostVote
+    public class PostsVotesService<T> : IDisposable where T : IPostVote
     {
         private bool _disposed;
 
@@ -29,7 +27,7 @@ namespace Bazaar.Managers
         /// <value>The persistence store the manager operates over.</value>
         protected internal IPostsVotesStore<T> Store { get; set; }
 
-        public PostsVotesManager(IPostsVotesStore<T> store, ILookupNormalizer keyNormalizer)
+        public PostsVotesService(IPostsVotesStore<T> store, ILookupNormalizer keyNormalizer)
         {
             Store = store ?? throw new ArgumentNullException(nameof(store));
             KeyNormalizer = keyNormalizer;

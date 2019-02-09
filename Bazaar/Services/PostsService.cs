@@ -4,15 +4,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using Bazaar.Common.Posts;
 using Bazaar.Common.Stores;
-using Bazaar.MongoDbStorage.Stores;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
-namespace Bazaar.Managers
+namespace Bazaar.Services
 {
-    public class PostsManager<T> : IDisposable where T : IPost
+    public class PostsService<T> : IDisposable where T : IPost
     {
         private bool _disposed;       
         private readonly ILogger _logger;      
@@ -21,10 +20,10 @@ namespace Bazaar.Managers
 
         protected virtual CancellationToken CancellationToken => CancellationToken.None;
 
-        public PostsManager(IPostsStore<T> store, ILoggerFactory loggerFactory, ILookupNormalizer keyNormalizer)
+        public PostsService(IPostsStore<T> store, ILoggerFactory loggerFactory, ILookupNormalizer keyNormalizer)
         {
             _store = store ?? throw new ArgumentNullException(nameof(store));
-            _logger = loggerFactory.CreateLogger<PostsManager<T>>();
+            _logger = loggerFactory.CreateLogger<PostsService<T>>();
             _keyNormalizer = keyNormalizer;
         }
 

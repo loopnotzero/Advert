@@ -28,15 +28,19 @@ else
                                     @if (!post.Hidden)
                                     {
                                         <span class="dropdown-item" onclick="onPostShowHideClick('@post.PostId')">
-                                            <i class="zmdi zmdi-check zmdi-hc-fw"></i>
-                                            <span id="post-availability__@post.PostId">Hide post</span>
+                                            <span id="post__visible--@post.PostId">
+                                                <i class="zmdi zmdi-eye-off zmdi-hc-fw" style="color: black"></i> 
+                                            </span>
+                                            <span> Hide post</span>
                                         </span>
                                     }
                                     else
                                     {
                                         <span href="" class="dropdown-item" onclick="onPostShowHideClick('@post.PostId')">
-                                            <i class="zmdi zmdi-check zmdi-hc-fw"></i>
-                                            <span id="post-availability__@post.PostId">Show post</span>
+                                            <span id="post__visible--@post.PostId">
+                                                <i class="zmdi zmdi-eye zmdi-hc-fw" style="color: black"></i>
+                                            </span>
+                                            <span> Show post</span>
                                         </span>
                                     }
                                     <a href="" class="dropdown-item" data-placement="top" data-target="#delete-post__modal" data-toggle="modal" onclick="onDeletePostClick('@post.PostId')">

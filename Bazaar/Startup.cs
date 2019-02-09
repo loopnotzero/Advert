@@ -5,7 +5,7 @@ using Bazaar.MongoDbStorage.Profiles;
 using Bazaar.MongoDbStorage.Roles;
 using Bazaar.MongoDbStorage.Stores;
 using Bazaar.MongoDbStorage.Users;
-using Bazaar.Managers;
+using Bazaar.Services;
 using Bazaar.Validators;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -58,14 +58,14 @@ namespace Bazaar
             
             #region Scoped services
             
-            services.AddScoped<PostCommentsManager<MongoDbPostComment>>();
-            services.AddScoped<PostCommentsVotesManager<MongoDbPostCommentVote>>(); 
-            services.AddScoped<PostsManager<MongoDbPost>>();
-            services.AddScoped<PostsPhotosManager<MongoDbPostPhotos>>();
-            services.AddScoped<PostsViewsCountManager<MongoDbPostViewsCount>>();
-            services.AddScoped<PostsVotesManager<MongoDbPostVote>>();
-            services.AddScoped<ProfilesManager<MongoDbProfile>>();
-            services.AddScoped<ProfilesPhotosManager<MongoDbProfilePhoto>>();
+            services.AddScoped<PostCommentsService<MongoDbPostComment>>();
+            services.AddScoped<PostCommentsVotesService<MongoDbPostCommentVote>>(); 
+            services.AddScoped<PostsService<MongoDbPost>>();
+            services.AddScoped<PostsPhotosService<MongoDbPostPhoto>>();
+            services.AddScoped<PostsViewsCountService<MongoDbPostViewsCount>>();
+            services.AddScoped<PostsVotesService<MongoDbPostVote>>();
+            services.AddScoped<ProfilesService<MongoDbProfile>>();
+            services.AddScoped<ProfilesPhotosService<MongoDbProfilePhoto>>();
             
             #endregion
 
@@ -84,10 +84,10 @@ namespace Bazaar
                 return new MongoDbPostsCommentsStore<MongoDbPostComment>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
             });
             
-            services.AddTransient<IPostsPhotosStore<MongoDbPostPhotos>>(provider =>
+            services.AddTransient<IPostsPhotosStore<MongoDbPostPhoto>>(provider =>
             {
                 var options = provider.GetService<IOptions<MongoDbOptions>>();
-                return new MongoDbPostsPhotosStore<MongoDbPostPhotos>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+                return new MongoDbPostsPhotosStore<MongoDbPostPhoto>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
             });
             
             services.AddTransient<IPostsStore<MongoDbPost>>(provider =>

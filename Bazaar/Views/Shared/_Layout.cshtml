@@ -249,7 +249,7 @@
     }
 
     function onAddPostClick() {
-        var addPostPhotos = new Dropzone("#add__post--add__photos",
+        var dzPhotos = new Dropzone("#add__post--add__photos",
             {
                 url: "/Posts/AddPostPhotosAsync",
                 maxFiles: 10,
@@ -285,8 +285,8 @@
             };
             createPostAsync(post,
                 function(response) {
-                    addPostPhotos.url = `/Posts/AddPostPhotosAsync?postId=${response.postId}`;
-                    addPostPhotos.processQueue();
+                    dzPhotos.url = `/Posts/AddPostPhotosAsync?postId=${response.postId}`;
+                    dzPhotos.processQueue();
                     $("#add__post--modal").modal('toggle');
                     window.location.replace(`/Posts?postId=${response.postId}`);
                 },
@@ -609,9 +609,15 @@
                     post,
                     function(response) {
                         if (!post.hidden) {
-                            $(`#post-availability__${postId}`).text("Hide post");
+                            $(`#post__visible--${postId}`)
+                                .html("<i class='zmdi zmdi-eye-off zmdi-hc-fw' style='color: black'>")
+                                .next()
+                                .text(" Hide post");
                         } else {
-                            $(`#post-availability__${postId}`).text("Show post");
+                            $(`#post__visible--${postId}`)
+                                .html("<i class='zmdi zmdi-eye zmdi-hc-fw' style='color: black'>")
+                                .next()
+                                .text(" Show post");
                         }
                         console.log(
                             `MatchedCount: ${response.matchedCount} ModifiedCount: ${response.matchedCount
