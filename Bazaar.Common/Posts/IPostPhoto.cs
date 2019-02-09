@@ -4,13 +4,13 @@ using MongoDB.Bson;
 
 namespace Bazaar.Common.Posts
 {
-    public interface IPostPhotos
+    public interface IPostPhoto
     {
         ObjectId _id { get; set; }
-        ObjectId ProfileId { get; set; }
+        string PhotoPath { get; set; }
+        string IdentityName { get; set; }
         DateTime CreatedAt { get; set; }
         DateTime? UpdatedAt { get; set; }
         DateTime? DeletedAt { get; set; }
-        List<string> ImagePaths { get; set; }
     }
 }
