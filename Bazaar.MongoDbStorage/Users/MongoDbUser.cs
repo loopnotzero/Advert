@@ -14,7 +14,6 @@ namespace Bazaar.MongoDbStorage.Users
             
         [BsonId]
         public string _id { get; set; }   
-
         public int AccessFailedCount { get; set; }
         public bool LockoutEnabled { get; set; }      
         public bool EmailConfirmed { get; set; }        

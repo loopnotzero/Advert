@@ -22,8 +22,7 @@ namespace Bazaar.MongoDbStorage.Profiles
         public string Name { get; set; }    
         public string Email { get; set; }      
         
-        public string Culture { get; set; }
-        
+        public string Culture { get; set; }      
         public string Location { get; set; }
         public string ImagePath { get; set; }
         public string CallingCode { get; set; }
