@@ -4,7 +4,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Net.Mime;
 using System.Threading.Tasks;
 using Bazaar.Common.Profiles;
 using Bazaar.Models.Post;
@@ -21,6 +20,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Png;
 
 namespace Bazaar.Controllers
 {
@@ -30,19 +31,19 @@ namespace Bazaar.Controllers
         private readonly IConfiguration _configuration;
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly PostsService<MongoDbPost> _postsService;
-        private readonly PostCommentsService<MongoDbPostComment> _postCommentsService;
         private readonly ProfilesService<MongoDbProfile> _profilesService;
         private readonly PostsVotesService<MongoDbPostVote> _postsVotesService;
-        private readonly ProfilesPhotosService<MongoDbProfilePhoto> _profilesPhotosService;
+        private readonly PostCommentsService<MongoDbPostComment> _postCommentsService;
 
         public ProfilesController(
-            ILoggerFactory loggerFactory, 
+            ILoggerFactory loggerFactory,
             IConfiguration configuration,
-            IHostingEnvironment hostingEnvironment, 
+            IHostingEnvironment hostingEnvironment,
             PostsService<MongoDbPost> postsService,
-            ProfilesService<MongoDbProfile> profilesService, PostsVotesService<MongoDbPostVote> postsVotesService,
-            PostCommentsService<MongoDbPostComment> postCommentsService,
-            ProfilesPhotosService<MongoDbProfilePhoto> profilesPhotosService)
+            ProfilesService<MongoDbProfile> profilesService, 
+            PostsVotesService<MongoDbPostVote> postsVotesService,
+            PostCommentsService<MongoDbPostComment> postCommentsService 
+        )
         {
             _logger = loggerFactory.CreateLogger<ProfilesController>();
             _configuration = configuration;
@@ -51,7 +52,6 @@ namespace Bazaar.Controllers
             _profilesService = profilesService;
             _postsVotesService = postsVotesService;
             _postCommentsService = postCommentsService;
-            _profilesPhotosService = profilesPhotosService;
         }
 
         [HttpGet]
@@ -75,126 +75,16 @@ namespace Bazaar.Controllers
         {
             try
             {
-                IProfile profile = await _profilesService.FindProfileByNormalizedNameAsync(profileName);
+                var profile = await _profilesService.FindProfileByNormalizedNameOrDefaultAsync(profileName, null);
 
                 if (profile == null)
                 {
                     return BadRequest();
                 }
 
-                var posts = await _postsService.FindPostsByProfileIdAsync(profile._id, 0, 100);
+                var posts = await _postsService.FindPostsByProfileNameAsync(profileName, 0, 100);
 
-                var countryCodes = _configuration.GetSection("CountryCodes").Get<List<CountryCode>>();
-
-                if (!HttpContext.User.Identity.IsAuthenticated)
-                {
-                    return View(new PostsAggregatorModel
-                    {
-                        Posts = posts.Select(post => new PostModel
-                        {
-                            Hidden = post.Hidden,
-                            PostId = post._id.ToString(),
-                            Text = post.Text.Length > 1000 ? post.Text.Substring(0, 1000) + "..." : post.Text,
-                            Title = post.Title,
-                            Currency = post.Currency,
-                            Location = post.Location,
-                            CreatedAt = post.CreatedAt.Humanize(),
-                            ViewsCount = ((double) post.ViewsCount).ToMetric(),
-                            LikesCount = ((double) post.LikesCount).ToMetric(),
-                            SharesCount = ((double) 0).ToMetric(),
-                            CommentsCount = ((double) post.CommentsCount).ToMetric(),
-                            ProfileImagePath = post.ProfileImagePath,
-                            Price = post.Price,
-                            Tags = post.Tags,
-                        }),
-
-                        Profile = new ProfileModel
-                        {
-                            Owner = false,
-                            Id = profile._id.ToString(),
-                            Name = profile.Name,
-                            Email = profile.Email,
-                            Gender = profile.Gender.ToString(),
-                            Location = profile.Location,
-                            Birthday = profile.Birthday?.ToString("dd MMMM yyyy"),
-                            CreatedAt = profile.CreatedAt.Humanize(),
-                            ImagePath = profile.ImagePath,
-                            CallingCode = profile.CallingCode,
-                            PhoneNumber = profile.PhoneNumber,
-                            CountryCodes = countryCodes.Select(x => new CountryCode
-                            {
-                                CountryName = x.CountryName,
-                                CallingCode = x.CallingCode
-                            })
-                        },
-
-                        PlacesApi = _configuration.GetSection("GoogleApiServices").GetValue<string>("PlacesApi"),
-                    });
-                }
-
-                IProfile myProfile = null;
-
-                if (HttpContext.User.Identity.IsAuthenticated)
-                {
-                    myProfile =
-                        await _profilesService.FindProfileByNormalizedEmailOrDefaultAsync(
-                            HttpContext.User.Identity.Name, null);
-                }
-
-                List<MongoDbPostVote> postsVotes = null;
-
-                if (myProfile != null)
-                {
-                    postsVotes = await _postsVotesService.FindPostsVotesAsync(myProfile._id);
-                }
-
-                return View(new PostsAggregatorModel
-                {
-                    Posts = posts.Select(post => new PostModel
-                    {
-                        Hidden = post.Hidden,
-                        IsOwner = myProfile != null && post.ProfileId.Equals(profile._id) &&
-                                  profile._id.Equals(myProfile._id),
-                        IsVoted = postsVotes != null && postsVotes.Any(x => x.PostId.Equals(post._id)),
-                        PostId = post._id.ToString(),
-                        Text = post.Text.Length > 1000 ? post.Text.Substring(0, 1000) + "..." : post.Text,
-                        Title = post.Title,
-                        Currency = post.Currency,
-                        Location = post.Location,
-                        CreatedAt = post.CreatedAt.Humanize(),
-                        ViewsCount = ((double) post.ViewsCount).ToMetric(),
-                        LikesCount = ((double) post.LikesCount).ToMetric(),
-                        SharesCount = ((double) 0).ToMetric(),
-                        CommentsCount = ((double) post.CommentsCount).ToMetric(),
-                        ProfileId = post.ProfileId.ToString(),
-                        ProfileName = post.ProfileName,
-                        ProfileImagePath = post.ProfileImagePath,
-                        Price = post.Price,
-                        Tags = post.Tags,
-                    }),
-
-                    Profile = new ProfileModel
-                    {
-                        Owner = myProfile != null && profile._id.Equals(myProfile._id),
-                        Id = profile._id.ToString(),
-                        Name = profile.Name,
-                        Email = profile.Email,
-                        Gender = profile.Gender.Humanize(),
-                        Location = profile.Location,
-                        Birthday = profile.Birthday?.ToString("dd MMMM yyyy"),
-                        CreatedAt = profile.CreatedAt.Humanize(),
-                        ImagePath = profile.ImagePath,
-                        CallingCode = profile.CallingCode,
-                        PhoneNumber = profile.PhoneNumber,
-                        CountryCodes = countryCodes.Select(x => new CountryCode
-                        {
-                            CountryName = x.CountryName,
-                            CallingCode = x.CallingCode
-                        })
-                    },
-
-                    PlacesApi = _configuration.GetSection("GoogleApiServices").GetValue<string>("PlacesApi"),
-                });
+                return await GetPosts(profile, posts);
             }
             catch (Exception e)
             {
@@ -204,132 +94,17 @@ namespace Bazaar.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         [Route("/{profileName}/Hidden")]
-        public async Task<IActionResult> GetProfileHiddenPosts(string profileName)
+        public async Task<IActionResult> GetProfileHiddenPosts()
         {
             try
             {
-                IProfile profile = await _profilesService.FindProfileByNormalizedNameAsync(profileName);
+                var profile = await _profilesService.FindProfileByIdentityName(HttpContext.User.Identity.Name);
 
-                if (profile == null)
-                {
-                    return BadRequest();
-                }
+                var posts = await _postsService.FindHiddenPostsByIdentityNameAsync(profile.IdentityName, 0, 100);
 
-                var posts = await _postsService.FindHiddenPostsByProfileIdAsync(profile._id, 0, 100);
-
-                var countryCodes = _configuration.GetSection("CountryCodes").Get<List<CountryCode>>();
-
-                if (!HttpContext.User.Identity.IsAuthenticated)
-                {
-                    return View(new PostsAggregatorModel
-                    {
-                        Posts = posts.Select(post => new PostModel
-                        {
-                            Hidden = post.Hidden,
-                            PostId = post._id.ToString(),
-                            Text = post.Text.Length > 1000 ? post.Text.Substring(0, 1000) + "..." : post.Text,
-                            Title = post.Title,
-                            Currency = post.Currency,
-                            Location = post.Location,
-                            CreatedAt = post.CreatedAt.Humanize(),
-                            ViewsCount = ((double) post.ViewsCount).ToMetric(),
-                            LikesCount = ((double) post.LikesCount).ToMetric(),
-                            SharesCount = ((double) 0).ToMetric(),
-                            CommentsCount = ((double) post.CommentsCount).ToMetric(),
-                            ProfileImagePath = post.ProfileImagePath,
-                            Price = post.Price,
-                            Tags = post.Tags,
-                        }),
-
-                        Profile = new ProfileModel
-                        {
-                            Owner = false,
-                            Id = profile._id.ToString(),
-                            Name = profile.Name,
-                            Email = profile.Email,
-                            Gender = profile.Gender.Humanize(),
-                            Location = profile.Location,
-                            Birthday = profile.Birthday?.ToString("dd MMMM yyyy"),
-                            CreatedAt = profile.CreatedAt.Humanize(),
-                            ImagePath = profile.ImagePath,
-                            CallingCode = profile.CallingCode,
-                            PhoneNumber = profile.PhoneNumber,
-                            CountryCodes = countryCodes.Select(x => new CountryCode
-                            {
-                                CountryName = x.CountryName,
-                                CallingCode = x.CallingCode
-                            })
-                        },
-
-                        PlacesApi = _configuration.GetSection("GoogleApiServices").GetValue<string>("PlacesApi"),
-                    });
-                }
-
-                IProfile myProfile = null;
-
-                if (HttpContext.User.Identity.IsAuthenticated)
-                {
-                    myProfile =
-                        await _profilesService.FindProfileByNormalizedEmailOrDefaultAsync(
-                            HttpContext.User.Identity.Name, null);
-                }
-
-                List<MongoDbPostVote> postsVotes = null;
-
-                if (myProfile != null)
-                {
-                    postsVotes = await _postsVotesService.FindPostsVotesAsync(myProfile._id);
-                }
-
-                return View(new PostsAggregatorModel
-                {
-                    Posts = posts.Select(post => new PostModel
-                    {
-                        Hidden = post.Hidden,
-                        IsOwner = myProfile != null && post.ProfileId.Equals(profile._id) &&
-                                  profile._id.Equals(myProfile._id),
-                        IsVoted = postsVotes != null && postsVotes.Count > 0 &&
-                                  postsVotes.Any(x => x.PostId.Equals(post._id)),
-                        PostId = post._id.ToString(),
-                        Text = post.Text.Length > 1000 ? post.Text.Substring(0, 1000) + "..." : post.Text,
-                        Title = post.Title,
-                        Currency = post.Currency,
-                        Location = post.Location,
-                        CreatedAt = post.CreatedAt.Humanize(),
-                        ViewsCount = ((double) post.ViewsCount).ToMetric(),
-                        LikesCount = ((double) post.LikesCount).ToMetric(),
-                        SharesCount = ((double) 0).ToMetric(),
-                        CommentsCount = ((double) post.CommentsCount).ToMetric(),
-                        ProfileId = post.ProfileId.ToString(),
-                        ProfileName = post.ProfileName,
-                        ProfileImagePath = post.ProfileImagePath,
-                        Price = post.Price,
-                        Tags = post.Tags,
-                    }),
-
-                    Profile = new ProfileModel
-                    {
-                        Owner = myProfile != null && profile._id.Equals(myProfile._id),
-                        Id = profile._id.ToString(),
-                        Name = profile.Name,
-                        Email = profile.Email,
-                        Gender = profile.Gender.Humanize(),
-                        Location = profile.Location,
-                        Birthday = profile.Birthday?.ToString("dd MMMM yyyy"),
-                        CreatedAt = profile.CreatedAt.Humanize(),
-                        ImagePath = profile.ImagePath,
-                        CallingCode = profile.CallingCode,
-                        PhoneNumber = profile.PhoneNumber,
-                        CountryCodes = countryCodes.Select(x => new CountryCode
-                        {
-                            CountryName = x.CountryName,
-                            CallingCode = x.CallingCode
-                        })
-                    },
-
-                    PlacesApi = _configuration.GetSection("GoogleApiServices").GetValue<string>("PlacesApi"),
-                });
+                return await GetPosts(profile, posts);
             }
             catch (Exception e)
             {
@@ -345,77 +120,16 @@ namespace Bazaar.Controllers
         {
             try
             {
-                IProfile profile = await _profilesService.FindProfileByNormalizedNameAsync(profileName);
+                IProfile profile =
+                    await _profilesService.FindProfileByIdentityName(HttpContext.User.Identity.Name);
 
-                if (profile == null)
-                {
-                    return BadRequest();
-                }
-
-                var postsVotes = await _postsVotesService.FindPostsVotesAsync(profile._id);
+                var postsVotes = await _postsVotesService.FindPostsVotesOwnedByAsync(profile.IdentityName);
 
                 var posts = postsVotes.Count > 0
                     ? await _postsService.FindPostsAsync(postsVotes.Select(x => x.PostId).ToList())
-                    : null;
+                    : new List<MongoDbPost>();
 
-                IProfile myProfile = null;
-
-                if (HttpContext.User.Identity.IsAuthenticated)
-                {
-                    myProfile =
-                        await _profilesService.FindProfileByNormalizedEmailOrDefaultAsync(
-                            HttpContext.User.Identity.Name, null);
-                }
-
-                var countryCodes = _configuration.GetSection("CountryCodes").Get<List<CountryCode>>();
-
-                return View(new PostsAggregatorModel
-                {
-                    Posts = posts?.Select(post => new PostModel
-                    {
-                        Hidden = post.Hidden,
-                        IsOwner = post.ProfileId.Equals(profile._id),
-                        IsVoted = postsVotes.Count > 0 && postsVotes.Any(x => x.PostId.Equals(post._id)),
-                        PostId = post._id.ToString(),
-                        Text = post.Text.Length > 1000 ? post.Text.Substring(0, 1000) + "..." : post.Text,
-                        Title = post.Title,
-                        Currency = post.Currency,
-                        Location = post.Location,
-                        CreatedAt = post.CreatedAt.Humanize(),
-                        ViewsCount = ((double) post.ViewsCount).ToMetric(),
-                        LikesCount = ((double) post.LikesCount).ToMetric(),
-                        SharesCount = ((double) 0).ToMetric(),
-                        CommentsCount = ((double) post.CommentsCount).ToMetric(),
-                        ProfileId = post.ProfileId.ToString(),
-                        ProfileName = post.ProfileName,
-                        ProfileImagePath = post.ProfileImagePath,
-                        Price = post.Price,
-                        Tags = post.Tags,
-                    }),
-
-                    Profile = new ProfileModel
-                    {
-                        Owner = myProfile != null &&
-                                profile.NormalizedEmail.Equals(HttpContext.User.Identity.Name.ToUpper()),
-                        Id = profile._id.ToString(),
-                        Name = profile.Name,
-                        Email = profile.Email,
-                        Gender = profile.Gender.Humanize(),
-                        Location = profile.Location,
-                        Birthday = profile.Birthday?.ToString("dd MMMM yyyy"),
-                        CreatedAt = profile.CreatedAt.Humanize(),
-                        ImagePath = profile.ImagePath,
-                        CallingCode = profile.CallingCode,
-                        PhoneNumber = profile.PhoneNumber,
-                        CountryCodes = countryCodes.Select(x => new CountryCode
-                        {
-                            CountryName = x.CountryName,
-                            CallingCode = x.CallingCode
-                        })
-                    },
-
-                    PlacesApi = _configuration.GetSection("GoogleApiServices").GetValue<string>("PlacesApi"),
-                });
+                return await GetPosts(profile, posts);
             }
             catch (Exception e)
             {
@@ -427,59 +141,72 @@ namespace Bazaar.Controllers
         [HttpPost]
         [Authorize]
         [Route("/Profile/AddProfilePhotoAsync")]
-        public async Task<IActionResult> AddProfilePhotoAsync([FromQuery(Name = "profileId")] string profileId, IFormFile file)
+        public async Task<IActionResult> AddProfilePhotoAsync(IFormFile file)
         {
-            var profile = await _profilesService.FindProfileByIdAsync(ObjectId.Parse(profileId));
-
-            if (!profile.Email.ToUpper().Equals(HttpContext.User.Identity.Name.ToUpper()))
+            try
             {
-                return Ok(new ProfileErrorModel
+                var profile = await _profilesService.FindProfileByIdentityName(HttpContext.User.Identity.Name);
+                
+                var photoDir = $"profiles/{profile._id}";
+
+                var photoSystemDir = $"{_hostingEnvironment.WebRootPath}/{photoDir}";
+
+                if (!Directory.Exists(photoSystemDir))
                 {
-                    Errors = new List<ProfileError>
+                    Directory.CreateDirectory(photoSystemDir);
+                }
+
+                using (var imageStream = file.OpenReadStream())
+                {
+                    var format = Image.DetectFormat(imageStream);
+
+                    if (format.Equals(PngFormat.Instance))
                     {
-                        new ProfileError
+                        var pngImage = Image.Load(imageStream);
+                    
+                        using (var stream = new FileStream($"{photoSystemDir}/profile__photo.jpg", FileMode.Create))
                         {
-                            Description = "You don't have permission to upload profile photo"
+                            pngImage.SaveAsJpeg(stream);
                         }
-                    },
+                    }
+                }
+
+                return Ok(new AddProfilePhotoResult
+                {
+                    ProfileName = profile.Name,
+                    ProfilePhoto = $"{photoDir}/profile__photo.jpg"
                 });
             }
-
-            var photoDir = $"{_hostingEnvironment.WebRootPath}/images/profiles/{profile._id.ToString()}/photo/";
-
-            if (!Directory.Exists(photoDir))
+            catch (Exception e)
             {
-                Directory.CreateDirectory(photoDir);
-            }
-
-            using (var stream = new FileStream($"{photoDir}{Path.GetFileNameWithoutExtension(file.FileName)}.jpg", FileMode.Create))
-            {
-                await file.CopyToAsync(stream);
-            }
-            
-            var profilePhoto = new MongoDbProfilePhoto
-            {
-                ProfileId = profile._id,
-                ImagePath = $"/images/profiles/{profile._id.ToString()}/photo/{Path.GetFileNameWithoutExtension(file.FileName)}.jpg",
-                CreatedAt = DateTime.UtcNow
-            };
-
-            await _profilesPhotosService.CreateProfilePhotoAsync(profilePhoto);
-
-            profile.ImagePath = profilePhoto.ImagePath;
-
-            await _profilesService.UpdateProfileAsync(profile);
-
-            return Ok(profilePhoto);
+                _logger.LogError(e.Message, e);
+                return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
+            }          
         }
 
-        [HttpPost]
+        [HttpDelete]
         [Authorize]
         [Route("/Profile/RemoveProfilePhotoAsync")]
-        public async Task<IActionResult> RemoveProfilePhotoAsync([FromQuery(Name = "fileName")] string fileName,
-            IFormFile file)
+        public async Task<IActionResult> RemoveProfilePhotoAsync()
         {
-            throw new NotImplementedException();
+            try
+            {
+                var profile = await _profilesService.FindProfileByIdentityName(HttpContext.User.Identity.Name);
+                
+                var photoDir = $"{_hostingEnvironment.WebRootPath}/profiles/{profile._id}";
+
+                if (Directory.Exists(photoDir))
+                {
+                    Directory.Delete(photoDir);
+                }
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
+            }
         }
         
         [HttpPut]
@@ -527,5 +254,111 @@ namespace Bazaar.Controllers
                 return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
             }
         }  
+        
+        private async Task<IActionResult> GetPosts(IProfile profile, IEnumerable<MongoDbPost> posts)
+        {
+            var countryCodes = _configuration.GetSection("CountryCodes").Get<List<CountryCode>>();
+
+            if (!HttpContext.User.Identity.IsAuthenticated)
+            {
+                return View(new PostsAggregatorModel
+                {
+                    Posts = posts.Select(post => new PostModel
+                    {
+                        Hidden = post.Hidden,
+                        PostId = post._id.ToString(),
+                        Text = post.Text.Length > 1000 ? post.Text.Substring(0, 1000) + "..." : post.Text,
+                        Title = post.Title,
+                        Currency = post.Currency,
+                        Location = post.Location,
+                        CreatedAt = post.CreatedAt.Humanize(),
+                        ViewsCount = ((double) post.ViewsCount).ToMetric(),
+                        LikesCount = ((double) post.LikesCount).ToMetric(),
+                        SharesCount = ((double) 0).ToMetric(),
+                        CommentsCount = ((double) post.CommentsCount).ToMetric(),
+                        ProfilePhoto = post.ProfilePhoto,
+                        Price = post.Price,
+                        Tags = post.Tags,
+                    }),
+
+                    Profile = new ProfileModel
+                    {
+                        Owner = false,
+                        Id = profile._id.ToString(),
+                        Name = profile.Name,
+                        Email = profile.Email,
+                        Gender = profile.Gender.ToString(),
+                        Location = profile.Location,
+                        Birthday = profile.Birthday?.ToString("dd MMMM yyyy"),
+                        CreatedAt = profile.CreatedAt.Humanize(),
+                        ImagePath = profile.Photo,
+                        CallingCode = profile.CallingCode,
+                        PhoneNumber = profile.PhoneNumber,
+                        CountryCodes = countryCodes.Select(x => new CountryCode
+                        {
+                            CountryName = x.CountryName,
+                            CallingCode = x.CallingCode
+                        })
+                    },
+
+                    PlacesApi = _configuration.GetSection("GoogleApiServices").GetValue<string>("PlacesApi"),
+                });
+            }
+
+            var myProfile = await _profilesService.FindProfileByIdentityNameOrDefaultAsync(HttpContext.User.Identity.Name,null);
+
+            List<MongoDbPostVote> postsVotes = null;
+
+            if (myProfile != null)
+            {
+                postsVotes = await _postsVotesService.FindPostsVotesOwnedByAsync(myProfile.IdentityName);
+            }
+
+            return View(new PostsAggregatorModel
+            {
+                Posts = posts.Select(post => new PostModel
+                {
+                    Hidden = post.Hidden,
+                    IsOwner = myProfile != null && post.IdentityName.Equals(profile.IdentityName),
+                    IsVoted = postsVotes != null && postsVotes.Any(x => x.PostId.Equals(post._id)),
+                    PostId = post._id.ToString(),
+                    Text = post.Text.Length > 1000 ? post.Text.Substring(0, 1000) + "..." : post.Text,
+                    Title = post.Title,
+                    Currency = post.Currency,
+                    Location = post.Location,
+                    CreatedAt = post.CreatedAt.Humanize(),
+                    ViewsCount = ((double) post.ViewsCount).ToMetric(),
+                    LikesCount = ((double) post.LikesCount).ToMetric(),
+                    SharesCount = ((double) 0).ToMetric(),
+                    CommentsCount = ((double) post.CommentsCount).ToMetric(),
+                    ProfileName = post.ProfileName,
+                    ProfilePhoto = post.ProfilePhoto,
+                    Price = post.Price,
+                    Tags = post.Tags,
+                }),
+
+                Profile = new ProfileModel
+                {
+                    Owner = myProfile != null && profile._id.Equals(myProfile._id),
+                    Id = profile._id.ToString(),
+                    Name = profile.Name,
+                    Email = profile.Email,
+                    Gender = profile.Gender.Humanize(),
+                    Location = profile.Location,
+                    Birthday = profile.Birthday?.ToString("dd MMMM yyyy"),
+                    CreatedAt = profile.CreatedAt.Humanize(),
+                    ImagePath = profile.Photo,
+                    CallingCode = profile.CallingCode,
+                    PhoneNumber = profile.PhoneNumber,
+                    CountryCodes = countryCodes.Select(x => new CountryCode
+                    {
+                        CountryName = x.CountryName,
+                        CallingCode = x.CallingCode
+                    })
+                },
+
+                PlacesApi = _configuration.GetSection("GoogleApiServices").GetValue<string>("PlacesApi"),
+            });
+        }
     }
 }

@@ -12,9 +12,8 @@ namespace Bazaar.Models.Post
         public string CreatedAt { get; set; }    
         public string CommentId { get; set; }        
         public string VotesCount { get; set; }
-        public string ProfileId { get; set; }
         public string ProfileName { get; set; }
-        public string ProfileImagePath { get; set; }
+        public string ProfilePhoto { get; set; }
         public List<PostCommentModel> Comments { get; set; }
     }
 }

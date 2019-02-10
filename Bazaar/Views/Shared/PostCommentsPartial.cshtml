@@ -6,14 +6,7 @@
     foreach (var comment in Model)
     {
         <div id="@comment.CommentId" class="media p-2">
-            @if (!string.IsNullOrEmpty(comment.ProfileImagePath))
-            {
-                <img class="card-user__img" src="@comment.ProfileImagePath" width="48" height="48" alt="profile-image">
-            }
-            else
-            {
-                <img class="card-user__img" src="/images/profile__empty.png" width="48" height="48" alt="profile-image">
-            }
+            <img class="card-user__img" src="@comment.ProfilePhoto" width="48" height="48" alt="profile-image">
             <div class="media-body media__img content__break">
                 <div class="col-auto">
                     <span class="font-weight-bold" style="font-size: 0.9rem">
@@ -68,14 +61,7 @@
                     foreach (var reply in comment.Comments)
                     {
                         <div id="@reply.CommentId" class="media p-2">
-                            @if (!string.IsNullOrEmpty(reply.ProfileImagePath))
-                            {
-                                <img class="card-user__img" src="@reply.ProfileImagePath" width="48" height="48" alt="profile-image">
-                            }
-                            else
-                            {
-                                <img class="card-user__img" src="/images/profile__empty.png" width="48" height="48" alt="profile-image">
-                            }
+                            <img class="card-user__img" src="@reply.ProfilePhoto" width="48" height="48" alt="profile-image">
                             <div class="media-body media__img content__break">
                                 <div class="col-auto">
                                     <span class="font-weight-bold" style="font-size: 0.9rem">

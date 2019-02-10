@@ -13,6 +13,7 @@ using Bazaar.Models.Settings;
 using Bazaar.MongoDbStorage.Posts;
 using Bazaar.MongoDbStorage.Profiles;
 using Bazaar.MongoDbStorage.Users;
+using Bazaar.Normalizers;
 using Bazaar.Services;
 using Humanizer;
 using Microsoft.AspNetCore.Authorization;
@@ -30,8 +31,8 @@ namespace Bazaar.Controllers
     {
         private readonly ILogger _logger;
         private readonly IConfiguration _configuration;
+        private readonly ILookupNormalizer _keyNormalizer;
         private readonly IHostingEnvironment _hostingEnvironment;
-
         private readonly PostsService<MongoDbPost> _postsService;
         private readonly ProfilesService<MongoDbProfile> _profilesService;
         private readonly PostsVotesService<MongoDbPostVote> _postsVotesService;
@@ -42,7 +43,9 @@ namespace Bazaar.Controllers
 
         public PostsController(ILoggerFactory loggerFactory,
             IConfiguration configuration,
-            IHostingEnvironment hostingEnvironment, UserManager<MongoDbUser> userManager,
+            ILookupNormalizer keyNormalizer,
+            IHostingEnvironment hostingEnvironment, 
+            UserManager<MongoDbUser> userManager,
             ProfilesService<MongoDbProfile> profilesService, PostsService<MongoDbPost> postsService,
             PostsVotesService<MongoDbPostVote> postsVotesService,
             PostsPhotosService<MongoDbPostPhoto> postsPhotosService,
@@ -52,6 +55,7 @@ namespace Bazaar.Controllers
         {
             _logger = loggerFactory.CreateLogger<AccountController>();
             _configuration = configuration;
+            _keyNormalizer = keyNormalizer;
             _hostingEnvironment = hostingEnvironment;
 
             _postsService = postsService;
@@ -79,18 +83,18 @@ namespace Bazaar.Controllers
                     posts = await _postsService.FindPostsByKeywordAsync(0, _configuration.GetSection("BazaarOptions").GetValue<int>("PostsPerPage"), keyword);
                 }
 
-                IProfile profile = null;
+                IProfile myProfile = null;
 
                 if (User.Identity.IsAuthenticated)
                 {
-                    profile = await _profilesService.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
+                    myProfile = await _profilesService.FindProfileByIdentityNameOrDefaultAsync(HttpContext.User.Identity.Name, null);
                 }
 
                 var postsVotes = new List<IPostVote>();
 
-                if (profile != null)
+                if (myProfile != null)
                 {
-                    postsVotes.AddRange(await _postsVotesService.FindPostsVotesAsync(profile._id));
+                    postsVotes.AddRange(await _postsVotesService.FindPostsVotesOwnedByAsync(myProfile.IdentityName));
                 }
 
                 var countryCodes = _configuration.GetSection("CountryCodes").Get<List<CountryCode>>();
@@ -100,7 +104,7 @@ namespace Bazaar.Controllers
                     Posts = posts.Select(post => new PostModel
                     {
                         Hidden = post.Hidden,
-                        IsOwner = User.Identity.IsAuthenticated && profile != null && post.ProfileId.Equals(profile._id),
+                        IsOwner = User.Identity.IsAuthenticated && myProfile != null && post.IdentityName.Equals(myProfile.IdentityName),
                         IsVoted = postsVotes.Count > 0 && postsVotes.Any(x => x.PostId.Equals(post._id)),
                         PostId = post._id.ToString(),
                         Text = post.Text.Length > 1000 ? post.Text.Substring(0, 1000) + "..." : post.Text,
@@ -112,28 +116,27 @@ namespace Bazaar.Controllers
                         LikesCount = ((double) post.LikesCount).ToMetric(),
                         SharesCount = ((double) 0).ToMetric(),
                         CommentsCount = ((double) post.CommentsCount).ToMetric(),
-                        ProfileId = post.ProfileId.ToString(),
                         ProfileName = post.ProfileName,
-                        ProfileImagePath = post.ProfileImagePath,
+                        ProfilePhoto = post.ProfilePhoto,
                         Price = post.Price,
                         Tags = post.Tags,
                     }),
 
-                    Profile = profile == null
+                    Profile = myProfile == null
                         ? null
                         : new ProfileModel
                         {
-                            Owner = profile.NormalizedEmail.Equals(HttpContext.User.Identity.Name.ToUpper()),
-                            Id = profile._id.ToString(),
-                            Name = profile.Name,
-                            Email = profile.Email,
-                            Gender = profile.Gender.Humanize(),
-                            Location = profile.Location,
-                            Birthday = profile.Birthday?.ToString("dd MMMM yyyy"),
-                            CreatedAt = profile.CreatedAt.Humanize(),
-                            ImagePath = profile.ImagePath,
-                            CallingCode = profile.CallingCode,
-                            PhoneNumber = profile.PhoneNumber,
+                            Owner = myProfile.IdentityName.Equals(HttpContext.User.Identity.Name.ToUpper()),
+                            Id = myProfile._id.ToString(),
+                            Name = myProfile.Name,
+                            Email = myProfile.Email,
+                            Gender = myProfile.Gender.Humanize(),
+                            Location = myProfile.Location,
+                            Birthday = myProfile.Birthday?.ToString("dd MMMM yyyy"),
+                            CreatedAt = myProfile.CreatedAt.Humanize(),
+                            ImagePath = myProfile.Photo,
+                            CallingCode = myProfile.CallingCode,
+                            PhoneNumber = myProfile.PhoneNumber,
                             CountryCodes = countryCodes.Select(x => new CountryCode
                             {
                                 CountryName = x.CountryName,
@@ -163,16 +166,16 @@ namespace Bazaar.Controllers
 
                 var postsCommentsVotes = new List<IPostCommentVote>();
 
-                IProfile profile = null;
+                IProfile myProfile = null;
 
                 if (HttpContext.User.Identity.IsAuthenticated)
                 {
-                    profile = await _profilesService.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
+                    myProfile = await _profilesService.FindProfileByIdentityName(HttpContext.User.Identity.Name);
 
                     await _postsViewsCountService.CreatePostViewsCountAsync(new MongoDbPostViewsCount
                     {
+                        IdentityName = _keyNormalizer.NormalizeKey(HttpContext.User.Identity.Name),
                         PostId = ObjectId.Parse(postId),
-                        ProfileId = profile._id,
                         CreatedAt = DateTime.UtcNow
                     });
 
@@ -180,14 +183,12 @@ namespace Bazaar.Controllers
 
                     await _postsService.UpdatePostAsync(post);
 
-                    postsVotes.AddRange(await _postsVotesService.FindPostsVotesAsync(profile._id));
+                    postsVotes.AddRange(await _postsVotesService.FindPostsVotesOwnedByAsync(myProfile.IdentityName));
 
-                    postsCommentsVotes.AddRange(
-                        await _postCommentsVotesService.FindPostsCommentsVotesAsync(profile._id));
+                    postsCommentsVotes.AddRange(await _postCommentsVotesService.FindPostsCommentsVotesOwnedByAsync(myProfile.IdentityName));
                 }
 
-                var postComments =
-                    await _postCommentsService.FindPostCommentsAsync(postId, 0, null, SortDefinition.Descending);
+                var postComments = await _postCommentsService.FindPostCommentsAsync(postId, 0, null, SortDefinition.Descending);
 
                 var commentsReplies = new Dictionary<ObjectId, PostCommentModel>();
 
@@ -199,18 +200,16 @@ namespace Bazaar.Controllers
                         {
                             commentsReplies.Add(comment._id, new PostCommentModel
                             {
-                                IsOwner = profile != null && comment.ProfileId.Equals(profile._id),
-                                IsVoted = postsCommentsVotes.Count > 0 && postsCommentsVotes.Any(x =>
-                                              x.CommentId.Equals(comment._id) && x.ProfileId.Equals(profile._id)),
+                                IsOwner = myProfile != null && comment.IdentityName.Equals(myProfile.IdentityName),
+                                IsVoted = myProfile != null && comment.IdentityName.Equals(myProfile.IdentityName) && postsCommentsVotes.Count > 0 && postsCommentsVotes.Any(x => x.CommentId.Equals(comment._id)),
                                 PostId = comment.PostId.ToString(),
                                 Text = comment.Text,
                                 ReplyTo = comment.ReplyTo.ToString(),
                                 CreatedAt = comment.CreatedAt.Humanize(),
                                 CommentId = comment._id.ToString(),
                                 VotesCount = ((double) comment.VotesCount).ToMetric(),
-                                ProfileId = comment.ProfileId.ToString(),
                                 ProfileName = comment.ProfileName,
-                                ProfileImagePath = comment.ProfileImagePath
+                                ProfilePhoto = comment.ProfilePhoto
                             });
                         }
                     }
@@ -226,19 +225,16 @@ namespace Bazaar.Controllers
                                     {
                                         return new PostCommentModel
                                         {
-                                            IsOwner = profile != null && comment.ProfileId.Equals(profile._id),
-                                            IsVoted = postsCommentsVotes.Count > 0 && postsCommentsVotes.Any(x =>
-                                                          x.CommentId.Equals(comment._id) &&
-                                                          x.ProfileId.Equals(profile._id)),
+                                            IsOwner = myProfile != null && comment.IdentityName.Equals(myProfile.IdentityName),
+                                            IsVoted = myProfile != null && comment.IdentityName.Equals(myProfile.IdentityName) && postsCommentsVotes.Count > 0 && postsCommentsVotes.Any(x => x.CommentId.Equals(comment._id)),
                                             PostId = comment.PostId.ToString(),
                                             Text = comment.Text,
                                             ReplyTo = comment.ReplyTo.ToString(),
                                             CreatedAt = comment.CreatedAt.Humanize(),
                                             CommentId = comment._id.ToString(),
                                             VotesCount = ((double) comment.VotesCount).ToMetric(),
-                                            ProfileId = comment.ProfileId.ToString(),
                                             ProfileName = comment.ProfileName,
-                                            ProfileImagePath = comment.ProfileImagePath
+                                            ProfilePhoto = comment.ProfilePhoto
                                         };
                                     }).ToList();
                                 }
@@ -249,19 +245,16 @@ namespace Bazaar.Controllers
                                 {
                                     return new PostCommentModel
                                     {
-                                        IsOwner = profile != null && comment.ProfileId.Equals(profile._id),
-                                        IsVoted = postsCommentsVotes.Count > 0 && postsCommentsVotes.Any(x =>
-                                                      x.CommentId.Equals(comment._id) &&
-                                                      x.ProfileId.Equals(profile._id)),
+                                        IsOwner = myProfile != null && comment.IdentityName.Equals(myProfile.IdentityName),
+                                        IsVoted = myProfile != null && comment.IdentityName.Equals(myProfile.IdentityName) && postsCommentsVotes.Count > 0 && postsCommentsVotes.Any(x => x.CommentId.Equals(comment._id)),
                                         PostId = comment.PostId.ToString(),
                                         Text = comment.Text,
                                         ReplyTo = comment.ReplyTo.ToString(),
                                         CreatedAt = comment.CreatedAt.Humanize(),
                                         CommentId = comment._id.ToString(),
                                         VotesCount = ((double) comment.VotesCount).ToMetric(),
-                                        ProfileId = comment.ProfileId.ToString(),
                                         ProfileName = comment.ProfileName,
-                                        ProfileImagePath = comment.ProfileImagePath
+                                        ProfilePhoto = comment.ProfilePhoto
                                     };
                                 }));
                             }
@@ -278,8 +271,7 @@ namespace Bazaar.Controllers
                         new PostModel
                         {
                             Hidden = post.Hidden,
-                            IsOwner = User.Identity.IsAuthenticated && profile != null &&
-                                      post.ProfileId.Equals(profile._id),
+                            IsOwner = myProfile != null && post.IdentityName.Equals(myProfile.IdentityName),
                             IsVoted = postsVotes.Count > 0 && postsVotes.Any(x => x.PostId.Equals(post._id)),
                             PostId = post._id.ToString(),
                             Text = post.Text,
@@ -291,29 +283,28 @@ namespace Bazaar.Controllers
                             LikesCount = ((double) post.LikesCount).ToMetric(),
                             SharesCount = ((double) 0).ToMetric(),
                             CommentsCount = ((double) post.CommentsCount).ToMetric(),
-                            ProfileId = post.ProfileId.ToString(),
                             ProfileName = post.ProfileName,
-                            ProfileImagePath = post.ProfileImagePath,
+                            ProfilePhoto = post.ProfilePhoto,
                             Price = post.Price,
                             Tags = post.Tags,
                         }
                     },
 
-                    Profile = profile == null
+                    Profile = myProfile == null
                         ? null
                         : new ProfileModel
                         {
-                            Owner = profile.NormalizedEmail.Equals(HttpContext.User.Identity.Name.ToUpper()),
-                            Id = profile._id.ToString(),
-                            Name = profile.Name,
-                            Email = profile.Email,
-                            Gender = profile.Gender.Humanize(),
-                            Location = profile.Location,
-                            Birthday = profile.Birthday?.ToString("dd MMMM yyyy"),
-                            CreatedAt = profile.CreatedAt.Humanize(),
-                            ImagePath = profile.ImagePath,
-                            CallingCode = profile.CallingCode,
-                            PhoneNumber = profile.PhoneNumber,
+                            Owner = myProfile.IdentityName.Equals(HttpContext.User.Identity.Name.ToUpper()),
+                            Id = myProfile._id.ToString(),
+                            Name = myProfile.Name,
+                            Email = myProfile.Email,
+                            Gender = myProfile.Gender.Humanize(),
+                            Location = myProfile.Location,
+                            Birthday = myProfile.Birthday?.ToString("dd MMMM yyyy"),
+                            CreatedAt = myProfile.CreatedAt.Humanize(),
+                            ImagePath = myProfile.Photo,
+                            CallingCode = myProfile.CallingCode,
+                            PhoneNumber = myProfile.PhoneNumber,
                             CountryCodes = countryCodes.Select(x => new CountryCode
                             {
                                 CountryName = x.CountryName,
@@ -340,12 +331,7 @@ namespace Bazaar.Controllers
         {
             try
             {
-                if (!HttpContext.User.Identity.IsAuthenticated)
-                {
-                    return Unauthorized();
-                }
-
-                var profile = await _profilesService.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
+                var profile = await _profilesService.FindProfileByIdentityName(HttpContext.User.Identity.Name);
 
                 var post = new MongoDbPost
                 {
@@ -354,9 +340,9 @@ namespace Bazaar.Controllers
                     Location = model.Location,
                     Currency = model.Currency,
                     ProfileName = profile.Name,
-                    ProfileImagePath = profile.ImagePath,
+                    ProfilePhoto = profile.Photo,
+                    IdentityName = _keyNormalizer.NormalizeKey(profile.IdentityName),
                     Price = model.Price,
-                    ProfileId = profile._id,
                     CreatedAt = DateTime.UtcNow,
                     ReleaseType = ReleaseType.Moderating,
                 };
@@ -366,7 +352,7 @@ namespace Bazaar.Controllers
                 return Ok(new PostModel
                 {
                     Hidden = post.Hidden,
-                    IsOwner = post.ProfileId.Equals(profile._id),
+                    IsOwner = post.IdentityName.Equals(profile.IdentityName),
                     PostId = post._id.ToString(),
                     Text = post.Text,
                     Title = post.Title,
@@ -376,10 +362,9 @@ namespace Bazaar.Controllers
                     ViewsCount = ((double) post.ViewsCount).ToMetric(),
                     LikesCount = ((double) post.LikesCount).ToMetric(),
                     SharesCount = ((double) 0).ToMetric(),
-                    CommentsCount = ((double) post.CommentsCount).ToMetric(),
-                    ProfileId = post.ProfileId.ToString(),
+                    CommentsCount = ((double) post.CommentsCount).ToMetric(),               
                     ProfileName = post.ProfileName,
-                    ProfileImagePath = post.ProfileImagePath,
+                    ProfilePhoto = post.ProfilePhoto,
                     Price = post.Price,
                     Tags = post.Tags,
                 });
@@ -462,21 +447,16 @@ namespace Bazaar.Controllers
         {
             try
             {
-                if (!HttpContext.User.Identity.IsAuthenticated)
-                {
-                    return Unauthorized();
-                }
-
-                var profile = await _profilesService.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
+                var profile = await _profilesService.FindProfileByIdentityName(HttpContext.User.Identity.Name);
 
                 var post = await _postsService.FindPostByIdAsync(ObjectId.Parse(postId));
 
-                var postsVotes = await _postsVotesService.FindPostsVotesAsync(profile._id);
+                var postsVotes = await _postsVotesService.FindPostsVotesOwnedByAsync(profile.IdentityName);
 
                 return Ok(new PostModel
                 {
                     Hidden = post.Hidden,
-                    IsOwner = User.Identity.IsAuthenticated && post.ProfileId.Equals(profile._id),
+                    IsOwner = post.IdentityName.Equals(profile.IdentityName),
                     IsVoted = postsVotes.Count > 0 && postsVotes.Any(x => x.PostId.Equals(post._id)),
                     PostId = post._id.ToString(),
                     Text = post.Text,
@@ -488,9 +468,8 @@ namespace Bazaar.Controllers
                     LikesCount = ((double) post.LikesCount).ToMetric(),
                     SharesCount = ((double) 0).ToMetric(),
                     CommentsCount = ((double) post.CommentsCount).ToMetric(),
-                    ProfileId = post.ProfileId.ToString(),
                     ProfileName = post.ProfileName,
-                    ProfileImagePath = post.ProfileImagePath,
+                    ProfilePhoto = post.ProfilePhoto,
                     Price = post.Price,
                     Tags = post.Tags,
                 });
@@ -510,26 +489,29 @@ namespace Bazaar.Controllers
         {
             try
             {
-                var profile = await _profilesService.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
+                if (!HttpContext.User.Identity.IsAuthenticated)
+                {
+                    return Unauthorized();
+                }
+                
+                var myProfile = await _profilesService.FindProfileByIdentityName(HttpContext.User.Identity.Name);
 
                 var postComment = await _postCommentsService.FindPostComment(postId, ObjectId.Parse(commentId));
 
-                var postsCommentsVotes = await _postCommentsVotesService.FindPostsCommentsVotesAsync(profile._id);
+                var postsCommentsVotes = await _postCommentsVotesService.FindPostsCommentsVotesOwnedByAsync(myProfile.IdentityName);
 
                 return Ok(new PostCommentModel
                 {
-                    IsOwner = postComment.ProfileId.Equals(profile._id),
-                    IsVoted = postsCommentsVotes.Any(x =>
-                        x.CommentId.Equals(postComment._id) && x.ProfileId.Equals(profile._id)),
+                    IsOwner = postComment.IdentityName.Equals(myProfile.IdentityName),
+                    IsVoted = myProfile.IdentityName.Equals(postComment.IdentityName) && postsCommentsVotes.Any(x => x.CommentId.Equals(postComment._id)),
                     PostId = postComment.PostId.ToString(),
                     Text = postComment.Text,
                     ReplyTo = postComment.ReplyTo.ToString(),
                     CreatedAt = postComment.CreatedAt.Humanize(),
                     CommentId = postComment._id.ToString(),
                     VotesCount = ((double) postComment.VotesCount).ToMetric(),
-                    ProfileId = postComment.ProfileId.ToString(),
                     ProfileName = postComment.ProfileName,
-                    ProfileImagePath = postComment.ProfileImagePath,
+                    ProfilePhoto = postComment.ProfilePhoto,
                 });
             }
             catch (Exception e)
@@ -641,22 +623,22 @@ namespace Bazaar.Controllers
         {
             try
             {
-                var profile = await _profilesService.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
+                var profile = await _profilesService.FindProfileByIdentityName(HttpContext.User.Identity.Name);
 
-                var vote = await _postsVotesService.FindPostVoteAsync(ObjectId.Parse(postId), profile._id);
+                var vote = await _postsVotesService.FindPostVoteByPostIdOwnedByAsync(ObjectId.Parse(postId), profile.IdentityName);
 
                 if (vote == null)
                 {
                     await _postsVotesService.CreatePostVoteAsync(new MongoDbPostVote
                     {
+                        IdentityName = _keyNormalizer.NormalizeKey(HttpContext.User.Identity.Name),
                         PostId = ObjectId.Parse(postId),
-                        ProfileId = profile._id,
                         VoteType = model.VoteType,
                         CreatedAt = DateTime.UtcNow
                     });
 
                     var votesCount =
-                        await _postsVotesService.CountPostVotesAsync(ObjectId.Parse(postId), VoteType.Like);
+                        await _postsVotesService.CountPostVotesByIdAsync(ObjectId.Parse(postId), VoteType.Like);
 
                     await _postsService.UpdatePostLikesCountByPostId(ObjectId.Parse(postId), votesCount);
 
@@ -674,7 +656,7 @@ namespace Bazaar.Controllers
                     }
 
                     var votesCount =
-                        await _postsVotesService.CountPostVotesAsync(ObjectId.Parse(postId), VoteType.Like);
+                        await _postsVotesService.CountPostVotesByIdAsync(ObjectId.Parse(postId), VoteType.Like);
 
                     await _postsService.UpdatePostLikesCountByPostId(ObjectId.Parse(postId), votesCount);
 
@@ -704,7 +686,7 @@ namespace Bazaar.Controllers
         {
             try
             {
-                var profile = await _profilesService.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
+                var profile = await _profilesService.FindProfileByIdentityName(HttpContext.User.Identity.Name);
 
                 var postId = ObjectId.Parse(model.PostId);
 
@@ -714,9 +696,8 @@ namespace Bazaar.Controllers
                     ReplyTo = model.ReplyTo == null ? ObjectId.Empty : ObjectId.Parse(model.ReplyTo),
                     CreatedAt = DateTime.UtcNow,
                     PostId = postId,
-                    ProfileId = profile._id,
                     ProfileName = profile.Name,
-                    ProfileImagePath = profile.ImagePath,
+                    ProfilePhoto = profile.Photo,
                     VotesCount = 0,
                 };
 
@@ -737,9 +718,8 @@ namespace Bazaar.Controllers
                     CreatedAt = comment.CreatedAt.Humanize(),
                     CommentId = comment._id.ToString(),
                     PostId = model.PostId,
-                    ProfileId = comment.ProfileId.ToString(),
                     ProfileName = comment.ProfileName,
-                    ProfileImagePath = comment.ProfileImagePath,
+                    ProfilePhoto = comment.ProfilePhoto,
                     VotesCount = ((double) comment.VotesCount).ToMetric()
                 });
             }
@@ -758,20 +738,18 @@ namespace Bazaar.Controllers
         {
             try
             {
-                var profile = await _profilesService.FindProfileByNormalizedEmailAsync(HttpContext.User.Identity.Name);
-
                 var commentVote =
-                    await _postCommentsVotesService.FindPostCommentVoteOrDefaultAsync(ObjectId.Parse(commentId),
-                        profile._id, null);
+                    await _postCommentsVotesService.FindPostCommentVoteByCommentIdOwnedByOrDefaultAsync(
+                        ObjectId.Parse(commentId), HttpContext.User.Identity.Name, null);
 
                 if (commentVote == null)
                 {
                     var postCommentVote = new MongoDbPostCommentVote
                     {
+                        IdentityName = _keyNormalizer.NormalizeKey(HttpContext.User.Identity.Name),
                         PostId = ObjectId.Parse(postId),
                         VoteType = model.VoteType,
                         CommentId = ObjectId.Parse(commentId),
-                        ProfileId = profile._id,
                         CreatedAt = DateTime.UtcNow,
                     };
 
@@ -853,12 +831,14 @@ namespace Bazaar.Controllers
 
             var photoDir = $"/posts/{postId}";
 
-            if (!Directory.Exists($"{_hostingEnvironment.WebRootPath}/{photoDir}"))
+            var photoSystemDir = $"{_hostingEnvironment.WebRootPath}/{photoDir}";
+            
+            if (!Directory.Exists(photoSystemDir))
             {
-                Directory.CreateDirectory($"{_hostingEnvironment.WebRootPath}/{photoDir}");
+                Directory.CreateDirectory(photoSystemDir);
             }
 
-            var photoPath = $"{_hostingEnvironment.WebRootPath}/{photoDir}/{Guid.NewGuid():N}.{Path.GetExtension(file.FileName)}";
+            var photoPath = $"{photoSystemDir}/{Guid.NewGuid():N}.{Path.GetExtension(file.FileName)}";
  
             using (var stream = new FileStream(photoPath, FileMode.Create))
             {

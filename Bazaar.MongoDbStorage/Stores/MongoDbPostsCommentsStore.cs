@@ -24,7 +24,7 @@ namespace Bazaar.MongoDbStorage.Stores
 //                bsonClassMap.MapIdMember(x => x.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
 //            });
         }
-        
+       
         public bool PostCommentsCollectionExists(string collectionName, CancellationToken cancellationToken)
         {
             //todo: Improve filter 

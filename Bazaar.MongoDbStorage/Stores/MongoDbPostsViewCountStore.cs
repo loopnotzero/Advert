@@ -30,6 +30,13 @@ namespace Bazaar.MongoDbStorage.Stores
 //                bsonClassMap.MapIdMember(x => x.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
 //            });
         }
+        
+        public string CreateDefaultIndexes()
+        {
+            return _collection.Indexes.CreateOne(
+                new CreateIndexModel<T>(Builders<T>.IndexKeys.Hashed(x => x.IdentityName))
+            );
+        }
 
         public async Task CreatePostViewsCountAsync(T entity, CancellationToken cancellationToken)
         {

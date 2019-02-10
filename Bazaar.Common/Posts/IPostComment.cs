@@ -10,10 +10,10 @@ namespace Bazaar.Common.Posts
         long VotesCount { get; set; }
         string Text { get; set; }  
         string ProfileName { get; set; }
-        string ProfileImagePath { get; set; }
+        string ProfilePhoto { get; set; }
+        string IdentityName { get; set; }
         ObjectId PostId { get; set; }
         ObjectId ReplyTo { get; set; }
-        ObjectId ProfileId { get; set; }
         DateTime CreatedAt { get; set; }
         DateTime? UpdatedAt { get; set; }
         DateTime? DeletedAt { get; set; }

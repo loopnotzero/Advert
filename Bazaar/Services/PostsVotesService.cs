@@ -45,7 +45,7 @@ namespace Bazaar.Services
             await Store.CreatePostVoteAsync(entity, CancellationToken);
         }
 
-        public async Task<T> FindPostVoteAsync(ObjectId postId, ObjectId profileId)
+        public async Task<T> FindPostVoteByPostIdOwnedByAsync(ObjectId postId, string identityName)
         {
             ThrowIfDisposed();
 
@@ -54,27 +54,27 @@ namespace Bazaar.Services
                 throw new ArgumentNullException(nameof(postId));
             }
 
-            if (profileId == ObjectId.Empty)
+            if (string.IsNullOrEmpty(identityName))
             {
-                throw new ArgumentNullException(nameof(profileId));
+                throw new ArgumentNullException(nameof(identityName));
             }
 
-            return await Store.FindPostVoteAsync(postId, profileId, CancellationToken);
+            return await Store.FindPostVoteByPostIdOwnedByAsync(postId, identityName, CancellationToken);
         }
         
-        public async Task<List<T>> FindPostsVotesAsync(ObjectId profileId)
+        public async Task<List<T>> FindPostsVotesOwnedByAsync(string identityName)
         {
             ThrowIfDisposed();
 
-            if (profileId == ObjectId.Empty)
+            if (string.IsNullOrEmpty(identityName))
             {
-                throw new ArgumentNullException(nameof(profileId));
+                throw new ArgumentNullException(nameof(identityName));
             }
 
-            return await Store.FindPostsVotesAsync(profileId, CancellationToken);
+            return await Store.FindPostsVotesOwnedByAsync(identityName, CancellationToken);
         }
 
-        public async Task<long> CountPostVotesAsync(ObjectId postId, VoteType voteType)
+        public async Task<long> CountPostVotesByIdAsync(ObjectId postId, VoteType voteType)
         {
             ThrowIfDisposed();
 

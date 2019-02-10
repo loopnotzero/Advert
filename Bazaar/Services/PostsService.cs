@@ -51,10 +51,10 @@ namespace Bazaar.Services
             return await _store.FindPostByIdAsync(postId, CancellationToken);
         }
             
-        public async Task<long> CountPostsByProfileIdAsync(ObjectId profileId)
+        public async Task<long> CountPostsByIdentityNameAsync(string identityName)
         {
             ThrowIfDisposed();
-            return await _store.CountPostsByProfileIdAsync(profileId, CancellationToken);
+            return await _store.CountPostsByIdentityNameAsync(identityName, CancellationToken);
         }
 
         public async Task<long> EstimatedPostsCountAsync()
@@ -75,24 +75,28 @@ namespace Bazaar.Services
             return await _store.FindPostsAsync(list, CancellationToken);
         }
                    
-        public async Task<List<T>> FindPostsByProfileIdAsync(ObjectId profileId, int offset, int? limit)
+        public async Task<List<T>> FindPostsByIdentityNameAsync(string identityName, int offset, int? limit)
         {
             ThrowIfDisposed();
             
-            if (profileId == ObjectId.Empty)
+            if (string.IsNullOrEmpty(identityName))
             {
-                throw new ArgumentNullException(nameof(profileId));
+                throw new ArgumentNullException(nameof(identityName));
             }
 
-            return await _store.FindPostsByProfileIdAsync(profileId, offset, limit, CancellationToken);
+            return await _store.FindPostsByIdentityNameAsync(identityName, offset, limit, CancellationToken);
         }
 
-        public async Task<List<T>> FindHiddenPostsByProfileIdAsync(ObjectId profileId, int offset, int? limit)
+        public async Task<List<T>> FindHiddenPostsByIdentityNameAsync(string identityName, int offset, int? limit)
         {
             ThrowIfDisposed();          
-            return await _store.FindHiddenPostsByProfileIdAsync(profileId, offset, limit, CancellationToken);
+            return await _store.FindHiddenPostsByIdentityNameAsync(identityName, offset, limit, CancellationToken);
         }
 
+        public async Task<List<T>> FindPostsByProfileNameAsync(string profileName, int offset, int? limit)
+        {
+            throw new NotImplementedException();
+        }
         public async Task<List<T>> FindPostsByKeywordAsync(int offset, int? limit, string keyword)
         {
             ThrowIfDisposed();
@@ -179,6 +183,6 @@ namespace Bazaar.Services
             {
                 throw new ObjectDisposedException(GetType().Name);
             }
-        }
+        }  
     }
 }

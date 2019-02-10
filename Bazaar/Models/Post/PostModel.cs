@@ -17,9 +17,8 @@ namespace Bazaar.Models.Post
         public string LikesCount { get; set; }
         public string SharesCount { get; set; }
         public string CommentsCount { get; set; }
-        public string ProfileId { get; set; }
         public string ProfileName { get; set; }
-        public string ProfileImagePath { get; set; }   
+        public string ProfilePhoto { get; set; }   
         public decimal Price { get; set; }
         public List<string> Tags { get; set; }
         

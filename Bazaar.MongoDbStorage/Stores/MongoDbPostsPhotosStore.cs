@@ -27,6 +27,13 @@ namespace Bazaar.MongoDbStorage.Stores
 //            });
         }
 
+        public string CreateDefaultIndexes()
+        {
+            return _collection.Indexes.CreateOne(
+                new CreateIndexModel<T>(Builders<T>.IndexKeys.Hashed(x => x.IdentityName))
+            );
+        }
+        
         public Task CreatePostPhotoAsync(T entity, CancellationToken cancellationToken)
         {
             throw new System.NotImplementedException();

@@ -16,7 +16,6 @@ namespace Bazaar.MongoDbStorage.Stores
         public MongoDbPostCommentsVotesStore(IMongoDatabase mongoDatabase) : this()
         {
             _collection = mongoDatabase.GetCollection<T>(MongoDbCollections.PostCommentsVotes);
-            //todo: Create indices
         }
         
         private MongoDbPostCommentsVotesStore()
@@ -26,6 +25,13 @@ namespace Bazaar.MongoDbStorage.Stores
 //                bsonClassMap.AutoMap();
 //                bsonClassMap.MapIdMember(x => x.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
 //            });
+        }
+        
+        public string CreateDefaultIndexes()
+        {
+            return _collection.Indexes.CreateOne(
+                new CreateIndexModel<T>(Builders<T>.IndexKeys.Hashed(x => x.IdentityName))
+            );
         }
 
         public async Task CreatePostCommentVoteAsync(T entity, CancellationToken cancellationToken)
@@ -37,12 +43,14 @@ namespace Bazaar.MongoDbStorage.Stores
             }, cancellationToken);
         }
 
-        public async Task<T> FindPostCommentVoteOrDefaultAsync(ObjectId commentId, ObjectId profileId, T defaultValue, CancellationToken cancellationToken)
+        public async Task<T> FindPostCommentVoteByCommentIdOwnedByOrDefaultAsync(ObjectId commentId,
+            string identityName, T defaultValue,
+            CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();          
             var filter = Builders<T>.Filter.And(
                 Builders<T>.Filter.Eq(x => x.CommentId, commentId),
-                Builders<T>.Filter.Eq(x => x.ProfileId, profileId)
+                Builders<T>.Filter.Eq(x => x.IdentityName, identityName)
             );         
             var cursor = await _collection.FindAsync(filter, cancellationToken: cancellationToken);
             var commentVote = await cursor.FirstOrDefaultAsync(cancellationToken);
@@ -51,10 +59,11 @@ namespace Bazaar.MongoDbStorage.Stores
             return commentVote;
         }
 
-        public async Task<List<T>> FindPostsCommentsVotesAsync(ObjectId profileId, CancellationToken cancellationToken)
+        public async Task<List<T>> FindPostsCommentsVotesOwnedByAsync(string identityName,
+            CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var filter = Builders<T>.Filter.Eq(x => x.ProfileId, profileId);          
+            var filter = Builders<T>.Filter.Eq(x => x.IdentityName, identityName);          
             var cursor = await _collection.FindAsync(filter, cancellationToken: cancellationToken);
             return await cursor.ToListAsync(cancellationToken);
         }

@@ -29,6 +29,13 @@ namespace Bazaar.MongoDbStorage.Stores
 //            });
         }
 
+        public string CreateDefaultIndexes()
+        {
+            return _collection.Indexes.CreateOne(
+                new CreateIndexModel<T>(Builders<T>.IndexKeys.Hashed(x => x.IdentityName))
+            );
+        }
+        
         public async Task CreatePostAsync(T entity, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -59,10 +66,10 @@ namespace Bazaar.MongoDbStorage.Stores
             return await _collection.EstimatedDocumentCountAsync(cancellationToken: cancellationToken);
         }
 
-        public async Task<long> CountPostsByProfileIdAsync(ObjectId profileId, CancellationToken cancellationToken)
+        public async Task<long> CountPostsByIdentityNameAsync(string identityName, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            return await _collection.CountDocumentsAsync(Builders<T>.Filter.Eq(x => x.ProfileId, profileId), cancellationToken: cancellationToken);
+            return await _collection.CountDocumentsAsync(Builders<T>.Filter.Eq(x => x.IdentityName, identityName), cancellationToken: cancellationToken);
         }
 
         public async Task<List<T>> FindPostsAsync(List<ObjectId> postIds, CancellationToken cancellationToken)
@@ -124,7 +131,7 @@ namespace Bazaar.MongoDbStorage.Stores
             return await cursor.ToListAsync(cancellationToken);
         }
 
-        public async Task<List<T>> FindPostsByProfileIdAsync(ObjectId profileId, int offset, int? limit, CancellationToken cancellationToken)
+        public async Task<List<T>> FindPostsByIdentityNameAsync(string identityName, int offset, int? limit, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -135,16 +142,18 @@ namespace Bazaar.MongoDbStorage.Stores
                 findOptions.Limit = limit;
             }
 
-            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.ProfileId, profileId), findOptions, cancellationToken: cancellationToken);
+            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.IdentityName, identityName), findOptions, cancellationToken: cancellationToken);
 
             return await cursor.ToListAsync(cancellationToken);
         }
         
-        public async Task<List<T>> FindHiddenPostsByProfileIdAsync(ObjectId profileId, int offset, int? limit, CancellationToken cancellationToken)
+        public async Task<List<T>> FindHiddenPostsByIdentityNameAsync(string identityName, int offset, int? limit,
+            CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var filter = Builders<T>.Filter.And(Builders<T>.Filter.Eq(x => x.ProfileId, profileId), Builders<T>.Filter.Eq(x => x.Hidden, true));
+            var filter = Builders<T>.Filter.And(Builders<T>.Filter.Eq(x => x.IdentityName, identityName),
+                Builders<T>.Filter.Eq(x => x.Hidden, true));
 
             var findOptions = new FindOptions<T> {Sort = Builders<T>.Sort.Descending(field => field.CreatedAt), Skip = offset};
 
@@ -199,7 +208,7 @@ namespace Bazaar.MongoDbStorage.Stores
                 BypassDocumentValidation = false
             }, cancellationToken);
         }
-
+        
         public void Dispose()
         {
         }

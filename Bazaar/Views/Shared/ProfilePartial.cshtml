@@ -11,14 +11,7 @@
         }
     </div>
 
-    if (string.IsNullOrEmpty(Model.ImagePath))
-    {
-        <img id="profile-image" src="~/images/profile__empty.png" class="team__img" alt="">
-    }
-    else
-    {
-        <img id="profile-image" src="@Model.ImagePath" class="team__img" alt="">
-    }
+    <img id="profile-image" src="@Model.ImagePath?@DateTime.UtcNow.ToFileTimeUtc()" class="team__img" alt="">
     
     <div class="card-body">
         @if (Model != null)

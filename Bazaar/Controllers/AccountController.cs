@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Bazaar.MongoDbStorage.Profiles;
 using Bazaar.MongoDbStorage.Users;
 using Bazaar.Models.Account;
+using Bazaar.Normalizers;
 using Bazaar.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -19,20 +20,23 @@ namespace Bazaar.Controllers
     public class AccountController : Controller
     {
         private readonly ILogger _logger;
-        private readonly IHostingEnvironment _hostEnv;
+        private readonly ILookupNormalizer _keyNormalizer;
+        private readonly IHostingEnvironment _hostingEnvironment;
         private readonly UserManager<MongoDbUser> _userManager;
         private readonly SignInManager<MongoDbUser> _signInManager;
         private readonly ProfilesService<MongoDbProfile> _profilesService;
-        
+
         public AccountController(
             ILoggerFactory loggerFactory, 
-            IHostingEnvironment hostEnv, 
+            ILookupNormalizer keyNormalizer,
+            IHostingEnvironment hostingEnvironment, 
             UserManager<MongoDbUser> userManager, 
             SignInManager<MongoDbUser> signInManager,
             ProfilesService<MongoDbProfile> profilesService)
         {
             _logger = loggerFactory.CreateLogger<AccountController>();
-            _hostEnv = hostEnv;
+            _keyNormalizer = keyNormalizer;
+            _hostingEnvironment = hostingEnvironment;
             _userManager = userManager;
             _signInManager = signInManager;
             _profilesService = profilesService;
@@ -223,10 +227,10 @@ namespace Bazaar.Controllers
                         },
                     });
                 }
-                
-                var profile = await _profilesService.FindProfileByNormalizedEmailOrDefaultAsync(model.Email, null);
 
-                if (profile != null)
+                var byEmailAsync = await _userManager.FindByEmailAsync(model.Name);
+
+                if (byEmailAsync != null)
                 {
                     return Ok(new ErrorModel
                     {
@@ -260,19 +264,23 @@ namespace Bazaar.Controllers
                 {
                     Name = model.Name,
                     Email = model.Email,
+                    IdentityName = _keyNormalizer.NormalizeKey(model.Email),
+                    NormalizedName = _keyNormalizer.NormalizeKey(model.Name),
                     CreatedAt = DateTime.UtcNow,
                 };
                 
-                myProfile.ImagePath = $"/images/profiles/{myProfile._id.ToString()}/photo/profile__photo.jpg";
+                var photoDir = $"/profiles/{myProfile._id.ToString()}";
+                
+                myProfile.Photo = $"{photoDir}/profile__photo.jpg";
 
-                var photoDir = $"{_hostEnv.WebRootPath}/images/profiles/{myProfile._id.ToString()}/photo/";
+                var photoSystemDir = $"{_hostingEnvironment.WebRootPath}/profiles/{myProfile._id.ToString()}";
 
-                if (!Directory.Exists(photoDir))
+                if (!Directory.Exists(photoSystemDir))
                 {
-                    Directory.CreateDirectory(photoDir);
+                    Directory.CreateDirectory(photoSystemDir);
                 }
-
-                System.IO.File.Copy($"{_hostEnv.WebRootPath}/images/profile__photo.jpg", photoDir);
+                
+                System.IO.File.Copy($"{_hostingEnvironment.WebRootPath}/assets/profile__photo.jpg", photoSystemDir);
   
                 await _profilesService.CreateProfileAsync(myProfile);
 

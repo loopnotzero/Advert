@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Bazaar.Common.Profiles;
 using Bazaar.Common.Stores;
+using Bazaar.Normalizers;
 using Microsoft.AspNetCore.Identity;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -62,69 +63,76 @@ namespace Bazaar.Services
             return await Store.UpdateProfileAsync(entity, CancellationToken);
         }
 
-        public async Task<T> FindProfileByIdAsync(ObjectId id)
+        public async Task<T> FindProfileByIdAsync(ObjectId profileId)
         {
             ThrowIfDisposed();
 
-            if (id == ObjectId.Empty)
+            if (profileId == ObjectId.Empty)
             {
-                throw new ArgumentNullException(nameof(id)); 
+                throw new ArgumentNullException(nameof(profileId)); 
             }
             
-            return await Store.FindProfileByIdAsync(id, CancellationToken);
+            return await Store.FindProfileByIdAsync(profileId, CancellationToken);
         }
 
-        public async Task<T> FindProfileByIdOrDefaultAsync(ObjectId id, T defaultValue)
+        public async Task<T> FindProfileByIdOrDefaultAsync(ObjectId profileId, T defaultValue)
         {
-            throw new NotImplementedException();
+            ThrowIfDisposed();
+
+            if (profileId == ObjectId.Empty)
+            {
+                throw new ArgumentNullException(nameof(profileId)); 
+            }
+            
+            return await Store.FindProfileByIdOrDefaultAsync(profileId, CancellationToken);
         }
         
-        public async Task<T> FindProfileByNormalizedNameAsync(string name)
+        public async Task<IProfile> FindProfileByNormalizedName(string profileName)
         {
             ThrowIfDisposed();
 
-            if (string.IsNullOrEmpty(name))
+            if (string.IsNullOrEmpty(profileName))
             {
-                throw new ArgumentNullException(nameof(name)); 
+                throw new ArgumentNullException(nameof(profileName)); 
             }
             
-            return await Store.FindProfileByNormalizedNameAsync(NormalizeKey(name), CancellationToken);
+            return await Store.FindProfileByNormalizedName(_keyNormalizer.NormalizeKey(profileName), CancellationToken);
         }
-
-        public async Task<T> FindProfileByNormalizedNameOrDefaultAsync(string name, T defaultValue)
+        
+        public async Task<IProfile> FindProfileByNormalizedNameOrDefaultAsync(string profileName, T defaultValue)
         {
             ThrowIfDisposed();
 
-            if (string.IsNullOrEmpty(name))
+            if (string.IsNullOrEmpty(profileName))
             {
-                throw new ArgumentNullException(nameof(name)); 
+                throw new ArgumentNullException(nameof(profileName)); 
             }
             
-            return await Store.FindProfileByNormalizedNameOrDefaultAsync(NormalizeKey(name), defaultValue, CancellationToken);
+            return await Store.FindProfileByNormalizedNameOrDefault(_keyNormalizer.NormalizeKey(profileName), defaultValue, CancellationToken);
         }
-
-        public async Task<T> FindProfileByNormalizedEmailAsync(string email)
+        
+        public async Task<T> FindProfileByIdentityName(string email)
         {
             ThrowIfDisposed();
-
+            
             if (string.IsNullOrEmpty(email))
             {
                 throw new ArgumentNullException(nameof(email)); 
             }
             
-            return await Store.FindProfileByNormalizedEmailAsync(NormalizeKey(email), CancellationToken);
+            return await Store.FindProfileByIdentityNameAsync(_keyNormalizer.NormalizeKey(email), CancellationToken);
         }
-
-        public async Task<T> FindProfileByNormalizedEmailOrDefaultAsync(string email, T defaultValue)
+        
+        public async Task<T> FindProfileByIdentityNameOrDefaultAsync(string email, T defaultValue)
         {
             ThrowIfDisposed();
-
+            
             if (string.IsNullOrEmpty(email))
             {
                 throw new ArgumentNullException(nameof(email)); 
             }
             
-            return await Store.FindProfileByNormalizedEmailOrDefaultAsync(NormalizeKey(email), defaultValue, CancellationToken);
+            return await Store.FindProfileByIdentityNameOrDefaultAsync(_keyNormalizer.NormalizeKey(email), defaultValue, CancellationToken);
         }
         
         private void Dispose(bool disposing)
@@ -137,17 +145,12 @@ namespace Bazaar.Services
             _disposed = true;
         }
 
-        private string NormalizeKey(string key)
-        {
-            return _keyNormalizer != null ? _keyNormalizer.Normalize(key) : key;
-        }
-
-        protected void ThrowIfDisposed()
+        public void ThrowIfDisposed()
         {
             if (_disposed)
             {
                 throw new ObjectDisposedException(GetType().Name);
             }
-        }
+        }   
     }
 }

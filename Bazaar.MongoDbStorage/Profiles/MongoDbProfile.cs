@@ -20,15 +20,15 @@ namespace Bazaar.MongoDbStorage.Profiles
              
         public bool IsDeleted { get; set; }
         public string Name { get; set; }    
-        public string Email { get; set; }      
+        public string Email { get; set; }  
+        public string Photo { get; set; }
         
         public string Culture { get; set; }      
         public string Location { get; set; }
-        public string ImagePath { get; set; }
         public string CallingCode { get; set; }
-        public string PhoneNumber { get; set; }        
+        public string PhoneNumber { get; set; }
         public string NormalizedName { get; set; }
-        public string NormalizedEmail { get; set; }
+        public string IdentityName { get; set; }
         public Gender Gender { get; set; }
         public DateTime CreatedAt { get; set; }
         

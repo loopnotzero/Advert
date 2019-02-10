@@ -28,9 +28,9 @@ namespace Bazaar.MongoDbStorage.Posts
         [BsonElement] public string Location { get; set; }
         [BsonElement] public string Currency { get; set; }
         [BsonElement] public string ProfileName { get; set; }
-        [BsonElement] public string ProfileImagePath { get; set; }
+        [BsonElement] public string ProfilePhoto { get; set; }
+        [BsonElement] public string IdentityName { get; set; }
         [BsonElement] public decimal Price { get; set; }
-        [BsonElement] public ObjectId ProfileId { get; set; }
         [BsonElement] public DateTime CreatedAt { get; set; }
         [BsonElement] public DateTime? UpdatedAt { get; set; }
         [BsonElement] public DateTime? DeletedAt { get; set; }

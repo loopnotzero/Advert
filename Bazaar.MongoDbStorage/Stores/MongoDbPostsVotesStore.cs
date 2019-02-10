@@ -16,7 +16,6 @@ namespace Bazaar.MongoDbStorage.Stores
         public MongoDbPostsVotesStore(IMongoDatabase mongoDatabase) : this()
         {
             _collection = mongoDatabase.GetCollection<T>(MongoDbCollections.PostsVotes);          
-            //todo: Create indices
         }
 
         private MongoDbPostsVotesStore()
@@ -26,6 +25,13 @@ namespace Bazaar.MongoDbStorage.Stores
 //                bsonClassMap.AutoMap();
 //                bsonClassMap.MapIdMember(x => x.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
 //            });
+        }
+        
+        public string CreateDefaultIndexes()
+        {
+            return _collection.Indexes.CreateOne(
+                new CreateIndexModel<T>(Builders<T>.IndexKeys.Hashed(x => x.IdentityName))
+            );
         }
 
         public async Task CreatePostVoteAsync(T entity, CancellationToken cancellationToken)
@@ -37,25 +43,19 @@ namespace Bazaar.MongoDbStorage.Stores
             }, cancellationToken);
         }
 
-        public async Task<T> FindPostVoteAsync(ObjectId postId, ObjectId profileId, CancellationToken cancellationToken)
+        public async Task<T> FindPostVoteByPostIdOwnedByAsync(ObjectId postId, string identityName, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var filter = Builders<T>.Filter.And(Builders<T>.Filter.Eq(x => x.PostId, postId), Builders<T>.Filter.Eq(x => x.ProfileId, profileId));
-            var cursor = await _collection.FindAsync(filter, new FindOptions<T>
-            {
-                
-            }, cancellationToken);
+            var filter = Builders<T>.Filter.And(Builders<T>.Filter.Eq(x => x.PostId, postId), Builders<T>.Filter.Eq(x => x.IdentityName, identityName));
+            var cursor = await _collection.FindAsync(filter, new FindOptions<T>(), cancellationToken);
             return await cursor.FirstOrDefaultAsync(cancellationToken);
         }
 
-        public async Task<List<T>> FindPostsVotesAsync(ObjectId profileId, CancellationToken cancellationToken)
+        public async Task<List<T>> FindPostsVotesOwnedByAsync(string identityName, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var filter = Builders<T>.Filter.Eq(x => x.ProfileId, profileId);
-            var cursor = await _collection.FindAsync(filter, new FindOptions<T>
-            {
-                
-            }, cancellationToken);
+            var filter = Builders<T>.Filter.Eq(x => x.IdentityName, identityName);
+            var cursor = await _collection.FindAsync(filter, new FindOptions<T>(), cancellationToken);
             return await cursor.ToListAsync(cancellationToken);
         }
 

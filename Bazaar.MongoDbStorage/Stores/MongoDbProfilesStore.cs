@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Bazaar.Common.Profiles;
 using Bazaar.Common.Stores;
@@ -13,9 +14,8 @@ namespace Bazaar.MongoDbStorage.Stores
         private readonly IMongoCollection<T> _collection;
 
         public MongoDbProfilesStore(IMongoDatabase mongoDatabase) : this()
-        {          
-            _collection = mongoDatabase.GetCollection<T>(MongoDbCollections.Profiles);          
-            //todo: Create indices
+        {
+            _collection = mongoDatabase.GetCollection<T>(MongoDbCollections.Profiles);
         }
         
         private MongoDbProfilesStore()
@@ -26,14 +26,17 @@ namespace Bazaar.MongoDbStorage.Stores
 //                bsonClassMap.MapIdMember(x => x.Id).SetSerializer(new StringSerializer(BsonType.ObjectId)).SetIdGenerator(StringObjectIdGenerator.Instance);
 //            });
         }
+        
+        public string CreateDefaultIndexes()
+        {
+            return _collection.Indexes.CreateOne(
+                new CreateIndexModel<T>(Builders<T>.IndexKeys.Hashed(x => x.IdentityName))
+            );
+        }
 
         public async Task CreateProfileAsync(T entity, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-
-            entity.NormalizedName = entity.NormalizedName ?? entity.Name.ToUpper();
-            entity.NormalizedEmail = entity.NormalizedEmail ?? entity.Email.ToUpper();
-            
             await _collection.InsertOneAsync(entity, new InsertOneOptions
             {
                 BypassDocumentValidation = false
@@ -49,51 +52,51 @@ namespace Bazaar.MongoDbStorage.Stores
             }, cancellationToken);
         }
 
-        public async Task<T> FindProfileByIdAsync(ObjectId id, CancellationToken cancellationToken)
+        public async Task<T> FindProfileByIdAsync(ObjectId profileId, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x._id, id), cancellationToken: cancellationToken);
+            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x._id, profileId), cancellationToken: cancellationToken);
+            return await cursor.FirstAsync(cancellationToken);
+        }
+
+        public async Task<T> FindProfileByIdOrDefaultAsync(ObjectId profileId, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x._id, profileId), cancellationToken: cancellationToken);
             return await cursor.FirstOrDefaultAsync(cancellationToken);
         }
 
-        public async Task<T> FindProfileByNormalizedNameAsync(string name, CancellationToken cancellationToken)
+        public async Task<T> FindProfileByNormalizedName(string profileName, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.NormalizedName, name), cancellationToken: cancellationToken);
+            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.NormalizedName, profileName), cancellationToken: cancellationToken);
             return await cursor.FirstAsync(cancellationToken);
         }
 
-        public async Task<T> FindProfileByNormalizedEmailAsync(string email, CancellationToken cancellationToken)
+        public async Task<T> FindProfileByNormalizedNameOrDefault(string profileName, T defaultValue, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.NormalizedEmail, email), cancellationToken: cancellationToken);
+            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.NormalizedName, profileName), cancellationToken: cancellationToken);          
+            var profile = await cursor.FirstOrDefaultAsync(cancellationToken);          
+            return profile == null ? defaultValue : profile;
+        }
+
+        public async Task<T> FindProfileByIdentityNameAsync(string email, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.IdentityName, email), cancellationToken: cancellationToken);
             return await cursor.FirstAsync(cancellationToken);
         }
 
-        public async Task<T> FindProfileByNormalizedNameOrDefaultAsync(string name, T defaultValue, CancellationToken cancellationToken)
+        public async Task<T> FindProfileByIdentityNameOrDefaultAsync(string email, T defaultValue,
+            CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.NormalizedName, name), cancellationToken: cancellationToken);
-            var result = await cursor.FirstOrDefaultAsync(cancellationToken);
-            if (result == null)
-            {
-                return defaultValue;
-            }
-            return result;
+            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.IdentityName, email), cancellationToken: cancellationToken);          
+            var profile = await cursor.FirstOrDefaultAsync(cancellationToken);          
+            return profile == null ? defaultValue : profile;
         }
         
-        public async Task<T> FindProfileByNormalizedEmailOrDefaultAsync(string email, T defaultValue, CancellationToken cancellationToken)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            var cursor = await _collection.FindAsync(Builders<T>.Filter.Eq(x => x.NormalizedEmail, email), cancellationToken: cancellationToken);          
-            var result = await cursor.FirstOrDefaultAsync(cancellationToken);          
-            if (result == null)
-            {
-                return defaultValue;
-            }        
-            return result;
-        }
-
         public void Dispose()
         {
         }

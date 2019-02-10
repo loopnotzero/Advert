@@ -19,13 +19,13 @@ namespace Bazaar.Common.Posts
         string Location { get; set; }
         string Currency { get; set; }
         string ProfileName { get; set; }
-        string ProfileImagePath { get; set; }
+        string ProfilePhoto { get; set; }
+        string IdentityName { get; set; }
         decimal Price { get; set; }
-        ObjectId ProfileId { get; set; }
         DateTime CreatedAt { get; set; }
         DateTime? UpdatedAt { get; set; }
         DateTime? DeletedAt { get; set; }
         ReleaseType ReleaseType { get; set; }
-        List<String> Tags { get; set; }
+        List<string> Tags { get; set; }
     }
 }

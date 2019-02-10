@@ -7,7 +7,7 @@
     <meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description"/>
     <meta content="Advert" name="author"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="shortcut icon" href="~/images/favicon.ico">
+    <link rel="shortcut icon" href="~/assets/favicon.ico">
     <link href="~/css/dropzone.min.css" rel="stylesheet" type="text/css"/>
     <link href="~/css/font.min.css" rel="stylesheet" type="text/css"/>
     <link href="~/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
@@ -45,18 +45,17 @@
     Dropzone.autoDiscover = false;
     
     if (document.getElementById("edit__profile--add__photo")) {
-        var addProfilePhoto = new Dropzone("#edit__profile--add__photo",
+        var dzProfilePhoto = new Dropzone("#edit__profile--add__photo",
             {
-                url: `/Profile/AddProfilePhotoAsync?profileId=${$("#edit__profile--profile_id").val()}`,
+                url: "/Profile/AddProfilePhotoAsync",
                 maxFiles: 1,
                 acceptedFiles: "image/*",
                 autoProcessQueue: false,
                 init: function() {
                     this.on("success",
                         function(file, response) {
-                            $("#profile-image").attr("src", `${response.imagePath}?${new Date().getTime()}`);
-                            $(`img[photo-id='${response.profileId}']`)
-                                .attr("src", `${response.imagePath}?${new Date().getTime()}`);
+                            $("#profile-image").attr("src", `${response.profilePhoto}?${new Date().getTime()}`);
+                            $(`img[photo-id='${response.profileName}']`).attr("src", `${response.profilePhoto}?${new Date().getTime()}`);
                             $("#edit__profile--modal").modal('toggle');
                         });
                     this.on("addedfile",
@@ -576,14 +575,13 @@
                                     } ${profile.phoneNumber}</span>`);
                         }
 
-                        if (!addProfilePhoto.getAcceptedFiles().length) {
+                        if (!dzProfilePhoto.getAcceptedFiles().length) {
                             $("#edit__profile--modal").modal('toggle');
                         } else {
                             var target = toBlob($("#edit__profile--photo").cropper('getCroppedCanvas').toDataURL());
-                            target.name = "profile__photo.jpg";
-                            addProfilePhoto.removeFile(addProfilePhoto.getAcceptedFiles()[0]);
-                            addProfilePhoto.addFile(target);
-                            addProfilePhoto.processQueue();
+                            dzProfilePhoto.removeFile(dzProfilePhoto.getAcceptedFiles()[0]);
+                            dzProfilePhoto.addFile(target);
+                            dzProfilePhoto.processQueue();
                         }
                     },
                     function(jqXhr, textStatus, errorThrown) {
