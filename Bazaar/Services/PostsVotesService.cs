@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Bazaar.Common.Posts;
 using Bazaar.Common.Stores;
+using Bazaar.Normalizers;
 using Microsoft.AspNetCore.Identity;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -17,7 +18,7 @@ namespace Bazaar.Services
         /// <summary>
         /// The <see cref="T:Microsoft.AspNetCore.Identity.ILookupNormalizer" /> used to normalize things like user and role names.
         /// </summary>
-        private ILookupNormalizer KeyNormalizer { get; set; }
+        private ILookupNormalizer _keyNormalizer { get; set; }
         
         protected virtual CancellationToken CancellationToken => CancellationToken.None;
 
@@ -30,7 +31,7 @@ namespace Bazaar.Services
         public PostsVotesService(IPostsVotesStore<T> store, ILookupNormalizer keyNormalizer)
         {
             Store = store ?? throw new ArgumentNullException(nameof(store));
-            KeyNormalizer = keyNormalizer;
+            _keyNormalizer = keyNormalizer;
         }
 
         public async Task CreatePostVoteAsync(T entity)
@@ -59,7 +60,7 @@ namespace Bazaar.Services
                 throw new ArgumentNullException(nameof(identityName));
             }
 
-            return await Store.FindPostVoteByPostIdOwnedByAsync(postId, identityName, CancellationToken);
+            return await Store.FindPostVoteByPostIdOwnedByAsync(postId, _keyNormalizer.NormalizeKey(identityName), CancellationToken);
         }
         
         public async Task<List<T>> FindPostsVotesOwnedByAsync(string identityName)
@@ -71,7 +72,7 @@ namespace Bazaar.Services
                 throw new ArgumentNullException(nameof(identityName));
             }
 
-            return await Store.FindPostsVotesOwnedByAsync(identityName, CancellationToken);
+            return await Store.FindPostsVotesOwnedByAsync(_keyNormalizer.NormalizeKey(identityName), CancellationToken);
         }
 
         public async Task<long> CountPostVotesByIdAsync(ObjectId postId, VoteType voteType)
@@ -113,13 +114,8 @@ namespace Bazaar.Services
 
             _disposed = true;
         }
-        
-        private string NormalizeKey(string key)
-        {
-            return KeyNormalizer != null ? KeyNormalizer.Normalize(key) : key;
-        }
 
-        protected void ThrowIfDisposed()
+        private void ThrowIfDisposed()
         {
             if (_disposed)
             {

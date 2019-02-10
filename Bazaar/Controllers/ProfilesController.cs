@@ -82,7 +82,7 @@ namespace Bazaar.Controllers
                     return BadRequest();
                 }
 
-                var posts = await _postsService.FindPostsByProfileNameAsync(profileName, 0, 100);
+                var posts = await _postsService.FindPostsByIdentityNameAsync(profile.IdentityName, 0, 100);
 
                 return await GetPosts(profile, posts);
             }

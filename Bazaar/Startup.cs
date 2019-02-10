@@ -68,48 +68,56 @@ namespace Bazaar
             services.AddSingleton<IPostCommentsVotesStore<MongoDbPostCommentVote>>(provider =>
             {
                 var options = provider.GetService<IOptions<MongoDbOptions>>();
-                return new MongoDbPostCommentsVotesStore<MongoDbPostCommentVote>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+                var postCommentsVotesStore = new MongoDbPostCommentsVotesStore<MongoDbPostCommentVote>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+                postCommentsVotesStore.CreateDefaultIndexes();
+                return postCommentsVotesStore;
             });
                        
             services.AddSingleton<IPostsCommentsStore<MongoDbPostComment>>(provider =>
             {
                 var options = provider.GetService<IOptions<MongoDbOptions>>();
-                return new MongoDbPostsCommentsStore<MongoDbPostComment>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+                var postsCommentsStore = new MongoDbPostsCommentsStore<MongoDbPostComment>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+                return postsCommentsStore;
             });
             
             services.AddSingleton<IPostsPhotosStore<MongoDbPostPhoto>>(provider =>
             {
-                var options = provider.GetService<IOptions<MongoDbOptions>>();   
-
+                var options = provider.GetService<IOptions<MongoDbOptions>>();
                 var postsPhotosStore = new MongoDbPostsPhotosStore<MongoDbPostPhoto>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
-
                 postsPhotosStore.CreateDefaultIndexes();
-                
                 return postsPhotosStore;
             });
             
             services.AddSingleton<IPostsStore<MongoDbPost>>(provider =>
             {
                 var options = provider.GetService<IOptions<MongoDbOptions>>();
-                return new MongoDbPostsStore<MongoDbPost>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+                var postsStore = new MongoDbPostsStore<MongoDbPost>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+                postsStore.CreateDefaultIndexes();
+                return postsStore;
             });
                        
-            services.AddSingleton<IPostsViewCountStore<MongoDbPostViewsCount>>(provider =>
+            services.AddSingleton<IPostsViewsCountStore<MongoDbPostViewsCount>>(provider =>
             {
                 var options = provider.GetService<IOptions<MongoDbOptions>>();
-                return new MongoDbPostsViewCountStore<MongoDbPostViewsCount>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+                var postsViewsCountStore = new MongoDbPostsViewsCountStore<MongoDbPostViewsCount>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+                postsViewsCountStore.CreateDefaultIndexes();
+                return postsViewsCountStore;
             });
               
             services.AddSingleton<IPostsVotesStore<MongoDbPostVote>>(provider =>
             {
                 var options = provider.GetService<IOptions<MongoDbOptions>>();
-                return new MongoDbPostsVotesStore<MongoDbPostVote>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+                var postsVotesStore = new MongoDbPostsVotesStore<MongoDbPostVote>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+                postsVotesStore.CreateDefaultIndexes();
+                return postsVotesStore;
             });
             
             services.AddSingleton<IProfilesStore<MongoDbProfile>>(provider =>
             {
                 var options = provider.GetService<IOptions<MongoDbOptions>>();
-                return new MongoDbProfilesStore<MongoDbProfile>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+                var profilesStore = new MongoDbProfilesStore<MongoDbProfile>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+                profilesStore.CreateDefaultIndexes();
+                return profilesStore;
             });
             
             services.AddSingleton<IRoleStore<MongoDbRole>>(provider =>

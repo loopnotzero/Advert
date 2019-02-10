@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Bazaar.Common.Posts;
 using Bazaar.Common.Stores;
+using Bazaar.Normalizers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
@@ -84,19 +85,21 @@ namespace Bazaar.Services
                 throw new ArgumentNullException(nameof(identityName));
             }
 
-            return await _store.FindPostsByIdentityNameAsync(identityName, offset, limit, CancellationToken);
+            return await _store.FindPostsByIdentityNameAsync(_keyNormalizer.NormalizeKey(identityName), offset, limit, CancellationToken);
         }
 
         public async Task<List<T>> FindHiddenPostsByIdentityNameAsync(string identityName, int offset, int? limit)
         {
-            ThrowIfDisposed();          
-            return await _store.FindHiddenPostsByIdentityNameAsync(identityName, offset, limit, CancellationToken);
+            ThrowIfDisposed();
+            
+            if (string.IsNullOrEmpty(identityName))
+            {
+                throw new ArgumentNullException(nameof(identityName));
+            }
+            
+            return await _store.FindHiddenPostsByIdentityNameAsync(_keyNormalizer.NormalizeKey(identityName), offset, limit, CancellationToken);
         }
 
-        public async Task<List<T>> FindPostsByProfileNameAsync(string profileName, int offset, int? limit)
-        {
-            throw new NotImplementedException();
-        }
         public async Task<List<T>> FindPostsByKeywordAsync(int offset, int? limit, string keyword)
         {
             ThrowIfDisposed();

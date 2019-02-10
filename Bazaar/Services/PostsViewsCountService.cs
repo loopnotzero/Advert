@@ -17,9 +17,9 @@ namespace Bazaar.Services
         /// Gets or sets the persistence store the manager operates over.
         /// </summary>
         /// <value>The persistence store the manager operates over.</value>
-        protected internal IPostsViewCountStore<T> Store { get; set; }
+        protected internal IPostsViewsCountStore<T> Store { get; set; }
 
-        public PostsViewsCountService(IPostsViewCountStore<T> store)
+        public PostsViewsCountService(IPostsViewsCountStore<T> store)
         {
             Store = store ?? throw new ArgumentNullException(nameof(store));
         }

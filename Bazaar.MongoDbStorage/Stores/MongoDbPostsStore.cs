@@ -146,7 +146,7 @@ namespace Bazaar.MongoDbStorage.Stores
 
             return await cursor.ToListAsync(cancellationToken);
         }
-        
+
         public async Task<List<T>> FindHiddenPostsByIdentityNameAsync(string identityName, int offset, int? limit,
             CancellationToken cancellationToken)
         {
@@ -155,15 +155,16 @@ namespace Bazaar.MongoDbStorage.Stores
             var filter = Builders<T>.Filter.And(Builders<T>.Filter.Eq(x => x.IdentityName, identityName),
                 Builders<T>.Filter.Eq(x => x.Hidden, true));
 
-            var findOptions = new FindOptions<T> {Sort = Builders<T>.Sort.Descending(field => field.CreatedAt), Skip = offset};
+            var findOptions = new FindOptions<T>
+                {Sort = Builders<T>.Sort.Descending(field => field.CreatedAt), Skip = offset};
 
             if (limit.HasValue)
             {
                 findOptions.Limit = limit;
             }
-            
+
             var cursor = await _collection.FindAsync(filter, findOptions, cancellationToken: cancellationToken);
-            
+
             return await cursor.ToListAsync(cancellationToken);
         }
 

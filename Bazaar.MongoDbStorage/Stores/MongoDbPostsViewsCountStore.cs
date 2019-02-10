@@ -12,17 +12,17 @@ using MongoDB.Driver;
 
 namespace Bazaar.MongoDbStorage.Stores
 {
-    public class MongoDbPostsViewCountStore<T> : IPostsViewCountStore<T> where T : IPostViewsCount
+    public class MongoDbPostsViewsCountStore<T> : IPostsViewsCountStore<T> where T : IPostViewsCount
     {
         private readonly IMongoCollection<T> _collection;
         
-        public MongoDbPostsViewCountStore(IMongoDatabase mongoDatabase) : this()
+        public MongoDbPostsViewsCountStore(IMongoDatabase mongoDatabase) : this()
         {
             _collection = mongoDatabase.GetCollection<T>(MongoDbCollections.PostsViews);
             //todo: Create indices
         }
 
-        private MongoDbPostsViewCountStore()
+        private MongoDbPostsViewsCountStore()
         {
 //            BsonClassMap.RegisterClassMap<MongoDbPostViewsCount>(bsonClassMap =>
 //            {
