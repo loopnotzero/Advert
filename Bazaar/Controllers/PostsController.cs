@@ -104,7 +104,7 @@ namespace Bazaar.Controllers
                     Posts = posts.Select(post => new PostModel
                     {
                         Hidden = post.Hidden,
-                        IsOwner = User.Identity.IsAuthenticated && myProfile != null && post.IdentityName.Equals(myProfile.IdentityName),
+                        IsOwner = myProfile != null && post.IdentityName.Equals(myProfile.IdentityName),
                         IsVoted = postsVotes.Count > 0 && postsVotes.Any(x => x.PostId.Equals(post._id)),
                         PostId = post._id.ToString(),
                         Text = post.Text.Length > 1000 ? post.Text.Substring(0, 1000) + "..." : post.Text,
@@ -126,7 +126,7 @@ namespace Bazaar.Controllers
                         ? null
                         : new ProfileModel
                         {
-                            Owner = myProfile.IdentityName.Equals(HttpContext.User.Identity.Name.ToUpper()),
+                            Owner = myProfile.IdentityName.Equals(_keyNormalizer.NormalizeKey(HttpContext.User.Identity.Name)),
                             Id = myProfile._id.ToString(),
                             Name = myProfile.Name,
                             Email = myProfile.Email,
@@ -201,7 +201,7 @@ namespace Bazaar.Controllers
                             commentsReplies.Add(comment._id, new PostCommentModel
                             {
                                 IsOwner = myProfile != null && comment.IdentityName.Equals(myProfile.IdentityName),
-                                IsVoted = myProfile != null && comment.IdentityName.Equals(myProfile.IdentityName) && postsCommentsVotes.Count > 0 && postsCommentsVotes.Any(x => x.CommentId.Equals(comment._id)),
+                                IsVoted = myProfile != null && postsCommentsVotes.Count > 0 && postsCommentsVotes.Any(x => x.CommentId.Equals(comment._id) && x.IdentityName.Equals(myProfile.IdentityName)),
                                 PostId = comment.PostId.ToString(),
                                 Text = comment.Text,
                                 ReplyTo = comment.ReplyTo.ToString(),
@@ -226,7 +226,7 @@ namespace Bazaar.Controllers
                                         return new PostCommentModel
                                         {
                                             IsOwner = myProfile != null && comment.IdentityName.Equals(myProfile.IdentityName),
-                                            IsVoted = myProfile != null && comment.IdentityName.Equals(myProfile.IdentityName) && postsCommentsVotes.Count > 0 && postsCommentsVotes.Any(x => x.CommentId.Equals(comment._id)),
+                                            IsVoted = myProfile != null && postsCommentsVotes.Count > 0 && postsCommentsVotes.Any(x => x.CommentId.Equals(comment._id) && x.IdentityName.Equals(myProfile.IdentityName)),
                                             PostId = comment.PostId.ToString(),
                                             Text = comment.Text,
                                             ReplyTo = comment.ReplyTo.ToString(),
@@ -246,7 +246,7 @@ namespace Bazaar.Controllers
                                     return new PostCommentModel
                                     {
                                         IsOwner = myProfile != null && comment.IdentityName.Equals(myProfile.IdentityName),
-                                        IsVoted = myProfile != null && comment.IdentityName.Equals(myProfile.IdentityName) && postsCommentsVotes.Count > 0 && postsCommentsVotes.Any(x => x.CommentId.Equals(comment._id)),
+                                        IsVoted = myProfile != null && postsCommentsVotes.Count > 0 && postsCommentsVotes.Any(x => x.CommentId.Equals(comment._id) && x.IdentityName.Equals(myProfile.IdentityName)),
                                         PostId = comment.PostId.ToString(),
                                         Text = comment.Text,
                                         ReplyTo = comment.ReplyTo.ToString(),
