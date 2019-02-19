@@ -261,6 +261,8 @@
                     this.on("success",
                         function(file, response) {
                             console.log("success");
+                            $("#add__post--modal").modal('toggle');
+//                            window.location.reload();
                         });
                     this.on("addedfile",
                         function(file) {
@@ -289,9 +291,7 @@
                 function(response) {
                     console.log(`Post id: ${response.postId}`);
                     dzPhotos.options.url = `/Posts/AddPostPhotosAsync?postId=${response.postId}`;
-                    dzPhotos.processQueue();
-                    $("#add__post--modal").modal('toggle');
-                    window.location.replace(`/Posts?postId=${response.postId}`);
+                    dzPhotos.processQueue();         
                 },
                 function(jqXhr, textStatus, errorThrown) {
                     alert("Error");

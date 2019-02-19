@@ -884,7 +884,10 @@ namespace Bazaar.Controllers
                 await _postsPhotosService.CreatePostPhotosAsync(postPhoto);
             }
 
-            return Ok();
+            return Ok(new PostPhotoModel
+            {
+                
+            });
         }
     }
 }
