@@ -1,1 +1,20 @@
-1) Count comment votes difference with aggregation
+1) Add upload photo for profile card +
+2) Add edit profile information +
+3) Add joined, born dates and contacts +
+4) Add upload up to 10 photos on creating post
+5) Add photo gallery per post +
+6) Add dropdown prompts for search.
+7) Add comments collection creation per profile not per post
+8) Add find posts by tags
+9) Add private messaging
+10) Add subscriptions & notifications
+11) Create Advert icon
+12) Split collections to normal & history.
+13) Add show login modal window for unauthorized user.
+14) Handle errors
+15) Youtube integration
+16) Fix modal window scrolling +
+17) Payment system (runpay, paynet, victoriabank)
+18) Add search engine
+19) Add infinite scroll & load more button
+20) Add account activation by email or sms

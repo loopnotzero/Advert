@@ -30,12 +30,6 @@
     ]
   },
   {
-    "outputFileName": "wwwroot/css/font.min.css",
-    "inputFiles": [
-      "wwwroot/css/font.css"
-    ]
-  },
-  {
     "outputFileName": "wwwroot/css/nanogallery2.min.css",
     "inputFiles": [
       "wwwroot/css/nanogallery2.css"
