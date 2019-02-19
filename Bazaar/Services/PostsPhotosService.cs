@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Bazaar.Common.Posts;
 using Bazaar.Common.Stores;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
+using MongoDB.Bson;
 
 namespace Bazaar.Services
 {
@@ -35,7 +37,13 @@ namespace Bazaar.Services
         {
             ThrowIfDisposed();
             await _store.CreatePostPhotoAsync(entity, CancellationToken);
-        }    
+        }
+
+        public async Task<List<T>> GetPostPhotosByPostIdAsync(ObjectId postId)
+        {
+            ThrowIfDisposed();
+            return await _store.GetPostPhotosByPostIdAsync(postId, CancellationToken);
+        }
 
         private void Dispose(bool disposing)
         {

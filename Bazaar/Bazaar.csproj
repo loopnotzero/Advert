@@ -1606,9 +1606,21 @@
     <_ContentIncludedByDefault Remove="wwwroot\scss\vendors\material-design-iconic-font\_stacked.scss" />
     <_ContentIncludedByDefault Remove="wwwroot\scss\vendors\material-design-iconic-font\_variables.scss" />
     <_ContentIncludedByDefault Remove="wwwroot\images\profiles\5c5e14ef41d7c83aff0dad5f\photo\profile__photo.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\posts\5c6c8b32c321835dcc6a809d\Nicolae Covercenco-2.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\posts\5c6c8b32c321835dcc6a809d\Nicolae Covercenco-3.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\posts\5c6c8b32c321835dcc6a809d\Nicolae Covercenco-4.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\posts\5c6c8b32c321835dcc6a809d\Nicolae Covercenco-5.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\posts\5c6c8b32c321835dcc6a809d\Nicolae Covercenco-6.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\posts\5c6c8b32c321835dcc6a809d\Nicolae Covercenco-7.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\posts\5c6c8b32c321835dcc6a809d\Nicolae Covercenco-8.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\posts\5c6c8b32c321835dcc6a809d\Nicolae Covercenco-9.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\posts\5c6c8b32c321835dcc6a809d\Nicolae Covercenco.jpg" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Bazaar.Common\Bazaar.Common.csproj" />
     <ProjectReference Include="..\Bazaar.MongoDbStorage\Bazaar.MongoDbStorage.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="wwwroot\posts" />
   </ItemGroup>
 </Project>

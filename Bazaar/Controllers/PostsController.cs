@@ -24,6 +24,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Png;
 
 namespace Bazaar.Controllers
 {
@@ -99,9 +101,13 @@ namespace Bazaar.Controllers
 
                 var countryCodes = _configuration.GetSection("CountryCodes").Get<List<CountryCode>>();
 
-                return View(new PostsAggregatorModel
+                var postsModels = new List<PostModel>();
+
+                foreach (var post in posts)
                 {
-                    Posts = posts.Select(post => new PostModel
+                    var postPhotos = await _postsPhotosService.GetPostPhotosByPostIdAsync(post._id);
+
+                    var postModel = new PostModel
                     {
                         Hidden = post.Hidden,
                         IsOwner = myProfile != null && post.IdentityName.Equals(myProfile.IdentityName),
@@ -120,7 +126,15 @@ namespace Bazaar.Controllers
                         ProfilePhoto = post.ProfilePhoto,
                         Price = post.Price,
                         Tags = post.Tags,
-                    }),
+                        PostPhotos = postPhotos.Select(x => x.PhotoPath).ToList()
+                    };
+                    
+                    postsModels.Add(postModel);
+                }
+                
+                return View(new PostsAggregatorModel
+                {
+                    Posts = postsModels,
 
                     Profile = myProfile == null
                         ? null
@@ -489,11 +503,6 @@ namespace Bazaar.Controllers
         {
             try
             {
-                if (!HttpContext.User.Identity.IsAuthenticated)
-                {
-                    return Unauthorized();
-                }
-                
                 var myProfile = await _profilesService.FindProfileByIdentityName(HttpContext.User.Identity.Name);
 
                 var postComment = await _postCommentsService.FindPostComment(postId, ObjectId.Parse(commentId));
@@ -822,43 +831,60 @@ namespace Bazaar.Controllers
         [HttpPost]
         [Authorize]
         [Route("/Posts/AddPostPhotosAsync")]
-        public async Task<IActionResult> AddPostPhotosAsync([FromQuery(Name = "postId")] string postId, IFormFile file)
+        [RequestSizeLimit(1024 * 1024 * 15 * 10)]
+        public async Task<IActionResult> AddPostPhotosAsync([FromQuery(Name = "postId")] string postId)
         {
-            if (!HttpContext.User.Identity.IsAuthenticated)
+            var files = HttpContext.Request.Form.Files;
+            
+            var postDir = $"posts/{postId}";
+            
+            var postPhotoDir = $"{_hostingEnvironment.WebRootPath}/{postDir}";
+            
+            if (!Directory.Exists(postPhotoDir))
             {
-                return Unauthorized();
+                Directory.CreateDirectory(postPhotoDir);
             }
 
-            var photoDir = $"/posts/{postId}";
-
-            var photoSystemDir = $"{_hostingEnvironment.WebRootPath}/{photoDir}";
-            
-            if (!Directory.Exists(photoSystemDir))
+            foreach (var file in files)
             {
-                Directory.CreateDirectory(photoSystemDir);
+                var fileName = $"{Path.GetFileNameWithoutExtension(file.FileName)}.jpg";
+
+                var postPhotoFullPath = $"{postPhotoDir}/{fileName}";
+
+                using (var imageStream = file.OpenReadStream())
+                {
+                    var format = Image.DetectFormat(imageStream);
+
+                    if (format.Equals(PngFormat.Instance))
+                    {
+                        var pngImage = Image.Load(imageStream);
+
+                        using (var stream = new FileStream(postPhotoFullPath, FileMode.Create))
+                        {
+                            pngImage.SaveAsJpeg(stream);
+                        }
+                    }
+                    else
+                    {
+                        using (var stream = new FileStream(postPhotoFullPath, FileMode.Create))
+                        {
+                            await file.CopyToAsync(stream);
+                        }
+                    }
+                }
+
+                var postPhoto = new MongoDbPostPhoto
+                {
+                    PhotoPath = $"{postDir}/{fileName}",
+                    IdentityName = HttpContext.User.Identity.Name,
+                    PostId = ObjectId.Parse(postId),
+                    CreatedAt = DateTime.UtcNow,
+                };
+            
+                await _postsPhotosService.CreatePostPhotosAsync(postPhoto);
             }
 
-            var photoPath = $"{photoSystemDir}/{Guid.NewGuid():N}.{Path.GetExtension(file.FileName)}";
- 
-            using (var stream = new FileStream(photoPath, FileMode.Create))
-            {
-                await file.CopyToAsync(stream);
-            }
-
-            var postPhoto = new MongoDbPostPhoto
-            {
-                PhotoPath = photoPath,
-                IdentityName = HttpContext.User.Identity.Name,
-                CreatedAt = DateTime.UtcNow,
-            };
-            
-            await _postsPhotosService.CreatePostPhotosAsync(postPhoto);
-            
-            return Ok(new PostPhotoModel
-            {
-                PhotoId = postPhoto._id.ToString(),
-                PhotoPath = photoPath,
-            });
+            return Ok();
         }
     }
 }

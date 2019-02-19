@@ -20,8 +20,7 @@ namespace Bazaar.Models.Post
         public string ProfileName { get; set; }
         public string ProfilePhoto { get; set; }   
         public decimal Price { get; set; }
-        public List<string> Tags { get; set; }
-        
+        public List<string> Tags { get; set; }     
         public List<string> PostPhotos { get; set; }
     }
 }

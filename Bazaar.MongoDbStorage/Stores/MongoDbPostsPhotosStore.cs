@@ -34,9 +34,13 @@ namespace Bazaar.MongoDbStorage.Stores
             );
         }
         
-        public Task CreatePostPhotoAsync(T entity, CancellationToken cancellationToken)
+        public async Task CreatePostPhotoAsync(T entity, CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            cancellationToken.ThrowIfCancellationRequested();
+            await _collection.InsertOneAsync(entity, new InsertOneOptions
+            {
+                BypassDocumentValidation = false
+            }, cancellationToken);
         }
 
         public Task DeletePostPhotoById(ObjectId photoId, CancellationToken cancellationToken)
@@ -54,9 +58,12 @@ namespace Bazaar.MongoDbStorage.Stores
             throw new System.NotImplementedException();
         }
 
-        public Task<List<T>> GetPostPhotosByPostIdAsync(ObjectId postId, CancellationToken cancellationToken)
+        public async Task<List<T>> GetPostPhotosByPostIdAsync(ObjectId postId, CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            cancellationToken.ThrowIfCancellationRequested();          
+            var filter = Builders<T>.Filter.Eq(x => x.PostId, postId);      
+            var cursor = await _collection.FindAsync(filter, cancellationToken: cancellationToken);
+            return await cursor.ToListAsync(cancellationToken: cancellationToken);
         }
 
         public void Dispose()

@@ -10,12 +10,10 @@ namespace Bazaar.MongoDbStorage.Posts
         public MongoDbPostCommentVote()
         {
             _id = ObjectId.GenerateNewId();
-            //Create indeces
         }
         
         [BsonId]
-        public ObjectId _id { get; set; } 
-        
+        public ObjectId _id { get; set; }        
         public string IdentityName { get; set; }
         public ObjectId PostId { get; set; }      
         public ObjectId CommentId { get; set; }  

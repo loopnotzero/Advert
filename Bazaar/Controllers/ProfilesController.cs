@@ -163,10 +163,17 @@ namespace Bazaar.Controllers
                     if (format.Equals(PngFormat.Instance))
                     {
                         var pngImage = Image.Load(imageStream);
-                    
+
                         using (var stream = new FileStream($"{photoSystemDir}/profile__photo.jpg", FileMode.Create))
                         {
                             pngImage.SaveAsJpeg(stream);
+                        }
+                    }
+                    else
+                    {
+                        using (var stream = new FileStream($"{photoSystemDir}/profile__photo.jpg", FileMode.Create))
+                        {
+                            await file.CopyToAsync(stream);
                         }
                     }
                 }

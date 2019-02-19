@@ -252,7 +252,10 @@
             {
                 url: "/Posts/AddPostPhotosAsync",
                 maxFiles: 10,
+                maxFileSize: 15,
+                parallelUploads: 10,
                 acceptedFiles: "image/*",
+                uploadMultiple: true,
                 autoProcessQueue: false,
                 init: function() {
                     this.on("success",
@@ -284,7 +287,8 @@
             };
             createPostAsync(post,
                 function(response) {
-                    dzPhotos.url = `/Posts/AddPostPhotosAsync?postId=${response.postId}`;
+                    console.log(`Post id: ${response.postId}`);
+                    dzPhotos.options.url = `/Posts/AddPostPhotosAsync?postId=${response.postId}`;
                     dzPhotos.processQueue();
                     $("#add__post--modal").modal('toggle');
                     window.location.replace(`/Posts?postId=${response.postId}`);
