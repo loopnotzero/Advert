@@ -693,12 +693,12 @@ namespace Bazaar.Controllers
                 var postComment = new MongoDbPostComment
                 {
                     Text = model.Text,
-                    ReplyTo = model.ReplyTo == null ? ObjectId.Empty : ObjectId.Parse(model.ReplyTo),
-                    CreatedAt = DateTime.UtcNow,
-                    PostId = postId,
                     ProfileName = profile.Name,
                     ProfilePhoto = profile.Photo,
-                    VotesCount = 0,
+                    IdentityName = profile.IdentityName,
+                    PostId = postId,
+                    ReplyTo = model.ReplyTo == null ? ObjectId.Empty : ObjectId.Parse(model.ReplyTo),
+                    CreatedAt = DateTime.UtcNow,
                 };
 
                 await _postCommentsService.CreatePostComment(model.PostId, postComment);

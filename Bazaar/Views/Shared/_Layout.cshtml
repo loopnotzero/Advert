@@ -130,7 +130,7 @@
 
     function renderCommentForm(response) {
         var html = `<div id="${response.commentId}" class="media p-2">
-                    <img class="card-user__img" src="${response.profileImagePath
+                    <img class="card-user__img" src="${response.profilePhoto
             }" width="48" height="48" alt="profile-image">
                     <div class="media-body media__img content__break">
                         <div class="col-auto">
@@ -739,7 +739,7 @@
 
     $(window).on('load',
         function() {
-            $('#body').fadeIn(250);
+            $('#body').fadeIn(100);
         });
 
     $(document).ready(function() {
