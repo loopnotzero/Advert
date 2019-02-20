@@ -12,20 +12,20 @@ using Bazaar.Models.Profiles;
 using Bazaar.Models.Settings;
 using Bazaar.MongoDbStorage.Posts;
 using Bazaar.MongoDbStorage.Profiles;
-using Bazaar.MongoDbStorage.Users;
 using Bazaar.Normalizers;
 using Bazaar.Services;
 using Humanizer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.Processing;
 
 namespace Bazaar.Controllers
 {
@@ -46,8 +46,7 @@ namespace Bazaar.Controllers
         public PostsController(ILoggerFactory loggerFactory,
             IConfiguration configuration,
             ILookupNormalizer keyNormalizer,
-            IHostingEnvironment hostingEnvironment, 
-            UserManager<MongoDbUser> userManager,
+            IHostingEnvironment hostingEnvironment,
             ProfilesService<MongoDbProfile> profilesService, PostsService<MongoDbPost> postsService,
             PostsVotesService<MongoDbPostVote> postsVotesService,
             PostsPhotosService<MongoDbPostPhoto> postsPhotosService,
@@ -59,7 +58,6 @@ namespace Bazaar.Controllers
             _configuration = configuration;
             _keyNormalizer = keyNormalizer;
             _hostingEnvironment = hostingEnvironment;
-
             _postsService = postsService;
             _profilesService = profilesService;
             _postsVotesService = postsVotesService;
@@ -844,7 +842,7 @@ namespace Bazaar.Controllers
             {
                 Directory.CreateDirectory(postPhotoDir);
             }
-
+            
             foreach (var file in files)
             {
                 var fileName = $"{Path.GetFileNameWithoutExtension(file.FileName)}.jpg";
@@ -853,22 +851,41 @@ namespace Bazaar.Controllers
 
                 using (var imageStream = file.OpenReadStream())
                 {
-                    var format = Image.DetectFormat(imageStream);
+                    var imgFormat = Image.DetectFormat(imageStream);
 
-                    if (format.Equals(PngFormat.Instance))
+                    if (imgFormat.Equals(PngFormat.Instance))
                     {
                         var pngImage = Image.Load(imageStream);
+                        
+                        pngImage.Mutate(x => x.Resize(pngImage.Width / 2, pngImage.Height / 2));
+                        
+                        var jpegEncoder = new JpegEncoder
+                        {
+                            Quality = 40,
+                            Subsample = JpegSubsample.Ratio420
+                        };
 
                         using (var stream = new FileStream(postPhotoFullPath, FileMode.Create))
                         {
-                            pngImage.SaveAsJpeg(stream);
+                            pngImage.SaveAsJpeg(stream, jpegEncoder);
                         }
                     }
                     else
                     {
+                        var jpgImage = Image.Load(imageStream);
+                                      
+                        jpgImage.Mutate(x => x.Resize(jpgImage.Width / 2, jpgImage.Height / 2));
+
+                        var jpegEncoder = new JpegEncoder
+                        {
+                            Quality = 40,
+                            Subsample = JpegSubsample.Ratio420
+                        };
+
+                        
                         using (var stream = new FileStream(postPhotoFullPath, FileMode.Create))
                         {
-                            await file.CopyToAsync(stream);
+                            jpgImage.SaveAsJpeg(stream, jpegEncoder);
                         }
                     }
                 }
