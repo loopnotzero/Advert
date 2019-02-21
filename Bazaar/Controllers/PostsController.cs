@@ -830,58 +830,54 @@ namespace Bazaar.Controllers
         {
             try
             {
-                Directory.CreateDirectory(postPhotoDir);
-            }
-            
-            foreach (var file in files)
-            {
-                var fileName = $"{Path.GetFileNameWithoutExtension(file.FileName)}.jpg";
+                var files = HttpContext.Request.Form.Files;
 
-                var postPhotoDir = $"{_hostingEnvironment.WebRootPath}/{postDir}";
+                var postFolderPath = $"posts/{postId}";
+                var postFolderRootPath = $"{_hostingEnvironment.WebRootPath}/{postFolderPath}";
 
-                if (!Directory.Exists(postPhotoDir))
+                if (!Directory.Exists(postFolderRootPath))
                 {
-                    var imgFormat = Image.DetectFormat(imageStream);
+                    Directory.CreateDirectory(postFolderRootPath);
+                }
 
-                    if (imgFormat.Equals(PngFormat.Instance))
+                var photoPaths = new List<string>();
+
+                var jpegEncoder = new JpegEncoder
+                {
+                    Quality = 40,
+                    Subsample = JpegSubsample.Ratio420
+                };
+                
+                foreach (var file in files)
+                {
+                    var fileName = $"{Path.GetFileNameWithoutExtension(file.FileName)}.jpg";
+
+                    var postPhotoFullPath = $"{postFolderRootPath}/{fileName}";
+
+                    using (var imageStream = file.OpenReadStream())
                     {
-                        var pngImage = Image.Load(imageStream);
-                        
-                        pngImage.Mutate(x => x.Resize(pngImage.Width / 2, pngImage.Height / 2));
-                        
-                        var jpegEncoder = new JpegEncoder
-                        {
-                            Quality = 40,
-                            Subsample = JpegSubsample.Ratio420
-                        };
-
+                        var format = Image.DetectFormat(imageStream);  
                         if (format.Equals(PngFormat.Instance))
                         {
-                            pngImage.SaveAsJpeg(stream, jpegEncoder);
+                            var pngImage = Image.Load(imageStream);
+                            using (var stream = new FileStream(postPhotoFullPath, FileMode.Create))
+                            {
+                                pngImage.SaveAsJpeg(stream, jpegEncoder);
+                            }
+                        }
+                        else
+                        {
+                            var jpgImage = Image.Load(imageStream);
+                            using (var stream = new FileStream(postPhotoFullPath, FileMode.Create))
+                            {
+                                jpgImage.SaveAsJpeg(stream, jpegEncoder);
+                            }
                         }
                     }
-                    else
-                    {
-                        var jpgImage = Image.Load(imageStream);
-                                      
-                        jpgImage.Mutate(x => x.Resize(jpgImage.Width / 2, jpgImage.Height / 2));
-
-                        var jpegEncoder = new JpegEncoder
-                        {
-                            Quality = 40,
-                            Subsample = JpegSubsample.Ratio420
-                        };
-
-                        
-                        using (var stream = new FileStream(postPhotoFullPath, FileMode.Create))
-                        {
-                            jpgImage.SaveAsJpeg(stream, jpegEncoder);
-                        }
-                    }
-                
-                    photoPaths.Add($"{postDir}/{fileName}");
+                    
+                    photoPaths.Add($"{postFolderPath}/{fileName}");
                 }
-            
+
                 var postPhotos = new MongoDbPostPhotos
                 {
                     IdentityName = HttpContext.User.Identity.Name,
@@ -901,8 +897,8 @@ namespace Bazaar.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e.Message, e);
-                return new StatusCodeResult((int) HttpStatusCode.InternalServerError); 
-            }           
+                return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
+            }
         }
 
         [HttpGet]

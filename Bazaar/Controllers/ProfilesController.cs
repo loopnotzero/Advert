@@ -21,6 +21,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Formats.Png;
 
 namespace Bazaar.Controllers
@@ -147,33 +148,37 @@ namespace Bazaar.Controllers
             {
                 var profile = await _profilesService.FindProfileByIdentityName(HttpContext.User.Identity.Name);
                 
-                var photoDir = $"profiles/{profile._id}";
+                var profileFolderPath = $"profiles/{profile._id}";
+                var profileFolderRootPath = $"{_hostingEnvironment.WebRootPath}/{profileFolderPath}";
 
-                var photoSystemDir = $"{_hostingEnvironment.WebRootPath}/{photoDir}";
-
-                if (!Directory.Exists(photoSystemDir))
+                if (!Directory.Exists(profileFolderRootPath))
                 {
-                    Directory.CreateDirectory(photoSystemDir);
+                    Directory.CreateDirectory(profileFolderRootPath);
                 }
+                
+                var jpegEncoder = new JpegEncoder
+                {
+                    Quality = 40,
+                    Subsample = JpegSubsample.Ratio420
+                };
 
                 using (var imageStream = file.OpenReadStream())
                 {
                     var format = Image.DetectFormat(imageStream);
-
                     if (format.Equals(PngFormat.Instance))
                     {
                         var pngImage = Image.Load(imageStream);
-
-                        using (var stream = new FileStream($"{photoSystemDir}/profile__photo.jpg", FileMode.Create))
+                        using (var stream = new FileStream($"{profileFolderRootPath}/profile__photo.jpg", FileMode.Create))
                         {
-                            pngImage.SaveAsJpeg(stream);
+                            pngImage.SaveAsJpeg(stream, jpegEncoder);
                         }
                     }
                     else
                     {
-                        using (var stream = new FileStream($"{photoSystemDir}/profile__photo.jpg", FileMode.Create))
+                        var jpegImage = Image.Load(imageStream);
+                        using (var stream = new FileStream($"{profileFolderRootPath}/profile__photo.jpg", FileMode.Create))
                         {
-                            await file.CopyToAsync(stream);
+                            jpegImage.SaveAsJpeg(stream, jpegEncoder);
                         }
                     }
                 }
@@ -181,7 +186,7 @@ namespace Bazaar.Controllers
                 return Ok(new AddProfilePhotoResult
                 {
                     ProfileName = profile.Name,
-                    ProfilePhoto = $"{photoDir}/profile__photo.jpg"
+                    ProfilePhoto = $"{profileFolderPath}/profile__photo.jpg"
                 });
             }
             catch (Exception e)
