@@ -9,7 +9,7 @@ using MongoDB.Driver;
 
 namespace Bazaar.MongoDbStorage.Stores
 {
-    public class MongoDbPostsPhotosStore<T> : IPostsPhotosStore<T> where T : IPostPhoto
+    public class MongoDbPostsPhotosStore<T> : IPostsPhotosStore<T> where T : IPostPhotos
     {
         private readonly IMongoCollection<T> _collection;
 
@@ -58,12 +58,12 @@ namespace Bazaar.MongoDbStorage.Stores
             throw new System.NotImplementedException();
         }
 
-        public async Task<List<T>> GetPostPhotosByPostIdAsync(ObjectId postId, CancellationToken cancellationToken)
+        public async Task<T> GetPostPhotosByPostIdAsync(ObjectId postId, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();          
             var filter = Builders<T>.Filter.Eq(x => x.PostId, postId);      
             var cursor = await _collection.FindAsync(filter, cancellationToken: cancellationToken);
-            return await cursor.ToListAsync(cancellationToken: cancellationToken);
+            return await cursor.FirstAsync(cancellationToken: cancellationToken);
         }
 
         public void Dispose()
