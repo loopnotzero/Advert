@@ -141,14 +141,13 @@ else
             <div class="card-footer">
                 @if (post.PostPhotos != null && post.PostPhotos.Count > 0)
                 {
-                    <div class="mb-2" data-nanogallery2='{ "itemsBaseURL": "/", "locationHash": "false", "galleryTheme": { "thumbnail": { "titleShadow": "none", "descriptionShadow": "none" } }, "thumbnailLabel": { "display": "false", "position": "overImageOnBottom", "hideIcons": "true", "titleFontSize": "1em", "align": "left", "titleMultiLine": "true" }, "galleryMaxRows": "1", "gallerySorting": "random", "thumbnailWidth": "auto", "thumbnailHeight": "150", "galleryDisplayMode": "rows", "galleryLastRowFull": "true", "navigationFontSize": "1.0em", "galleryPaginationMode": "rectangles", "thumbnailSliderDelay": "5000", "thumbnailToolbarImage": { "topRight": "", "bottomRight": "" }, "thumbnailBorderVertical": "0", "thumbnailBorderHorizontal": "0", "thumbnailDisplayTransition": "randomScale" }'>
+                    <div class="mb-2" data-nanogallery2='{ "itemsBaseURL": "/", "locationHash": "false", "galleryTheme": { "thumbnail": { "titleShadow": "none", "descriptionShadow": "none" } }, "thumbnailLabel": { "display": "false", "position": "overImageOnBottom", "hideIcons": "true", "titleFontSize": "1em", "align": "left", "titleMultiLine": "true" }, "galleryMaxRows": "1", "gallerySorting": "random", "thumbnailWidth": "auto", "thumbnailHeight": "150", "galleryDisplayMode": "rows", "galleryLastRowFull": "true", "navigationFontSize": "1.0em", "galleryPaginationMode": "rectangles", "thumbnailSliderDelay": "10000", "thumbnailToolbarImage": { "topRight": "", "bottomRight": "" }, "thumbnailBorderVertical": "0", "thumbnailBorderHorizontal": "0", "thumbnailDisplayTransition": "randomScale" }'>
                         @foreach (var photo in post.PostPhotos)
                         {
                             <a href="@photo" data-ngthumb="@photo"></a>
                         }
                     </div>
                 }
-
                 <div class="r-btn r-btn-light r-btn--icon waves-effect" onclick="onVotePostClick('@post.PostId', 1)">
                     @if (post.IsVoted)
                     {

@@ -23,6 +23,7 @@ using MongoDB.Bson;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.Processing;
 
 namespace Bazaar.Controllers
 {
@@ -34,6 +35,7 @@ namespace Bazaar.Controllers
         private readonly PostsService<MongoDbPost> _postsService;
         private readonly ProfilesService<MongoDbProfile> _profilesService;
         private readonly PostsVotesService<MongoDbPostVote> _postsVotesService;
+        private readonly PostsPhotosService<MongoDbPostPhotos> _postsPhotosService;
         private readonly PostCommentsService<MongoDbPostComment> _postCommentsService;
 
         public ProfilesController(
@@ -43,6 +45,7 @@ namespace Bazaar.Controllers
             PostsService<MongoDbPost> postsService,
             ProfilesService<MongoDbProfile> profilesService, 
             PostsVotesService<MongoDbPostVote> postsVotesService,
+            PostsPhotosService<MongoDbPostPhotos> postsPhotosService,
             PostCommentsService<MongoDbPostComment> postCommentsService 
         )
         {
@@ -52,6 +55,7 @@ namespace Bazaar.Controllers
             _postsService = postsService;
             _profilesService = profilesService;
             _postsVotesService = postsVotesService;
+            _postsPhotosService = postsPhotosService;
             _postCommentsService = postCommentsService;
         }
 
@@ -100,11 +104,9 @@ namespace Bazaar.Controllers
         public async Task<IActionResult> GetProfileHiddenPosts()
         {
             try
-            {
+            {                
+                var posts = await _postsService.FindHiddenPostsByIdentityNameAsync(HttpContext.User.Identity.Name, 0, 100);
                 var profile = await _profilesService.FindProfileByIdentityName(HttpContext.User.Identity.Name);
-
-                var posts = await _postsService.FindHiddenPostsByIdentityNameAsync(profile.IdentityName, 0, 100);
-
                 return await GetPosts(profile, posts);
             }
             catch (Exception e)
@@ -121,15 +123,9 @@ namespace Bazaar.Controllers
         {
             try
             {
-                IProfile profile =
-                    await _profilesService.FindProfileByIdentityName(HttpContext.User.Identity.Name);
-
+                var profile = await _profilesService.FindProfileByIdentityName(HttpContext.User.Identity.Name);
                 var postsVotes = await _postsVotesService.FindPostsVotesOwnedByAsync(profile.IdentityName);
-
-                var posts = postsVotes.Count > 0
-                    ? await _postsService.FindPostsAsync(postsVotes.Select(x => x.PostId).ToList())
-                    : new List<MongoDbPost>();
-
+                var posts = postsVotes.Count > 0 ? await _postsService.FindPostsAsync(postsVotes.Select(x => x.PostId).ToList()) : new List<MongoDbPost>();
                 return await GetPosts(profile, posts);
             }
             catch (Exception e)
@@ -168,6 +164,7 @@ namespace Bazaar.Controllers
                     if (format.Equals(PngFormat.Instance))
                     {
                         var pngImage = Image.Load(imageStream);
+                        pngImage.Mutate(x => x.Resize(pngImage.Width / 2, pngImage.Height / 2));
                         using (var stream = new FileStream($"{profileFolderRootPath}/profile__photo.jpg", FileMode.Create))
                         {
                             pngImage.SaveAsJpeg(stream, jpegEncoder);
@@ -176,6 +173,7 @@ namespace Bazaar.Controllers
                     else
                     {
                         var jpegImage = Image.Load(imageStream);
+                        jpegImage.Mutate(x => x.Resize(jpegImage.Width / 2, jpegImage.Height / 2));
                         using (var stream = new FileStream($"{profileFolderRootPath}/profile__photo.jpg", FileMode.Create))
                         {
                             jpegImage.SaveAsJpeg(stream, jpegEncoder);
@@ -271,11 +269,15 @@ namespace Bazaar.Controllers
         {
             var countryCodes = _configuration.GetSection("CountryCodes").Get<List<CountryCode>>();
 
+            var postsModels = new List<PostModel>();
+
             if (!HttpContext.User.Identity.IsAuthenticated)
-            {
-                return View(new PostsAggregatorModel
+            {               
+                foreach (var post in posts)
                 {
-                    Posts = posts.Select(post => new PostModel
+                    var postPhotos = await _postsPhotosService.GetPostPhotosByPostIdAsync(post._id);
+
+                    postsModels.Add(new PostModel
                     {
                         Hidden = post.Hidden,
                         PostId = post._id.ToString(),
@@ -291,8 +293,13 @@ namespace Bazaar.Controllers
                         ProfilePhoto = post.ProfilePhoto,
                         Price = post.Price,
                         Tags = post.Tags,
-                    }),
-
+                        PostPhotos = postPhotos.PhotoPaths
+                    });
+                }
+                
+                return View(new PostsAggregatorModel
+                {
+                    Posts = postsModels,
                     Profile = new ProfileModel
                     {
                         Owner = false,
@@ -325,10 +332,12 @@ namespace Bazaar.Controllers
             {
                 postsVotes = await _postsVotesService.FindPostsVotesOwnedByAsync(myProfile.IdentityName);
             }
-
-            return View(new PostsAggregatorModel
+ 
+            foreach (var post in posts)
             {
-                Posts = posts.Select(post => new PostModel
+                var postPhotos = await _postsPhotosService.GetPostPhotosByPostIdAsync(post._id);
+
+                postsModels.Add(new PostModel
                 {
                     Hidden = post.Hidden,
                     IsOwner = myProfile != null && post.IdentityName.Equals(profile.IdentityName),
@@ -347,8 +356,13 @@ namespace Bazaar.Controllers
                     ProfilePhoto = post.ProfilePhoto,
                     Price = post.Price,
                     Tags = post.Tags,
-                }),
-
+                    PostPhotos = postPhotos.PhotoPaths
+                });
+            }
+            
+            return View(new PostsAggregatorModel
+            {
+                Posts = postsModels,
                 Profile = new ProfileModel
                 {
                     Owner = myProfile != null && profile._id.Equals(myProfile._id),

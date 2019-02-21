@@ -262,7 +262,6 @@
                         function(file, response) {
                             console.log("success");
                             $("#add__post--modal").modal('toggle');
-//                            window.location.reload();
                         });
                     this.on("addedfile",
                         function(file) {
@@ -340,9 +339,12 @@
                 uploadMultiple: true,
                 autoProcessQueue: false,
                 init: function() {
+                    var dzObj = this;
+                    
                     this.on("success",
                         function(file, response) {
                             console.log("success");
+                            $("#edit__post--modal").modal('toggle');
                         });
                     this.on("addedfile",
                         function(file) {
@@ -359,17 +361,28 @@
 
                     getPostPhotosByPostIdAsync(postId,
                         function(response) {
-                            response.photoPaths.forEach(function(photoPath) {
-                                console.log(`Photo path ${photoPath}`);
-                                this.addFile.call(this, photoPath);
-                            });
+                            for (var i = 0, len = response.postPhotos.length; i < len; i++) {
+                                (function(index) {
+                                    var mockFile = { name: index, size: '', dataURL: response.postPhotos[index] };
+                                    dzObj.emit("addedfile", mockFile);
+                                    dzObj.createThumbnailFromUrl(
+                                        mockFile, 
+                                        dzObj.options.thumbnailWidth, 
+                                        dzObj.options.thumbnailHeight, 
+                                        dzObj.options.thumbnailMethod,
+                                        true,
+                                        function (dataUrl) {
+                                            dzObj.emit("thumbnail", mockFile, dataUrl);
+                                        });
+                                    dzObj.emit("complete", mockFile);
+                                    dzObj.options.maxFiles = dzObj.options.maxFiles - len;
+                                })(i);                             
+                            }                            
                         },
                         function(jqXhr, textStatus, errorThrown) {
                             alert("Error");
                         }
                     );
-
-
                 }
             });
         

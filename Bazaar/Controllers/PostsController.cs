@@ -276,6 +276,8 @@ namespace Bazaar.Controllers
 
                 var countryCodes = _configuration.GetSection("CountryCodes").Get<List<CountryCode>>();
 
+                var postPhotos = await _postsPhotosService.GetPostPhotosByPostIdAsync(post._id);
+                
                 return View(new PostsAggregatorModel
                 {
                     Posts = new List<PostModel>
@@ -299,6 +301,7 @@ namespace Bazaar.Controllers
                             ProfilePhoto = post.ProfilePhoto,
                             Price = post.Price,
                             Tags = post.Tags,
+                            PostPhotos = postPhotos.PhotoPaths
                         }
                     },
 
@@ -461,6 +464,8 @@ namespace Bazaar.Controllers
 
                 var post = await _postsService.FindPostByIdAsync(ObjectId.Parse(postId));
 
+                var postPhotos = await _postsPhotosService.GetPostPhotosByPostIdAsync(post._id);
+                
                 var postsVotes = await _postsVotesService.FindPostsVotesOwnedByAsync(profile.IdentityName);
 
                 return Ok(new PostModel
@@ -482,6 +487,7 @@ namespace Bazaar.Controllers
                     ProfilePhoto = post.ProfilePhoto,
                     Price = post.Price,
                     Tags = post.Tags,
+                    PostPhotos = postPhotos.PhotoPaths
                 });
             }
             catch (Exception e)
@@ -860,6 +866,7 @@ namespace Bazaar.Controllers
                         if (format.Equals(PngFormat.Instance))
                         {
                             var pngImage = Image.Load(imageStream);
+                            pngImage.Mutate(x => x.Resize(pngImage.Width / 2, pngImage.Height / 2));
                             using (var stream = new FileStream(postPhotoFullPath, FileMode.Create))
                             {
                                 pngImage.SaveAsJpeg(stream, jpegEncoder);
@@ -868,6 +875,7 @@ namespace Bazaar.Controllers
                         else
                         {
                             var jpgImage = Image.Load(imageStream);
+                            jpgImage.Mutate(x => x.Resize(jpgImage.Width / 2, jpgImage.Height / 2));
                             using (var stream = new FileStream(postPhotoFullPath, FileMode.Create))
                             {
                                 jpgImage.SaveAsJpeg(stream, jpegEncoder);
