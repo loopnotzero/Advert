@@ -186,6 +186,23 @@ function getPostTagsByPostIdAsync(postId, successCallback, errorCallback) {
     });
 }
 
+function getPostPhotosByPostIdAsync(postId, successCallback, errorCallback) {
+    console.log(`Get post photos by post id: ${postId}`);
+    $.ajax({
+        url: `/Posts/GetPostPhotosByPostIdAsync?postId=${postId}`,
+        type: "GET",
+        contentType: "application/json",
+        error: function(jqXhr, textStatus, errorThrown) {
+            console.log("jqXhr: " + jqXhr);
+            console.log("textStatus: " + textStatus);
+            console.log("errorThrown: " + errorThrown);
+            errorCallback(jqXhr, textStatus, errorThrown);
+        },
+        success: function(response) {
+            successCallback(response);
+        }
+    });
+}
 
 function updatePostByIdAsync(postId, post, successCallback, errorCallback) {
     console.log(`Update post by id: ${postId}`);

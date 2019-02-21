@@ -330,6 +330,49 @@
     }
 
     function onEditPostClick(postId) {
+        var dzPhotos = new Dropzone("#edit__post--add__photos",
+            {
+                url: "/Posts/AddPostPhotosAsync",
+                maxFiles: 10,
+                maxFileSize: 15,
+                parallelUploads: 10,
+                acceptedFiles: "image/*",
+                uploadMultiple: true,
+                autoProcessQueue: false,
+                init: function() {
+                    this.on("success",
+                        function(file, response) {
+                            console.log("success");
+                        });
+                    this.on("addedfile",
+                        function(file) {
+                            console.log("addedfile");
+                        });
+                    this.on("removedfile",
+                        function(file) {
+                            console.log("removedfile");
+                        });
+                    this.on("maxfilesexceeded",
+                        function(file) {
+                            this.removeFile(file);
+                        });
+
+                    getPostPhotosByPostIdAsync(postId,
+                        function(response) {
+                            response.photoPaths.forEach(function(photoPath) {
+                                console.log(`Photo path ${photoPath}`);
+                                this.addFile.call(this, photoPath);
+                            });
+                        },
+                        function(jqXhr, textStatus, errorThrown) {
+                            alert("Error");
+                        }
+                    );
+
+
+                }
+            });
+        
         getPostByIdAsync(postId,
             function(response) {
                 $("#edit-post__title").val(response.title);
@@ -341,6 +384,7 @@
             function(jqXhr, textStatus, errorThrown) {
                 alert("Error");
             });
+        
         $("#edit-post__save").off("click").click(function() {
             var post = {
                 text: textEditor["edit__post--text__editor"].options.previewRender(textEditor["edit__post--text__editor"]
@@ -371,6 +415,7 @@
                     alert("Error");
                 });
         });
+        
         $("#edit-post__close").off("click").click(function() {
             if (textEditor["edit__post--text__editor"].isFullscreenActive()) {
                 textEditor["edit__post--text__editor"].toggleFullScreen();

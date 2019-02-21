@@ -41,16 +41,16 @@ namespace Bazaar.Controllers
         private readonly PostCommentsService<MongoDbPostComment> _postCommentsService;
         private readonly PostsViewsCountService<MongoDbPostViewsCount> _postsViewsCountService;
         private readonly PostCommentsVotesService<MongoDbPostCommentVote> _postCommentsVotesService;
-        private readonly PostsPhotosService<MongoDbPostPhoto> _postsPhotosService;
+        private readonly PostsPhotosService<MongoDbPostPhotos> _postsPhotosService;
 
         public PostsController(ILoggerFactory loggerFactory,
             IConfiguration configuration,
             ILookupNormalizer keyNormalizer,
-            IHostingEnvironment hostingEnvironment, 
+            IHostingEnvironment hostingEnvironment,
             UserManager<MongoDbUser> userManager,
             ProfilesService<MongoDbProfile> profilesService, PostsService<MongoDbPost> postsService,
             PostsVotesService<MongoDbPostVote> postsVotesService,
-            PostsPhotosService<MongoDbPostPhoto> postsPhotosService,
+            PostsPhotosService<MongoDbPostPhotos> postsPhotosService,
             PostCommentsService<MongoDbPostComment> postCommentsService,
             PostsViewsCountService<MongoDbPostViewsCount> postsViewsCountService,
             PostCommentsVotesService<MongoDbPostCommentVote> postCommentsVotesService)
@@ -126,12 +126,12 @@ namespace Bazaar.Controllers
                         ProfilePhoto = post.ProfilePhoto,
                         Price = post.Price,
                         Tags = post.Tags,
-                        PostPhotos = postPhotos.Select(x => x.PhotoPath).ToList()
+                        PostPhotos = postPhotos.PhotoPaths
                     };
-                    
+
                     postsModels.Add(postModel);
                 }
-                
+
                 return View(new PostsAggregatorModel
                 {
                     Posts = postsModels,
@@ -376,7 +376,7 @@ namespace Bazaar.Controllers
                     ViewsCount = ((double) post.ViewsCount).ToMetric(),
                     LikesCount = ((double) post.LikesCount).ToMetric(),
                     SharesCount = ((double) 0).ToMetric(),
-                    CommentsCount = ((double) post.CommentsCount).ToMetric(),               
+                    CommentsCount = ((double) post.CommentsCount).ToMetric(),
                     ProfileName = post.ProfileName,
                     ProfilePhoto = post.ProfilePhoto,
                     Price = post.Price,
@@ -393,8 +393,7 @@ namespace Bazaar.Controllers
         [HttpPost]
         [Authorize]
         [Route("/Posts/UpdatePostByIdAsync")]
-        public async Task<IActionResult> UpdatePostByIdAsync([FromQuery(Name = "postId")] string postId,
-            [FromBody] PostModel model)
+        public async Task<IActionResult> UpdatePostByIdAsync([FromQuery(Name = "postId")] string postId, [FromBody] PostModel model)
         {
             try
             {
@@ -428,8 +427,7 @@ namespace Bazaar.Controllers
         [HttpPost]
         [Authorize]
         [Route("/Posts/UpdatePostCommentAsync")]
-        public async Task<IActionResult> UpdatePostCommentAsync([FromQuery(Name = "postId")] string postId,
-            [FromQuery(Name = "commentId")] string commentId, [FromBody] PostCommentModel model)
+        public async Task<IActionResult> UpdatePostCommentAsync([FromQuery(Name = "postId")] string postId, [FromQuery(Name = "commentId")] string commentId, [FromBody] PostCommentModel model)
         {
             try
             {
@@ -498,8 +496,7 @@ namespace Bazaar.Controllers
         [HttpGet]
         [Authorize]
         [Route("/Posts/GetPostCommentAsync")]
-        public async Task<IActionResult> GetPostCommentAsync([FromQuery(Name = "postId")] string postId,
-            [FromQuery(Name = "commentId")] string commentId)
+        public async Task<IActionResult> GetPostCommentAsync([FromQuery(Name = "postId")] string postId, [FromQuery(Name = "commentId")] string commentId)
         {
             try
             {
@@ -553,8 +550,7 @@ namespace Bazaar.Controllers
         [HttpDelete]
         [Authorize]
         [Route("/Posts/DeletePostCommentAsync")]
-        public async Task<IActionResult> DeletePostCommentAsync([FromQuery(Name = "postId")] string postId,
-            [FromQuery(Name = "commentId")] string commentId)
+        public async Task<IActionResult> DeletePostCommentAsync([FromQuery(Name = "postId")] string postId, [FromQuery(Name = "commentId")] string commentId)
         {
             try
             {
@@ -599,8 +595,7 @@ namespace Bazaar.Controllers
         [HttpPost]
         [Authorize]
         [Route("/Posts/CreatePostTagsByPostIdAsync")]
-        public async Task<IActionResult> CreatePostTagsByPostIdAsync([FromQuery(Name = "postId")] string postId,
-            [FromBody] PostTagsModel model)
+        public async Task<IActionResult> CreatePostTagsByPostIdAsync([FromQuery(Name = "postId")] string postId, [FromBody] PostTagsModel model)
         {
             try
             {
@@ -634,7 +629,8 @@ namespace Bazaar.Controllers
             {
                 var profile = await _profilesService.FindProfileByIdentityName(HttpContext.User.Identity.Name);
 
-                var vote = await _postsVotesService.FindPostVoteByPostIdOwnedByAsync(ObjectId.Parse(postId), profile.IdentityName);
+                var vote = await _postsVotesService.FindPostVoteByPostIdOwnedByAsync(ObjectId.Parse(postId),
+                    profile.IdentityName);
 
                 if (vote == null)
                 {
@@ -834,60 +830,95 @@ namespace Bazaar.Controllers
         [RequestSizeLimit(1024 * 1024 * 15 * 10)]
         public async Task<IActionResult> AddPostPhotosAsync([FromQuery(Name = "postId")] string postId)
         {
-            var files = HttpContext.Request.Form.Files;
-            
-            var postDir = $"posts/{postId}";
-            
-            var postPhotoDir = $"{_hostingEnvironment.WebRootPath}/{postDir}";
-            
-            if (!Directory.Exists(postPhotoDir))
+            try
             {
-                Directory.CreateDirectory(postPhotoDir);
-            }
+                var files = HttpContext.Request.Form.Files;
 
-            foreach (var file in files)
-            {
-                var fileName = $"{Path.GetFileNameWithoutExtension(file.FileName)}.jpg";
+                var postDir = $"posts/{postId}";
 
-                var postPhotoFullPath = $"{postPhotoDir}/{fileName}";
+                var postPhotoDir = $"{_hostingEnvironment.WebRootPath}/{postDir}";
 
-                using (var imageStream = file.OpenReadStream())
+                if (!Directory.Exists(postPhotoDir))
                 {
-                    var format = Image.DetectFormat(imageStream);
-
-                    if (format.Equals(PngFormat.Instance))
-                    {
-                        var pngImage = Image.Load(imageStream);
-
-                        using (var stream = new FileStream(postPhotoFullPath, FileMode.Create))
-                        {
-                            pngImage.SaveAsJpeg(stream);
-                        }
-                    }
-                    else
-                    {
-                        using (var stream = new FileStream(postPhotoFullPath, FileMode.Create))
-                        {
-                            await file.CopyToAsync(stream);
-                        }
-                    }
+                    Directory.CreateDirectory(postPhotoDir);
                 }
 
-                var postPhoto = new MongoDbPostPhoto
+                var photoPaths = new List<string>();
+
+                foreach (var file in files)
                 {
-                    PhotoPath = $"{postDir}/{fileName}",
+                    var fileName = $"{Path.GetFileNameWithoutExtension(file.FileName)}.jpg";
+
+                    var postPhotoFullPath = $"{postPhotoDir}/{fileName}";
+
+                    using (var imageStream = file.OpenReadStream())
+                    {
+                        var format = Image.DetectFormat(imageStream);
+
+                        if (format.Equals(PngFormat.Instance))
+                        {
+                            var pngImage = Image.Load(imageStream);
+
+                            using (var stream = new FileStream(postPhotoFullPath, FileMode.Create))
+                            {
+                                pngImage.SaveAsJpeg(stream);
+                            }
+                        }
+                        else
+                        {
+                            using (var stream = new FileStream(postPhotoFullPath, FileMode.Create))
+                            {
+                                await file.CopyToAsync(stream);
+                            }
+                        }
+                    }
+                
+                    photoPaths.Add($"{postDir}/{fileName}");
+                }
+            
+                var postPhotos = new MongoDbPostPhotos
+                {
                     IdentityName = HttpContext.User.Identity.Name,
                     PostId = ObjectId.Parse(postId),
                     CreatedAt = DateTime.UtcNow,
+                    PhotoPaths = photoPaths,
                 };
-            
-                await _postsPhotosService.CreatePostPhotosAsync(postPhoto);
-            }
 
-            return Ok(new PostPhotoModel
+                await _postsPhotosService.CreatePostPhotosAsync(postPhotos);
+
+                return Ok(new PostPhotosModel
+                {
+                    PostId = postId,
+                    PostPhotos = photoPaths
+                });
+            }
+            catch (Exception e)
             {
+                _logger.LogError(e.Message, e);
+                return new StatusCodeResult((int) HttpStatusCode.InternalServerError); 
+            }           
+        }
+
+        [HttpGet]
+        [Authorize]
+        [Route("/Posts/GetPostPhotosByPostIdAsync")]
+        public async Task<IActionResult> GetPostPhotosByPostIdAsync([FromQuery(Name = "postId")] string postId)
+        {
+            try
+            {
+                var postPhotos = await _postsPhotosService.GetPostPhotosByPostIdAsync(ObjectId.Parse(postId));
                 
-            });
+                return Ok(new PostPhotosModel
+                {
+                    PostId = postId,
+                    PostPhotos = postPhotos.PhotoPaths
+                });
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message, e);
+                return new StatusCodeResult((int) HttpStatusCode.InternalServerError);
+            }
         }
     }
 }

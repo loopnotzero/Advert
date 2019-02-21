@@ -1615,12 +1615,12 @@
     <_ContentIncludedByDefault Remove="wwwroot\posts\5c6c8b32c321835dcc6a809d\Nicolae Covercenco-8.jpg" />
     <_ContentIncludedByDefault Remove="wwwroot\posts\5c6c8b32c321835dcc6a809d\Nicolae Covercenco-9.jpg" />
     <_ContentIncludedByDefault Remove="wwwroot\posts\5c6c8b32c321835dcc6a809d\Nicolae Covercenco.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\profiles\5c67bcaf91fb1c3415351c15\profile__photo.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\profiles\5c6c8d4882fbae2af683119f\profile__photo.jpg" />
+    <_ContentIncludedByDefault Remove="wwwroot\profiles\5c6f00be0092002671bf5155\profile__photo.jpg" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Bazaar.Common\Bazaar.Common.csproj" />
     <ProjectReference Include="..\Bazaar.MongoDbStorage\Bazaar.MongoDbStorage.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="wwwroot\posts" />
   </ItemGroup>
 </Project>

@@ -10,7 +10,7 @@ using MongoDB.Bson;
 
 namespace Bazaar.Services
 {
-    public class PostsPhotosService<T> : IDisposable where T : IPostPhoto
+    public class PostsPhotosService<T> : IDisposable where T : IPostPhotos
     {      
         private bool _disposed;    
         
@@ -39,7 +39,7 @@ namespace Bazaar.Services
             await _store.CreatePostPhotoAsync(entity, CancellationToken);
         }
 
-        public async Task<List<T>> GetPostPhotosByPostIdAsync(ObjectId postId)
+        public async Task<T> GetPostPhotosByPostIdAsync(ObjectId postId)
         {
             ThrowIfDisposed();
             return await _store.GetPostPhotosByPostIdAsync(postId, CancellationToken);

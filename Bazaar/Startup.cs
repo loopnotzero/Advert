@@ -60,7 +60,7 @@ namespace Bazaar
             services.AddScoped<PostCommentsService<MongoDbPostComment>>();
             services.AddScoped<PostCommentsVotesService<MongoDbPostCommentVote>>(); 
             services.AddScoped<PostsService<MongoDbPost>>();
-            services.AddScoped<PostsPhotosService<MongoDbPostPhoto>>();
+            services.AddScoped<PostsPhotosService<MongoDbPostPhotos>>();
             services.AddScoped<PostsViewsCountService<MongoDbPostViewsCount>>();
             services.AddScoped<PostsVotesService<MongoDbPostVote>>();
             services.AddScoped<ProfilesService<MongoDbProfile>>();
@@ -80,10 +80,10 @@ namespace Bazaar
                 return postsCommentsStore;
             });
             
-            services.AddSingleton<IPostsPhotosStore<MongoDbPostPhoto>>(provider =>
+            services.AddSingleton<IPostsPhotosStore<MongoDbPostPhotos>>(provider =>
             {
                 var options = provider.GetService<IOptions<MongoDbOptions>>();
-                var postsPhotosStore = new MongoDbPostsPhotosStore<MongoDbPostPhoto>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
+                var postsPhotosStore = new MongoDbPostsPhotosStore<MongoDbPostPhotos>(new MongoClient(options.Value.ConnectionString).GetDatabase(options.Value.DatabaseName));
                 postsPhotosStore.CreateDefaultIndexes();
                 return postsPhotosStore;
             });
