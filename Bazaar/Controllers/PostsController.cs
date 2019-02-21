@@ -12,20 +12,20 @@ using Bazaar.Models.Profiles;
 using Bazaar.Models.Settings;
 using Bazaar.MongoDbStorage.Posts;
 using Bazaar.MongoDbStorage.Profiles;
-using Bazaar.MongoDbStorage.Users;
 using Bazaar.Normalizers;
 using Bazaar.Services;
 using Humanizer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.Processing;
 
 namespace Bazaar.Controllers
 {
@@ -47,7 +47,6 @@ namespace Bazaar.Controllers
             IConfiguration configuration,
             ILookupNormalizer keyNormalizer,
             IHostingEnvironment hostingEnvironment,
-            UserManager<MongoDbUser> userManager,
             ProfilesService<MongoDbProfile> profilesService, PostsService<MongoDbPost> postsService,
             PostsVotesService<MongoDbPostVote> postsVotesService,
             PostsPhotosService<MongoDbPostPhotos> postsPhotosService,
@@ -59,7 +58,6 @@ namespace Bazaar.Controllers
             _configuration = configuration;
             _keyNormalizer = keyNormalizer;
             _hostingEnvironment = hostingEnvironment;
-
             _postsService = postsService;
             _profilesService = profilesService;
             _postsVotesService = postsVotesService;
@@ -832,44 +830,52 @@ namespace Bazaar.Controllers
         {
             try
             {
-                var files = HttpContext.Request.Form.Files;
-
-                var postDir = $"posts/{postId}";
+                Directory.CreateDirectory(postPhotoDir);
+            }
+            
+            foreach (var file in files)
+            {
+                var fileName = $"{Path.GetFileNameWithoutExtension(file.FileName)}.jpg";
 
                 var postPhotoDir = $"{_hostingEnvironment.WebRootPath}/{postDir}";
 
                 if (!Directory.Exists(postPhotoDir))
                 {
-                    Directory.CreateDirectory(postPhotoDir);
-                }
+                    var imgFormat = Image.DetectFormat(imageStream);
 
-                var photoPaths = new List<string>();
-
-                foreach (var file in files)
-                {
-                    var fileName = $"{Path.GetFileNameWithoutExtension(file.FileName)}.jpg";
-
-                    var postPhotoFullPath = $"{postPhotoDir}/{fileName}";
-
-                    using (var imageStream = file.OpenReadStream())
+                    if (imgFormat.Equals(PngFormat.Instance))
                     {
-                        var format = Image.DetectFormat(imageStream);
+                        var pngImage = Image.Load(imageStream);
+                        
+                        pngImage.Mutate(x => x.Resize(pngImage.Width / 2, pngImage.Height / 2));
+                        
+                        var jpegEncoder = new JpegEncoder
+                        {
+                            Quality = 40,
+                            Subsample = JpegSubsample.Ratio420
+                        };
 
                         if (format.Equals(PngFormat.Instance))
                         {
-                            var pngImage = Image.Load(imageStream);
-
-                            using (var stream = new FileStream(postPhotoFullPath, FileMode.Create))
-                            {
-                                pngImage.SaveAsJpeg(stream);
-                            }
+                            pngImage.SaveAsJpeg(stream, jpegEncoder);
                         }
-                        else
+                    }
+                    else
+                    {
+                        var jpgImage = Image.Load(imageStream);
+                                      
+                        jpgImage.Mutate(x => x.Resize(jpgImage.Width / 2, jpgImage.Height / 2));
+
+                        var jpegEncoder = new JpegEncoder
                         {
-                            using (var stream = new FileStream(postPhotoFullPath, FileMode.Create))
-                            {
-                                await file.CopyToAsync(stream);
-                            }
+                            Quality = 40,
+                            Subsample = JpegSubsample.Ratio420
+                        };
+
+                        
+                        using (var stream = new FileStream(postPhotoFullPath, FileMode.Create))
+                        {
+                            jpgImage.SaveAsJpeg(stream, jpegEncoder);
                         }
                     }
                 
